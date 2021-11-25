@@ -115,7 +115,7 @@ public class SlashCommandHandler extends ListenerAdapter {
         event.deferReply().queue();
         try {
             var command = slashCommands.get(getFullCommandName(event.getName(), event.getSubcommandGroup(), event.getSubcommandName()));
-            command.handler().handleSlash(event).queue();
+            command.handler().handleSlash(event);
         } catch (Exception e) {
             e.printStackTrace();
         }

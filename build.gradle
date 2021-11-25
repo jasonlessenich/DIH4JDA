@@ -11,7 +11,7 @@ plugins {
 
 group 'com.dynxsty'
 archivesBaseName = 'dih4jda'
-version '1.0_1'
+version '1.0_2'
 
 repositories {
     mavenCentral()
