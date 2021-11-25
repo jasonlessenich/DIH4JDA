@@ -3,7 +3,6 @@ package com.dynxsty.dih4jda.slash_command;
 import com.dynxsty.dih4jda.slash_command.dto.SlashCommand;
 import com.dynxsty.dih4jda.slash_command.dto.SlashSubCommand;
 import com.dynxsty.dih4jda.slash_command.dto.SlashSubCommandGroup;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -21,16 +20,15 @@ import static org.reflections.Reflections.log;
 
 public class SlashCommandHandler extends ListenerAdapter {
 
-    private final HashMap<String, SlashCommandInteraction> slashCommands;
+    private HashMap<String, SlashCommandInteraction> slashCommands;
     private final String commandsPackage;
 
     public SlashCommandHandler(String commandsPackage) {
-        this.slashCommands = new HashMap<>();
         this.commandsPackage = commandsPackage;
     }
 
-    public void registerSlashCommands(Guild guild) throws Exception {
-        CommandListUpdateAction updateAction = guild.updateCommands();
+    public void registerSlashCommands(CommandListUpdateAction updateAction) throws Exception {
+        this.slashCommands = new HashMap<>();
 
         Reflections commands = new Reflections(this.commandsPackage);
         Set<Class<? extends SlashCommand>> classes = commands.getSubTypesOf(SlashCommand.class);
