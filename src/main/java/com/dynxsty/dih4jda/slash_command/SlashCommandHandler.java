@@ -20,8 +20,8 @@ import static org.reflections.Reflections.log;
 
 public class SlashCommandHandler extends ListenerAdapter {
 
-    private HashMap<String, SlashCommandInteraction> slashCommands;
     private final String commandsPackage;
+    private HashMap<String, SlashCommandInteraction> slashCommands;
 
     /**
      * Constructs a new {@link SlashCommandHandler} from the supplied commands package.

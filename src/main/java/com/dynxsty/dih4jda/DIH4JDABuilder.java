@@ -1,6 +1,7 @@
 package com.dynxsty.dih4jda;
 
 import net.dv8tion.jda.api.JDA;
+import org.reflections.util.ClasspathHelper;
 
 /**
  * Builder-System used to build {@link DIH4JDA}.
@@ -58,6 +59,9 @@ public class DIH4JDABuilder {
     public DIH4JDA build() {
         if (jda == null) throw new IllegalStateException("JDA instance may not be empty.");
         if (commandType == null) throw new IllegalStateException("Command Type may not be empty.");
+        if (ClasspathHelper.forPackage(commandsPackage).isEmpty())
+            throw new IllegalArgumentException("Package " + commandsPackage + " does not exist.");
+
         return new DIH4JDA(jda, SlashCommandType.GUILD, commandsPackage, ownerId);
     }
 }
