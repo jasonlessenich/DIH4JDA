@@ -23,10 +23,26 @@ public class SlashCommandHandler extends ListenerAdapter {
     private HashMap<String, SlashCommandInteraction> slashCommands;
     private final String commandsPackage;
 
+    /**
+     * Constructs a new {@link SlashCommandHandler} from the supplied commands package.
+     * @param commandsPackage The package that houses the command classes.
+     */
     public SlashCommandHandler(String commandsPackage) {
         this.commandsPackage = commandsPackage;
     }
 
+    /**
+     * Registers all slash commands. Loops through all classes found in the commands package that is a subclass of {@link SlashCommand}.
+     * Goes through these steps with every iteration;
+     * <ol>
+     *     <li>Checks if the class is missing {@link CommandData} and doesn't register if it is.</li>
+     *     <li>Checks if the class is neither a subclass of {@link SlashSubCommand} nor {@link SlashSubCommandGroup} and registers it as regular command.</li>
+     *     <li>Checks if the class is a subclass of {@link SlashSubCommandGroup} if it is, the SlashCommandGroup is validated and another loop is fired following the two steps above for the group's sub commands.</li>
+     *     <li>Checks if the class is a subclass of {@link SlashSubCommand}, if it is, it is registered as a sub command.</li>
+     * </ol>
+     * @param updateAction The {@link CommandListUpdateAction} that is used to register the commands.
+     * @throws Exception if anything goes wrong.
+     */
     public void registerSlashCommands(CommandListUpdateAction updateAction) throws Exception {
         this.slashCommands = new HashMap<>();
 
@@ -111,6 +127,10 @@ public class SlashCommandHandler extends ListenerAdapter {
         updateAction.queue();
     }
 
+    /**
+     * If a {@link SlashCommandEvent} is fired the corresponding class is found and the command is executed.
+     * @param event The {@link SlashCommandEvent} that was fired.
+     */
     private void handleCommand(SlashCommandEvent event) {
         event.deferReply().queue();
         try {
@@ -121,10 +141,21 @@ public class SlashCommandHandler extends ListenerAdapter {
         }
     }
 
+    /**
+     * Used to create one command name out of the SlashCommand, SlashSubCommandGroup and SlashSubCommand
+     * @param first The SlashCommand's name.
+     * @param second The SlashSubCommandGroup's name.
+     * @param third The SlashSubCommand's name.
+     * @return One combined string.
+     */
     private String getFullCommandName(String first, String second, String third) {
         return first + " " + second + " " + third;
     }
 
+    /**
+     * Fired if Discord reports a {@link SlashCommandEvent}.
+     * @param event The {@link SlashCommandEvent} that was fired.
+     */
     @Override
     public void onSlashCommand(@NotNull SlashCommandEvent event) {
         CompletableFuture.runAsync(() -> handleCommand(event));
