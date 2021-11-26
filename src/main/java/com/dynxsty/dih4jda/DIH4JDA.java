@@ -13,6 +13,13 @@ public class DIH4JDA extends ListenerAdapter {
     public static SlashCommandType commandType;
     public static String ownerId, commandsPackage;
 
+    /**
+     * Creates a new DIH4JDA instance
+     * @param jda The {@link net.dv8tion.jda.api.JDA} instance the handler is to be used for.
+     * @param commandType The {@link SlashCommandType} the handler should use.
+     * @param commandsPackage The package that houses the command classes.
+     * @param ownerId The ID of the owner - used for admin-only commands.
+     */
     DIH4JDA(JDA jda, SlashCommandType commandType, String commandsPackage, String ownerId) {
         DIH4JDA.jda = jda;
         DIH4JDA.commandType = commandType;
@@ -21,6 +28,14 @@ public class DIH4JDA extends ListenerAdapter {
         jda.addEventListener(this);
     }
 
+    /**
+     * Ran once the {@link net.dv8tion.jda.api.JDA} instance fires the {@link net.dv8tion.jda.api.events.ReadyEvent}. Mainly does the following two things;
+     * <ol>
+     *     <li>Creates a new {@link SlashCommandHandler} instance</li>
+     *     <li>Register the Slash commands, depending on the {@link SlashCommandType}, either by looping through all guilds or by registering global slash commands with the JDA instance.</li>
+     * </ol>
+     * @param event The {@link net.dv8tion.jda.api.events.ReadyEvent} that was fired.
+     */
     @Override
     public void onReady(ReadyEvent event) {
         if (commandsPackage == null) return;
