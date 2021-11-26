@@ -31,7 +31,11 @@ public class DIH4JDA extends ListenerAdapter {
         CompletableFuture.runAsync(() -> {
             try {
                 switch (commandType) {
-                    case GUILD -> { for (var g : jda.getGuilds()) { handler.registerSlashCommands(g.updateCommands()); } }
+                    case GUILD -> {
+                        for (var g : jda.getGuilds()) {
+                            handler.registerSlashCommands(g.updateCommands());
+                        }
+                    }
                     case GLOBAL -> handler.registerSlashCommands(jda.updateCommands());
                     default -> throw new IllegalStateException("Invalid commandType: " + commandType);
                 }

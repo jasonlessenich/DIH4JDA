@@ -1,7 +1,9 @@
 # DIH4JDA
+
 A very easy-to-use interaction handler for JDA!
 
-## Usage 
+## Usage
+
 Just create a new `DIH4JDA` instance like this:
 
 ```java
@@ -28,7 +30,7 @@ class PingCommand extends SlashCommand implements ISlashCommand {
     }
 ```
 
-All commands that run code on execution should implement the `ISlashCommand` class.  
+All commands that run code on execution should implement the `ISlashCommand` class.
 
 ## ToDo
 
