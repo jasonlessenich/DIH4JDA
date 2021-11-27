@@ -1,5 +1,6 @@
 package com.dynxsty.dih4jda;
 
+import com.dynxsty.dih4jda.message.InteractionHandler;
 import com.dynxsty.dih4jda.slash_command.SlashCommandHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -26,7 +27,7 @@ public class DIH4JDA extends ListenerAdapter {
         if (commandsPackage == null) return;
 
         SlashCommandHandler handler = new SlashCommandHandler(commandsPackage);
-        jda.addEventListener(handler);
+        jda.addEventListener(handler, new InteractionHandler());
 
         CompletableFuture.runAsync(() -> {
             try {

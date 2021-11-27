@@ -3,6 +3,7 @@ package com.dynxsty.dih4jda.slash_command;
 import com.dynxsty.dih4jda.slash_command.dto.SlashCommand;
 import com.dynxsty.dih4jda.slash_command.dto.SlashSubCommand;
 import com.dynxsty.dih4jda.slash_command.dto.SlashSubCommandGroup;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -16,8 +17,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import static org.reflections.Reflections.log;
-
+@Slf4j
 public class SlashCommandHandler extends ListenerAdapter {
 
     private final String commandsPackage;
@@ -53,8 +53,6 @@ public class SlashCommandHandler extends ListenerAdapter {
                 slashCommands.put(getFullCommandName(first, second, third), new SlashCommandInteraction((ISlashCommand) instance, privileges));
             }
 
-            log.info("[*] Added CommandData from Class {}", clazz.getSimpleName());
-
             if (instance.getSubCommandGroupClasses() != null) {
                 for (var subGroupClazz : instance.getSubCommandGroupClasses()) {
                     SlashSubCommandGroup subGroupInstance = subGroupClazz.getDeclaredConstructor().newInstance();
@@ -64,8 +62,6 @@ public class SlashCommandHandler extends ListenerAdapter {
                         log.warn("Class {} is missing SubCommandGroupData. It will be ignored.", subGroupClazz.getName());
                         continue;
                     }
-                    log.info("\t[{}] Adding SubCommandGroupData from Class {}",
-                            clazz.getSimpleName(), subGroupClazz.getSimpleName());
 
                     if (subGroupInstance.getSubCommandClasses() == null) {
                         log.warn("Class {} is missing SubCommandClasses. It will be ignored.", subGroupClazz.getName());
@@ -83,8 +79,6 @@ public class SlashCommandHandler extends ListenerAdapter {
                         slashCommands.put(getFullCommandName(first, second, third), new SlashCommandInteraction((ISlashCommand) subInstance, privileges));
                         subCmdGroupData.addSubcommands(subInstance.getSubCommandData());
 
-                        log.info("\t\t[{}] Added SubCommandData from Class {}",
-                                subGroupClazz.getSimpleName(), subClazz.getSimpleName());
                     }
                     cmdData.addSubcommandGroups(subCmdGroupData);
                 }
@@ -100,14 +94,10 @@ public class SlashCommandHandler extends ListenerAdapter {
                     }
                     slashCommands.put(getFullCommandName(first, second, third), new SlashCommandInteraction((ISlashCommand) subInstance, privileges));
                     cmdData.addSubcommands(subInstance.getSubCommandData());
-
-                    log.info("\t[{}] Added SubCommandData from Class {}",
-                            clazz.getSimpleName(), subClazz.getSimpleName());
                 }
             }
             updateAction.addCommands(cmdData);
         }
-        log.info("[*] Queuing SlashCommands");
         updateAction.queue();
     }
 
