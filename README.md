@@ -8,8 +8,8 @@ An very easy-to-use Interaction Handler for JDA!
 ## Maven
 ```xml
 <dependency> 
-    <groupId>com.dynxsty</groupId> 
-    <artifactId>dih4jda</artifactId> 
+    <groupId>com.github.DynxstyGIT</groupId> 
+    <artifactId>DIH4JDA</artifactId> 
     <version>${DIH4JDA_VERSION}</version> 
 </dependency>
 ```
@@ -18,12 +18,12 @@ An very easy-to-use Interaction Handler for JDA!
 ```gradle
 plugins {
     id 'java'
-    id 'jitpack'
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     [...]
-    implementation 'com.dynxsty:dih4jda:${DIH4JDA_VERSION}'
+    implementation 'com.github.DynxstyGIT:DIH4JDA:${DIH4JDA_VERSION}'
     implementation 'org.reflections:reflections:0.10.2'
     implementation 'net.dv8tion:JDA:5.0.0-alpha.5'
 }
