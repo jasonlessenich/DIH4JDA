@@ -7,11 +7,24 @@ buildscript {
 plugins {
     id 'java'
     id 'maven-publish'
+
 }
 
 group 'com.dynxsty'
 archivesBaseName = 'dih4jda'
-version '1.0_3'
+version '1.0'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = group
+            artifactId = archivesBaseName
+            version = version
+
+            from components.java
+        }
+    }
+}
 
 repositories {
     mavenCentral()
@@ -23,23 +36,6 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/DynxstyGIT/DIH4JDA")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("GITHUB_ACTOR")
-                password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-    publications {
-        gpr(MavenPublication) {
-            from(components.java)
-        }
-    }
-}
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
