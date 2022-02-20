@@ -11,8 +11,8 @@ import javax.annotation.Nonnull;
  * Builder-System used to build {@link DIH4JDA}.
  */
 public class DIH4JDABuilder {
-
-    private String ownerId, commandsPackage;
+    private long ownerId;
+    private String commandsPackage;
     private JDA jda;
 
     private DIH4JDABuilder(@Nonnull JDA jda) {
@@ -34,7 +34,7 @@ public class DIH4JDABuilder {
      * @param id The ID of the owner.
      */
     @Nonnull
-    public DIH4JDABuilder setOwnerId(@Nonnull String id) {
+    public DIH4JDABuilder setOwnerId(@Nonnull long id) {
         this.ownerId = id;
         return this;
     }
