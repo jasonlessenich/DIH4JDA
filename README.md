@@ -24,8 +24,6 @@ plugins {
 dependencies {
     [...]
     implementation 'com.github.DynxstyGIT:DIH4JDA:${DIH4JDA_VERSION}'
-    implementation 'org.reflections:reflections:0.10.2'
-    implementation 'net.dv8tion:JDA:5.0.0-alpha.5'
 }
 ```
 

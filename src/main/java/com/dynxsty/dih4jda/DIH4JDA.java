@@ -11,9 +11,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class DIH4JDA extends ListenerAdapter {
 
-    public JDA jda;
-    public String commandsPackage;
-    public long ownerId;
+    private final JDA jda;
+    private final String commandsPackage;
+    private final long ownerId;
 
     public static final org.slf4j.Logger log = JDALogger.getLog(DIH4JDA.class);
 
@@ -37,16 +37,27 @@ public class DIH4JDA extends ListenerAdapter {
      */
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        if (commandsPackage == null) return;
-        InteractionHandler handler = new InteractionHandler(commandsPackage);
-        this.jda.addEventListener(handler);
+        if (getCommandsPackage() == null) return;
+        InteractionHandler handler = new InteractionHandler(getCommandsPackage());
+        this.getJDA().addEventListener(handler);
         CompletableFuture.runAsync(() -> {
             try {
-                handler.registerSlashCommands(this.jda);
-                handler.registerContextCommands(this.jda);
+                handler.register(this.jda);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    public JDA getJDA() {
+        return this.jda;
+    }
+
+    public String getCommandsPackage() {
+        return this.commandsPackage;
+    }
+
+    public long getOwnerId() {
+        return this.ownerId;
     }
 }

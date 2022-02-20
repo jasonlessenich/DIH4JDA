@@ -10,7 +10,6 @@ import com.dynxsty.dih4jda.commands.interactions.context.dao.GuildContextCommand
 import com.dynxsty.dih4jda.commands.interactions.slash.ISlashCommand;
 import com.dynxsty.dih4jda.commands.interactions.slash.SlashCommandInteraction;
 import com.dynxsty.dih4jda.commands.interactions.slash.dao.*;
-import com.dynxsty.dih4jda.exceptions.InvalidParentException;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
@@ -61,6 +60,24 @@ public class InteractionHandler extends ListenerAdapter {
 		this.commandsPackage = commandsPackage;
 	}
 
+	public void register(JDA jda) throws Exception {
+		this.registerSlashCommands();
+		this.registerContextCommands(jda);
+
+		for (Guild guild : jda.getGuilds()) {
+			List<CommandData> commands = new ArrayList<>();
+			commands.addAll(registerGuildCommand(guild));
+			commands.addAll(registerGuildContext(guild));
+			CommandListUpdateAction action = guild.updateCommands();
+			action.addCommands(commands).queue();
+		}
+		List<CommandData> commands = new ArrayList<>();
+		commands.addAll(registerGlobalCommand(jda));
+		commands.addAll(registerGlobalContext());
+		CommandListUpdateAction action = jda.updateCommands();
+		action.addCommands(commands).queue();
+	}
+
 	/**
 	 * Registers all slash commands. Loops through all classes found in the commands package that is a subclass of {@link BaseSlashCommand}.
 	 * Goes through these steps with every iteration;
@@ -71,10 +88,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 *     <li>Checks if the class is a subclass of {@link SlashSubcommand}, if it is, it is registered as a sub command.</li>
 	 * </ol>
 	 *
-	 * @param jda The {@link JDA} instance.
-	 * @throws Exception if anything goes wrong.
 	 */
-	public void registerSlashCommands(JDA jda) throws Exception {
+	private void registerSlashCommands() {
 		Reflections commands = new Reflections(this.commandsPackage);
 		Set<Class<? extends BaseSlashCommand>> classes = commands.getSubTypesOf(BaseSlashCommand.class);
 		for (Class<? extends BaseSlashCommand> c : classes) {
@@ -84,14 +99,6 @@ public class InteractionHandler extends ListenerAdapter {
 				guildCommands.add(c);
 			}
 		}
-		if (!this.guildCommands.isEmpty()) {
-			for (Guild guild : jda.getGuilds()) {
-				registerGuildCommand(guild);
-			}
-		}
-		if (!this.globalCommands.isEmpty()) {
-			registerGlobalCommand(jda);
-		}
 	}
 
 	/**
@@ -100,14 +107,14 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param guild The command's guild.
 	 * @throws Exception If an error occurs.
 	 */
-	private void registerGuildCommand(@NotNull Guild guild) throws Exception {
-		CommandListUpdateAction updateAction = guild.updateCommands();
+	private List<CommandData> registerGuildCommand(@NotNull Guild guild) throws Exception {
+		List<CommandData> commands = new ArrayList<>();
 		for (Class<? extends BaseSlashCommand> slashCommandClass : this.guildCommands) {
 			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(guild, slashCommandClass);
-			updateAction = registerCommand(updateAction, instance, slashCommandClass, guild);
+			commands.add(this.registerCommand(instance, slashCommandClass, guild));
 		}
 		log.info(String.format("[%s] Queuing Guild SlashCommands", guild.getName()));
-		updateAction.queue();
+		return commands;
 	}
 
 	/**
@@ -115,27 +122,26 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @throws Exception If an error occurs.
 	 */
-	private void registerGlobalCommand(@NotNull JDA jda) throws Exception {
-		CommandListUpdateAction updateAction = jda.updateCommands();
+	private List<CommandData> registerGlobalCommand(@NotNull JDA jda) throws Exception {
+		List<CommandData> commands = new ArrayList<>();
 		for (Class<? extends BaseSlashCommand> slashCommandClass : this.globalCommands) {
 			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(null, slashCommandClass);
-			updateAction = this.registerCommand(updateAction, instance, slashCommandClass, null);
+			commands.add(this.registerCommand(instance, slashCommandClass, null));
 		}
 		log.info("[*] Queuing Global SlashCommands");
-		updateAction.queue();
+		return commands;
 	}
 
 	/**
 	 * Registers a single Command.
 	 *
-	 * @param action       The {@link CommandListUpdateAction}.
 	 * @param command      The base command's instance.
 	 * @param commandClass The base command's class.
 	 * @param guild        The current guild (if available)
 	 * @return The new {@link CommandListUpdateAction}.
 	 * @throws Exception If an error occurs.
 	 */
-	private CommandListUpdateAction registerCommand(CommandListUpdateAction action, @NotNull BaseSlashCommand command, Class<? extends BaseSlashCommand> commandClass, @Nullable Guild guild) throws Exception {
+	private SlashCommandData registerCommand(@NotNull BaseSlashCommand command, Class<? extends BaseSlashCommand> commandClass, @Nullable Guild guild) throws Exception {
 		if (command.getCommandData() == null) {
 			log.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
 			return null;
@@ -150,8 +156,7 @@ public class InteractionHandler extends ListenerAdapter {
 					new SlashCommandInteraction((ISlashCommand) command, command.getCommandPrivileges()));
 			log.info(String.format("\t[*] Registered command: /%s", command.getCommandData().getName()));
 		}
-		action.addCommands(commandData);
-		return action;
+		return commandData;
 	}
 
 	/**
@@ -235,9 +240,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Registers all context commands. Loops through all classes found in the commands package that is a subclass of {@link BaseContextCommand}.
 	 *
 	 * @param jda The {@link JDA} instance.
-	 * @throws Exception if anything goes wrong.
 	 */
-	public void registerContextCommands(JDA jda) throws Exception {
+	private void registerContextCommands(JDA jda) {
 		Reflections commands = new Reflections(this.commandsPackage);
 		Set<Class<? extends BaseContextCommand>> classes = commands.getSubTypesOf(BaseContextCommand.class);
 		for (Class<? extends BaseContextCommand> c : classes) {
@@ -247,14 +251,6 @@ public class InteractionHandler extends ListenerAdapter {
 				guildContexts.add(c);
 			}
 		}
-		if (!this.guildContexts.isEmpty()) {
-			for (Guild guild : jda.getGuilds()) {
-				registerGuildContext(guild);
-			}
-		}
-		if (!this.globalContexts.isEmpty()) {
-			registerGlobalContext(jda);
-		}
 	}
 
 	/**
@@ -263,14 +259,14 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param guild The context command's guild.
 	 * @throws Exception If an error occurs.
 	 */
-	private void registerGuildContext(@NotNull Guild guild) throws Exception {
-		CommandListUpdateAction updateAction = guild.updateCommands();
+	private List<CommandData> registerGuildContext(@NotNull Guild guild) throws Exception {
+		List<CommandData> commands = new ArrayList<>();
 		for (Class<? extends BaseContextCommand> contextCommandClass : this.guildContexts) {
 			BaseContextCommand instance = (BaseContextCommand) this.getClassInstance(guild, contextCommandClass);
-			updateAction = registerContext(updateAction, instance, contextCommandClass, guild);
+			commands.add(this.registerContext(instance, contextCommandClass, guild));
 		}
 		log.info(String.format("[%s] Queuing Guild Context Commands", guild.getName()));
-		updateAction.queue();
+		return commands;
 	}
 
 	/**
@@ -278,27 +274,26 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @throws Exception If an error occurs.
 	 */
-	private void registerGlobalContext(@NotNull JDA jda) throws Exception {
-		CommandListUpdateAction updateAction = jda.updateCommands();
+	private List<CommandData> registerGlobalContext() throws Exception {
+		List<CommandData> commands = new ArrayList<>();
 		for (Class<? extends BaseContextCommand> contextCommandClass : this.globalContexts) {
 			BaseContextCommand instance = (BaseContextCommand) this.getClassInstance(null, contextCommandClass);
-			updateAction = this.registerContext(updateAction, instance, contextCommandClass, null);
+			commands.add(this.registerContext(instance, contextCommandClass, null));
 		}
-		log.info("[Global] Queuing Global Context Commands");
-		updateAction.queue();
+		log.info("[*] Queuing Global Context Commands");
+		return commands;
 	}
 
 	/**
 	 * Registers a single Context Command.
 	 *
-	 * @param action       The {@link CommandListUpdateAction}.
 	 * @param command      The base context command's instance.
 	 * @param commandClass The base context command's class.
 	 * @param guild        The current guild (if available)
 	 * @return The new {@link CommandListUpdateAction}.
 	 * @throws Exception If an error occurs.
 	 */
-	private CommandListUpdateAction registerContext(CommandListUpdateAction action, @NotNull BaseContextCommand command, Class<? extends BaseContextCommand> commandClass, @Nullable Guild guild) throws Exception {
+	private CommandData registerContext(@NotNull BaseContextCommand command, Class<? extends BaseContextCommand> commandClass, @Nullable Guild guild) throws Exception {
 		if (command.getCommandData() == null) {
 			log.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
 			return null;
@@ -310,11 +305,10 @@ public class InteractionHandler extends ListenerAdapter {
 			userContextIndex.put(commandData.getName(), new UserContextInteraction((IUserContextCommand) command));
 		} else {
 			log.error(String.format("Invalid Command Type \"%s\" for Context Command! This command will be ignored.", commandData.getType()));
-			return action;
+			return null;
 		}
 		log.info(String.format("\t[*] Registered context command: %s", command.getCommandData().getName()));
-		action.addCommands(commandData);
-		return action;
+		return commandData;
 	}
 
 	/**
