@@ -72,15 +72,20 @@ public class SlashCommandHandler extends ListenerAdapter {
 		}
 		if (!this.guild.isEmpty()) {
 			for (var guild : jda.getGuilds()) {
-				registerGuildCommands(guild);
+				registerGuildCommand(guild);
 			}
 		}
 		if (!this.global.isEmpty()) {
-			registerGlobalCommands(jda);
+			registerGlobalCommand(jda);
 		}
 	}
 
-	private void registerGuildCommands(@NotNull Guild guild) throws Exception {
+	/**
+	 * Registers a single Guild Command.
+	 * @param guild The command's guild.
+	 * @throws Exception If an error occurs.
+	 */
+	private void registerGuildCommand(@NotNull Guild guild) throws Exception {
 		var updateAction = guild.updateCommands();
 		for (var slashCommandClass : this.guild) {
 			var instance = (SlashCommand) this.getClassInstance(SlashCommandType.GUILD, guild, slashCommandClass);
@@ -90,7 +95,11 @@ public class SlashCommandHandler extends ListenerAdapter {
 		updateAction.queue();
 	}
 
-	private void registerGlobalCommands(@NotNull JDA jda) throws Exception {
+	/**
+	 * Registers a single Global Command.
+	 * @throws Exception If an error occurs.
+	 */
+	private void registerGlobalCommand(@NotNull JDA jda) throws Exception {
 		var updateAction = jda.updateCommands();
 		for (var slashCommandClass : this.global) {
 			var instance = slashCommandClass.getConstructor().newInstance();
@@ -100,6 +109,15 @@ public class SlashCommandHandler extends ListenerAdapter {
 		updateAction.queue();
 	}
 
+	/**
+	 * Registers a single Command.
+	 * @param action The {@link CommandListUpdateAction}.
+	 * @param command The base command's instance.
+	 * @param commandClass The base command's class.
+	 * @param guild The current guild (if available)
+	 * @return The new {@link CommandListUpdateAction}.
+	 * @throws Exception If an error occurs.
+	 */
 	private CommandListUpdateAction registerCommand(CommandListUpdateAction action, @NotNull SlashCommand command, Class<? extends SlashCommand> commandClass, @Nullable Guild guild) throws Exception{
 		if (command.getCommandData() == null) {
 			log.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
@@ -119,6 +137,14 @@ public class SlashCommandHandler extends ListenerAdapter {
 		return action;
 	}
 
+	/**
+	 * Registers a single Command Group.
+	 * @param command The base command's instance.
+	 * @param groupClasses All slash command group classes.
+	 * @param guild The current guild (if available)
+	 * @return The new {@link CommandListUpdateAction}.
+	 * @throws Exception If an error occurs.
+	 */
 	private SlashCommandData registerSubcommandGroup(@NotNull SlashCommand command, Class<? extends SlashSubcommandGroup> @NotNull [] groupClasses, @Nullable Guild guild) throws Exception {
 		var data = command.getCommandData();
 		for (var group : groupClasses) {
@@ -137,7 +163,15 @@ public class SlashCommandHandler extends ListenerAdapter {
 		return data;
 	}
 
-	@Contract("_, _, _ -> param2")
+	/**
+	 * Registers a single Sub Command for a Subcommand Group.
+	 * @param command The base command's instance.
+	 * @param data The subcommand group's data.
+	 * @param subClasses All sub command classes.
+	 * @param guild The current guild (if available)
+	 * @return The new {@link CommandListUpdateAction}.
+	 * @throws Exception If an error occurs.
+	 */
 	private SubcommandGroupData registerSubcommand(SlashCommand command, SubcommandGroupData data, Class<? extends SlashSubcommand> @NotNull [] subClasses, @Nullable Guild guild) throws Exception {
 		for (var sub : subClasses) {
 			var instance = (SlashSubcommand) this.getClassInstance(command.getType(), guild, sub);
@@ -153,6 +187,14 @@ public class SlashCommandHandler extends ListenerAdapter {
 		return data;
 	}
 
+	/**
+	 * Registers a single Sub Command.
+	 * @param command The base command's instance.
+	 * @param subClasses All sub command classes.
+	 * @param guild The current guild (if available)
+	 * @return The new {@link CommandListUpdateAction}.
+	 * @throws Exception If an error occurs.
+	 */
 	private SlashCommandData registerSubcommand(@NotNull SlashCommand command, Class<? extends SlashSubcommand> @NotNull [] subClasses, @Nullable Guild guild) throws Exception {
 		var data = command.getCommandData();
 		for (var sub : subClasses) {
@@ -196,6 +238,14 @@ public class SlashCommandHandler extends ListenerAdapter {
 		return String.format("%s %s %s", first, second, third);
 	}
 
+	/**
+	 * Creates a new Instance of the given class.
+	 * @param type The slash command's type.
+	 * @param guild The slash command's guild. (only available for {@link SlashCommandType#GUILD})
+	 * @param clazz The slash command's class.
+	 * @return The Instance as a generic Object.
+	 * @throws Exception If an error occurs.
+	 */
 	private Object getClassInstance(SlashCommandType type, Guild guild, Class<?> clazz) throws Exception {
 		if (type != SlashCommandType.GLOBAL && guild != null) {
 			try {
