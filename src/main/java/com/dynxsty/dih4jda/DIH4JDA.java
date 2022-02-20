@@ -11,7 +11,8 @@ import java.util.concurrent.CompletableFuture;
 public class DIH4JDA extends ListenerAdapter {
 
     public JDA jda;
-    public String ownerId, commandsPackage;
+    public String commandsPackage;
+    public long ownerId;
 
     /**
      * Constructs a new DIH4JDA instance
@@ -19,7 +20,7 @@ public class DIH4JDA extends ListenerAdapter {
      * @param commandsPackage The package that houses the command classes.
      * @param ownerId The ID of the owner - used for admin-only commands.
      */
-    protected DIH4JDA(JDA jda, String commandsPackage, String ownerId) {
+    protected DIH4JDA(JDA jda, String commandsPackage, long ownerId) {
         this.jda = jda;
         this.ownerId = ownerId;
         this.commandsPackage = commandsPackage;
