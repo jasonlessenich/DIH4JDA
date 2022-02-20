@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.commands.dto;
+package com.dynxsty.dih4jda.commands.interactions.slash.dao;
 
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
@@ -6,7 +6,9 @@ import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 /**
  * A SlashCommand object with getters, setters, a constructor and a toString method.
  */
-public abstract class SlashCommand {
+public abstract class BaseSlashCommand {
+    protected BaseSlashCommand() {}
+
     private SlashCommandData commandData;
     private Class<? extends SlashSubcommand>[] subcommandClasses;
     private Class<? extends SlashSubcommandGroup>[] subcommandGroupClasses;
