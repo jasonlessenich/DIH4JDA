@@ -278,7 +278,10 @@ public class InteractionHandler extends ListenerAdapter {
 		List<CommandData> commands = new ArrayList<>();
 		for (Class<? extends BaseContextCommand> contextCommandClass : this.globalContexts) {
 			BaseContextCommand instance = (BaseContextCommand) this.getClassInstance(null, contextCommandClass);
-			commands.add(this.registerContext(instance, contextCommandClass, null));
+			CommandData data = this.registerContext(instance, contextCommandClass, null);
+			if (data != null) {
+				commands.add(data);
+			}
 		}
 		log.info("[*] Queuing Global Context Commands");
 		return commands;
