@@ -1,5 +1,8 @@
 package com.dynxsty.dih4jda.exceptions;
 
+/**
+ * Exception that is thrown for everything that is related to DIH4JDA.
+ */
 public class DIH4JDAException extends Exception {
 
 	public DIH4JDAException(String message) {
