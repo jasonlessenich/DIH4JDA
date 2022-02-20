@@ -1,4 +1,5 @@
 # DIH4JDA
+[![](https://jitpack.io/v/DynxstyGIT/DIH4JDA.svg)](https://jitpack.io/#DynxstyGIT/DIH4JDA)
 
 A very easy-to-use Interaction Handler for JDA!
 
