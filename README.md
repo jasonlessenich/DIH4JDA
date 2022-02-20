@@ -20,6 +20,13 @@ plugins {
     id 'java'
     id 'jitpack'
 }
+
+dependencies {
+    [...]
+    implementation 'com.dynxsty:dih4jda:${DIH4JDA_VERSION}'
+    implementation 'org.reflections:reflections:0.10.2'
+    implementation 'net.dv8tion:JDA:5.0.0-alpha.5'
+}
 ```
 
 ## Setup
