@@ -7,12 +7,12 @@ buildscript {
 plugins {
     id 'java'
     id 'maven-publish'
-
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 
 group 'com.dynxsty'
 archivesBaseName = 'dih4jda'
-version '1.0'
+version '1.0_001'
 
 publishing {
     publications {

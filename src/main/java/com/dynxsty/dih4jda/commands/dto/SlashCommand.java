@@ -1,6 +1,5 @@
 package com.dynxsty.dih4jda.commands.dto;
 
-import com.dynxsty.dih4jda.SlashCommandType;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
@@ -12,7 +11,6 @@ public abstract class SlashCommand {
     private Class<? extends SlashSubcommand>[] subcommandClasses;
     private Class<? extends SlashSubcommandGroup>[] subcommandGroupClasses;
     private CommandPrivilege[] commandPrivileges;
-    private SlashCommandType type;
 
     public SlashCommandData getCommandData() {
         return commandData;
@@ -46,13 +44,5 @@ public abstract class SlashCommand {
 
     public void setCommandPrivileges(CommandPrivilege... commandPrivileges) {
         this.commandPrivileges = commandPrivileges;
-    }
-
-    public SlashCommandType getType() {
-        return type;
-    }
-
-    public void setType(SlashCommandType type) {
-        this.type = type;
     }
 }
