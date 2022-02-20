@@ -18,7 +18,7 @@ An very easy-to-use Interaction Handler for JDA!
 ```gradle
 plugins {
     id 'java'
-    id 'jitpack'
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
