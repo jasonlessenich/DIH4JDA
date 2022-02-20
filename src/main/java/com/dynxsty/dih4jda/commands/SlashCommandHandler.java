@@ -59,19 +59,19 @@ public class SlashCommandHandler extends ListenerAdapter {
 	public void registerSlashCommands(JDA jda) throws Exception {
 		Reflections commands = new Reflections(this.commandsPackage);
 		Set<Class<? extends SlashCommand>> classes = commands.getSubTypesOf(SlashCommand.class);
-		for (var c : classes) {
-			var instance = c.getConstructor().newInstance();
+		for (Class<? extends SlashCommand> c : classes) {
+			SlashCommand instance = c.getConstructor().newInstance();
 			if (instance.getType() == null) {
 				log.warn(String.format("Class %s is missing a Command Type. It will be ignored.", c.getName()));
 				continue;
 			}
 			switch (instance.getType()) {
-				case GLOBAL -> global.add(c);
-				case GUILD -> guild.add(c);
+				case GLOBAL: global.add(c); break;
+				case GUILD: guild.add(c); break;
 			}
 		}
 		if (!this.guild.isEmpty()) {
-			for (var guild : jda.getGuilds()) {
+			for (Guild guild : jda.getGuilds()) {
 				registerGuildCommand(guild);
 			}
 		}
@@ -86,9 +86,9 @@ public class SlashCommandHandler extends ListenerAdapter {
 	 * @throws Exception If an error occurs.
 	 */
 	private void registerGuildCommand(@NotNull Guild guild) throws Exception {
-		var updateAction = guild.updateCommands();
-		for (var slashCommandClass : this.guild) {
-			var instance = (SlashCommand) this.getClassInstance(SlashCommandType.GUILD, guild, slashCommandClass);
+		CommandListUpdateAction updateAction = guild.updateCommands();
+		for (Class<? extends SlashCommand> slashCommandClass : this.guild) {
+			SlashCommand instance = (SlashCommand) this.getClassInstance(SlashCommandType.GUILD, guild, slashCommandClass);
 			updateAction = registerCommand(updateAction, instance, slashCommandClass, guild);
 		}
 		log.info(String.format("[%s] Queuing Guild SlashCommands", guild.getName()));
@@ -100,9 +100,9 @@ public class SlashCommandHandler extends ListenerAdapter {
 	 * @throws Exception If an error occurs.
 	 */
 	private void registerGlobalCommand(@NotNull JDA jda) throws Exception {
-		var updateAction = jda.updateCommands();
-		for (var slashCommandClass : this.global) {
-			var instance = slashCommandClass.getConstructor().newInstance();
+		CommandListUpdateAction updateAction = jda.updateCommands();
+		for (Class<? extends SlashCommand> slashCommandClass : this.global) {
+			SlashCommand instance = slashCommandClass.getConstructor().newInstance();
 			updateAction = this.registerCommand(updateAction, instance, slashCommandClass, null);
 		}
 		log.info("[*] Queuing Global SlashCommands");
@@ -146,9 +146,9 @@ public class SlashCommandHandler extends ListenerAdapter {
 	 * @throws Exception If an error occurs.
 	 */
 	private SlashCommandData registerSubcommandGroup(@NotNull SlashCommand command, Class<? extends SlashSubcommandGroup> @NotNull [] groupClasses, @Nullable Guild guild) throws Exception {
-		var data = command.getCommandData();
-		for (var group : groupClasses) {
-			var instance = (SlashSubcommandGroup) this.getClassInstance(command.getType(), guild, group);
+		SlashCommandData data = command.getCommandData();
+		for (Class<? extends SlashSubcommandGroup> group : groupClasses) {
+			SlashSubcommandGroup instance = (SlashSubcommandGroup) this.getClassInstance(command.getType(), guild, group);
 			if (instance.getSubcommandGroupData() == null) {
 				log.warn(String.format("Class %s is missing SubcommandGroupData. It will be ignored.", group.getName()));
 				continue;
@@ -173,8 +173,8 @@ public class SlashCommandHandler extends ListenerAdapter {
 	 * @throws Exception If an error occurs.
 	 */
 	private SubcommandGroupData registerSubcommand(SlashCommand command, SubcommandGroupData data, Class<? extends SlashSubcommand> @NotNull [] subClasses, @Nullable Guild guild) throws Exception {
-		for (var sub : subClasses) {
-			var instance = (SlashSubcommand) this.getClassInstance(command.getType(), guild, sub);
+		for (Class<? extends SlashSubcommand> sub : subClasses) {
+			SlashSubcommand instance = (SlashSubcommand) this.getClassInstance(command.getType(), guild, sub);
 			if (instance.getSubCommandData() == null) {
 				log.warn(String.format("Class %s is missing SubcommandData. It will be ignored.", sub.getName()));
 				continue;
@@ -196,9 +196,9 @@ public class SlashCommandHandler extends ListenerAdapter {
 	 * @throws Exception If an error occurs.
 	 */
 	private SlashCommandData registerSubcommand(@NotNull SlashCommand command, Class<? extends SlashSubcommand> @NotNull [] subClasses, @Nullable Guild guild) throws Exception {
-		var data = command.getCommandData();
-		for (var sub : subClasses) {
-			var instance = (SlashSubcommand) this.getClassInstance(command.getType(), guild, sub);
+		SlashCommandData data = command.getCommandData();
+		for (Class<? extends SlashSubcommand> sub : subClasses) {
+			SlashSubcommand instance = (SlashSubcommand) this.getClassInstance(command.getType(), guild, sub);
 			if (instance.getSubCommandData() == null) {
 				log.warn(String.format("Class %s is missing SubcommandData. It will be ignored.", sub.getName()));
 				continue;
@@ -218,8 +218,8 @@ public class SlashCommandHandler extends ListenerAdapter {
 	 */
 	private void handleCommand(SlashCommandInteractionEvent event) {
 		try {
-			var command = slashCommandIndex.get(getFullCommandName(event.getName(), event.getSubcommandGroup(), event.getSubcommandName()));
-			command.handler().handleSlashCommandInteraction(event);
+			SlashCommandInteraction command = slashCommandIndex.get(getFullCommandName(event.getName(), event.getSubcommandGroup(), event.getSubcommandName()));
+			command.getHandler().handleSlashCommandInteraction(event);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
