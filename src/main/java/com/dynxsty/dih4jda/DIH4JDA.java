@@ -1,30 +1,28 @@
 package com.dynxsty.dih4jda;
 
-import com.dynxsty.dih4jda.slash_command.SlashCommandHandler;
+import com.dynxsty.dih4jda.commands.SlashCommandHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
 public class DIH4JDA extends ListenerAdapter {
 
-    public static JDA jda;
-    public static SlashCommandType commandType;
-    public static String ownerId, commandsPackage;
+    public JDA jda;
+    public String ownerId, commandsPackage;
 
     /**
      * Constructs a new DIH4JDA instance
      * @param jda The {@link JDA} instance the handler is to be used for.
-     * @param commandType The {@link SlashCommandType} the handler should use.
      * @param commandsPackage The package that houses the command classes.
      * @param ownerId The ID of the owner - used for admin-only commands.
      */
-    DIH4JDA(JDA jda, SlashCommandType commandType, String commandsPackage, String ownerId) {
-        DIH4JDA.jda = jda;
-        DIH4JDA.commandType = commandType;
-        DIH4JDA.ownerId = ownerId;
-        DIH4JDA.commandsPackage = commandsPackage;
+    protected DIH4JDA(JDA jda, String commandsPackage, String ownerId) {
+        this.jda = jda;
+        this.ownerId = ownerId;
+        this.commandsPackage = commandsPackage;
         jda.addEventListener(this);
     }
 
@@ -37,27 +35,16 @@ public class DIH4JDA extends ListenerAdapter {
      * @param event The {@link ReadyEvent} that was fired.
      */
     @Override
-    public void onReady(ReadyEvent event) {
+    public void onReady(@NotNull ReadyEvent event) {
         if (commandsPackage == null) return;
-
         SlashCommandHandler handler = new SlashCommandHandler(commandsPackage);
-        jda.addEventListener(handler);
-
+        this.jda.addEventListener(handler);
         CompletableFuture.runAsync(() -> {
             try {
-                switch (commandType) {
-                    case GUILD -> {
-                        for (var g : jda.getGuilds()) {
-                            handler.registerSlashCommands(g.updateCommands());
-                        }
-                    }
-                    case GLOBAL -> handler.registerSlashCommands(jda.updateCommands());
-                    default -> throw new IllegalStateException("Invalid commandType: " + commandType);
-                }
+                handler.registerSlashCommands(this.jda);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-
     }
 }
