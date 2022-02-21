@@ -40,13 +40,11 @@ public class DIH4JDA extends ListenerAdapter {
         if (getCommandsPackage() == null) return;
         InteractionHandler handler = new InteractionHandler(getCommandsPackage());
         this.getJDA().addEventListener(handler);
-        CompletableFuture.runAsync(() -> {
-            try {
-                handler.register(this.jda);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        try {
+            handler.register(this.jda);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public JDA getJDA() {
