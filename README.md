@@ -1,7 +1,10 @@
 # DIH4JDA
+![image](https://user-images.githubusercontent.com/48297101/154980678-ae9db212-f38b-4a4e-a628-0f94d13086b7.png)
+
 [![](https://jitpack.io/v/DynxstyGIT/DIH4JDA.svg)](https://jitpack.io/#DynxstyGIT/DIH4JDA)
 
-A very easy-to-use Interaction Handler for JDA!
+
+A very easy-to-use Interaction Handler for the [Java Discord API!](https://github.com/DV8FromTheWorld/JDA)
 
 ## Installation
 
