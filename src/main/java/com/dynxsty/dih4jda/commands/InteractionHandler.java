@@ -10,6 +10,7 @@ import com.dynxsty.dih4jda.commands.interactions.context.dao.GuildContextCommand
 import com.dynxsty.dih4jda.commands.interactions.slash.ISlashCommand;
 import com.dynxsty.dih4jda.commands.interactions.slash.SlashCommandInteraction;
 import com.dynxsty.dih4jda.commands.interactions.slash.dao.*;
+import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
@@ -19,6 +20,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.jetbrains.annotations.Contract;
@@ -60,22 +62,20 @@ public class InteractionHandler extends ListenerAdapter {
 		this.commandsPackage = commandsPackage;
 	}
 
-	public void register(JDA jda) throws Exception {
+	public void registerInteractions(JDA jda) throws Exception {
 		this.registerSlashCommands();
-		this.registerContextCommands(jda);
+		this.registerContextCommands();
 
 		for (Guild guild : jda.getGuilds()) {
 			List<CommandData> commands = new ArrayList<>();
-			commands.addAll(registerGuildCommand(guild));
-			commands.addAll(registerGuildContext(guild));
-			CommandListUpdateAction action = guild.updateCommands();
-			action.addCommands(commands).queue();
+			commands.addAll(getGuildSlashCommandData(guild));
+			commands.addAll(getGuildContextCommandData(guild));
+			guild.updateCommands().addCommands(commands).queue();
 		}
 		List<CommandData> commands = new ArrayList<>();
-		commands.addAll(registerGlobalCommand(jda));
-		commands.addAll(registerGlobalContext());
-		CommandListUpdateAction action = jda.updateCommands();
-		action.addCommands(commands).queue();
+		commands.addAll(getGlobalSlashCommandData());
+		commands.addAll(getGlobalContextCommandData());
+		jda.updateCommands().addCommands(commands).queue();
 	}
 
 	/**
@@ -87,7 +87,6 @@ public class InteractionHandler extends ListenerAdapter {
 	 *     <li>Checks if the class is a subclass of {@link SlashSubcommandGroup} if it is, the SlashCommandGroup is validated and another loop is fired following the two steps above for the group's sub commands.</li>
 	 *     <li>Checks if the class is a subclass of {@link SlashSubcommand}, if it is, it is registered as a sub command.</li>
 	 * </ol>
-	 *
 	 */
 	private void registerSlashCommands() {
 		Reflections commands = new Reflections(this.commandsPackage);
@@ -102,146 +101,9 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Registers a single Guild Command.
-	 *
-	 * @param guild The command's guild.
-	 * @throws Exception If an error occurs.
-	 */
-	private List<CommandData> registerGuildCommand(@NotNull Guild guild) throws Exception {
-		List<CommandData> commands = new ArrayList<>();
-		for (Class<? extends BaseSlashCommand> slashCommandClass : this.guildCommands) {
-			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(guild, slashCommandClass);
-			commands.add(this.registerCommand(instance, slashCommandClass, guild));
-		}
-		log.info(String.format("[%s] Queuing Guild SlashCommands", guild.getName()));
-		return commands;
-	}
-
-	/**
-	 * Registers a single Global Command.
-	 *
-	 * @throws Exception If an error occurs.
-	 */
-	private List<CommandData> registerGlobalCommand(@NotNull JDA jda) throws Exception {
-		List<CommandData> commands = new ArrayList<>();
-		for (Class<? extends BaseSlashCommand> slashCommandClass : this.globalCommands) {
-			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(null, slashCommandClass);
-			commands.add(this.registerCommand(instance, slashCommandClass, null));
-		}
-		log.info("[*] Queuing Global SlashCommands");
-		return commands;
-	}
-
-	/**
-	 * Registers a single Command.
-	 *
-	 * @param command      The base command's instance.
-	 * @param commandClass The base command's class.
-	 * @param guild        The current guild (if available)
-	 * @return The new {@link CommandListUpdateAction}.
-	 * @throws Exception If an error occurs.
-	 */
-	private SlashCommandData registerCommand(@NotNull BaseSlashCommand command, Class<? extends BaseSlashCommand> commandClass, @Nullable Guild guild) throws Exception {
-		if (command.getCommandData() == null) {
-			log.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
-			return null;
-		}
-		SlashCommandData commandData = command.getCommandData();
-		if (command.getSubcommandGroupClasses() != null) {
-			commandData = registerSubcommandGroup(command, command.getSubcommandGroupClasses(), guild);
-		} else if (command.getSubcommandClasses() != null) {
-			commandData = registerSubcommand(command, command.getSubcommandClasses(), guild);
-		} else {
-			slashCommandIndex.put(getFullCommandName(commandData.getName(), null, null),
-					new SlashCommandInteraction((ISlashCommand) command, command.getCommandPrivileges()));
-			log.info(String.format("\t[*] Registered command: /%s", command.getCommandData().getName()));
-		}
-		return commandData;
-	}
-
-	/**
-	 * Registers a single Command Group.
-	 *
-	 * @param command      The base command's instance.
-	 * @param groupClasses All slash command group classes.
-	 * @param guild        The current guild (if available)
-	 * @return The new {@link CommandListUpdateAction}.
-	 * @throws Exception If an error occurs.
-	 */
-	private SlashCommandData registerSubcommandGroup(@NotNull BaseSlashCommand command, Class<? extends SlashSubcommandGroup> @NotNull [] groupClasses, @Nullable Guild guild) throws Exception {
-		SlashCommandData data = command.getCommandData();
-		for (Class<? extends SlashSubcommandGroup> group : groupClasses) {
-			SlashSubcommandGroup instance = (SlashSubcommandGroup) this.getClassInstance(guild, group);
-			if (instance.getSubcommandGroupData() == null) {
-				log.warn(String.format("Class %s is missing SubcommandGroupData. It will be ignored.", group.getName()));
-				continue;
-			}
-			if (instance.getSubcommandClasses() == null) {
-				log.warn(String.format("SubcommandGroup %s is missing Subcommands. It will be ignored.", instance.getSubcommandGroupData().getName()));
-				continue;
-			}
-			SubcommandGroupData groupData = registerSubcommand(command, instance.getSubcommandGroupData(), instance.getSubcommandClasses(), guild);
-			data.addSubcommandGroups(groupData);
-		}
-		return data;
-	}
-
-	/**
-	 * Registers a single Sub Command for a Subcommand Group.
-	 *
-	 * @param command    The base command's instance.
-	 * @param data       The subcommand group's data.
-	 * @param subClasses All sub command classes.
-	 * @param guild      The current guild (if available)
-	 * @return The new {@link CommandListUpdateAction}.
-	 * @throws Exception If an error occurs.
-	 */
-	private SubcommandGroupData registerSubcommand(BaseSlashCommand command, SubcommandGroupData data, Class<? extends SlashSubcommand> @NotNull [] subClasses, @Nullable Guild guild) throws Exception {
-		for (Class<? extends SlashSubcommand> sub : subClasses) {
-			SlashSubcommand instance = (SlashSubcommand) this.getClassInstance(guild, sub);
-			if (instance.getSubcommandData() == null) {
-				log.warn(String.format("Class %s is missing SubcommandData. It will be ignored.", sub.getName()));
-				continue;
-			}
-			slashCommandIndex.put(getFullCommandName(command.getCommandData().getName(), data.getName(), instance.getSubcommandData().getName()),
-					new SlashCommandInteraction((ISlashCommand) instance, command.getCommandPrivileges()));
-			log.info(String.format("\t[*] Registered command: /%s", getFullCommandName(command.getCommandData().getName(), data.getName(), instance.getSubcommandData().getName())));
-			data.addSubcommands(instance.getSubcommandData());
-		}
-		return data;
-	}
-
-	/**
-	 * Registers a single Sub Command.
-	 *
-	 * @param command    The base command's instance.
-	 * @param subClasses All sub command classes.
-	 * @param guild      The current guild (if available)
-	 * @return The new {@link CommandListUpdateAction}.
-	 * @throws Exception If an error occurs.
-	 */
-	private SlashCommandData registerSubcommand(@NotNull BaseSlashCommand command, Class<? extends SlashSubcommand> @NotNull [] subClasses, @Nullable Guild guild) throws Exception {
-		SlashCommandData data = command.getCommandData();
-		for (Class<? extends SlashSubcommand> sub : subClasses) {
-			SlashSubcommand instance = (SlashSubcommand) this.getClassInstance(guild, sub);
-			if (instance.getSubcommandData() == null) {
-				log.warn(String.format("Class %s is missing SubcommandData. It will be ignored.", sub.getName()));
-				continue;
-			}
-			slashCommandIndex.put(getFullCommandName(data.getName(), data.getName(), instance.getSubcommandData().getName()),
-					new SlashCommandInteraction((ISlashCommand) instance, command.getCommandPrivileges()));
-			log.info(String.format("\t[*] Registered command: /%s %s", data.getName(), instance.getSubcommandData().getName()));
-			data.addSubcommands(instance.getSubcommandData());
-		}
-		return data;
-	}
-
-	/**
 	 * Registers all context commands. Loops through all classes found in the commands package that is a subclass of {@link BaseContextCommand}.
-	 *
-	 * @param jda The {@link JDA} instance.
 	 */
-	private void registerContextCommands(JDA jda) {
+	private void registerContextCommands() {
 		Reflections commands = new Reflections(this.commandsPackage);
 		Set<Class<? extends BaseContextCommand>> classes = commands.getSubTypesOf(BaseContextCommand.class);
 		for (Class<? extends BaseContextCommand> c : classes) {
@@ -253,32 +115,154 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 	}
 
+
 	/**
-	 * Registers a single Guild Context Command.
+	 * Gets all Guild commands registered in {@link InteractionHandler#registerSlashCommands()} and adds
+	 * them to the {@link InteractionHandler#slashCommandIndex}.
+	 *
+	 * @param guild The command's guild.
+	 * @throws Exception If an error occurs.
+	 */
+	private List<CommandData> getGuildSlashCommandData(@NotNull Guild guild) throws Exception {
+		List<CommandData> commands = new ArrayList<>();
+		for (Class<? extends BaseSlashCommand> slashCommandClass : this.guildCommands) {
+			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(guild, slashCommandClass);
+			commands.add(this.getBaseCommandData(instance, slashCommandClass, guild));
+		}
+		log.info(String.format("[%s] Queuing Guild SlashCommands", guild.getName()));
+		return commands;
+	}
+
+	/**
+	 * Gets all Global commands registered in {@link InteractionHandler#registerSlashCommands()} and adds
+	 * them to the {@link InteractionHandler#slashCommandIndex}.
+	 *
+	 * @throws Exception If an error occurs.
+	 */
+	private List<CommandData> getGlobalSlashCommandData() throws Exception {
+		List<CommandData> commands = new ArrayList<>();
+		for (Class<? extends BaseSlashCommand> slashCommandClass : this.globalCommands) {
+			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(null, slashCommandClass);
+			commands.add(this.getBaseCommandData(instance, slashCommandClass, null));
+		}
+		log.info("[*] Queuing Global SlashCommands");
+		return commands;
+	}
+
+	/**
+	 * Gets the complete {@link SlashCommandData} (including Subcommands & Subcommand Groups) of a single {@link BaseSlashCommand}.
+	 *
+	 * @param command      The base command's instance.
+	 * @param commandClass The base command's class.
+	 * @param guild        The current guild (if available)
+	 * @return The new {@link CommandListUpdateAction}.
+	 * @throws Exception If an error occurs.
+	 */
+	private SlashCommandData getBaseCommandData(@NotNull BaseSlashCommand command, Class<? extends BaseSlashCommand> commandClass, @Nullable Guild guild) throws Exception {
+		if (command.getCommandData() == null) {
+			log.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
+			return null;
+		}
+		SlashCommandData commandData = command.getCommandData();
+		if (command.getSubcommandGroupClasses() != null) {
+			commandData.addSubcommandGroups(this.getSubcommandGroupData(command, guild));
+		}
+		if (command.getSubcommandClasses() != null) {
+			commandData.addSubcommands(this.getSubcommandData(command, command.getSubcommandClasses(), null, guild));
+		}
+		if (command.getSubcommandGroupClasses() == null && command.getSubcommandClasses() == null){
+			slashCommandIndex.put(buildCommandPath(commandData.getName()), new SlashCommandInteraction((ISlashCommand) command, command.getCommandPrivileges()));
+			log.info(String.format("\t[*] Registered command: /%s", command.getCommandData().getName()));
+		}
+		return commandData;
+	}
+
+	/**
+	 * Gets all {@link SubcommandGroupData} (including Subcommands) of a single {@link BaseSlashCommand}.
+	 *
+	 * @param command The base command's instance.
+	 * @param guild   The current guild (if available)
+	 * @return All {@link SubcommandGroupData} stored in a List.
+	 * @throws Exception If an error occurs.
+	 */
+	private List<SubcommandGroupData> getSubcommandGroupData(@NotNull BaseSlashCommand command, @Nullable Guild guild) throws Exception {
+		List<SubcommandGroupData> groupDataList = new ArrayList<>();
+		for (Class<? extends SlashSubcommandGroup> group : command.getSubcommandGroupClasses()) {
+			SlashSubcommandGroup instance = (SlashSubcommandGroup) this.getClassInstance(guild, group);
+			if (instance.getSubcommandGroupData() == null) {
+				log.warn(String.format("Class %s is missing SubcommandGroupData. It will be ignored.", group.getName()));
+				continue;
+			}
+			if (instance.getSubcommandClasses() == null) {
+				log.warn(String.format("SubcommandGroup %s is missing Subcommands. It will be ignored.", instance.getSubcommandGroupData().getName()));
+				continue;
+			}
+			SubcommandGroupData groupData = instance.getSubcommandGroupData();
+			groupData.addSubcommands(this.getSubcommandData(command, instance.getSubcommandClasses(), groupData.getName(), guild));
+			groupDataList.add(groupData);
+		}
+		return groupDataList;
+	}
+
+	/**
+	 * Gets all {@link SubcommandData} from the given array of {@link SlashSubcommand} classes.
+	 *
+	 * @param command      The base command's instance.
+	 * @param subClasses   All sub command classes.
+	 * @param subGroupName The Subcommand Group's name. (if available)
+	 * @param guild        The current guild (if available)
+	 * @return The new {@link CommandListUpdateAction}.
+	 * @throws Exception If an error occurs.
+	 */
+	private List<SubcommandData> getSubcommandData(BaseSlashCommand command, Class<? extends SlashSubcommand>[] subClasses, @Nullable String subGroupName, @Nullable Guild guild) throws Exception {
+		List<SubcommandData> subDataList = new ArrayList<>();
+		for (Class<? extends SlashSubcommand> sub : subClasses) {
+			SlashSubcommand instance = (SlashSubcommand) this.getClassInstance(guild, sub);
+			if (instance.getSubcommandData() == null) {
+				log.warn(String.format("Class %s is missing SubcommandData. It will be ignored.", sub.getName()));
+				continue;
+			}
+			String commandPath;
+			if (subGroupName == null) {
+				commandPath = buildCommandPath(command.getCommandData().getName(), instance.getSubcommandData().getName());
+			} else {
+				commandPath = buildCommandPath(command.getCommandData().getName(), subGroupName, instance.getSubcommandData().getName());
+			}
+			slashCommandIndex.put(commandPath, new SlashCommandInteraction((ISlashCommand) instance, command.getCommandPrivileges()));
+			log.info(String.format("\t[*] Registered command: /%s", commandPath));
+			subDataList.add(instance.getSubcommandData());
+		}
+		return subDataList;
+	}
+
+	/**
+	 * Gets all Guild Context commands registered in {@link InteractionHandler#registerContextCommands()} and
+	 * returns their {@link CommandData} as a List.
 	 *
 	 * @param guild The context command's guild.
 	 * @throws Exception If an error occurs.
 	 */
-	private List<CommandData> registerGuildContext(@NotNull Guild guild) throws Exception {
+	private List<CommandData> getGuildContextCommandData(@NotNull Guild guild) throws Exception {
 		List<CommandData> commands = new ArrayList<>();
 		for (Class<? extends BaseContextCommand> contextCommandClass : this.guildContexts) {
 			BaseContextCommand instance = (BaseContextCommand) this.getClassInstance(guild, contextCommandClass);
-			commands.add(this.registerContext(instance, contextCommandClass, guild));
+			commands.add(this.getContextCommandData(instance, contextCommandClass));
 		}
 		log.info(String.format("[%s] Queuing Guild Context Commands", guild.getName()));
 		return commands;
 	}
 
 	/**
-	 * Registers a single Global Context Command.
+	 * Gets all Global Context commands registered in {@link InteractionHandler#registerContextCommands()} and
+	 * returns their {@link CommandData} as a List.
 	 *
 	 * @throws Exception If an error occurs.
 	 */
-	private List<CommandData> registerGlobalContext() throws Exception {
+	private List<CommandData> getGlobalContextCommandData() throws Exception {
 		List<CommandData> commands = new ArrayList<>();
 		for (Class<? extends BaseContextCommand> contextCommandClass : this.globalContexts) {
 			BaseContextCommand instance = (BaseContextCommand) this.getClassInstance(null, contextCommandClass);
-			CommandData data = this.registerContext(instance, contextCommandClass, null);
+			CommandData data = this.getContextCommandData(instance, contextCommandClass);
 			if (data != null) {
 				commands.add(data);
 			}
@@ -288,15 +272,13 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Registers a single Context Command.
+	 * Gets the complete {@link CommandData} from a single {@link BaseContextCommand}.
 	 *
 	 * @param command      The base context command's instance.
 	 * @param commandClass The base context command's class.
-	 * @param guild        The current guild (if available)
 	 * @return The new {@link CommandListUpdateAction}.
-	 * @throws Exception If an error occurs.
 	 */
-	private CommandData registerContext(@NotNull BaseContextCommand command, Class<? extends BaseContextCommand> commandClass, @Nullable Guild guild) throws Exception {
+	private CommandData getContextCommandData(@NotNull BaseContextCommand command, Class<? extends BaseContextCommand> commandClass) {
 		if (command.getCommandData() == null) {
 			log.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
 			return null;
@@ -322,8 +304,12 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleSlashCommand(SlashCommandInteractionEvent event) {
 		try {
-			SlashCommandInteraction command = slashCommandIndex.get(getFullCommandName(event.getName(), event.getSubcommandGroup(), event.getSubcommandName()));
-			command.getHandler().handleSlashCommandInteraction(event);
+			SlashCommandInteraction command = slashCommandIndex.get(event.getCommandPath());
+			if (command == null) {
+				throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", event.getCommandPath()));
+			} else {
+				command.getHandler().handleSlashCommandInteraction(event);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -337,8 +323,12 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleUserContextCommand(UserContextInteractionEvent event) {
 		try {
-			UserContextInteraction context = userContextIndex.get(event.getName());
-			context.getHandler().handleUserContextInteraction(event);
+			UserContextInteraction context = userContextIndex.get(event.getCommandPath());
+			if (context == null) {
+				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
+			} else {
+				context.getHandler().handleUserContextInteraction(event);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -352,8 +342,12 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleMessageContextCommand(MessageContextInteractionEvent event) {
 		try {
-			MessageContextInteraction context = messageContextIndex.get(event.getName());
-			context.getHandler().handleMessageContextInteraction(event);
+			MessageContextInteraction context = messageContextIndex.get(event.getCommandPath());
+			if (context == null) {
+				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
+			} else {
+				context.getHandler().handleMessageContextInteraction(event);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -362,14 +356,11 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * Used to create one command name out of the SlashCommand, SlashSubCommandGroup and SlashSubCommand
 	 *
-	 * @param first  The SlashCommand's name.
-	 * @param second The SlashSubCommandGroup's name.
-	 * @param third  The SlashSubCommand's name.
 	 * @return One combined string.
 	 */
 	@Contract(pure = true)
-	private @NotNull String getFullCommandName(String first, String second, String third) {
-		return String.format("%s %s %s", first, second, third);
+	private @NotNull String buildCommandPath(String... args) {
+		return String.join("/", args);
 	}
 
 	/**
@@ -380,12 +371,11 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return The Instance as a generic Object.
 	 * @throws Exception If an error occurs.
 	 */
-	private Object getClassInstance(Guild guild, Class<?> clazz) throws Exception {
+	private @NotNull Object getClassInstance(Guild guild, Class<?> clazz) throws Exception {
 		if (guild != null || !clazz.getSuperclass().equals(GlobalSlashCommand.class)) {
 			try {
 				return clazz.getConstructor(Guild.class).newInstance(guild);
-			} catch (NoSuchMethodException ignored) {
-			}
+			} catch (NoSuchMethodException ignored) {}
 		}
 		return clazz.getConstructor().newInstance();
 	}
