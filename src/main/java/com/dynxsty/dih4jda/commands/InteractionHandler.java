@@ -223,11 +223,11 @@ public class InteractionHandler extends ListenerAdapter {
 				continue;
 			}
 			String commandPath;
-			if (subGroupName == null)
+			if (subGroupName == null) {
 				commandPath = buildCommandPath(command.getCommandData().getName(), instance.getSubcommandData().getName());
-			else
+			} else {
 				commandPath = buildCommandPath(command.getCommandData().getName(), subGroupName, instance.getSubcommandData().getName());
-
+			}
 			slashCommandIndex.put(commandPath, new SlashCommandInteraction((ISlashCommand) instance, command.getCommandPrivileges()));
 			log.info(String.format("\t[*] Registered command: /%s", commandPath));
 			subDataList.add(instance.getSubcommandData());
