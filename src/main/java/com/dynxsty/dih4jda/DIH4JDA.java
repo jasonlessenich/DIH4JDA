@@ -7,8 +7,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.CompletableFuture;
-
 public class DIH4JDA extends ListenerAdapter {
 
     private final JDA jda;
@@ -41,7 +39,7 @@ public class DIH4JDA extends ListenerAdapter {
         InteractionHandler handler = new InteractionHandler(getCommandsPackage());
         this.getJDA().addEventListener(handler);
         try {
-            handler.register(this.jda);
+            handler.registerInteractions(this.jda);
         } catch (Exception e) {
             e.printStackTrace();
         }
