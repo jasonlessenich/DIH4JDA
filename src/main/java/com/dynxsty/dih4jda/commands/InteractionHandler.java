@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,7 @@ import org.reflections.Reflections;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static com.dynxsty.dih4jda.DIH4JDA.log;
 
@@ -65,17 +67,18 @@ public class InteractionHandler extends ListenerAdapter {
 	public void registerInteractions(JDA jda) throws Exception {
 		this.registerSlashCommands();
 		this.registerContextCommands();
-
 		for (Guild guild : jda.getGuilds()) {
 			List<CommandData> commands = new ArrayList<>();
-			commands.addAll(getGuildSlashCommandData(guild));
-			commands.addAll(getGuildContextCommandData(guild));
+			commands.addAll(this.getGuildSlashCommandData(guild));
+			commands.addAll(this.getGuildContextCommandData(guild));
 			guild.updateCommands().addCommands(commands).queue();
 		}
 		List<CommandData> commands = new ArrayList<>();
-		commands.addAll(getGlobalSlashCommandData());
-		commands.addAll(getGlobalContextCommandData());
+		commands.addAll(this.getGlobalSlashCommandData());
+		commands.addAll(this.getGlobalContextCommandData());
 		jda.updateCommands().addCommands(commands).queue();
+
+		this.registerCommandPrivileges(jda);
 	}
 
 	/**
@@ -115,6 +118,39 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 	}
 
+	/**
+	 * Registers all Command Privileges.
+	 *
+	 * @param jda The {@link JDA} instance.
+	 */
+	private void registerCommandPrivileges(JDA jda) {
+		for (Guild guild : jda.getGuilds()) {
+			Map<String, List<CommandPrivilege>> privileges = new HashMap<>();
+			guild.retrieveCommands().queue(commands -> {
+				for (Command command : commands) {
+					if (privileges.containsKey(command.getId())) continue;
+					Optional<SlashCommandInteraction> interactionOptional = this.slashCommandIndex
+							.keySet()
+							.stream()
+							.filter(p -> p.split("/")[0].equals(command.getName()))
+							.map(slashCommandIndex::get)
+							.filter(p -> p.getPrivileges() != null && p.getPrivileges().length > 0)
+							.findFirst();
+					if (interactionOptional.isPresent()) {
+						SlashCommandInteraction interaction = interactionOptional.get();
+						if (interaction.getBaseClass().getSuperclass().equals(GlobalSlashCommand.class)) {
+							log.error("Can not register command privileges for global command {} ({}).", command.getName(), interaction.getBaseClass().getSimpleName());
+							continue;
+						}
+						privileges.put(command.getId(), Arrays.asList(interaction.getPrivileges()));
+						log.info("[{}] Registered privileges for command {}: {}", guild.getName(), command.getName(), Arrays.toString(interaction.getPrivileges()));
+					}
+					if (privileges.isEmpty()) continue;
+					guild.updateCommandPrivileges(privileges).queue();
+				}
+			});
+		}
+	}
 
 	/**
 	 * Gets all Guild commands registered in {@link InteractionHandler#registerSlashCommands()} and adds
@@ -170,8 +206,8 @@ public class InteractionHandler extends ListenerAdapter {
 		if (command.getSubcommandClasses() != null) {
 			commandData.addSubcommands(this.getSubcommandData(command, command.getSubcommandClasses(), null, guild));
 		}
-		if (command.getSubcommandGroupClasses() == null && command.getSubcommandClasses() == null){
-			slashCommandIndex.put(buildCommandPath(commandData.getName()), new SlashCommandInteraction((ISlashCommand) command, command.getCommandPrivileges()));
+		if (command.getSubcommandGroupClasses() == null && command.getSubcommandClasses() == null) {
+			slashCommandIndex.put(buildCommandPath(commandData.getName()), new SlashCommandInteraction((ISlashCommand) command, commandClass, command.getCommandPrivileges()));
 			log.info(String.format("\t[*] Registered command: /%s", command.getCommandData().getName()));
 		}
 		return commandData;
@@ -228,7 +264,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} else {
 				commandPath = buildCommandPath(command.getCommandData().getName(), subGroupName, instance.getSubcommandData().getName());
 			}
-			slashCommandIndex.put(commandPath, new SlashCommandInteraction((ISlashCommand) instance, command.getCommandPrivileges()));
+			slashCommandIndex.put(commandPath, new SlashCommandInteraction((ISlashCommand) instance, sub, command.getCommandPrivileges()));
 			log.info(String.format("\t[*] Registered command: /%s", commandPath));
 			subDataList.add(instance.getSubcommandData());
 		}
@@ -375,7 +411,8 @@ public class InteractionHandler extends ListenerAdapter {
 		if (guild != null || !clazz.getSuperclass().equals(GlobalSlashCommand.class)) {
 			try {
 				return clazz.getConstructor(Guild.class).newInstance(guild);
-			} catch (NoSuchMethodException ignored) {}
+			} catch (NoSuchMethodException ignored) {
+			}
 		}
 		return clazz.getConstructor().newInstance();
 	}
