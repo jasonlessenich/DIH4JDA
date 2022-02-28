@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.commands.interactions.context.dao;
+package com.dynxsty.dih4jda.commands.interactions.context_command.dao;
 
 import com.dynxsty.dih4jda.DIH4JDA;
 import net.dv8tion.jda.api.interactions.commands.Command;

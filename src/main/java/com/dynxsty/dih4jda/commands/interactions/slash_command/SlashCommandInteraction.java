@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.commands.interactions.slash;
+package com.dynxsty.dih4jda.commands.interactions.slash_command;
 
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 

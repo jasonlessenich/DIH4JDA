@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.commands.interactions.context;
+package com.dynxsty.dih4jda.commands.interactions.context_command;
 
 /**
  * Represents a single Slash Command Interaction.

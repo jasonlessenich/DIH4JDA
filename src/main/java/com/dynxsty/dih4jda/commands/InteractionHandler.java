@@ -1,15 +1,15 @@
 package com.dynxsty.dih4jda.commands;
 
-import com.dynxsty.dih4jda.commands.interactions.context.IMessageContextCommand;
-import com.dynxsty.dih4jda.commands.interactions.context.IUserContextCommand;
-import com.dynxsty.dih4jda.commands.interactions.context.MessageContextInteraction;
-import com.dynxsty.dih4jda.commands.interactions.context.UserContextInteraction;
-import com.dynxsty.dih4jda.commands.interactions.context.dao.BaseContextCommand;
-import com.dynxsty.dih4jda.commands.interactions.context.dao.GlobalContextCommand;
-import com.dynxsty.dih4jda.commands.interactions.context.dao.GuildContextCommand;
-import com.dynxsty.dih4jda.commands.interactions.slash.ISlashCommand;
-import com.dynxsty.dih4jda.commands.interactions.slash.SlashCommandInteraction;
-import com.dynxsty.dih4jda.commands.interactions.slash.dao.*;
+import com.dynxsty.dih4jda.commands.interactions.context_command.IMessageContextCommand;
+import com.dynxsty.dih4jda.commands.interactions.context_command.IUserContextCommand;
+import com.dynxsty.dih4jda.commands.interactions.context_command.MessageContextInteraction;
+import com.dynxsty.dih4jda.commands.interactions.context_command.UserContextInteraction;
+import com.dynxsty.dih4jda.commands.interactions.context_command.dao.BaseContextCommand;
+import com.dynxsty.dih4jda.commands.interactions.context_command.dao.GlobalContextCommand;
+import com.dynxsty.dih4jda.commands.interactions.context_command.dao.GuildContextCommand;
+import com.dynxsty.dih4jda.commands.interactions.slash_command.ISlashCommand;
+import com.dynxsty.dih4jda.commands.interactions.slash_command.SlashCommandInteraction;
+import com.dynxsty.dih4jda.commands.interactions.slash_command.dao.*;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -31,7 +31,6 @@ import org.reflections.Reflections;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import static com.dynxsty.dih4jda.DIH4JDA.log;
 
