@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 /**
  * A SlashSubCommand object with getters, setters, a constructor and a toString method.
  */
-public abstract class SlashSubcommand {
+public abstract class Subcommand {
     private SubcommandData subcommandData;
 
     public SubcommandData getSubcommandData() {

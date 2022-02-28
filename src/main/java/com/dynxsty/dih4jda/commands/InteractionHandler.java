@@ -85,9 +85,9 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Goes through these steps with every iteration;
 	 * <ol>
 	 *     <li>Checks if the class is missing {@link CommandData} and doesn't register if it is.</li>
-	 *     <li>Checks if the class is neither a subclass of {@link SlashSubcommand} nor {@link SlashSubcommandGroup} and registers it as regular command.</li>
-	 *     <li>Checks if the class is a subclass of {@link SlashSubcommandGroup} if it is, the SlashCommandGroup is validated and another loop is fired following the two steps above for the group's sub commands.</li>
-	 *     <li>Checks if the class is a subclass of {@link SlashSubcommand}, if it is, it is registered as a sub command.</li>
+	 *     <li>Checks if the class is neither a subclass of {@link Subcommand} nor {@link SubcommandGroup} and registers it as regular command.</li>
+	 *     <li>Checks if the class is a subclass of {@link SubcommandGroup} if it is, the SlashCommandGroup is validated and another loop is fired following the two steps above for the group's sub commands.</li>
+	 *     <li>Checks if the class is a subclass of {@link Subcommand}, if it is, it is registered as a sub command.</li>
 	 * </ol>
 	 */
 	private void registerSlashCommands() {
@@ -199,13 +199,13 @@ public class InteractionHandler extends ListenerAdapter {
 			return null;
 		}
 		SlashCommandData commandData = command.getCommandData();
-		if (command.getSubcommandGroupClasses() != null) {
+		if (command.getSubcommandGroups() != null) {
 			commandData.addSubcommandGroups(this.getSubcommandGroupData(command, guild));
 		}
-		if (command.getSubcommandClasses() != null) {
-			commandData.addSubcommands(this.getSubcommandData(command, command.getSubcommandClasses(), null, guild));
+		if (command.getSubcommands() != null) {
+			commandData.addSubcommands(this.getSubcommandData(command, command.getSubcommands(), null, guild));
 		}
-		if (command.getSubcommandGroupClasses() == null && command.getSubcommandClasses() == null) {
+		if (command.getSubcommandGroups() == null && command.getSubcommands() == null) {
 			slashCommandIndex.put(buildCommandPath(commandData.getName()), new SlashCommandInteraction((ISlashCommand) command, commandClass, command.getCommandPrivileges()));
 			log.info(String.format("\t[*] Registered command: /%s", command.getCommandData().getName()));
 		}
@@ -222,25 +222,25 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private List<SubcommandGroupData> getSubcommandGroupData(@NotNull BaseSlashCommand command, @Nullable Guild guild) throws Exception {
 		List<SubcommandGroupData> groupDataList = new ArrayList<>();
-		for (Class<? extends SlashSubcommandGroup> group : command.getSubcommandGroupClasses()) {
-			SlashSubcommandGroup instance = (SlashSubcommandGroup) this.getClassInstance(guild, group);
+		for (Class<? extends SubcommandGroup> group : command.getSubcommandGroups()) {
+			SubcommandGroup instance = (SubcommandGroup) this.getClassInstance(guild, group);
 			if (instance.getSubcommandGroupData() == null) {
 				log.warn(String.format("Class %s is missing SubcommandGroupData. It will be ignored.", group.getName()));
 				continue;
 			}
-			if (instance.getSubcommandClasses() == null) {
+			if (instance.getSubcommands() == null) {
 				log.warn(String.format("SubcommandGroup %s is missing Subcommands. It will be ignored.", instance.getSubcommandGroupData().getName()));
 				continue;
 			}
 			SubcommandGroupData groupData = instance.getSubcommandGroupData();
-			groupData.addSubcommands(this.getSubcommandData(command, instance.getSubcommandClasses(), groupData.getName(), guild));
+			groupData.addSubcommands(this.getSubcommandData(command, instance.getSubcommands(), groupData.getName(), guild));
 			groupDataList.add(groupData);
 		}
 		return groupDataList;
 	}
 
 	/**
-	 * Gets all {@link SubcommandData} from the given array of {@link SlashSubcommand} classes.
+	 * Gets all {@link SubcommandData} from the given array of {@link Subcommand} classes.
 	 *
 	 * @param command      The base command's instance.
 	 * @param subClasses   All sub command classes.
@@ -249,10 +249,10 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return The new {@link CommandListUpdateAction}.
 	 * @throws Exception If an error occurs.
 	 */
-	private List<SubcommandData> getSubcommandData(BaseSlashCommand command, Class<? extends SlashSubcommand>[] subClasses, @Nullable String subGroupName, @Nullable Guild guild) throws Exception {
+	private List<SubcommandData> getSubcommandData(BaseSlashCommand command, Class<? extends Subcommand>[] subClasses, @Nullable String subGroupName, @Nullable Guild guild) throws Exception {
 		List<SubcommandData> subDataList = new ArrayList<>();
-		for (Class<? extends SlashSubcommand> sub : subClasses) {
-			SlashSubcommand instance = (SlashSubcommand) this.getClassInstance(guild, sub);
+		for (Class<? extends Subcommand> sub : subClasses) {
+			Subcommand instance = (Subcommand) this.getClassInstance(guild, sub);
 			if (instance.getSubcommandData() == null) {
 				log.warn(String.format("Class %s is missing SubcommandData. It will be ignored.", sub.getName()));
 				continue;
