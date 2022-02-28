@@ -131,7 +131,7 @@ public class InteractionHandler extends ListenerAdapter {
 					Optional<SlashCommandInteraction> interactionOptional = this.slashCommandIndex
 							.keySet()
 							.stream()
-							.filter(p -> p.split("/")[0].equals(command.getName()))
+							.filter(p -> p.equals(command.getName()) || p.split("/")[0].equals(command.getName()))
 							.map(slashCommandIndex::get)
 							.filter(p -> p.getPrivileges() != null && p.getPrivileges().length > 0)
 							.findFirst();
