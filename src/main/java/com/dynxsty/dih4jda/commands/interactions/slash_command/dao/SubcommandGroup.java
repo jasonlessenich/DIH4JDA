@@ -21,7 +21,8 @@ public abstract class SubcommandGroup {
         return subcommandClasses;
     }
 
-    public void setSubcommands(Class<? extends Subcommand>... classes) {
+    @SafeVarargs
+    public final void setSubcommands(Class<? extends Subcommand>... classes) {
         this.subcommandClasses = classes;
     }
 }
