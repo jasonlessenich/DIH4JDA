@@ -57,7 +57,7 @@ public class DIH4JDABuilder {
      */
     @Nonnull
     public DIH4JDABuilder disableLogging(DIH4JDALogger.Type... types) {
-        if (types.length < 1) {
+        if (types == null || types.length < 1) {
             this.blockedLogTypes = DIH4JDALogger.Type.values();
         } else {
             this.blockedLogTypes = types;
