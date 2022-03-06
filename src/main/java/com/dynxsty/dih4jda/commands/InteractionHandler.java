@@ -31,6 +31,7 @@ import org.reflections.Reflections;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static com.dynxsty.dih4jda.DIH4JDA.log;
 
@@ -41,11 +42,11 @@ public class InteractionHandler extends ListenerAdapter {
 	private final Map<String, MessageContextInteraction> messageContextIndex;
 	private final Map<String, UserContextInteraction> userContextIndex;
 
-	private final List<Class<? extends BaseSlashCommand>> guildCommands;
-	private final List<Class<? extends BaseSlashCommand>> globalCommands;
+	private final Set<Class<? extends BaseSlashCommand>> guildCommands;
+	private final Set<Class<? extends BaseSlashCommand>> globalCommands;
 
-	private final List<Class<? extends BaseContextCommand>> guildContexts;
-	private final List<Class<? extends BaseContextCommand>> globalContexts;
+	private final Set<Class<? extends BaseContextCommand>> guildContexts;
+	private final Set<Class<? extends BaseContextCommand>> globalContexts;
 
 	/**
 	 * Constructs a new {@link InteractionHandler} from the supplied commands package.
@@ -53,10 +54,10 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param commandsPackage The package that houses the command classes.
 	 */
 	public InteractionHandler(String commandsPackage) {
-		this.guildCommands = new ArrayList<>();
-		this.globalCommands = new ArrayList<>();
-		this.guildContexts = new ArrayList<>();
-		this.globalContexts = new ArrayList<>();
+		this.guildCommands = new HashSet<>();
+		this.globalCommands = new HashSet<>();
+		this.guildContexts = new HashSet<>();
+		this.globalContexts = new HashSet<>();
 		this.slashCommandIndex = new HashMap<>();
 		this.messageContextIndex = new HashMap<>();
 		this.userContextIndex = new HashMap<>();
@@ -67,12 +68,12 @@ public class InteractionHandler extends ListenerAdapter {
 		this.registerSlashCommands();
 		this.registerContextCommands();
 		for (Guild guild : jda.getGuilds()) {
-			List<CommandData> commands = new ArrayList<>();
+			Set<CommandData> commands = new HashSet<>();
 			commands.addAll(this.getGuildSlashCommandData(guild));
 			commands.addAll(this.getGuildContextCommandData(guild));
 			guild.updateCommands().addCommands(commands).queue();
 		}
-		List<CommandData> commands = new ArrayList<>();
+		Set<CommandData> commands = new HashSet<>();
 		commands.addAll(this.getGlobalSlashCommandData());
 		commands.addAll(this.getGlobalContextCommandData());
 		jda.updateCommands().addCommands(commands).queue();
@@ -124,7 +125,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void registerCommandPrivileges(JDA jda) {
 		for (Guild guild : jda.getGuilds()) {
-			Map<String, List<CommandPrivilege>> privileges = new HashMap<>();
+			Map<String, Set<CommandPrivilege>> privileges = new HashMap<>();
 			guild.retrieveCommands().queue(commands -> {
 				for (Command command : commands) {
 					if (privileges.containsKey(command.getId())) continue;
@@ -141,8 +142,8 @@ public class InteractionHandler extends ListenerAdapter {
 							log.error("Can not register command privileges for global command {} ({}).", command.getName(), interaction.getBaseClass().getSimpleName());
 							continue;
 						}
-						privileges.put(command.getId(), Arrays.asList(interaction.getPrivileges()));
-						log.info("[{}] Registered privileges for command {}: {}", guild.getName(), command.getName(), Arrays.toString(interaction.getPrivileges()));
+						privileges.put(command.getId(), new HashSet<>(Arrays.asList(interaction.getPrivileges())));
+						log.info("[{}] Registered privileges for command {}: {}", guild.getName(), command.getName(), Arrays.stream(interaction.getPrivileges()).map(CommandPrivilege::toData).collect(Collectors.toList()));
 					}
 					if (privileges.isEmpty()) continue;
 					guild.updateCommandPrivileges(privileges).queue();
@@ -158,8 +159,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param guild The command's guild.
 	 * @throws Exception If an error occurs.
 	 */
-	private List<CommandData> getGuildSlashCommandData(@NotNull Guild guild) throws Exception {
-		List<CommandData> commands = new ArrayList<>();
+	private Set<CommandData> getGuildSlashCommandData(@NotNull Guild guild) throws Exception {
+		Set<CommandData> commands = new HashSet<>();
 		for (Class<? extends BaseSlashCommand> slashCommandClass : this.guildCommands) {
 			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(guild, slashCommandClass);
 			commands.add(this.getBaseCommandData(instance, slashCommandClass, guild));
@@ -174,8 +175,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @throws Exception If an error occurs.
 	 */
-	private List<CommandData> getGlobalSlashCommandData() throws Exception {
-		List<CommandData> commands = new ArrayList<>();
+	private Set<CommandData> getGlobalSlashCommandData() throws Exception {
+		Set<CommandData> commands = new HashSet<>();
 		for (Class<? extends BaseSlashCommand> slashCommandClass : this.globalCommands) {
 			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(null, slashCommandClass);
 			commands.add(this.getBaseCommandData(instance, slashCommandClass, null));
@@ -220,8 +221,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return All {@link SubcommandGroupData} stored in a List.
 	 * @throws Exception If an error occurs.
 	 */
-	private List<SubcommandGroupData> getSubcommandGroupData(@NotNull BaseSlashCommand command, @Nullable Guild guild) throws Exception {
-		List<SubcommandGroupData> groupDataList = new ArrayList<>();
+	private Set<SubcommandGroupData> getSubcommandGroupData(@NotNull BaseSlashCommand command, @Nullable Guild guild) throws Exception {
+		Set<SubcommandGroupData> groupDataList = new HashSet<>();
 		for (Class<? extends SubcommandGroup> group : command.getSubcommandGroups()) {
 			SubcommandGroup instance = (SubcommandGroup) this.getClassInstance(guild, group);
 			if (instance.getSubcommandGroupData() == null) {
@@ -249,8 +250,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return The new {@link CommandListUpdateAction}.
 	 * @throws Exception If an error occurs.
 	 */
-	private List<SubcommandData> getSubcommandData(BaseSlashCommand command, Class<? extends Subcommand>[] subClasses, @Nullable String subGroupName, @Nullable Guild guild) throws Exception {
-		List<SubcommandData> subDataList = new ArrayList<>();
+	private Set<SubcommandData> getSubcommandData(BaseSlashCommand command, Class<? extends Subcommand>[] subClasses, @Nullable String subGroupName, @Nullable Guild guild) throws Exception {
+		Set<SubcommandData> subDataList = new HashSet<>();
 		for (Class<? extends Subcommand> sub : subClasses) {
 			Subcommand instance = (Subcommand) this.getClassInstance(guild, sub);
 			if (instance.getSubcommandData() == null) {
@@ -277,8 +278,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param guild The context command's guild.
 	 * @throws Exception If an error occurs.
 	 */
-	private List<CommandData> getGuildContextCommandData(@NotNull Guild guild) throws Exception {
-		List<CommandData> commands = new ArrayList<>();
+	private Set<CommandData> getGuildContextCommandData(@NotNull Guild guild) throws Exception {
+		Set<CommandData> commands = new HashSet<>();
 		for (Class<? extends BaseContextCommand> contextCommandClass : this.guildContexts) {
 			BaseContextCommand instance = (BaseContextCommand) this.getClassInstance(guild, contextCommandClass);
 			commands.add(this.getContextCommandData(instance, contextCommandClass));
@@ -293,8 +294,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @throws Exception If an error occurs.
 	 */
-	private List<CommandData> getGlobalContextCommandData() throws Exception {
-		List<CommandData> commands = new ArrayList<>();
+	private Set<CommandData> getGlobalContextCommandData() throws Exception {
+		Set<CommandData> commands = new HashSet<>();
 		for (Class<? extends BaseContextCommand> contextCommandClass : this.globalContexts) {
 			BaseContextCommand instance = (BaseContextCommand) this.getClassInstance(null, contextCommandClass);
 			CommandData data = this.getContextCommandData(instance, contextCommandClass);
@@ -410,8 +411,7 @@ public class InteractionHandler extends ListenerAdapter {
 		if (guild != null || !clazz.getSuperclass().equals(GlobalSlashCommand.class)) {
 			try {
 				return clazz.getConstructor(Guild.class).newInstance(guild);
-			} catch (NoSuchMethodException ignored) {
-			}
+			} catch (NoSuchMethodException ignored) {}
 		}
 		return clazz.getConstructor().newInstance();
 	}
