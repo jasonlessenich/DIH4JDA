@@ -1,13 +1,13 @@
-package com.dynxsty.dih4jda.commands.interactions.slash.dao;
+package com.dynxsty.dih4jda.commands.interactions.slash_command.dao;
 
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 /**
  * A SlashSubCommandGroup object with getters, setters, a constructor and a toString method.
  */
-public abstract class SlashSubcommandGroup {
+public abstract class SubcommandGroup {
     private SubcommandGroupData subcommandGroupData;
-    private Class<? extends SlashSubcommand>[] subcommandClasses;
+    private Class<? extends Subcommand>[] subcommandClasses;
 
     public SubcommandGroupData getSubcommandGroupData() {
         return subcommandGroupData;
@@ -17,11 +17,12 @@ public abstract class SlashSubcommandGroup {
         this.subcommandGroupData = subcommandGroupData;
     }
 
-    public Class<? extends SlashSubcommand>[] getSubcommandClasses() {
+    public Class<? extends Subcommand>[] getSubcommands() {
         return subcommandClasses;
     }
 
-    public void setSubcommandClasses(Class<? extends SlashSubcommand>... classes) {
+    @SafeVarargs
+    public final void setSubcommands(Class<? extends Subcommand>... classes) {
         this.subcommandClasses = classes;
     }
 }

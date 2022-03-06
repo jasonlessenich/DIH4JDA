@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.commands.interactions.slash.dao;
+package com.dynxsty.dih4jda.commands.interactions.slash_command.dao;
 
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
@@ -10,8 +10,8 @@ public abstract class BaseSlashCommand {
     protected BaseSlashCommand() {}
 
     private SlashCommandData commandData;
-    private Class<? extends SlashSubcommand>[] subcommandClasses;
-    private Class<? extends SlashSubcommandGroup>[] subcommandGroupClasses;
+    private Class<? extends Subcommand>[] subcommandClasses;
+    private Class<? extends SubcommandGroup>[] subcommandGroupClasses;
     private CommandPrivilege[] commandPrivileges;
 
     public SlashCommandData getCommandData() {
@@ -22,21 +22,21 @@ public abstract class BaseSlashCommand {
         this.commandData = commandData;
     }
 
-    public Class<? extends SlashSubcommand>[] getSubcommandClasses() {
+    public Class<? extends Subcommand>[] getSubcommands() {
         return subcommandClasses;
     }
 
     @SafeVarargs
-    public final void setSubcommandClasses(Class<? extends SlashSubcommand>... classes) {
+    public final void setSubcommands(Class<? extends Subcommand>... classes) {
         this.subcommandClasses = classes;
     }
 
-    public Class<? extends SlashSubcommandGroup>[] getSubcommandGroupClasses() {
+    public Class<? extends SubcommandGroup>[] getSubcommandGroups() {
         return subcommandGroupClasses;
     }
 
     @SafeVarargs
-    public final void setSubcommandGroupClasses(Class<? extends SlashSubcommandGroup>... classes) {
+    public final void setSubcommandGroups(Class<? extends SubcommandGroup>... classes) {
         this.subcommandGroupClasses = classes;
     }
 

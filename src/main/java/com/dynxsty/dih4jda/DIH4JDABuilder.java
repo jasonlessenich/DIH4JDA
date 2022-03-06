@@ -14,6 +14,7 @@ public class DIH4JDABuilder {
     private long ownerId;
     private String commandsPackage;
     private JDA jda;
+    private DIH4JDALogger.Type[] blockedLogTypes;
 
     private DIH4JDABuilder(@Nonnull JDA jda) {
         this.jda = jda;
@@ -34,7 +35,7 @@ public class DIH4JDABuilder {
      * @param id The ID of the owner.
      */
     @Nonnull
-    public DIH4JDABuilder setOwnerId(@Nonnull long id) {
+    public DIH4JDABuilder setOwnerId(long id) {
         this.ownerId = id;
         return this;
     }
@@ -50,6 +51,21 @@ public class DIH4JDABuilder {
     }
 
     /**
+     * Sets the types of logging that should be disabled.
+     *
+     * @param types All {@link DIH4JDALogger.Type}'s that should be disabled.
+     */
+    @Nonnull
+    public DIH4JDABuilder disableLogging(DIH4JDALogger.Type... types) {
+        if (types == null || types.length < 1) {
+            this.blockedLogTypes = DIH4JDALogger.Type.values();
+        } else {
+            this.blockedLogTypes = types;
+        }
+        return this;
+    }
+
+    /**
      * Returns a {@link DIH4JDA} instance that has been validated.
      * @return the built, usable {@link DIH4JDA}
      */
@@ -58,6 +74,6 @@ public class DIH4JDABuilder {
         if (ClasspathHelper.forPackage(commandsPackage).isEmpty()) {
             throw new InvalidPackageException("Package " + commandsPackage + " does not exist.");
         }
-        return new DIH4JDA(jda, commandsPackage, ownerId);
+        return new DIH4JDA(jda, commandsPackage, ownerId, blockedLogTypes);
     }
 }
