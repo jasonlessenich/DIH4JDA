@@ -8,7 +8,7 @@ A very easy-to-use Interaction Handler for the [Java Discord API!](https://githu
 
 ## Installation
 
-## Maven
+### Maven
 
 Add the [JitPack](https://jitpack.io/) repository to your `pom.xml`
 ```xml
@@ -29,7 +29,7 @@ Add the dependency (Make sure to replace `${DIH4JDA_VERSION}` with the latest ve
 </dependency>
 ```
 
-## Gradle
+### Gradle
 
 Add the [JitPack](https://jitpack.io/) repository to your `build.gradle`
 ```gradle
