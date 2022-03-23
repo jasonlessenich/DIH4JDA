@@ -13,8 +13,10 @@ import javax.annotation.Nonnull;
 public class DIH4JDABuilder {
     private long ownerId;
     private String commandsPackage;
-    private JDA jda;
+    private final JDA jda;
     private DIH4JDALogger.Type[] blockedLogTypes;
+    private boolean registerOnStartup = true;
+    private boolean smartQueuing = true;
 
     private DIH4JDABuilder(@Nonnull JDA jda) {
         this.jda = jda;
@@ -66,6 +68,30 @@ public class DIH4JDABuilder {
     }
 
     /**
+     * Whether DIH4JDA should automatically register all interactions on Startup.
+     * A manual registration of all interactions can be executed using {@link DIH4JDA#registerInteractions()}.
+     *
+     */
+    @Nonnull
+    public DIH4JDABuilder disableAutomaticCommandRegistration() {
+        this.registerOnStartup = false;
+        return this;
+    }
+
+    /**
+     * <b>NOT RECOMMENDED</b> (unless there are some bugs) <br>
+     * This will disable the Smart Queueing functionality.
+     * If Smart Queueing is disabled Global Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call,
+     * thus, making Global Commands unusable for about an hour, until they're registered again. <br>
+     * Smart Queuing also includes the automatic removal of unknown/unused Global Interactions.
+     */
+    @Nonnull
+    public DIH4JDABuilder disableSmartQueuing() {
+        this.smartQueuing = false;
+        return this;
+    }
+
+    /**
      * Returns a {@link DIH4JDA} instance that has been validated.
      * @return the built, usable {@link DIH4JDA}
      */
@@ -74,6 +100,6 @@ public class DIH4JDABuilder {
         if (ClasspathHelper.forPackage(commandsPackage).isEmpty()) {
             throw new InvalidPackageException("Package " + commandsPackage + " does not exist.");
         }
-        return new DIH4JDA(jda, commandsPackage, ownerId, blockedLogTypes);
+        return new DIH4JDA(this.jda, this.commandsPackage, this.ownerId, this.registerOnStartup, this.smartQueuing, this.blockedLogTypes);
     }
 }
