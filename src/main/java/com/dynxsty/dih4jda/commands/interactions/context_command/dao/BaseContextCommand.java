@@ -4,7 +4,9 @@ import com.dynxsty.dih4jda.DIH4JDALogger;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-public class BaseContextCommand {
+public abstract class BaseContextCommand {
+	protected BaseContextCommand() {}
+
 	private CommandData commandData;
 
 	public CommandData getCommandData() {

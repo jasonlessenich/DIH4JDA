@@ -13,17 +13,17 @@ public class DIH4JDALogger {
 		ERROR,
 		DEBUG,
 		TRACE,
+		COMMANDS_QUEUED,
 		SLASH_COMMAND_REGISTERED,
-		SLASH_COMMANDS_QUEUED,
 		CONTEXT_COMMAND_REGISTERED,
-		CONTEXT_COMMANDS_QUEUED,
-		COMMAND_PRIVILEGE_REGISTERED
+		COMMAND_PRIVILEGE_REGISTERED,
+		SMART_QUEUE
 	}
 
 	private static final org.slf4j.Logger log = JDALogger.getLog(DIH4JDALogger.class);
 
 	protected static Set<Type> blockedLogTypes;
-	public static void log(String msg, Type type, Level level) {
+	private static void log(String msg, Type type, Level level) {
 		if (blockedLogTypes.contains(type)) return;
 		switch (level) {
 			case INFO: log.info(msg); break;

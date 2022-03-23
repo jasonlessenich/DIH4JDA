@@ -1,7 +1,5 @@
-package com.dynxsty.dih4jda.commands;
+package com.dynxsty.dih4jda;
 
-import com.dynxsty.dih4jda.DIH4JDA;
-import com.dynxsty.dih4jda.DIH4JDALogger;
 import com.dynxsty.dih4jda.commands.interactions.context_command.IMessageContextCommand;
 import com.dynxsty.dih4jda.commands.interactions.context_command.IUserContextCommand;
 import com.dynxsty.dih4jda.commands.interactions.context_command.MessageContextInteraction;
@@ -13,6 +11,7 @@ import com.dynxsty.dih4jda.commands.interactions.slash_command.ISlashCommand;
 import com.dynxsty.dih4jda.commands.interactions.slash_command.SlashCommandInteraction;
 import com.dynxsty.dih4jda.commands.interactions.slash_command.dao.*;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
+import com.dynxsty.dih4jda.util.CommandUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
@@ -20,10 +19,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.build.*;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.jetbrains.annotations.Contract;
@@ -53,7 +49,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param dih4jda The {@link DIH4JDA} instance.
 	 */
-	public InteractionHandler(DIH4JDA dih4jda) {
+	protected InteractionHandler(DIH4JDA dih4jda) {
 		this.guildCommands = new HashSet<>();
 		this.globalCommands = new HashSet<>();
 		this.guildContexts = new HashSet<>();
@@ -67,18 +63,51 @@ public class InteractionHandler extends ListenerAdapter {
 	public void registerInteractions(JDA jda) throws Exception {
 		this.registerSlashCommands();
 		this.registerContextCommands();
+		// register commands for each guild
 		for (Guild guild : jda.getGuilds()) {
 			Set<CommandData> commands = new HashSet<>();
 			commands.addAll(this.getGuildSlashCommandData(guild));
 			commands.addAll(this.getGuildContextCommandData(guild));
 			guild.updateCommands().addCommands(commands).queue();
+			DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", commands.size(), guild.getName(), commands.stream().map(CommandData::getName).collect(Collectors.joining(", "))), DIH4JDALogger.Type.COMMANDS_QUEUED);
 		}
-		Set<CommandData> commands = new HashSet<>();
-		commands.addAll(this.getGlobalSlashCommandData());
-		commands.addAll(this.getGlobalContextCommandData());
-		jda.updateCommands().addCommands(commands).queue();
-
+		final List<Command> existingData = jda.retrieveCommands().complete();
+		List<Command> allCommands = new ArrayList<>(existingData);
+		Set<SlashCommandData> slashData = new HashSet<>(this.getGlobalSlashCommandData());
+		Set<CommandData> commandData = new HashSet<>(this.getGlobalContextCommandData());
+		// check if smart queuing was disabled
+		if (this.dih4jda.isSmartQueuing() && allCommands.size() > 0) {
+			DIH4JDALogger.info(String.format("Found %s existing global command(s). Trying to just queue edited commands...", allCommands.size()), DIH4JDALogger.Type.SMART_QUEUE);
+			commandData.removeIf(command -> existingData.stream().anyMatch(data -> this.isCommandData(allCommands, data, command)));
+			slashData.removeIf(command -> existingData.stream().anyMatch(data -> this.isCommandData(allCommands, data, command)));
+			// remove unknown commands
+			if (allCommands.size() > 0) {
+				DIH4JDALogger.info(String.format("Found %s unknown command(s). Attempting deletion.", allCommands.size()), DIH4JDALogger.Type.SMART_QUEUE);
+				for (Command command : allCommands) {
+					DIH4JDALogger.info(String.format("Deleting unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+					jda.deleteCommandById(command.getId()).queue();
+				}
+			}
+		}
+		commandData.addAll(slashData);
+		// queue all global commands
+		if (commandData.size() > 0) {
+			jda.updateCommands().addCommands(commandData).queue();
+			DIH4JDALogger.info(String.format("Queued %s global command(s): %s", commandData.size(), commandData.stream().map(CommandData::getName).collect(Collectors.joining(", "))), DIH4JDALogger.Type.COMMANDS_QUEUED);
+		}
+		// register command privileges
 		this.registerCommandPrivileges(jda);
+	}
+
+	private boolean isCommandData(List<Command> allCommands, Command command, Object data) {
+		boolean equals = false;
+		if (data instanceof CommandData) equals = CommandUtils.equals((CommandData) data, command);
+		if (data instanceof SlashCommandData) equals = CommandUtils.equals((SlashCommandData) data, command);
+		if (equals) {
+			allCommands.remove(command);
+			DIH4JDALogger.info(String.format("Found duplicate %s command, which will be ignored: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+		}
+		return equals;
 	}
 
 	/**
@@ -159,13 +188,12 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param guild The command's guild.
 	 * @throws Exception If an error occurs.
 	 */
-	private Set<CommandData> getGuildSlashCommandData(@NotNull Guild guild) throws Exception {
-		Set<CommandData> commands = new HashSet<>();
+	private Set<SlashCommandData> getGuildSlashCommandData(@NotNull Guild guild) throws Exception {
+		Set<SlashCommandData> commands = new HashSet<>();
 		for (Class<? extends BaseSlashCommand> slashCommandClass : this.guildCommands) {
 			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(guild, slashCommandClass);
 			commands.add(this.getBaseCommandData(instance, slashCommandClass, guild));
 		}
-		DIH4JDALogger.info(String.format("[%s] Queuing Guild Slash Commands", guild.getName()), DIH4JDALogger.Type.SLASH_COMMANDS_QUEUED);
 		return commands;
 	}
 
@@ -175,13 +203,12 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @throws Exception If an error occurs.
 	 */
-	private Set<CommandData> getGlobalSlashCommandData() throws Exception {
-		Set<CommandData> commands = new HashSet<>();
+	private Set<SlashCommandData> getGlobalSlashCommandData() throws Exception {
+		Set<SlashCommandData> commands = new HashSet<>();
 		for (Class<? extends BaseSlashCommand> slashCommandClass : this.globalCommands) {
 			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(null, slashCommandClass);
 			commands.add(this.getBaseCommandData(instance, slashCommandClass, null));
 		}
-		DIH4JDALogger.info("[*] Queuing Global Slash Commands", DIH4JDALogger.Type.SLASH_COMMANDS_QUEUED);
 		return commands;
 	}
 
@@ -284,7 +311,6 @@ public class InteractionHandler extends ListenerAdapter {
 			BaseContextCommand instance = (BaseContextCommand) this.getClassInstance(guild, contextCommandClass);
 			commands.add(this.getContextCommandData(instance, contextCommandClass));
 		}
-		DIH4JDALogger.info(String.format("[%s] Queuing Guild Context Commands", guild.getName()), DIH4JDALogger.Type.CONTEXT_COMMANDS_QUEUED);
 		return commands;
 	}
 
@@ -303,7 +329,6 @@ public class InteractionHandler extends ListenerAdapter {
 				commands.add(data);
 			}
 		}
-		DIH4JDALogger.info("[*] Queuing Global Context Commands", DIH4JDALogger.Type.CONTEXT_COMMANDS_QUEUED);
 		return commands;
 	}
 
@@ -411,7 +436,8 @@ public class InteractionHandler extends ListenerAdapter {
 		if (guild != null || !clazz.getSuperclass().equals(GlobalSlashCommand.class)) {
 			try {
 				return clazz.getConstructor(Guild.class).newInstance(guild);
-			} catch (NoSuchMethodException ignored) {}
+			} catch (NoSuchMethodException ignored) {
+			}
 		}
 		return clazz.getConstructor().newInstance();
 	}
