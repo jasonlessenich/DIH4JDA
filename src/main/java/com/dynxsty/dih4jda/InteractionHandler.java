@@ -1,16 +1,16 @@
 package com.dynxsty.dih4jda;
 
-import com.dynxsty.dih4jda.commands.interactions.context_command.IMessageContextCommand;
-import com.dynxsty.dih4jda.commands.interactions.context_command.IUserContextCommand;
-import com.dynxsty.dih4jda.commands.interactions.context_command.MessageContextInteraction;
-import com.dynxsty.dih4jda.commands.interactions.context_command.UserContextInteraction;
-import com.dynxsty.dih4jda.commands.interactions.context_command.dao.BaseContextCommand;
-import com.dynxsty.dih4jda.commands.interactions.context_command.dao.GlobalContextCommand;
-import com.dynxsty.dih4jda.commands.interactions.context_command.dao.GuildContextCommand;
-import com.dynxsty.dih4jda.commands.interactions.slash_command.ISlashCommand;
-import com.dynxsty.dih4jda.commands.interactions.slash_command.SlashCommandInteraction;
-import com.dynxsty.dih4jda.commands.interactions.slash_command.dao.*;
+import com.dynxsty.dih4jda.interactions.context_command.MessageContextCommand;
+import com.dynxsty.dih4jda.interactions.context_command.UserContextCommand;
+import com.dynxsty.dih4jda.interactions.context_command.MessageContextInteraction;
+import com.dynxsty.dih4jda.interactions.context_command.UserContextInteraction;
+import com.dynxsty.dih4jda.interactions.context_command.dao.BaseContextCommand;
+import com.dynxsty.dih4jda.interactions.context_command.dao.GlobalContextCommand;
+import com.dynxsty.dih4jda.interactions.context_command.dao.GuildContextCommand;
+import com.dynxsty.dih4jda.interactions.slash_command.SlashCommand;
+import com.dynxsty.dih4jda.interactions.slash_command.SlashCommandInteraction;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
+import com.dynxsty.dih4jda.interactions.slash_command.dao.*;
 import com.dynxsty.dih4jda.util.CommandUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -234,7 +234,7 @@ public class InteractionHandler extends ListenerAdapter {
 			commandData.addSubcommands(this.getSubcommandData(command, command.getSubcommands(), null, guild));
 		}
 		if (command.getSubcommandGroups() == null && command.getSubcommands() == null) {
-			slashCommandIndex.put(buildCommandPath(commandData.getName()), new SlashCommandInteraction((ISlashCommand) command, commandClass, command.getCommandPrivileges()));
+			slashCommandIndex.put(buildCommandPath(commandData.getName()), new SlashCommandInteraction((SlashCommand) command, commandClass, command.getCommandPrivileges()));
 			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s", command.getCommandData().getName()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 		}
 		return commandData;
@@ -291,7 +291,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} else {
 				commandPath = buildCommandPath(command.getCommandData().getName(), subGroupName, instance.getSubcommandData().getName());
 			}
-			slashCommandIndex.put(commandPath, new SlashCommandInteraction((ISlashCommand) instance, sub, command.getCommandPrivileges()));
+			slashCommandIndex.put(commandPath, new SlashCommandInteraction((SlashCommand) instance, sub, command.getCommandPrivileges()));
 			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s", commandPath), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 			subDataList.add(instance.getSubcommandData());
 		}
@@ -346,9 +346,9 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 		CommandData commandData = command.getCommandData();
 		if (commandData.getType() == Command.Type.MESSAGE) {
-			messageContextIndex.put(commandData.getName(), new MessageContextInteraction((IMessageContextCommand) command));
+			messageContextIndex.put(commandData.getName(), new MessageContextInteraction((MessageContextCommand) command));
 		} else if (commandData.getType() == Command.Type.USER) {
-			userContextIndex.put(commandData.getName(), new UserContextInteraction((IUserContextCommand) command));
+			userContextIndex.put(commandData.getName(), new UserContextInteraction((UserContextCommand) command));
 		} else {
 			DIH4JDALogger.error(String.format("Invalid Command Type \"%s\" for Context Command! This command will be ignored.", commandData.getType()));
 			return null;
@@ -369,7 +369,7 @@ public class InteractionHandler extends ListenerAdapter {
 			if (command == null) {
 				throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", event.getCommandPath()));
 			} else {
-				command.getHandler().handleSlashCommandInteraction(event);
+				command.getHandler().handleSlashCommand(event);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -388,7 +388,7 @@ public class InteractionHandler extends ListenerAdapter {
 			if (context == null) {
 				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 			} else {
-				context.getHandler().handleUserContextInteraction(event);
+				context.getHandler().handleUserContextCommand(event);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -407,7 +407,7 @@ public class InteractionHandler extends ListenerAdapter {
 			if (context == null) {
 				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 			} else {
-				context.getHandler().handleMessageContextInteraction(event);
+				context.getHandler().handleMessageContextCommand(event);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
