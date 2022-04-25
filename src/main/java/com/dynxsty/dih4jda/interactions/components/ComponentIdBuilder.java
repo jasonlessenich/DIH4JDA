@@ -19,16 +19,16 @@ public class ComponentIdBuilder {
 	}
 
 	/**
-	 * Gets the current component-id separator.
+	 * Gets the current separator.
 	 *
-	 * @return The current component-id separator.
+	 * @return The separator.
 	 */
 	public static String getSeparator() {
 		return separator;
 	}
 
 	/**
-	 * Builds a component-id using the (set) {@link ComponentIdBuilder#separator} and the given identifier and arguments.
+	 * Builds a component-id using the (set) separator and the given identifier and arguments.
 	 *
 	 * @param identifier The component's identifier.
 	 * @param args An optional parameter for arguments.
