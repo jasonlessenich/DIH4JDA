@@ -7,9 +7,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class GuildSlashCommand extends BaseSlashCommand {
-	private Set<Guild> whitelistedGuilds;
+	private Set<Guild> whitelistedGuilds = new HashSet<>();
 
-	private Set<Guild> blacklistedGuilds;
+	private Set<Guild> blacklistedGuilds = new HashSet<>();;
 
 	/**
 	 * Allows a set of {@link Guild}s to update their Slash Commands.
