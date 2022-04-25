@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
  * Utility class that allows for easy and consistent component-id building.
  */
 public class ComponentIdBuilder {
+
+	private ComponentIdBuilder() {}
+
 	private static String separator = ":";
 
 	/**
