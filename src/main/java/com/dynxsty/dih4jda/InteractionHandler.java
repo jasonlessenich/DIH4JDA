@@ -63,7 +63,8 @@ public class InteractionHandler extends ListenerAdapter {
 
 	//TODO-v1.4: Documentation
 	public void registerInteractions(JDA jda) throws Exception {
-		this.findSlashCommand();
+		// find all commands
+		this.findSlashCommands();
 		this.findContextCommands();
 		// register commands for each guild
 		for (Guild guild : jda.getGuilds()) {
@@ -115,7 +116,7 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * Registers all slash commands. Loops through all classes found in the commands package that is either a subclass of {@link GuildSlashCommand} or {@link GlobalSlashCommand}.
 	 */
-	private void findSlashCommand() {
+	private void findSlashCommands() {
 		Reflections commands = new Reflections(this.dih4jda.getCommandsPackage());
 		guildCommands.addAll(commands.getSubTypesOf(GuildSlashCommand.class));
 		globalCommands.addAll(commands.getSubTypesOf(GlobalSlashCommand.class));
@@ -165,7 +166,7 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets all Guild commands registered in {@link InteractionHandler#findSlashCommand()} and adds
+	 * Gets all Guild commands registered in {@link InteractionHandler#findSlashCommands()} and adds
 	 * them to the {@link InteractionHandler#slashCommandIndex}.
 	 *
 	 * @param guild The command's guild.
@@ -173,15 +174,19 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private Set<SlashCommandData> getGuildSlashCommandData(@NotNull Guild guild) throws Exception {
 		Set<SlashCommandData> commands = new HashSet<>();
-		for (Class<? extends BaseSlashCommand> slashCommandClass : this.guildCommands) {
-			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(guild, slashCommandClass);
-			commands.add(this.getBaseCommandData(instance, slashCommandClass, guild));
+		for (Class<? extends GuildSlashCommand> c : this.guildCommands) {
+			GuildSlashCommand instance = (GuildSlashCommand) this.getClassInstance(guild, c);
+			if (!instance.getGuilds(guild.getJDA()).contains(guild)) {
+				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
+				continue;
+			}
+			commands.add(this.getBaseCommandData(instance, c, guild));
 		}
 		return commands;
 	}
 
 	/**
-	 * Gets all Global commands registered in {@link InteractionHandler#findSlashCommand()} and adds
+	 * Gets all Global commands registered in {@link InteractionHandler#findSlashCommands()} and adds
 	 * them to the {@link InteractionHandler#slashCommandIndex}.
 	 *
 	 * @throws Exception If an error occurs.
@@ -290,9 +295,13 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private Set<CommandData> getGuildContextCommandData(@NotNull Guild guild) throws Exception {
 		Set<CommandData> commands = new HashSet<>();
-		for (Class<? extends BaseContextCommand> contextCommandClass : this.guildContexts) {
-			BaseContextCommand instance = (BaseContextCommand) this.getClassInstance(guild, contextCommandClass);
-			commands.add(this.getContextCommandData(instance, contextCommandClass));
+		for (Class<? extends GuildContextCommand> c : this.guildContexts) {
+			GuildContextCommand instance = (GuildContextCommand) this.getClassInstance(guild, c);
+			if (!instance.getGuilds(guild.getJDA()).contains(guild)) {
+				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.CONTEXT_COMMAND_SKIPPED);
+				continue;
+			}
+			commands.add(this.getContextCommandData(instance, c));
 		}
 		return commands;
 	}
