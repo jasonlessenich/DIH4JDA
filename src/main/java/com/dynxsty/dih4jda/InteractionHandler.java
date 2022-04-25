@@ -12,9 +12,9 @@ import com.dynxsty.dih4jda.interactions.commands.slash_command.SlashCommandInter
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.*;
 import com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder;
-import com.dynxsty.dih4jda.interactions.components.button.Button;
-import com.dynxsty.dih4jda.interactions.components.modal.Modal;
-import com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenu;
+import com.dynxsty.dih4jda.interactions.components.button.ButtonHandler;
+import com.dynxsty.dih4jda.interactions.components.modal.ModalHandler;
+import com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenuHandler;
 import com.dynxsty.dih4jda.util.CommandUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -53,13 +53,13 @@ public class InteractionHandler extends ListenerAdapter {
 	private final Map<String, UserContextInteraction> userContextIndex;
 
 	//TODO-v1.4: Documentation
-	private final Map<String, Button> buttonIndex;
+	private final Map<String, ButtonHandler> buttonIndex;
 
 	//TODO-v1.4: Documentation
-	private final Map<String, SelectMenu> selectMenuIndex;
+	private final Map<String, SelectMenuHandler> selectMenuIndex;
 
 	//TODO-v1.4: Documentation
-	private final Map<String, Modal> modalIndex;
+	private final Map<String, ModalHandler> modalIndex;
 
 	private final Set<Class<? extends GuildSlashCommand>> guildCommands;
 	private final Set<Class<? extends GlobalSlashCommand>> globalCommands;
@@ -315,9 +315,9 @@ public class InteractionHandler extends ListenerAdapter {
 
 	//TODO-v1.4: Documentation
 	private void findComponentAndModalHandlers(BaseSlashCommand command) {
-		command.getHandledButtonIds().forEach(s -> this.buttonIndex.put(s, (Button) command));
-		command.getHandledSelectMenuIds().forEach(s -> this.selectMenuIndex.put(s, (SelectMenu) command));
-		command.getHandledModalIds().forEach(s -> this.modalIndex.put(s, (Modal) command));
+		command.getHandledButtonIds().forEach(s -> this.buttonIndex.put(s, (ButtonHandler) command));
+		command.getHandledSelectMenuIds().forEach(s -> this.selectMenuIndex.put(s, (SelectMenuHandler) command));
+		command.getHandledModalIds().forEach(s -> this.modalIndex.put(s, (ModalHandler) command));
 	}
 
 	/**
@@ -448,7 +448,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleButton(ButtonInteractionEvent event) {
 		try {
-			Button component = buttonIndex.get(ComponentIdBuilder.splitBySeparator(event.getComponentId())[0]);
+			ButtonHandler component = buttonIndex.get(ComponentIdBuilder.splitBySeparator(event.getComponentId())[0]);
 			if (component == null) {
 				DIH4JDALogger.warn(String.format("Button with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.BUTTON_NOT_FOUND);
 			} else {
@@ -467,7 +467,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleSelectMenu(SelectMenuInteractionEvent event) {
 		try {
-			SelectMenu component = selectMenuIndex.get(ComponentIdBuilder.splitBySeparator(event.getComponentId())[0]);
+			SelectMenuHandler component = selectMenuIndex.get(ComponentIdBuilder.splitBySeparator(event.getComponentId())[0]);
 			if (component == null) {
 				DIH4JDALogger.warn(String.format("Select Menu with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND);
 			} else {
@@ -486,7 +486,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleModal(ModalInteractionEvent event) {
 		try {
-			Modal modal = modalIndex.get(ComponentIdBuilder.splitBySeparator(event.getModalId())[0]);
+			ModalHandler modal = modalIndex.get(ComponentIdBuilder.splitBySeparator(event.getModalId())[0]);
 			if (modal == null) {
 				DIH4JDALogger.warn(String.format("Modal with id \"%s\" could not be found.", event.getModalId()), DIH4JDALogger.Type.MODAL_NOT_FOUND);
 			} else {
