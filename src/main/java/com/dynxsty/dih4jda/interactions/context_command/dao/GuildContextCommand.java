@@ -1,26 +1,70 @@
 package com.dynxsty.dih4jda.interactions.context_command.dao;
 
 
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class GuildContextCommand extends BaseContextCommand {
-	private List<Long> includedGuilds;
+	private Set<Guild> whitelistedGuilds;
 
-	private List<Long> excludedGuilds;
+	private Set<Guild> blacklistedGuilds;
 
-	public List<Long> getIncludedGuilds() {
-		return includedGuilds;
+	/**
+	 * Allows a set of {@link Guild}s to update their Slash Commands.
+	 *
+	 * @param jda The {@link JDA} instance.
+	 * @param whitelisted An array of {@link Long}s.
+	 */
+	public void whitelistGuilds(JDA jda, Long... whitelisted) {
+		this.whitelistedGuilds = Arrays.stream(whitelisted).map(jda::getGuildById).collect(Collectors.toSet());
 	}
 
-	public void setIncludedGuilds(List<Long> includedGuilds) {
-		this.includedGuilds = includedGuilds;
+	/**
+	 * Prevents the given set of {@link Guild}s from updating their Slash Commands.
+	 *
+	 * @param jda The {@link JDA} instance.
+	 * @param blacklisted An array of {@link Long}s.
+	 */
+	public void blacklistGuilds(JDA jda, Long... blacklisted) {
+		this.blacklistedGuilds = Arrays.stream(blacklisted).map(jda::getGuildById).collect(Collectors.toSet());
 	}
 
-	public List<Long> getExcludedGuilds() {
-		return excludedGuilds;
+	/**
+	 * Allows a set of {@link Guild}s to update their Slash Commands.
+	 *
+	 * @param whitelisted An array of {@link Guild}s.
+	 */
+	public void whitelistGuilds(Guild... whitelisted) {
+		this.whitelistedGuilds = Arrays.stream(whitelisted).collect(Collectors.toSet());
 	}
 
-	public void setExcludedGuilds(List<Long> excludedGuilds) {
-		this.excludedGuilds = excludedGuilds;
+	/**
+	 * Prevents the given set of {@link Guild}s from updating their Slash Commands.
+	 *
+	 * @param blacklisted An array of {@link Guild}s.
+	 */
+	public void blacklistGuilds(Guild... blacklisted) {
+		this.blacklistedGuilds = Arrays.stream(blacklisted).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Gets all Guilds whose Slash Commands should be updated.
+	 *
+	 * @param jda The {@link JDA} instance.
+	 * @return A {@link List} with all Guilds.
+	 */
+	public Set<Guild> getGuilds(JDA jda) {
+		Set<Guild> guilds = new HashSet<>(jda.getGuilds());
+		guilds.removeIf(g -> this.blacklistedGuilds.contains(g));
+		if (whitelistedGuilds.size() > 0) {
+			guilds = this.whitelistedGuilds;
+		}
+		return guilds;
 	}
 }
