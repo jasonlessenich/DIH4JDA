@@ -47,4 +47,9 @@ public class ComponentIdBuilder {
 		}
 		return sb.toString();
 	}
+
+	//TODO-v1.4: Documentation
+	public static String[] splitBySeparator(String id) {
+		return id.split(separator);
+	}
 }

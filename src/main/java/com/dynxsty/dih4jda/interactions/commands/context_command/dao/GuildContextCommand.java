@@ -11,14 +11,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class GuildContextCommand extends BaseContextCommand {
-	private Set<Guild> whitelistedGuilds = new HashSet<>();;
+	private Set<Guild> whitelistedGuilds = new HashSet<>();
 
-	private Set<Guild> blacklistedGuilds = new HashSet<>();;
+	private Set<Guild> blacklistedGuilds = new HashSet<>();
 
 	/**
 	 * Allows a set of {@link Guild}s to update their Slash Commands.
 	 *
-	 * @param jda The {@link JDA} instance.
+	 * @param jda         The {@link JDA} instance.
 	 * @param whitelisted An array of {@link Long}s.
 	 */
 	public void whitelistGuilds(JDA jda, Long... whitelisted) {
@@ -28,7 +28,7 @@ public abstract class GuildContextCommand extends BaseContextCommand {
 	/**
 	 * Prevents the given set of {@link Guild}s from updating their Slash Commands.
 	 *
-	 * @param jda The {@link JDA} instance.
+	 * @param jda         The {@link JDA} instance.
 	 * @param blacklisted An array of {@link Long}s.
 	 */
 	public void blacklistGuilds(JDA jda, Long... blacklisted) {

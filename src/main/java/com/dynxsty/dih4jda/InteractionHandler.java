@@ -11,12 +11,19 @@ import com.dynxsty.dih4jda.interactions.commands.slash_command.SlashCommand;
 import com.dynxsty.dih4jda.interactions.commands.slash_command.SlashCommandInteraction;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.*;
+import com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder;
+import com.dynxsty.dih4jda.interactions.components.button.Button;
+import com.dynxsty.dih4jda.interactions.components.modal.Modal;
+import com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenu;
 import com.dynxsty.dih4jda.util.CommandUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.*;
@@ -35,9 +42,24 @@ import java.util.stream.Collectors;
 public class InteractionHandler extends ListenerAdapter {
 
 	private final DIH4JDA dih4jda;
+
+	//TODO-v1.4: Documentation
 	private final Map<String, SlashCommandInteraction> slashCommandIndex;
+
+	//TODO-v1.4: Documentation
 	private final Map<String, MessageContextInteraction> messageContextIndex;
+
+	//TODO-v1.4: Documentation
 	private final Map<String, UserContextInteraction> userContextIndex;
+
+	//TODO-v1.4: Documentation
+	private final Map<String, Button> buttonIndex;
+
+	//TODO-v1.4: Documentation
+	private final Map<String, SelectMenu> selectMenuIndex;
+
+	//TODO-v1.4: Documentation
+	private final Map<String, Modal> modalIndex;
 
 	private final Set<Class<? extends GuildSlashCommand>> guildCommands;
 	private final Set<Class<? extends GlobalSlashCommand>> globalCommands;
@@ -58,6 +80,9 @@ public class InteractionHandler extends ListenerAdapter {
 		this.slashCommandIndex = new HashMap<>();
 		this.messageContextIndex = new HashMap<>();
 		this.userContextIndex = new HashMap<>();
+		this.buttonIndex = new HashMap<>();
+		this.selectMenuIndex = new HashMap<>();
+		this.modalIndex = new HashMap<>();
 		this.dih4jda = dih4jda;
 	}
 
@@ -210,6 +235,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @throws Exception If an error occurs.
 	 */
 	private SlashCommandData getBaseCommandData(@NotNull BaseSlashCommand command, Class<? extends BaseSlashCommand> commandClass, @Nullable Guild guild) throws Exception {
+		// find component (and modal) handlers
+		this.findComponentAndModalHandlers(command);
 		if (command.getCommandData() == null) {
 			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
 			return null;
@@ -284,6 +311,13 @@ public class InteractionHandler extends ListenerAdapter {
 			subDataList.add(instance.getSubcommandData());
 		}
 		return subDataList;
+	}
+
+	//TODO-v1.4: Documentation
+	private void findComponentAndModalHandlers(BaseSlashCommand command) {
+		command.getHandledButtonIds().forEach(s -> this.buttonIndex.put(s, (Button) command));
+		command.getHandledSelectMenuIds().forEach(s -> this.selectMenuIndex.put(s, (SelectMenu) command));
+		command.getHandledModalIds().forEach(s -> this.modalIndex.put(s, (Modal) command));
 	}
 
 	/**
@@ -407,6 +441,63 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
+	 * Handles a single {@link ButtonInteractionEvent}.
+	 * If a {@link ButtonInteractionEvent} is fired the corresponding class is found and the command is executed.
+	 *
+	 * @param event The {@link ButtonInteractionEvent} that was fired.
+	 */
+	private void handleButton(ButtonInteractionEvent event) {
+		try {
+			Button component = buttonIndex.get(ComponentIdBuilder.splitBySeparator(event.getComponentId())[0]);
+			if (component == null) {
+				DIH4JDALogger.warn(String.format("Button with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.BUTTON_NOT_FOUND);
+			} else {
+				component.handleButton(event, event.getButton());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Handles a single {@link SelectMenuInteractionEvent}.
+	 * If a {@link SelectMenuInteractionEvent} is fired the corresponding class is found and the command is executed.
+	 *
+	 * @param event The {@link SelectMenuInteractionEvent} that was fired.
+	 */
+	private void handleSelectMenu(SelectMenuInteractionEvent event) {
+		try {
+			SelectMenu component = selectMenuIndex.get(ComponentIdBuilder.splitBySeparator(event.getComponentId())[0]);
+			if (component == null) {
+				DIH4JDALogger.warn(String.format("Select Menu with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND);
+			} else {
+				component.handleSelectMenu(event, event.getValues());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Handles a single {@link ModalInteractionEvent}.
+	 * If a {@link ModalInteractionEvent} is fired the corresponding class is found and the command is executed.
+	 *
+	 * @param event The {@link ModalInteractionEvent} that was fired.
+	 */
+	private void handleModal(ModalInteractionEvent event) {
+		try {
+			Modal modal = modalIndex.get(ComponentIdBuilder.splitBySeparator(event.getModalId())[0]);
+			if (modal == null) {
+				DIH4JDALogger.warn(String.format("Modal with id \"%s\" could not be found.", event.getModalId()), DIH4JDALogger.Type.MODAL_NOT_FOUND);
+			} else {
+				modal.handleModal(event, event.getValues());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * Used to create one command name out of the SlashCommand, SlashSubCommandGroup and SlashSubCommand
 	 *
 	 * @return One combined string.
@@ -463,5 +554,23 @@ public class InteractionHandler extends ListenerAdapter {
 	@Override
 	public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
 		CompletableFuture.runAsync(() -> this.handleMessageContextCommand(event));
+	}
+
+	//TODO-v1.4: Documentation
+	@Override
+	public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
+		CompletableFuture.runAsync(() -> this.handleButton(event));
+	}
+
+	//TODO-v1.4: Documentation
+	@Override
+	public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
+		CompletableFuture.runAsync(() -> this.handleSelectMenu(event));
+	}
+
+	//TODO-v1.4: Documentation
+	@Override
+	public void onModalInteraction(@NotNull ModalInteractionEvent event) {
+		CompletableFuture.runAsync(() -> this.handleModal(event));
 	}
 }

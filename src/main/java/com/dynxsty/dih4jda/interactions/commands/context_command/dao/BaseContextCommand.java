@@ -7,11 +7,10 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import java.util.List;
 
 public abstract class BaseContextCommand {
-	protected BaseContextCommand() {}
+	protected BaseContextCommand() {
+	}
 
 	private CommandData commandData;
-
-	private boolean handleAutoComplete;
 
 	private List<String> handledButtonIds;
 
@@ -29,14 +28,6 @@ public abstract class BaseContextCommand {
 
 	public CommandData getCommandData() {
 		return commandData;
-	}
-
-	public boolean shouldHandleAutoComplete() {
-		return handleAutoComplete;
-	}
-
-	public void setAutoCompleteHandling(boolean handleAutoComplete) {
-		this.handleAutoComplete = handleAutoComplete;
 	}
 
 	public List<String> getHandledButtonIds() {
@@ -59,7 +50,7 @@ public abstract class BaseContextCommand {
 		return handledModalIds;
 	}
 
-	public void setHandledModalIds(List<String> handledModalIds) {
+	public void handleModalIds(List<String> handledModalIds) {
 		this.handledModalIds = handledModalIds;
 	}
 }
