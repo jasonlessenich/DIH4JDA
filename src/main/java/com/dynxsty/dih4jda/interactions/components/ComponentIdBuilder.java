@@ -29,12 +29,19 @@ public class ComponentIdBuilder {
 
 	/**
 	 * Builds a component-id using the (set) separator and the given identifier and arguments.
+	 * <pre>{@code
+	 * Button.secondary(ComponentIdBuilder.build("self-role", roleId), "Click me!");
+	 * }</pre>
 	 *
 	 * @param identifier The component's identifier.
-	 * @param args An optional parameter for arguments.
+	 * @param args       An optional parameter for arguments.
 	 * @return The built component-id, as a {@link String}.
 	 */
 	public static String build(String identifier, Object... args) {
-		return identifier + separator + Arrays.stream(args).map(Object::toString).collect(Collectors.joining(separator));
+		StringBuilder sb = new StringBuilder(identifier);
+		if (args.length > 0) {
+			sb.append(separator).append(Arrays.stream(args).map(Object::toString).collect(Collectors.joining(separator)));
+		}
+		return sb.toString();
 	}
 }

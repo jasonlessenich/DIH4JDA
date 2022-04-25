@@ -10,12 +10,17 @@ import java.util.List;
  */
 public class AutoCompleteUtils {
 
-	private AutoCompleteUtils() {}
+	private AutoCompleteUtils() {
+	}
 
 	/**
 	 * Filters all AutoComplete choices based on the user's current input.
 	 *
-	 * @param event The {@link CommandAutoCompleteInteractionEvent} that was fired.
+	 * <pre>{@code
+	 * return event.replyChoices(AutoCompleteUtils.filterChoices(event, choices));
+	 * }</pre>
+	 *
+	 * @param event   The {@link CommandAutoCompleteInteractionEvent} that was fired.
 	 * @param choices A {@link List} of {@link Command.Choice}s.
 	 * @return The filtered {@link List} of {@link Command.Choice}s.
 	 */
@@ -26,7 +31,11 @@ public class AutoCompleteUtils {
 	/**
 	 * Filters all AutoComplete choices based on the user's current input.
 	 *
-	 * @param filter The filter.
+	 * <pre>{@code
+	 * return event.replyChoices(AutoCompleteUtils.filterChoices("abc", choices));
+	 * }</pre>
+	 *
+	 * @param filter  The filter.
 	 * @param choices A {@link List} of {@link Command.Choice}s.
 	 * @return The filtered {@link List} of {@link Command.Choice}s.
 	 */
