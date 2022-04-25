@@ -5,6 +5,7 @@ import org.slf4j.event.Level;
 
 import java.util.Set;
 
+//TODO-v1.4: Documentation
 public class DIH4JDALogger {
 
 	public enum Type {

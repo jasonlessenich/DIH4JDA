@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+//TODO-v1.4: Documentation
 public class InteractionHandler extends ListenerAdapter {
 
 	private final DIH4JDA dih4jda;
@@ -60,6 +61,7 @@ public class InteractionHandler extends ListenerAdapter {
 		this.dih4jda = dih4jda;
 	}
 
+	//TODO-v1.4: Documentation
 	public void registerInteractions(JDA jda) throws Exception {
 		this.registerSlashCommands();
 		this.registerContextCommands();

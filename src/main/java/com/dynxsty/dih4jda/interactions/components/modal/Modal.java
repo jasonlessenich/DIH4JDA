@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 
 import java.util.List;
 
+//TODO-v1.4: Documentation
 public interface Modal {
 	void handleModal(ModalInteractionEvent event, List<ModalMapping> values);
 }

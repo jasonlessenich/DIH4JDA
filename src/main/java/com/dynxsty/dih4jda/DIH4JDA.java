@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+//TODO-v1.4: Documentation
 public class DIH4JDA extends ListenerAdapter {
 
     private final JDA jda;

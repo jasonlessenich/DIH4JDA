@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEve
 
 import java.util.List;
 
+//TODO-v1.4: Documentation
 public interface SelectMenu {
 	void handleSelectMenu(SelectMenuInteractionEvent event, List<String> values);
 }
