@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.interactions.slash_command.dao;
+package com.dynxsty.dih4jda.interactions.commands.slash_command.dao;
 
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;

@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.interactions.context_command;
+package com.dynxsty.dih4jda.interactions.commands.context_command;
 
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 

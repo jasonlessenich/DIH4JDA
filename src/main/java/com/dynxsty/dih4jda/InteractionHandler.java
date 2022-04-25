@@ -1,16 +1,16 @@
 package com.dynxsty.dih4jda;
 
-import com.dynxsty.dih4jda.interactions.context_command.MessageContextCommand;
-import com.dynxsty.dih4jda.interactions.context_command.UserContextCommand;
-import com.dynxsty.dih4jda.interactions.context_command.MessageContextInteraction;
-import com.dynxsty.dih4jda.interactions.context_command.UserContextInteraction;
-import com.dynxsty.dih4jda.interactions.context_command.dao.BaseContextCommand;
-import com.dynxsty.dih4jda.interactions.context_command.dao.GlobalContextCommand;
-import com.dynxsty.dih4jda.interactions.context_command.dao.GuildContextCommand;
-import com.dynxsty.dih4jda.interactions.slash_command.SlashCommand;
-import com.dynxsty.dih4jda.interactions.slash_command.SlashCommandInteraction;
+import com.dynxsty.dih4jda.interactions.commands.context_command.MessageContextCommand;
+import com.dynxsty.dih4jda.interactions.commands.context_command.UserContextCommand;
+import com.dynxsty.dih4jda.interactions.commands.context_command.MessageContextInteraction;
+import com.dynxsty.dih4jda.interactions.commands.context_command.UserContextInteraction;
+import com.dynxsty.dih4jda.interactions.commands.context_command.dao.BaseContextCommand;
+import com.dynxsty.dih4jda.interactions.commands.context_command.dao.GlobalContextCommand;
+import com.dynxsty.dih4jda.interactions.commands.context_command.dao.GuildContextCommand;
+import com.dynxsty.dih4jda.interactions.commands.slash_command.SlashCommand;
+import com.dynxsty.dih4jda.interactions.commands.slash_command.SlashCommandInteraction;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
-import com.dynxsty.dih4jda.interactions.slash_command.dao.*;
+import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.*;
 import com.dynxsty.dih4jda.util.CommandUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -193,8 +193,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private Set<SlashCommandData> getGlobalSlashCommandData() throws Exception {
 		Set<SlashCommandData> commands = new HashSet<>();
-		for (Class<? extends BaseSlashCommand> slashCommandClass : this.globalCommands) {
-			BaseSlashCommand instance = (BaseSlashCommand) this.getClassInstance(null, slashCommandClass);
+		for (Class<? extends GlobalSlashCommand> slashCommandClass : this.globalCommands) {
+			GlobalSlashCommand instance = (GlobalSlashCommand) this.getClassInstance(null, slashCommandClass);
 			commands.add(this.getBaseCommandData(instance, slashCommandClass, null));
 		}
 		return commands;
@@ -314,8 +314,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private Set<CommandData> getGlobalContextCommandData() throws Exception {
 		Set<CommandData> commands = new HashSet<>();
-		for (Class<? extends BaseContextCommand> contextCommandClass : this.globalContexts) {
-			BaseContextCommand instance = (BaseContextCommand) this.getClassInstance(null, contextCommandClass);
+		for (Class<? extends GlobalContextCommand> contextCommandClass : this.globalContexts) {
+			GlobalContextCommand instance = (GlobalContextCommand) this.getClassInstance(null, contextCommandClass);
 			CommandData data = this.getContextCommandData(instance, contextCommandClass);
 			if (data != null) {
 				commands.add(data);

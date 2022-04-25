@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.interactions.slash_command;
+package com.dynxsty.dih4jda.interactions.commands.slash_command;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
