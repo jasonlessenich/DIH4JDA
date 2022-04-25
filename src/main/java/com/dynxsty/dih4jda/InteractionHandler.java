@@ -39,11 +39,11 @@ public class InteractionHandler extends ListenerAdapter {
 	private final Map<String, MessageContextInteraction> messageContextIndex;
 	private final Map<String, UserContextInteraction> userContextIndex;
 
-	private final Set<Class<? extends BaseSlashCommand>> guildCommands;
-	private final Set<Class<? extends BaseSlashCommand>> globalCommands;
+	private final Set<Class<? extends GuildSlashCommand>> guildCommands;
+	private final Set<Class<? extends GlobalSlashCommand>> globalCommands;
 
-	private final Set<Class<? extends BaseContextCommand>> guildContexts;
-	private final Set<Class<? extends BaseContextCommand>> globalContexts;
+	private final Set<Class<? extends GuildContextCommand>> guildContexts;
+	private final Set<Class<? extends GlobalContextCommand>> globalContexts;
 
 	/**
 	 * Constructs a new {@link InteractionHandler} from the supplied commands package.
@@ -63,8 +63,8 @@ public class InteractionHandler extends ListenerAdapter {
 
 	//TODO-v1.4: Documentation
 	public void registerInteractions(JDA jda) throws Exception {
-		this.registerSlashCommands();
-		this.registerContextCommands();
+		this.findSlashCommand();
+		this.findContextCommands();
 		// register commands for each guild
 		for (Guild guild : jda.getGuilds()) {
 			Set<CommandData> commands = new HashSet<>();
@@ -113,40 +113,21 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Registers all slash commands. Loops through all classes found in the commands package that is a subclass of {@link BaseSlashCommand}.
-	 * Goes through these steps with every iteration;
-	 * <ol>
-	 *     <li>Checks if the class is missing {@link CommandData} and doesn't register if it is.</li>
-	 *     <li>Checks if the class is neither a subclass of {@link Subcommand} nor {@link SubcommandGroup} and registers it as regular command.</li>
-	 *     <li>Checks if the class is a subclass of {@link SubcommandGroup} if it is, the SlashCommandGroup is validated and another loop is fired following the two steps above for the group's sub commands.</li>
-	 *     <li>Checks if the class is a subclass of {@link Subcommand}, if it is, it is registered as a sub command.</li>
-	 * </ol>
+	 * Registers all slash commands. Loops through all classes found in the commands package that is either a subclass of {@link GuildSlashCommand} or {@link GlobalSlashCommand}.
 	 */
-	private void registerSlashCommands() {
+	private void findSlashCommand() {
 		Reflections commands = new Reflections(this.dih4jda.getCommandsPackage());
-		Set<Class<? extends BaseSlashCommand>> classes = commands.getSubTypesOf(BaseSlashCommand.class);
-		for (Class<? extends BaseSlashCommand> c : classes) {
-			if (c.getSuperclass().equals(GlobalSlashCommand.class)) {
-				globalCommands.add(c);
-			} else if (c.getSuperclass().equals(GuildSlashCommand.class)) {
-				guildCommands.add(c);
-			}
-		}
+		guildCommands.addAll(commands.getSubTypesOf(GuildSlashCommand.class));
+		globalCommands.addAll(commands.getSubTypesOf(GlobalSlashCommand.class));
 	}
 
 	/**
-	 * Registers all context commands. Loops through all classes found in the commands package that is a subclass of {@link BaseContextCommand}.
+	 * Registers all context commands. Loops through all classes found in the commands package that is either a subclass of {@link GuildContextCommand} or {@link GlobalContextCommand}.
 	 */
-	private void registerContextCommands() {
+	private void findContextCommands() {
 		Reflections commands = new Reflections(this.dih4jda.getCommandsPackage());
-		Set<Class<? extends BaseContextCommand>> classes = commands.getSubTypesOf(BaseContextCommand.class);
-		for (Class<? extends BaseContextCommand> c : classes) {
-			if (c.getSuperclass().equals(GlobalContextCommand.class)) {
-				globalContexts.add(c);
-			} else if (c.getSuperclass().equals(GuildContextCommand.class)) {
-				guildContexts.add(c);
-			}
-		}
+		guildContexts.addAll(commands.getSubTypesOf(GuildContextCommand.class));
+		globalContexts.addAll(commands.getSubTypesOf(GlobalContextCommand.class));
 	}
 
 	/**
@@ -184,7 +165,7 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets all Guild commands registered in {@link InteractionHandler#registerSlashCommands()} and adds
+	 * Gets all Guild commands registered in {@link InteractionHandler#findSlashCommand()} and adds
 	 * them to the {@link InteractionHandler#slashCommandIndex}.
 	 *
 	 * @param guild The command's guild.
@@ -200,7 +181,7 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets all Global commands registered in {@link InteractionHandler#registerSlashCommands()} and adds
+	 * Gets all Global commands registered in {@link InteractionHandler#findSlashCommand()} and adds
 	 * them to the {@link InteractionHandler#slashCommandIndex}.
 	 *
 	 * @throws Exception If an error occurs.
@@ -301,7 +282,7 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets all Guild Context commands registered in {@link InteractionHandler#registerContextCommands()} and
+	 * Gets all Guild Context commands registered in {@link InteractionHandler#findContextCommands()} and
 	 * returns their {@link CommandData} as a List.
 	 *
 	 * @param guild The context command's guild.
@@ -317,7 +298,7 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets all Global Context commands registered in {@link InteractionHandler#registerContextCommands()} and
+	 * Gets all Global Context commands registered in {@link InteractionHandler#findContextCommands()} and
 	 * returns their {@link CommandData} as a List.
 	 *
 	 * @throws Exception If an error occurs.
