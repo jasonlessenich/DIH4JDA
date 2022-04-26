@@ -38,7 +38,7 @@ public class DIH4JDABuilder {
      */
     @Nonnull
     public DIH4JDABuilder setOwnerId(long id) {
-        this.ownerId = id;
+        ownerId = id;
         return this;
     }
 
@@ -48,7 +48,7 @@ public class DIH4JDABuilder {
      */
     @Nonnull
     public DIH4JDABuilder setCommandsPackage(@Nonnull String pack) {
-        this.commandsPackage = pack;
+        commandsPackage = pack;
         return this;
     }
 
@@ -60,9 +60,9 @@ public class DIH4JDABuilder {
     @Nonnull
     public DIH4JDABuilder disableLogging(DIH4JDALogger.Type... types) {
         if (types == null || types.length < 1) {
-            this.blockedLogTypes = DIH4JDALogger.Type.values();
+            blockedLogTypes = DIH4JDALogger.Type.values();
         } else {
-            this.blockedLogTypes = types;
+            blockedLogTypes = types;
         }
         return this;
     }
@@ -74,7 +74,7 @@ public class DIH4JDABuilder {
      */
     @Nonnull
     public DIH4JDABuilder disableAutomaticCommandRegistration() {
-        this.registerOnStartup = false;
+        registerOnStartup = false;
         return this;
     }
 
@@ -87,7 +87,7 @@ public class DIH4JDABuilder {
      */
     @Nonnull
     public DIH4JDABuilder disableSmartQueuing() {
-        this.smartQueuing = false;
+        smartQueuing = false;
         return this;
     }
 
@@ -100,6 +100,6 @@ public class DIH4JDABuilder {
         if (ClasspathHelper.forPackage(commandsPackage).isEmpty()) {
             throw new InvalidPackageException("Package " + commandsPackage + " does not exist.");
         }
-        return new DIH4JDA(this.jda, this.commandsPackage, this.ownerId, this.registerOnStartup, this.smartQueuing, this.blockedLogTypes);
+        return new DIH4JDA(jda, commandsPackage, ownerId, this.registerOnStartup, smartQueuing, blockedLogTypes);
     }
 }

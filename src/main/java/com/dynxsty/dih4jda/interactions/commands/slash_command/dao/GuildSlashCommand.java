@@ -18,7 +18,7 @@ public abstract class GuildSlashCommand extends BaseSlashCommand {
 	 * @param whitelisted An array of {@link Long}s.
 	 */
 	public void whitelistGuilds(JDA jda, Long... whitelisted) {
-		this.whitelistedGuilds = Arrays.stream(whitelisted).map(jda::getGuildById).collect(Collectors.toSet());
+		whitelistedGuilds = Arrays.stream(whitelisted).map(jda::getGuildById).collect(Collectors.toSet());
 	}
 
 	/**
@@ -28,7 +28,7 @@ public abstract class GuildSlashCommand extends BaseSlashCommand {
 	 * @param blacklisted An array of {@link Long}s.
 	 */
 	public void blacklistGuilds(JDA jda, Long... blacklisted) {
-		this.blacklistedGuilds = Arrays.stream(blacklisted).map(jda::getGuildById).collect(Collectors.toSet());
+		blacklistedGuilds = Arrays.stream(blacklisted).map(jda::getGuildById).collect(Collectors.toSet());
 	}
 
 	/**
@@ -37,7 +37,7 @@ public abstract class GuildSlashCommand extends BaseSlashCommand {
 	 * @param whitelisted An array of {@link Guild}s.
 	 */
 	public void whitelistGuilds(Guild... whitelisted) {
-		this.whitelistedGuilds = Arrays.stream(whitelisted).collect(Collectors.toSet());
+		whitelistedGuilds = Arrays.stream(whitelisted).collect(Collectors.toSet());
 	}
 
 	/**
@@ -46,7 +46,7 @@ public abstract class GuildSlashCommand extends BaseSlashCommand {
 	 * @param blacklisted An array of {@link Guild}s.
 	 */
 	public void blacklistGuilds(Guild... blacklisted) {
-		this.blacklistedGuilds = Arrays.stream(blacklisted).collect(Collectors.toSet());
+		blacklistedGuilds = Arrays.stream(blacklisted).collect(Collectors.toSet());
 	}
 
 	/**
@@ -57,9 +57,9 @@ public abstract class GuildSlashCommand extends BaseSlashCommand {
 	 */
 	public Set<Guild> getGuilds(JDA jda) {
 		Set<Guild> guilds = new HashSet<>(jda.getGuilds());
-		guilds.removeIf(g -> this.blacklistedGuilds.contains(g));
+		guilds.removeIf(g -> blacklistedGuilds.contains(g));
 		if (whitelistedGuilds.size() > 0) {
-			guilds = this.whitelistedGuilds;
+			guilds = whitelistedGuilds;
 		}
 		return guilds;
 	}

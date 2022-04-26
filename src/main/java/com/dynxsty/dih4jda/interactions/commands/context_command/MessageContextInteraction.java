@@ -8,7 +8,7 @@ public class MessageContextInteraction {
 	private MessageContextCommand handler;
 
 	public MessageContextInteraction(MessageContextCommand handler) {
-		this.setHandler(handler);
+		this.handler = handler;
 	}
 
 	public MessageContextCommand getHandler() {

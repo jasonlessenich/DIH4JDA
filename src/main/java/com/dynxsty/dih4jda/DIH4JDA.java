@@ -50,12 +50,12 @@ public class DIH4JDA extends ListenerAdapter {
      */
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        if (this.getCommandsPackage() == null) return;
+        if (getCommandsPackage() == null) return;
         DIH4JDALogger.blockedLogTypes = blockedLogTypes;
-        this.handler = new InteractionHandler(this);
-        this.getJDA().addEventListener(handler);
+        handler = new InteractionHandler(this);
+        getJDA().addEventListener(handler);
         try {
-            if (this.registerOnStartup) this.handler.registerInteractions(this.jda);
+            if (registerOnStartup) handler.registerInteractions(jda);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -66,30 +66,30 @@ public class DIH4JDA extends ListenerAdapter {
      * Please note that global commands may need up to an hour before they're fully registered.
      */
     public void registerInteractions() throws Exception {
-        this.handler.registerInteractions(this.jda);
+        handler.registerInteractions(jda);
     }
 
     public JDA getJDA() {
-        return this.jda;
+        return jda;
     }
 
     public String getCommandsPackage() {
-        return this.commandsPackage;
+        return commandsPackage;
     }
 
     public long getOwnerId() {
-        return this.ownerId;
+        return ownerId;
     }
 
     public Set<DIH4JDALogger.Type> getBlockedLogTypes() {
-        return this.blockedLogTypes;
+        return blockedLogTypes;
     }
 
     public boolean isRegisterOnStartup() {
-        return this.registerOnStartup;
+        return registerOnStartup;
     }
 
     public boolean isSmartQueuing() {
-        return this.smartQueuing;
+        return smartQueuing;
     }
 }

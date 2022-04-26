@@ -3,15 +3,10 @@ package com.dynxsty.dih4jda.interactions.commands.slash_command.dao;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * A SlashCommand object with getters, setters, a constructor and a toString method.
  */
-public abstract class BaseSlashCommand {
+public abstract class BaseSlashCommand extends ExecutableCommand {
 	protected BaseSlashCommand() {
 	}
 
@@ -19,14 +14,6 @@ public abstract class BaseSlashCommand {
 	private Class<? extends Subcommand>[] subcommandClasses;
 	private Class<? extends SubcommandGroup>[] subcommandGroupClasses;
 	private CommandPrivilege[] commandPrivileges;
-
-	private boolean handleAutoComplete = false;
-
-	private List<String> handledButtonIds = new ArrayList<>();
-
-	private List<String> handledSelectMenuIds = new ArrayList<>();;
-
-	private List<String> handledModalIds = new ArrayList<>();;
 
 	public SlashCommandData getCommandData() {
 		return commandData;
@@ -60,37 +47,5 @@ public abstract class BaseSlashCommand {
 
 	public void setCommandPrivileges(CommandPrivilege... commandPrivileges) {
 		this.commandPrivileges = commandPrivileges;
-	}
-
-	public boolean shouldHandleAutoComplete() {
-		return handleAutoComplete;
-	}
-
-	public void setAutoCompleteHandling(boolean handleAutoComplete) {
-		this.handleAutoComplete = handleAutoComplete;
-	}
-
-	public List<String> getHandledButtonIds() {
-		return handledButtonIds;
-	}
-
-	public void handleButtonIds(String... handledButtonIds) {
-		this.handledButtonIds.addAll(Arrays.stream(handledButtonIds).collect(Collectors.toList()));
-	}
-
-	public List<String> getHandledSelectMenuIds() {
-		return handledSelectMenuIds;
-	}
-
-	public void handleSelectMenuIds(String... handledSelectMenuIds) {
-		this.handledSelectMenuIds.addAll(Arrays.stream(handledSelectMenuIds).collect(Collectors.toList()));
-	}
-
-	public List<String> getHandledModalIds() {
-		return handledModalIds;
-	}
-
-	public void setHandledModalIds(String... handledModalIds) {
-		this.handledModalIds.addAll(Arrays.stream(handledModalIds).collect(Collectors.toList()));
 	}
 }
