@@ -18,8 +18,6 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
  * 	}
  * }}
  */
-
-
 public interface MessageContextCommand {
 	void handleMessageContextCommand(MessageContextInteractionEvent event);
 }
