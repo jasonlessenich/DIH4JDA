@@ -10,7 +10,19 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-//TODO-v1.4: Documentation
+/**
+ * The entry-point of this Handler.
+ *
+ * <h2>Creating a new DIH4JDA instance</h2>
+ * <pre>{@code
+ * DIH4JDA dih4JDA = DIH4JDABuilder
+ *         .setJDA(jda) // Your JDA instance
+ *         .setCommandsPackage("com.dynxsty.superawesomebot.commands") // The main package where all your commands are in.
+ *         .build();
+ * }</pre>
+ * Upon calling .build();, the bot will automatically register all Commands that are in the given commandsPackage.
+ * (if not disabled)
+ */
 public class DIH4JDA extends ListenerAdapter {
 
     private final JDA jda;

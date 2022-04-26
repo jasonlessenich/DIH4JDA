@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-//TODO-v1.4: Documentation
+/**
+ * Abstract class that represents an executable Slash Command (excluding Subcommand Groups).
+ */
 public abstract class ExecutableCommand {
 
 	protected ExecutableCommand() {
