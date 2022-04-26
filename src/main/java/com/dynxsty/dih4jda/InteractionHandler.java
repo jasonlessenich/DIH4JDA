@@ -1,16 +1,16 @@
 package com.dynxsty.dih4jda;
 
+import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import com.dynxsty.dih4jda.interactions.autocomplete.AutoCompleteHandler;
 import com.dynxsty.dih4jda.interactions.commands.context_command.MessageContextCommand;
-import com.dynxsty.dih4jda.interactions.commands.context_command.UserContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.context_command.MessageContextInteraction;
+import com.dynxsty.dih4jda.interactions.commands.context_command.UserContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.context_command.UserContextInteraction;
 import com.dynxsty.dih4jda.interactions.commands.context_command.dao.BaseContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.context_command.dao.GlobalContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.context_command.dao.GuildContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.slash_command.SlashCommand;
 import com.dynxsty.dih4jda.interactions.commands.slash_command.SlashCommandInteraction;
-import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.*;
 import com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder;
 import com.dynxsty.dih4jda.interactions.components.button.ButtonHandler;
@@ -28,7 +28,10 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.build.*;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.jetbrains.annotations.Contract;
@@ -547,7 +550,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return The Instance as a generic Object.
 	 * @throws Exception If an error occurs.
 	 */
-	private @NotNull Object getClassInstance(Guild guild, Class<?> clazz) throws ReflectiveOperationException{
+	private @NotNull Object getClassInstance(Guild guild, Class<?> clazz) throws ReflectiveOperationException {
 		if (guild != null || !clazz.getSuperclass().equals(GlobalSlashCommand.class)) {
 			try {
 				return clazz.getConstructor(Guild.class).newInstance(guild);
