@@ -483,7 +483,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleButton(ButtonInteractionEvent event) {
 		try {
-			ButtonHandler component = buttonIndex.get(ComponentIdBuilder.splitBySeparator(event.getComponentId())[0]);
+			ButtonHandler component = buttonIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
 			if (component == null) {
 				DIH4JDALogger.warn(String.format("Button with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.BUTTON_NOT_FOUND);
 			} else {
@@ -502,7 +502,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleSelectMenu(SelectMenuInteractionEvent event) {
 		try {
-			SelectMenuHandler component = selectMenuIndex.get(ComponentIdBuilder.splitBySeparator(event.getComponentId())[0]);
+			SelectMenuHandler component = selectMenuIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
 			if (component == null) {
 				DIH4JDALogger.warn(String.format("Select Menu with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND);
 			} else {
@@ -521,7 +521,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleModal(ModalInteractionEvent event) {
 		try {
-			ModalHandler modal = modalIndex.get(ComponentIdBuilder.splitBySeparator(event.getModalId())[0]);
+			ModalHandler modal = modalIndex.get(ComponentIdBuilder.split(event.getModalId())[0]);
 			if (modal == null) {
 				DIH4JDALogger.warn(String.format("Modal with id \"%s\" could not be found.", event.getModalId()), DIH4JDALogger.Type.MODAL_NOT_FOUND);
 			} else {

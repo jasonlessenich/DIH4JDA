@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
  */
 public class ComponentIdBuilder {
 
-	private ComponentIdBuilder() {}
+	private ComponentIdBuilder() {
+	}
 
 	private static String separator = ":";
 
@@ -48,8 +49,13 @@ public class ComponentIdBuilder {
 		return sb.toString();
 	}
 
-	//TODO-v1.4: Documentation
-	public static String[] splitBySeparator(String id) {
+	/**
+	 * Splits the given id by the current separator.
+	 *
+	 * @param id The component-id that should be split.
+	 * @return The split String as an array.
+	 */
+	public static String[] split(String id) {
 		return id.split(separator);
 	}
 }
