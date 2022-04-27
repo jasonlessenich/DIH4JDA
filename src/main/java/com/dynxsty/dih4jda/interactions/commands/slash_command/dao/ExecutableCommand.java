@@ -21,12 +21,16 @@ public abstract class ExecutableCommand {
 
 	private final List<String> handledModalIds = new ArrayList<>();
 
-	//TODO-v1.4: Documentation
+	/**
+	 * @return Whether the class should handle all options, that have the AutoComplete functionality activated.
+	 */
 	public boolean shouldHandleAutoComplete() {
 		return handleAutoComplete;
 	}
 
-	//TODO-v1.4: Documentation
+	/**
+	 * Enables AutoComplete handling for all
+	 */
 	public void enableAutoCompleteHandling() {
 		handleAutoComplete = true;
 	}

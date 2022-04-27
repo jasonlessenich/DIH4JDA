@@ -2,6 +2,8 @@ package com.dynxsty.dih4jda.util;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.*;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -90,5 +92,15 @@ public class CommandUtils {
 		if (command.getType() != Command.Type.MESSAGE && command.getType() != Command.Type.USER) throw new IllegalArgumentException("Command is not of Type CONTEXT");
 		return Commands.context(command.getType(), command.getName())
 				.setDefaultEnabled(command.isDefaultEnabled());
+	}
+
+	/**
+	 * Used to create one command name out of the SlashCommand, SlashSubCommandGroup and SlashSubCommand
+	 *
+	 * @return One combined string.
+	 */
+	@Contract(pure = true)
+	public static @NotNull String buildCommandPath(String... args) {
+		return String.join("/", args);
 	}
 }
