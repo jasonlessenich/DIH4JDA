@@ -12,7 +12,7 @@ plugins {
 
 group 'com.dynxsty'
 archivesBaseName = 'dih4jda'
-version '1.4'
+version '1.4.1'
 
 publishing {
     publications {
