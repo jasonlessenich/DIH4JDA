@@ -18,6 +18,7 @@ public abstract class ExecutableCommand {
 	}
 
 	/**
+	 * @since v1.4
 	 * @return Whether the class should handle all options that have the AutoComplete functionality activated.
 	 */
 	public boolean shouldHandleAutoComplete() {
@@ -28,6 +29,39 @@ public abstract class ExecutableCommand {
 	 * Enables AutoComplete handling for all options of this Slash Command.
 	 * If enabled, this class must implement {@link com.dynxsty.dih4jda.interactions.autocomplete.AutoCompleteHandler} and
 	 * override its method.
+	 *
+	 * <pre>{@code
+	 * public class PingCommand extends GuildSlashCommand implements SlashCommand, AutoCompleteHandler {
+	 *
+	 *     public PingCommand(Guild guild) {
+	 *         setCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id"));
+	 *         enableAutoCompleteHandling();
+	 *     }
+	 *
+	 *     @Override
+	 *     public void handleSlashCommand(SlashCommandInteractionEvent event) {
+	 *         OptionMapping mapping = event.getOption("user-id");
+	 *         String userId = mapping.getAsString();
+	 *         event.replyFormat("Ping! <@%s>", userId).queue();
+	 *     }
+	 *
+	 *     @Override
+	 *     public void handleAutoComplete(CommandAutoCompleteInteractionEvent event, AutoCompleteQuery target) {
+	 *         if (target.getName().equals("user-id")) {
+	 *             List<Member> members = event.getGuild().getMembers().stream().limit(25).collect(Collectors.toList());
+	 *             List<Command.Choice> choices = new ArrayList<>(25);
+	 *             for (Member member : members) {
+	 *                 choices.add(new Command.Choice(member.getUser().getAsTag(), member.getId()));
+	 *             }
+	 *             event.replyChoices(AutoCompleteUtils.filterChoices(event, choices)).queue();
+	 *         }
+	 *     }
+	 *
+	 * }}</pre>
+	 *
+	 * @since v1.4
+	 * @see com.dynxsty.dih4jda.interactions.autocomplete.AutoCompleteHandler
+	 * @see com.dynxsty.dih4jda.util.AutoCompleteUtils
 	 */
 	public void enableAutoCompleteHandling() {
 		handleAutoComplete = true;
@@ -36,6 +70,7 @@ public abstract class ExecutableCommand {
 	/**
 	 * Gets all Button identifiers that should be handled.
 	 *
+	 * @since v1.4
 	 * @return All identifiers as a {@link List}.
 	 */
 	public List<String> getHandledButtonIds() {
@@ -76,7 +111,10 @@ public abstract class ExecutableCommand {
 	 *    }
 	 * }}</pre>
 	 * <p>
-	 * * @see com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder#build
+	 *
+	 * @since v1.4
+	 * @see com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder#build
+	 * @see com.dynxsty.dih4jda.interactions.components.button.ButtonHandler
 	 *
 	 * @param handledButtonIds An array of Strings (the id's) that should be handled.
 	 */
@@ -87,6 +125,7 @@ public abstract class ExecutableCommand {
 	/**
 	 * Gets all SelectMenu identifiers that should be handled.
 	 *
+	 * @since v1.4
 	 * @return All identifiers as a {@link List}.
 	 */
 	public List<String> getHandledSelectMenuIds() {
@@ -125,8 +164,11 @@ public abstract class ExecutableCommand {
 	 *    }
 	 * }}</pre>
 	 *
-	 * @param handledSelectMenuIds An array of Strings (the id's) that should be handled.
+	 * @since v1.4
 	 * @see com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder#build
+	 * @see com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenuHandler
+	 *
+	 * @param handledSelectMenuIds An array of Strings (the id's) that should be handled.
 	 */
 	public void handleSelectMenuIds(String... handledSelectMenuIds) {
 		this.handledSelectMenuIds.addAll(Arrays.asList(handledSelectMenuIds));
@@ -135,6 +177,7 @@ public abstract class ExecutableCommand {
 	/**
 	 * Gets all Modal identifiers that should be handled.
 	 *
+	 * @since v1.4
 	 * @return All identifiers as a {@link List}.
 	 */
 	public List<String> getHandledModalIds() {
@@ -187,8 +230,11 @@ public abstract class ExecutableCommand {
 	 *    }
 	 * }}</pre>
 	 *
-	 * @param handledModalIds An array of Strings (the id's) that should be handled.
+	 * @since v1.4
 	 * @see com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder#build
+	 * @see com.dynxsty.dih4jda.interactions.components.modal.ModalHandler
+	 *
+	 * @param handledModalIds An array of Strings (the id's) that should be handled.
 	 */
 	public void handleModalIds(String... handledModalIds) {
 		this.handledModalIds.addAll(Arrays.asList(handledModalIds));
