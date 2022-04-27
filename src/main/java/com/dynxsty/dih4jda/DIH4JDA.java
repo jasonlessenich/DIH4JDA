@@ -67,7 +67,7 @@ public class DIH4JDA extends ListenerAdapter {
         handler = new InteractionHandler(this);
         getJDA().addEventListener(handler);
         try {
-            if (registerOnStartup) handler.registerInteractions(jda);
+            if (registerOnStartup) handler.registerInteractions();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,7 +78,7 @@ public class DIH4JDA extends ListenerAdapter {
      * Please note that global commands may need up to an hour before they're fully registered.
      */
     public void registerInteractions() throws Exception {
-        handler.registerInteractions(jda);
+        handler.registerInteractions();
     }
 
     public JDA getJDA() {

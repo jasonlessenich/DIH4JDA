@@ -20,6 +20,7 @@ import com.dynxsty.dih4jda.util.ClassUtils;
 import com.dynxsty.dih4jda.util.CommandUtils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
@@ -57,32 +58,45 @@ public class InteractionHandler extends ListenerAdapter {
 	private final DIH4JDA dih4jda;
 
 	/**
-	 * An Index ({@link Map}) of all Slash Command Interactions.
+	 * An Index of all Slash Command Interactions.
+	 * @see InteractionHandler#findSlashCommands()
 	 */
 	private final Map<String, SlashCommandInteraction> slashCommandIndex;
 
 	/**
-	 * An Index ({@link Map}) of all {@link MessageContextCommand}s.
+	 * An Index of all {@link MessageContextCommand}s.
+	 * @see InteractionHandler#findContextCommands()
 	 */
 	private final Map<String, MessageContextInteraction> messageContextIndex;
 
 	/**
-	 * An Index ({@link Map}) of all {@link UserContextCommand}s.
+	 * An Index of all {@link UserContextCommand}s.
+	 * @see InteractionHandler#findContextCommands()
 	 */
 	private final Map<String, UserContextInteraction> userContextIndex;
 
 	/**
-	 * An Index ({@link Map}) of all {@link AutoCompleteHandler}s.
+	 * An Index of all {@link AutoCompleteHandler}s.
+	 * @see InteractionHandler#findSlashCommands()
 	 */
 	private final Map<String, AutoCompleteHandler> autoCompleteIndex;
 
-	//TODO-v1.4: Documentation
+	/**
+	 * An Index of all {@link ButtonHandler}s.
+	 * @see InteractionHandler#findInteractionsHandlers(ExecutableCommand)
+	 */
 	private final Map<String, ButtonHandler> buttonIndex;
 
-	//TODO-v1.4: Documentation
+	/**
+	 * An Index of all {@link SelectMenuHandler}s.
+	 * @see InteractionHandler#findInteractionsHandlers(ExecutableCommand)
+	 */
 	private final Map<String, SelectMenuHandler> selectMenuIndex;
 
-	//TODO-v1.4: Documentation
+	/**
+	 * An Index of all {@link ModalHandler}s.
+	 * @see InteractionHandler#findInteractionsHandlers(ExecutableCommand)
+	 */
 	private final Map<String, ModalHandler> modalIndex;
 
 	private final Set<Class<? extends GuildSlashCommand>> guildCommands;
@@ -110,20 +124,27 @@ public class InteractionHandler extends ListenerAdapter {
 		this.dih4jda = dih4jda;
 	}
 
-	//TODO-v1.4: Documentation
-	public void registerInteractions(JDA jda) throws Exception {
+	/**
+	 * Finds and registers all interactions.
+	 * This method can be accessed from the {@link DIH4JDA} instance.
+	 * <br>This is automatically executed each time the {@link ListenerAdapter#onReady(ReadyEvent)} event is executed.
+	 * (can be disabled using {@link DIH4JDABuilder#disableAutomaticCommandRegistration()})
+	 *
+	 * @throws ReflectiveOperationException If an error occurs.
+	 */
+	public void registerInteractions() throws ReflectiveOperationException {
 		// find all commands
 		findSlashCommands();
 		findContextCommands();
 		// register commands for each guild
-		for (Guild guild : jda.getGuilds()) {
+		for (Guild guild : dih4jda.getJDA().getGuilds()) {
 			Set<CommandData> commands = new HashSet<>();
 			commands.addAll(getGuildSlashCommandData(guild));
 			commands.addAll(getGuildContextCommandData(guild));
 			guild.updateCommands().addCommands(commands).queue();
 			DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", commands.size(), guild.getName(), commands.stream().map(CommandData::getName).collect(Collectors.joining(", "))), DIH4JDALogger.Type.COMMANDS_QUEUED);
 		}
-		final List<Command> existingData = jda.retrieveCommands().complete();
+		final List<Command> existingData = dih4jda.getJDA().retrieveCommands().complete();
 		List<Command> allCommands = new ArrayList<>(existingData);
 		Set<SlashCommandData> slashData = new HashSet<>(getGlobalSlashCommandData());
 		Set<CommandData> commandData = new HashSet<>(getGlobalContextCommandData());
@@ -137,18 +158,18 @@ public class InteractionHandler extends ListenerAdapter {
 				DIH4JDALogger.info(String.format("Found %s unknown command(s). Attempting deletion.", allCommands.size()), DIH4JDALogger.Type.SMART_QUEUE);
 				for (Command command : allCommands) {
 					DIH4JDALogger.info(String.format("Deleting unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
-					jda.deleteCommandById(command.getId()).queue();
+					dih4jda.getJDA().deleteCommandById(command.getId()).queue();
 				}
 			}
 		}
 		commandData.addAll(slashData);
 		// queue all global commands
 		if (commandData.size() > 0) {
-			jda.updateCommands().addCommands(commandData).queue();
+			dih4jda.getJDA().updateCommands().addCommands(commandData).queue();
 			DIH4JDALogger.info(String.format("Queued %s global command(s): %s", commandData.size(), commandData.stream().map(CommandData::getName).collect(Collectors.joining(", "))), DIH4JDALogger.Type.COMMANDS_QUEUED);
 		}
 		// register command privileges
-		registerCommandPrivileges(jda);
+		registerCommandPrivileges(dih4jda.getJDA());
 	}
 
 	private boolean isCommandData(List<Command> allCommands, Command command, Object data) {
@@ -163,7 +184,9 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Registers all slash commands. Loops through all classes found in the commands package that is either a subclass of {@link GuildSlashCommand} or {@link GlobalSlashCommand}.
+	 * Finds all Slash Commands using {@link Reflections}.
+	 * Loops through all classes found in the commands package that is either a subclass of
+	 * {@link GuildSlashCommand} or {@link GlobalSlashCommand}.
 	 */
 	private void findSlashCommands() {
 		Reflections commands = new Reflections(dih4jda.getCommandsPackage());
@@ -172,7 +195,9 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Registers all context commands. Loops through all classes found in the commands package that is either a subclass of {@link GuildContextCommand} or {@link GlobalContextCommand}.
+	 * Finds all Context Commands using {@link Reflections}.
+	 * Loops through all classes found in the commands package that is either a subclass of
+	 * {@link GuildContextCommand} or {@link GlobalContextCommand}.
 	 */
 	private void findContextCommands() {
 		Reflections commands = new Reflections(dih4jda.getCommandsPackage());
@@ -180,7 +205,11 @@ public class InteractionHandler extends ListenerAdapter {
 		globalContexts.addAll(commands.getSubTypesOf(GlobalContextCommand.class));
 	}
 
-	//TODO-v1.4: Documentation
+	/**
+	 * Finds all Interaction Handlers and adds them to their corresponding index.
+	 *
+	 * @param command The {@link ExecutableCommand}.
+	 */
 	private void findInteractionsHandlers(ExecutableCommand command) {
 		command.getHandledButtonIds().forEach(s -> this.buttonIndex.put(s, (ButtonHandler) command));
 		command.getHandledSelectMenuIds().forEach(s -> this.selectMenuIndex.put(s, (SelectMenuHandler) command));
@@ -580,25 +609,41 @@ public class InteractionHandler extends ListenerAdapter {
 		CompletableFuture.runAsync(() -> this.handleMessageContextCommand(event));
 	}
 
-	//TODO-v1.4: Documentation
+	/**
+	 * Fired if Discord reports a {@link CommandAutoCompleteInteractionEvent}.
+	 *
+	 * @param event The {@link CommandAutoCompleteInteractionEvent} that was fired.
+	 */
 	@Override
 	public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
 		CompletableFuture.runAsync(() -> this.handleAutoComplete(event));
 	}
 
-	//TODO-v1.4: Documentation
+	/**
+	 * Fired if Discord reports a {@link ButtonInteractionEvent}.
+	 *
+	 * @param event The {@link ButtonInteractionEvent} that was fired.
+	 */
 	@Override
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
 		CompletableFuture.runAsync(() -> this.handleButton(event));
 	}
 
-	//TODO-v1.4: Documentation
+	/**
+	 * Fired if Discord reports a {@link SelectMenuInteractionEvent}.
+	 *
+	 * @param event The {@link SelectMenuInteractionEvent} that was fired.
+	 */
 	@Override
 	public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
 		CompletableFuture.runAsync(() -> this.handleSelectMenu(event));
 	}
 
-	//TODO-v1.4: Documentation
+	/**
+	 * Fired if Discord reports a {@link ModalInteractionEvent}.
+	 *
+	 * @param event The {@link ModalInteractionEvent} that was fired.
+	 */
 	@Override
 	public void onModalInteraction(@NotNull ModalInteractionEvent event) {
 		CompletableFuture.runAsync(() -> this.handleModal(event));
