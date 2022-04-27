@@ -4,8 +4,6 @@ import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.GlobalSlashCo
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-
 /**
  * Utility class for working with classes.
  */

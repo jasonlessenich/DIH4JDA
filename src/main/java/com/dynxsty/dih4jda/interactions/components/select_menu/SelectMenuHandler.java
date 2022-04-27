@@ -33,7 +33,7 @@ import java.util.List;
  *        }
  * 		event.reply("Successfully added " + String.join(", ", event.getValues())).queue();
  *    }
- * }</pre>
+ * }}</pre>
  */
 public interface SelectMenuHandler {
 	void handleSelectMenu(SelectMenuInteractionEvent event, List<String> values);

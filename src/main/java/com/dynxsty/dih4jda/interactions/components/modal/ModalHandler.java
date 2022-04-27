@@ -49,7 +49,7 @@ import java.util.List;
  *
  * 		event.reply("Thanks for your application!").queue();
  *    }
- * }</pre>
+ * }}</pre>
  */
 public interface ModalHandler {
 	void handleModal(ModalInteractionEvent event, List<ModalMapping> values);
