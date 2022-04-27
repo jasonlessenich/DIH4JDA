@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.interactions.autocomplete;
+package com.dynxsty.dih4jda.interactions.commands.slash_command.autocomplete;
 
 import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.ExecutableCommand;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
  * Interface that must be implemented for all classes that have {@link ExecutableCommand#enableAutoCompleteHandling()} set.
  *
  * <pre>{@code
- * public class PingCommand extends GuildSlashCommand implements SlashCommand, AutoCompleteHandler {
+ * public class PingCommand extends GuildSlashCommand implements AutoCompleteHandler {
  *
  *     public PingCommand(Guild guild) {
  *         setCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id"));

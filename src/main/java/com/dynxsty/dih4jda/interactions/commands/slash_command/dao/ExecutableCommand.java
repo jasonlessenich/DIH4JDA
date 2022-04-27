@@ -1,5 +1,7 @@
 package com.dynxsty.dih4jda.interactions.commands.slash_command.dao;
 
+import com.dynxsty.dih4jda.interactions.commands.slash_command.autocomplete.AutoCompleteHandler;
+import com.dynxsty.dih4jda.interactions.modal.ModalHandler;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.ArrayList;
@@ -31,11 +33,11 @@ public abstract class ExecutableCommand {
 
 	/**
 	 * Enables AutoComplete handling for all options of this Slash Command.
-	 * If enabled, this class must implement {@link com.dynxsty.dih4jda.interactions.autocomplete.AutoCompleteHandler} and
+	 * If enabled, this class must implement {@link AutoCompleteHandler} and
 	 * override its method.
 	 *
 	 * <pre>{@code
-	 * public class PingCommand extends GuildSlashCommand implements SlashCommand, AutoCompleteHandler {
+	 * public class PingCommand extends GuildSlashCommand implements AutoCompleteHandler {
 	 *
 	 *     public PingCommand(Guild guild) {
 	 *         setCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id"));
@@ -63,7 +65,7 @@ public abstract class ExecutableCommand {
 	 *
 	 * }}</pre>
 	 *
-	 * @see com.dynxsty.dih4jda.interactions.autocomplete.AutoCompleteHandler
+	 * @see AutoCompleteHandler
 	 * @see com.dynxsty.dih4jda.util.AutoCompleteUtils
 	 * @since v1.4
 	 */
@@ -87,7 +89,7 @@ public abstract class ExecutableCommand {
 	 * override its method.
 	 *
 	 * <pre>{@code
-	 * public class TestCommand extends GuildSlashCommand implements SlashCommand, ButtonHandler {
+	 * public class TestCommand extends GuildSlashCommand implements ButtonHandler {
 	 *
 	 *     public TestCommand(Guild guild) {
 	 *         setCommandData(Commands.slash("test", "test description"));
@@ -141,7 +143,7 @@ public abstract class ExecutableCommand {
 	 * override its method.
 	 *
 	 * <pre>{@code
-	 * public class TestCommand extends GuildSlashCommand implements SlashCommand, SelectMenuHandler {
+	 * public class TestCommand extends GuildSlashCommand implements SelectMenuHandler {
 	 *
 	 *     public TestCommand(Guild guild) {
 	 *         setCommandData(Commands.slash("test", "test description"));
@@ -188,11 +190,11 @@ public abstract class ExecutableCommand {
 
 	/**
 	 * Allows to set a set of identifiers (usually the first element in a modal id) that should be handled in this specific class.
-	 * If set, the class must implement {@link com.dynxsty.dih4jda.interactions.components.modal.ModalHandler} and
+	 * If set, the class must implement {@link ModalHandler} and
 	 * override its method.
 	 *
 	 * <pre>{@code
-	 * public class TestCommand extends GuildSlashCommand implements SlashCommand, ModalHandler {
+	 * public class TestCommand extends GuildSlashCommand implements ModalHandler {
 	 *
 	 *     public TestCommand(Guild guild) {
 	 *         setCommandData(Commands.slash("test", "test description"));
@@ -234,7 +236,7 @@ public abstract class ExecutableCommand {
 	 *
 	 * @param handledModalIds An array of Strings (the id's) that should be handled.
 	 * @see com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder#build
-	 * @see com.dynxsty.dih4jda.interactions.components.modal.ModalHandler
+	 * @see ModalHandler
 	 * @since v1.4
 	 */
 	public void handleModalIds(String... handledModalIds) {

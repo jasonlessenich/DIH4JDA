@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
  * This is best used with the {@link com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder}.
  *
  * <pre>{@code
- * public class TestCommand extends GuildSlashCommand implements SlashCommand, ButtonHandler {
+ * public class TestCommand extends GuildSlashCommand implements ButtonHandler {
  *
  *     public TestCommand(Guild guild) {
  *         setCommandData(Commands.slash("test", "test description"));

@@ -1,7 +1,7 @@
 package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
-import com.dynxsty.dih4jda.interactions.autocomplete.AutoCompleteHandler;
+import com.dynxsty.dih4jda.interactions.commands.slash_command.autocomplete.AutoCompleteHandler;
 import com.dynxsty.dih4jda.interactions.commands.context_command.MessageContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.context_command.MessageContextInteraction;
 import com.dynxsty.dih4jda.interactions.commands.context_command.UserContextCommand;
@@ -13,7 +13,7 @@ import com.dynxsty.dih4jda.interactions.commands.slash_command.SlashCommandInter
 import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.*;
 import com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder;
 import com.dynxsty.dih4jda.interactions.components.button.ButtonHandler;
-import com.dynxsty.dih4jda.interactions.components.modal.ModalHandler;
+import com.dynxsty.dih4jda.interactions.modal.ModalHandler;
 import com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenuHandler;
 import com.dynxsty.dih4jda.util.Checks;
 import com.dynxsty.dih4jda.util.ClassUtils;

@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.interactions.components.modal;
+package com.dynxsty.dih4jda.interactions.modal;
 
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
@@ -11,7 +11,7 @@ import java.util.List;
  * This is best used with the {@link com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder}.
  *
  * <pre>{@code
- * public class TestCommand extends GuildSlashCommand implements SlashCommand, ModalHandler {
+ * public class TestCommand extends GuildSlashCommand implements ModalHandler {
  *
  *     public TestCommand(Guild guild) {
  *         setCommandData(Commands.slash("test", "test description"));
