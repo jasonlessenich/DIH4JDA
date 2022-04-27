@@ -1,5 +1,7 @@
 package com.dynxsty.dih4jda.interactions.commands.slash_command.dao;
 
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -239,4 +241,25 @@ public abstract class ExecutableCommand {
 	public void handleModalIds(String... handledModalIds) {
 		this.handledModalIds.addAll(Arrays.asList(handledModalIds));
 	}
+
+	/**
+	 * Method that must be overridden for all Slash- & Subcommands.
+	 *
+	 * <pre>{@code
+	 * public class PingCommand extends GuildSlashCommand {
+	 *
+	 *     public PingCommand(Guild guild) {
+	 *         setCommandData(Commands.slash("ping", "Ping!"));
+	 *     }
+	 *
+	 *    @Override
+	 *    public void handleSlashCommand(SlashCommandInteractionEvent event) {
+	 * 		event.reply("Pong!").queue();
+	 *    }
+	 *
+	 * }
+	 * }</pre>
+	 */
+
+	public abstract void handleSlashCommand(SlashCommandInteractionEvent event);
 }

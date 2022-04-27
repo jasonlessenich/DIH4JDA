@@ -5,7 +5,10 @@ import org.slf4j.event.Level;
 
 import java.util.Set;
 
-//TODO-v1.4: Documentation
+/**
+ * This handler's own Logging System.
+ * <br> To disable certain {@link DIH4JDALogger.Type}s, simple use {@link DIH4JDABuilder#disableLogging(Type...)}.
+ */
 public class DIH4JDALogger {
 
 	public enum Type {

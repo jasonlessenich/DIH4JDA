@@ -1,5 +1,6 @@
 package com.dynxsty.dih4jda.interactions.commands.slash_command;
 
+import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.ExecutableCommand;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
 /**
@@ -7,21 +8,21 @@ import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
  */
 public class SlashCommandInteraction {
 
-	private SlashCommand handler;
+	private ExecutableCommand handler;
 	private Class<?> baseClass;
 	private CommandPrivilege[] privileges;
 
-	public SlashCommandInteraction(SlashCommand handler, Class<?> baseClass, CommandPrivilege... privileges) {
+	public SlashCommandInteraction(ExecutableCommand handler, Class<?> baseClass, CommandPrivilege... privileges) {
 		this.handler = handler;
 		this.privileges = privileges;
 		this.baseClass = baseClass;
 	}
 
-	public SlashCommand getHandler() {
+	public ExecutableCommand getHandler() {
 		return handler;
 	}
 
-	public void setHandler(SlashCommand handler) {
+	public void setHandler(ExecutableCommand handler) {
 		this.handler = handler;
 	}
 

@@ -7,16 +7,17 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import java.util.List;
 
 public abstract class BaseContextCommand {
+	private CommandData commandData;
+	private List<String> handledButtonIds;
+	private List<String> handledSelectMenuIds;
+	private List<String> handledModalIds;
+
 	protected BaseContextCommand() {
 	}
 
-	private CommandData commandData;
-
-	private List<String> handledButtonIds;
-
-	private List<String> handledSelectMenuIds;
-
-	private List<String> handledModalIds;
+	public CommandData getCommandData() {
+		return commandData;
+	}
 
 	public void setCommandData(CommandData commandData) {
 		if (commandData.getType() == Command.Type.MESSAGE || commandData.getType() == Command.Type.USER) {
@@ -24,10 +25,6 @@ public abstract class BaseContextCommand {
 		} else {
 			DIH4JDALogger.error(String.format("Invalid Command Type \"%s\" for Context Command! This command will be ignored.", commandData.getType()));
 		}
-	}
-
-	public CommandData getCommandData() {
-		return commandData;
 	}
 
 	public List<String> getHandledButtonIds() {

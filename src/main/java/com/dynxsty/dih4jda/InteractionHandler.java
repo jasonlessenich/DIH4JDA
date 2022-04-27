@@ -9,7 +9,6 @@ import com.dynxsty.dih4jda.interactions.commands.context_command.UserContextInte
 import com.dynxsty.dih4jda.interactions.commands.context_command.dao.BaseContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.context_command.dao.GlobalContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.context_command.dao.GuildContextCommand;
-import com.dynxsty.dih4jda.interactions.commands.slash_command.SlashCommand;
 import com.dynxsty.dih4jda.interactions.commands.slash_command.SlashCommandInteraction;
 import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.*;
 import com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder;
@@ -44,22 +43,37 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-//TODO-v1.4: Documentation
+/**
+ * The Handler class, that finds, registers and handles all Commands and other Interactions.
+ *
+ * @see DIH4JDABuilder#disableAutomaticCommandRegistration()
+ * @see DIH4JDA#registerInteractions()
+ */
 public class InteractionHandler extends ListenerAdapter {
 
-	//TODO-v1.4: Documentation
+	/**
+	 * The main {@link DIH4JDA} instance.
+	 */
 	private final DIH4JDA dih4jda;
 
-	//TODO-v1.4: Documentation
+	/**
+	 * An Index ({@link Map}) of all Slash Command Interactions.
+	 */
 	private final Map<String, SlashCommandInteraction> slashCommandIndex;
 
-	//TODO-v1.4: Documentation
+	/**
+	 * An Index ({@link Map}) of all {@link MessageContextCommand}s.
+	 */
 	private final Map<String, MessageContextInteraction> messageContextIndex;
 
-	//TODO-v1.4: Documentation
+	/**
+	 * An Index ({@link Map}) of all {@link UserContextCommand}s.
+	 */
 	private final Map<String, UserContextInteraction> userContextIndex;
 
-	//TODO-v1.4: Documentation
+	/**
+	 * An Index ({@link Map}) of all {@link AutoCompleteHandler}s.
+	 */
 	private final Map<String, AutoCompleteHandler> autoCompleteIndex;
 
 	//TODO-v1.4: Documentation
@@ -266,7 +280,7 @@ public class InteractionHandler extends ListenerAdapter {
 			commandData.addSubcommands(this.getSubcommandData(command, command.getSubcommands(), null, guild));
 		}
 		if (command.getSubcommandGroups() == null && command.getSubcommands() == null) {
-			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), new SlashCommandInteraction((SlashCommand) command, commandClass, command.getCommandPrivileges()));
+			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), new SlashCommandInteraction(command, commandClass, command.getCommandPrivileges()));
 			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s", command.getCommandData().getName()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 			if (command.shouldHandleAutoComplete()) {
 				if (Checks.checkImplementation(command.getClass(), AutoCompleteHandler.class)) {
@@ -330,8 +344,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} else {
 				commandPath = CommandUtils.buildCommandPath(command.getCommandData().getName(), subGroupName, instance.getSubcommandData().getName());
 			}
-			if (!Checks.checkImplementation(sub, SlashCommand.class)) continue;
-			slashCommandIndex.put(commandPath, new SlashCommandInteraction((SlashCommand) instance, sub, command.getCommandPrivileges()));
+			slashCommandIndex.put(commandPath, new SlashCommandInteraction(instance, sub, command.getCommandPrivileges()));
 			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s", commandPath), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 			if (instance.shouldHandleAutoComplete()) {
 				if (Checks.checkImplementation(instance.getClass(), AutoCompleteHandler.class)) {

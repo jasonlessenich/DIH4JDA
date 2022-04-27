@@ -7,13 +7,12 @@ import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
  * A SlashCommand object with getters, setters, a constructor and a toString method.
  */
 public abstract class BaseSlashCommand extends ExecutableCommand {
-	protected BaseSlashCommand() {
-	}
-
 	private SlashCommandData commandData;
 	private Class<? extends Subcommand>[] subcommandClasses;
 	private Class<? extends SubcommandGroup>[] subcommandGroupClasses;
 	private CommandPrivilege[] commandPrivileges;
+	protected BaseSlashCommand() {
+	}
 
 	public SlashCommandData getCommandData() {
 		return commandData;
