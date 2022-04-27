@@ -469,7 +469,7 @@ public class InteractionHandler extends ListenerAdapter {
 				command.getHandler().handleSlashCommand(event);
 			}
 		} catch (Throwable e) {
-			DIH4JDALogger.warn("An Exception was raised while handling a Slash Command: " + e.getMessage(), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			DIH4JDALogger.error(String.format("A %s was raised while handling a Slash Command: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
 		}
 	}
 
@@ -488,7 +488,7 @@ public class InteractionHandler extends ListenerAdapter {
 				context.getHandler().handleUserContextCommand(event);
 			}
 		} catch (Throwable e) {
-			DIH4JDALogger.warn("An Exception was raised while handling a User Context Command: " + e.getMessage(), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			DIH4JDALogger.error(String.format("A %s was raised while handling a User Context Command: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
 		}
 	}
 
@@ -507,7 +507,7 @@ public class InteractionHandler extends ListenerAdapter {
 				context.getHandler().handleMessageContextCommand(event);
 			}
 		} catch (Throwable e) {
-			DIH4JDALogger.warn("An Exception was raised while handling a Message Context Command: " + e.getMessage(), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			DIH4JDALogger.error(String.format("A %s was raised while handling a Message Context Command: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
 		}
 	}
 
@@ -524,7 +524,7 @@ public class InteractionHandler extends ListenerAdapter {
 				component.handleAutoComplete(event, event.getFocusedOption());
 			}
 		} catch (Throwable e) {
-			DIH4JDALogger.warn("An Exception was raised while handling an AutoComplete Interaction: " + e.getMessage(), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			DIH4JDALogger.error(String.format("A %s was raised while handling an AutoComplete Interaction: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
 		}
 	}
 
@@ -543,7 +543,7 @@ public class InteractionHandler extends ListenerAdapter {
 				component.handleButton(event, event.getButton());
 			}
 		} catch (Throwable e) {
-			DIH4JDALogger.warn("An Exception was raised while handling a Button Interaction: " + e.getMessage(), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			DIH4JDALogger.error(String.format("A %s was raised while handling a Button Interaction: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
 		}
 	}
 
@@ -562,7 +562,7 @@ public class InteractionHandler extends ListenerAdapter {
 				component.handleSelectMenu(event, event.getValues());
 			}
 		} catch (Throwable e) {
-			DIH4JDALogger.warn("An Exception was raised while handling a Select Menu Interaction: " + e.getMessage(), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			DIH4JDALogger.error(String.format("A %s was raised while handling a Select Menu Interaction: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
 		}
 	}
 
@@ -581,7 +581,7 @@ public class InteractionHandler extends ListenerAdapter {
 				modal.handleModal(event, event.getValues());
 			}
 		} catch (Throwable e) {
-			DIH4JDALogger.warn("An Exception was raised while handling a Modal Interaction: " + e.getMessage(), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			DIH4JDALogger.error(String.format("A %s was raised while handling a Modal Interaction: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
 		}
 	}
 

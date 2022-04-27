@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
  * public class PingCommand extends GuildSlashCommand implements AutoCompleteHandler {
  *
  *     public PingCommand(Guild guild) {
- *         setCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id"));
+ *         setCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id", true, true));
  *         enableAutoCompleteHandling();
  *     }
  *

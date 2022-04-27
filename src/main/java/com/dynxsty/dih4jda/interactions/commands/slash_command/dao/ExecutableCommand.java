@@ -264,5 +264,5 @@ public abstract class ExecutableCommand {
 	 * @since v1.4
 	 */
 
-	public abstract void handleSlashCommand(SlashCommandInteractionEvent event);
+	public void handleSlashCommand(SlashCommandInteractionEvent event) {}
 }
