@@ -25,7 +25,9 @@ public abstract class ExecutableCommand {
 	}
 
 	/**
-	 * Enables AutoComplete handling for all
+	 * Enables AutoComplete handling for all options of this Slash Command.
+	 * If enabled, this class must implement {@link com.dynxsty.dih4jda.interactions.autocomplete.AutoCompleteHandler} and
+	 * override its method.
 	 */
 	public void enableAutoCompleteHandling() {
 		handleAutoComplete = true;
@@ -42,8 +44,8 @@ public abstract class ExecutableCommand {
 
 	/**
 	 * Allows to set a set of identifiers (usually the first element in a button id) that should be handled in this specific class.
-	 * If set, the class must extend {@link com.dynxsty.dih4jda.interactions.components.button.ButtonHandler} and
-	 * implement its method.
+	 * If set, the class must implement {@link com.dynxsty.dih4jda.interactions.components.button.ButtonHandler} and
+	 * override its method.
 	 *
 	 * <pre>{@code
 	 * public class TestCommand extends GuildSlashCommand implements SlashCommand, ButtonHandler {
@@ -93,8 +95,8 @@ public abstract class ExecutableCommand {
 
 	/**
 	 * Allows to set a set of identifiers (usually the first element in a select menu id) that should be handled in this specific class.
-	 * If set, the class must extend {@link com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenuHandler} and
-	 * implement its method.
+	 * If set, the class must implement {@link com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenuHandler} and
+	 * override its method.
 	 *
 	 * <pre>{@code
 	 * public class TestCommand extends GuildSlashCommand implements SlashCommand, SelectMenuHandler {
@@ -141,8 +143,8 @@ public abstract class ExecutableCommand {
 
 	/**
 	 * Allows to set a set of identifiers (usually the first element in a modal id) that should be handled in this specific class.
-	 * If set, the class must extend {@link com.dynxsty.dih4jda.interactions.components.modal.ModalHandler} and
-	 * implement its method.
+	 * If set, the class must implement {@link com.dynxsty.dih4jda.interactions.components.modal.ModalHandler} and
+	 * override its method.
 	 *
 	 * <pre>{@code
 	 * public class TestCommand extends GuildSlashCommand implements SlashCommand, ModalHandler {
