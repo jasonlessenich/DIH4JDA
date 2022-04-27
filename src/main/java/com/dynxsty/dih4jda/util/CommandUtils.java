@@ -89,7 +89,9 @@ public class CommandUtils {
 	 * @return The recreated {@link CommandData}.
 	 */
 	public static CommandData toCommandData(Command command) {
-		if (command.getType() != Command.Type.MESSAGE && command.getType() != Command.Type.USER) throw new IllegalArgumentException("Command is not of Type CONTEXT");
+		if (command.getType() != Command.Type.MESSAGE && command.getType() != Command.Type.USER) {
+			throw new IllegalArgumentException("Command is not of Type CONTEXT");
+		}
 		return Commands.context(command.getType(), command.getName())
 				.setDefaultEnabled(command.isDefaultEnabled());
 	}

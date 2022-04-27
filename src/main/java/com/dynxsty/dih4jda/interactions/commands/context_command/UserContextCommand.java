@@ -8,14 +8,14 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
  * <pre>{@code
  * public class PingContextMenu extends GuildContextCommand implements UserContextCommand {
  *
- *     public PingContextMenu() {
+ *    public PingContextMenu() {
  * 		this.setCommandData(Commands.user("Ping"));
- * 	}
+ *    }
  *
- * 	@Override
- * 	public void handleUserContextInteraction(UserContextInteractionEvent event) {
+ *    @Override
+ *    public void handleUserContextInteraction(UserContextInteractionEvent event) {
  * 		event.reply("Pong!").queue();
- * 	}
+ *    }
  * }}
  */
 public interface UserContextCommand {

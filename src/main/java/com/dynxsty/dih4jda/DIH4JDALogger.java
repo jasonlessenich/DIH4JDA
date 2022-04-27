@@ -11,37 +11,27 @@ import java.util.Set;
  */
 public class DIH4JDALogger {
 
-	public enum Type {
-		INFO,
-		WARN,
-		ERROR,
-		DEBUG,
-		TRACE,
-		COMMANDS_QUEUED,
-		SLASH_COMMAND_REGISTERED,
-		SLASH_COMMAND_SKIPPED,
-		CONTEXT_COMMAND_REGISTERED,
-		CONTEXT_COMMAND_SKIPPED,
-		COMMAND_PRIVILEGE_REGISTERED,
-		SMART_QUEUE,
-		HANDLE_AUTOCOMPLETE,
-		BUTTON_NOT_FOUND,
-		SELECT_MENU_NOT_FOUND,
-		MODAL_NOT_FOUND,
-		COMMAND_EXCEPTION
-	}
-
 	private static final org.slf4j.Logger log = JDALogger.getLog(DIH4JDALogger.class);
-
 	protected static Set<Type> blockedLogTypes;
+
 	private static void log(String msg, Type type, Level level) {
 		if (blockedLogTypes.contains(type)) return;
 		switch (level) {
-			case INFO: log.info(msg); break;
-			case WARN: log.warn(msg); break;
-			case ERROR: log.error(msg); break;
-			case DEBUG: log.debug(msg); break;
-			case TRACE: log.trace(msg); break;
+			case INFO:
+				log.info(msg);
+				break;
+			case WARN:
+				log.warn(msg);
+				break;
+			case ERROR:
+				log.error(msg);
+				break;
+			case DEBUG:
+				log.debug(msg);
+				break;
+			case TRACE:
+				log.trace(msg);
+				break;
 		}
 	}
 
@@ -83,5 +73,25 @@ public class DIH4JDALogger {
 
 	public static void trace(String msg) {
 		log(msg, Type.TRACE, Level.TRACE);
+	}
+
+	public enum Type {
+		INFO,
+		WARN,
+		ERROR,
+		DEBUG,
+		TRACE,
+		COMMANDS_QUEUED,
+		SLASH_COMMAND_REGISTERED,
+		SLASH_COMMAND_SKIPPED,
+		CONTEXT_COMMAND_REGISTERED,
+		CONTEXT_COMMAND_SKIPPED,
+		COMMAND_PRIVILEGE_REGISTERED,
+		SMART_QUEUE,
+		HANDLE_AUTOCOMPLETE,
+		BUTTON_NOT_FOUND,
+		SELECT_MENU_NOT_FOUND,
+		MODAL_NOT_FOUND,
+		COMMAND_EXCEPTION
 	}
 }

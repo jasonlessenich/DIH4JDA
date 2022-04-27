@@ -11,6 +11,7 @@ public abstract class BaseSlashCommand extends ExecutableCommand {
 	private Class<? extends Subcommand>[] subcommandClasses;
 	private Class<? extends SubcommandGroup>[] subcommandGroupClasses;
 	private CommandPrivilege[] commandPrivileges;
+
 	protected BaseSlashCommand() {
 	}
 

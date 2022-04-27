@@ -34,6 +34,8 @@ import java.util.List;
  * 		event.reply("Successfully added " + String.join(", ", event.getValues())).queue();
  *    }
  * }}</pre>
+ *
+ * @since v1.4
  */
 public interface SelectMenuHandler {
 	void handleSelectMenu(SelectMenuInteractionEvent event, List<String> values);

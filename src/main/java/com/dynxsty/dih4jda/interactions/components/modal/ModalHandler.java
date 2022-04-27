@@ -50,6 +50,8 @@ import java.util.List;
  * 		event.reply("Thanks for your application!").queue();
  *    }
  * }}</pre>
+ *
+ * @since v1.4
  */
 public interface ModalHandler {
 	void handleModal(ModalInteractionEvent event, List<ModalMapping> values);

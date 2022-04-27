@@ -11,95 +11,98 @@ import javax.annotation.Nonnull;
  * Builder-System used to build {@link DIH4JDA}.
  */
 public class DIH4JDABuilder {
-    private long ownerId;
-    private String commandsPackage;
-    private final JDA jda;
-    private DIH4JDALogger.Type[] blockedLogTypes;
-    private boolean registerOnStartup = true;
-    private boolean smartQueuing = true;
+	private final JDA jda;
+	private long ownerId;
+	private String commandsPackage;
+	private DIH4JDALogger.Type[] blockedLogTypes;
+	private boolean registerOnStartup = true;
+	private boolean smartQueuing = true;
 
-    private DIH4JDABuilder(@Nonnull JDA jda) {
-        this.jda = jda;
-    }
+	private DIH4JDABuilder(@Nonnull JDA jda) {
+		this.jda = jda;
+	}
 
-    /**
-     * Sets the {@link JDA} instance the handler will be used for.
-     * @param instance The {@link JDA} instance.
-     */
-    public static DIH4JDABuilder setJDA(JDA instance) {
-        return new DIH4JDABuilder(instance);
-    }
+	/**
+	 * Sets the {@link JDA} instance the handler will be used for.
+	 *
+	 * @param instance The {@link JDA} instance.
+	 */
+	public static DIH4JDABuilder setJDA(JDA instance) {
+		return new DIH4JDABuilder(instance);
+	}
 
-    /**
-     * Sets the owner of the Bot. This is used for admin-only commands which can only be executed by the specified owner.
-     *
-     * If this is not set admin-only commands will not work.
-     * @param id The ID of the owner.
-     */
-    @Nonnull
-    public DIH4JDABuilder setOwnerId(long id) {
-        ownerId = id;
-        return this;
-    }
+	/**
+	 * Sets the owner of the Bot. This is used for admin-only commands which can only be executed by the specified owner.
+	 * <p>
+	 * If this is not set admin-only commands will not work.
+	 *
+	 * @param id The ID of the owner.
+	 */
+	@Nonnull
+	public DIH4JDABuilder setOwnerId(long id) {
+		ownerId = id;
+		return this;
+	}
 
-    /**
-     * Sets the package that houses all Command classes. DIH4JDA then uses Reflection to "scan" the package for these classes.
-     * @param pack The package's name.
-     */
-    @Nonnull
-    public DIH4JDABuilder setCommandsPackage(@Nonnull String pack) {
-        commandsPackage = pack;
-        return this;
-    }
+	/**
+	 * Sets the package that houses all Command classes. DIH4JDA then uses Reflection to "scan" the package for these classes.
+	 *
+	 * @param pack The package's name.
+	 */
+	@Nonnull
+	public DIH4JDABuilder setCommandsPackage(@Nonnull String pack) {
+		commandsPackage = pack;
+		return this;
+	}
 
-    /**
-     * Sets the types of logging that should be disabled.
-     *
-     * @param types All {@link DIH4JDALogger.Type}'s that should be disabled.
-     */
-    @Nonnull
-    public DIH4JDABuilder disableLogging(DIH4JDALogger.Type... types) {
-        if (types == null || types.length < 1) {
-            blockedLogTypes = DIH4JDALogger.Type.values();
-        } else {
-            blockedLogTypes = types;
-        }
-        return this;
-    }
+	/**
+	 * Sets the types of logging that should be disabled.
+	 *
+	 * @param types All {@link DIH4JDALogger.Type}'s that should be disabled.
+	 */
+	@Nonnull
+	public DIH4JDABuilder disableLogging(DIH4JDALogger.Type... types) {
+		if (types == null || types.length < 1) {
+			blockedLogTypes = DIH4JDALogger.Type.values();
+		} else {
+			blockedLogTypes = types;
+		}
+		return this;
+	}
 
-    /**
-     * Whether DIH4JDA should automatically register all interactions on Startup.
-     * A manual registration of all interactions can be executed using {@link DIH4JDA#registerInteractions()}.
-     *
-     */
-    @Nonnull
-    public DIH4JDABuilder disableAutomaticCommandRegistration() {
-        registerOnStartup = false;
-        return this;
-    }
+	/**
+	 * Whether DIH4JDA should automatically register all interactions on Startup.
+	 * A manual registration of all interactions can be executed using {@link DIH4JDA#registerInteractions()}.
+	 */
+	@Nonnull
+	public DIH4JDABuilder disableAutomaticCommandRegistration() {
+		registerOnStartup = false;
+		return this;
+	}
 
-    /**
-     * <b>NOT RECOMMENDED</b> (unless there are some bugs) <br>
-     * This will disable the Smart Queueing functionality.
-     * If Smart Queueing is disabled Global Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call,
-     * thus, making Global Commands unusable for about an hour, until they're registered again. <br>
-     * Smart Queuing also includes the automatic removal of unknown/unused Global Interactions.
-     */
-    @Nonnull
-    public DIH4JDABuilder disableSmartQueuing() {
-        smartQueuing = false;
-        return this;
-    }
+	/**
+	 * <b>NOT RECOMMENDED</b> (unless there are some bugs) <br>
+	 * This will disable the Smart Queueing functionality.
+	 * If Smart Queueing is disabled Global Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call,
+	 * thus, making Global Commands unusable for about an hour, until they're registered again. <br>
+	 * Smart Queuing also includes the automatic removal of unknown/unused Global Interactions.
+	 */
+	@Nonnull
+	public DIH4JDABuilder disableSmartQueuing() {
+		smartQueuing = false;
+		return this;
+	}
 
-    /**
-     * Returns a {@link DIH4JDA} instance that has been validated.
-     * @return the built, usable {@link DIH4JDA}
-     */
-    public DIH4JDA build() throws DIH4JDAException {
-        if (jda == null) throw new IllegalStateException("JDA instance may not be empty.");
-        if (ClasspathHelper.forPackage(commandsPackage).isEmpty()) {
-            throw new InvalidPackageException("Package " + commandsPackage + " does not exist.");
-        }
-        return new DIH4JDA(jda, commandsPackage, ownerId, this.registerOnStartup, smartQueuing, blockedLogTypes);
-    }
+	/**
+	 * Returns a {@link DIH4JDA} instance that has been validated.
+	 *
+	 * @return the built, usable {@link DIH4JDA}
+	 */
+	public DIH4JDA build() throws DIH4JDAException {
+		if (jda == null) throw new IllegalStateException("JDA instance may not be empty.");
+		if (ClasspathHelper.forPackage(commandsPackage).isEmpty()) {
+			throw new InvalidPackageException("Package " + commandsPackage + " does not exist.");
+		}
+		return new DIH4JDA(jda, commandsPackage, ownerId, this.registerOnStartup, smartQueuing, blockedLogTypes);
+	}
 }

@@ -8,14 +8,14 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
  * <pre>{@code
  * public class PingContextMenu extends GuildContextCommand implements MessageContextCommand {
  *
- *     public PingContextMenu() {
+ *    public PingContextMenu() {
  * 		this.setCommandData(Commands.message("Ping"));
- * 	}
+ *    }
  *
- * 	@Override
- * 	public void handleMessageContextInteraction(MessageContextInteractionEvent event) {
+ *    @Override
+ *    public void handleMessageContextInteraction(MessageContextInteractionEvent event) {
  * 		event.reply("Pong!").queue();
- * 	}
+ *    }
  * }}
  */
 public interface MessageContextCommand {

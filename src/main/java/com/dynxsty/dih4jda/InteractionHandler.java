@@ -59,42 +59,49 @@ public class InteractionHandler extends ListenerAdapter {
 
 	/**
 	 * An Index of all Slash Command Interactions.
+	 *
 	 * @see InteractionHandler#findSlashCommands()
 	 */
 	private final Map<String, SlashCommandInteraction> slashCommandIndex;
 
 	/**
 	 * An Index of all {@link MessageContextCommand}s.
+	 *
 	 * @see InteractionHandler#findContextCommands()
 	 */
 	private final Map<String, MessageContextInteraction> messageContextIndex;
 
 	/**
 	 * An Index of all {@link UserContextCommand}s.
+	 *
 	 * @see InteractionHandler#findContextCommands()
 	 */
 	private final Map<String, UserContextInteraction> userContextIndex;
 
 	/**
 	 * An Index of all {@link AutoCompleteHandler}s.
+	 *
 	 * @see InteractionHandler#findSlashCommands()
 	 */
 	private final Map<String, AutoCompleteHandler> autoCompleteIndex;
 
 	/**
 	 * An Index of all {@link ButtonHandler}s.
+	 *
 	 * @see InteractionHandler#findInteractionsHandlers(ExecutableCommand)
 	 */
 	private final Map<String, ButtonHandler> buttonIndex;
 
 	/**
 	 * An Index of all {@link SelectMenuHandler}s.
+	 *
 	 * @see InteractionHandler#findInteractionsHandlers(ExecutableCommand)
 	 */
 	private final Map<String, SelectMenuHandler> selectMenuIndex;
 
 	/**
 	 * An Index of all {@link ModalHandler}s.
+	 *
 	 * @see InteractionHandler#findInteractionsHandlers(ExecutableCommand)
 	 */
 	private final Map<String, ModalHandler> modalIndex;
@@ -409,7 +416,6 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * Gets all Global Context commands registered in {@link InteractionHandler#findContextCommands()} and
 	 * returns their {@link CommandData} as a List.
-	 *
 	 */
 	private Set<CommandData> getGlobalContextCommandData() throws ReflectiveOperationException {
 		Set<CommandData> commands = new HashSet<>();

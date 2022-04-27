@@ -35,6 +35,8 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
  * 		event.reply(content).queue();
  *    }
  * }}</pre>
+ *
+ * @since v1.4
  */
 public interface ButtonHandler {
 	void handleButton(ButtonInteractionEvent event, net.dv8tion.jda.api.interactions.components.buttons.Button button);

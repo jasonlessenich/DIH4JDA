@@ -37,8 +37,8 @@ import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
  * }
  * }</pre>
  *
- * @since v1.4
  * @see com.dynxsty.dih4jda.util.AutoCompleteUtils
+ * @since v1.4
  */
 public interface AutoCompleteHandler {
 	void handleAutoComplete(CommandAutoCompleteInteractionEvent event, AutoCompleteQuery target);

@@ -7,6 +7,8 @@ import java.util.List;
 
 /**
  * Utility class that contains some useful methods regarding the AutoComplete system.
+ *
+ * @since v1.4
  */
 public class AutoCompleteUtils {
 
@@ -23,6 +25,7 @@ public class AutoCompleteUtils {
 	 * @param event   The {@link CommandAutoCompleteInteractionEvent} that was fired.
 	 * @param choices A {@link List} of {@link Command.Choice}s.
 	 * @return The filtered {@link List} of {@link Command.Choice}s.
+	 * @since v1.4
 	 */
 	public static List<Command.Choice> filterChoices(CommandAutoCompleteInteractionEvent event, List<Command.Choice> choices) {
 		return AutoCompleteUtils.filterChoices(event.getFocusedOption().getValue().toLowerCase(), choices);
@@ -38,6 +41,7 @@ public class AutoCompleteUtils {
 	 * @param filter  The filter.
 	 * @param choices A {@link List} of {@link Command.Choice}s.
 	 * @return The filtered {@link List} of {@link Command.Choice}s.
+	 * @since v1.4
 	 */
 	public static List<Command.Choice> filterChoices(String filter, List<Command.Choice> choices) {
 		choices.removeIf(choice -> !choice.getName().toLowerCase().contains(filter.toLowerCase()));

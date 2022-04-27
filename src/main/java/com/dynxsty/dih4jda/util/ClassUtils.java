@@ -6,12 +6,22 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Utility class for working with classes.
+ *
+ * @since v1.4
  */
 public class ClassUtils {
 
 	private ClassUtils() {
 	}
 
+	/**
+	 * Checks if the given base class implements a certain class.
+	 *
+	 * @param base           The base class.
+	 * @param implementation The implementation that should be checked.
+	 * @return Whether the base class is implementing the given class.
+	 * @since v1.4
+	 */
 	public static boolean doesImplement(Class<?> base, Class<?> implementation) {
 		return implementation.isAssignableFrom(base);
 	}

@@ -8,6 +8,8 @@ import java.util.List;
 
 /**
  * Abstract class that represents an executable Slash Command (excluding Subcommand Groups).
+ *
+ * @since v1.4
  */
 public abstract class ExecutableCommand {
 
@@ -20,8 +22,8 @@ public abstract class ExecutableCommand {
 	}
 
 	/**
-	 * @since v1.4
 	 * @return Whether the class should handle all options that have the AutoComplete functionality activated.
+	 * @since v1.4
 	 */
 	public boolean shouldHandleAutoComplete() {
 		return handleAutoComplete;
@@ -61,9 +63,9 @@ public abstract class ExecutableCommand {
 	 *
 	 * }}</pre>
 	 *
-	 * @since v1.4
 	 * @see com.dynxsty.dih4jda.interactions.autocomplete.AutoCompleteHandler
 	 * @see com.dynxsty.dih4jda.util.AutoCompleteUtils
+	 * @since v1.4
 	 */
 	public void enableAutoCompleteHandling() {
 		handleAutoComplete = true;
@@ -72,8 +74,8 @@ public abstract class ExecutableCommand {
 	/**
 	 * Gets all Button identifiers that should be handled.
 	 *
-	 * @since v1.4
 	 * @return All identifiers as a {@link List}.
+	 * @since v1.4
 	 */
 	public List<String> getHandledButtonIds() {
 		return handledButtonIds;
@@ -114,11 +116,10 @@ public abstract class ExecutableCommand {
 	 * }}</pre>
 	 * <p>
 	 *
-	 * @since v1.4
+	 * @param handledButtonIds An array of Strings (the id's) that should be handled.
 	 * @see com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder#build
 	 * @see com.dynxsty.dih4jda.interactions.components.button.ButtonHandler
-	 *
-	 * @param handledButtonIds An array of Strings (the id's) that should be handled.
+	 * @since v1.4
 	 */
 	public void handleButtonIds(String... handledButtonIds) {
 		this.handledButtonIds.addAll(Arrays.asList(handledButtonIds));
@@ -127,8 +128,8 @@ public abstract class ExecutableCommand {
 	/**
 	 * Gets all SelectMenu identifiers that should be handled.
 	 *
-	 * @since v1.4
 	 * @return All identifiers as a {@link List}.
+	 * @since v1.4
 	 */
 	public List<String> getHandledSelectMenuIds() {
 		return handledSelectMenuIds;
@@ -166,11 +167,10 @@ public abstract class ExecutableCommand {
 	 *    }
 	 * }}</pre>
 	 *
-	 * @since v1.4
+	 * @param handledSelectMenuIds An array of Strings (the id's) that should be handled.
 	 * @see com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder#build
 	 * @see com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenuHandler
-	 *
-	 * @param handledSelectMenuIds An array of Strings (the id's) that should be handled.
+	 * @since v1.4
 	 */
 	public void handleSelectMenuIds(String... handledSelectMenuIds) {
 		this.handledSelectMenuIds.addAll(Arrays.asList(handledSelectMenuIds));
@@ -179,8 +179,8 @@ public abstract class ExecutableCommand {
 	/**
 	 * Gets all Modal identifiers that should be handled.
 	 *
-	 * @since v1.4
 	 * @return All identifiers as a {@link List}.
+	 * @since v1.4
 	 */
 	public List<String> getHandledModalIds() {
 		return handledModalIds;
@@ -232,11 +232,10 @@ public abstract class ExecutableCommand {
 	 *    }
 	 * }}</pre>
 	 *
-	 * @since v1.4
+	 * @param handledModalIds An array of Strings (the id's) that should be handled.
 	 * @see com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder#build
 	 * @see com.dynxsty.dih4jda.interactions.components.modal.ModalHandler
-	 *
-	 * @param handledModalIds An array of Strings (the id's) that should be handled.
+	 * @since v1.4
 	 */
 	public void handleModalIds(String... handledModalIds) {
 		this.handledModalIds.addAll(Arrays.asList(handledModalIds));
@@ -259,6 +258,8 @@ public abstract class ExecutableCommand {
 	 *
 	 * }
 	 * }</pre>
+	 *
+	 * @since v1.4
 	 */
 
 	public abstract void handleSlashCommand(SlashCommandInteractionEvent event);
