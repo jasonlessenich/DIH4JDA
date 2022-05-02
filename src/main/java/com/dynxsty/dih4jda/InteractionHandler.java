@@ -19,6 +19,7 @@ import com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenuHandler
 import com.dynxsty.dih4jda.util.Checks;
 import com.dynxsty.dih4jda.util.ClassUtils;
 import com.dynxsty.dih4jda.util.CommandUtils;
+import com.dynxsty.dih4jda.util.ResponseBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -469,8 +470,9 @@ public class InteractionHandler extends ListenerAdapter {
 			} else {
 				command.getHandler().handleSlashCommand(event);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			DIH4JDALogger.error(String.format("A %s was raised while handling a Slash Command: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			event.replyEmbeds(ResponseBuilder.getExceptionEmbed(e)).queue();
 		}
 	}
 
@@ -488,8 +490,9 @@ public class InteractionHandler extends ListenerAdapter {
 			} else {
 				context.getHandler().handleUserContextCommand(event);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			DIH4JDALogger.error(String.format("A %s was raised while handling a User Context Command: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			event.replyEmbeds(ResponseBuilder.getExceptionEmbed(e)).queue();
 		}
 	}
 
@@ -507,8 +510,9 @@ public class InteractionHandler extends ListenerAdapter {
 			} else {
 				context.getHandler().handleMessageContextCommand(event);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			DIH4JDALogger.error(String.format("A %s was raised while handling a Message Context Command: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			event.replyEmbeds(ResponseBuilder.getExceptionEmbed(e)).queue();
 		}
 	}
 
@@ -524,7 +528,7 @@ public class InteractionHandler extends ListenerAdapter {
 			if (component != null) {
 				component.handleAutoComplete(event, event.getFocusedOption());
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			DIH4JDALogger.error(String.format("A %s was raised while handling an AutoComplete Interaction: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
 		}
 	}
@@ -543,8 +547,9 @@ public class InteractionHandler extends ListenerAdapter {
 			} else {
 				component.handleButton(event, event.getButton());
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			DIH4JDALogger.error(String.format("A %s was raised while handling a Button Interaction: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			event.replyEmbeds(ResponseBuilder.getExceptionEmbed(e)).queue();
 		}
 	}
 
@@ -562,8 +567,9 @@ public class InteractionHandler extends ListenerAdapter {
 			} else {
 				component.handleSelectMenu(event, event.getValues());
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			DIH4JDALogger.error(String.format("A %s was raised while handling a Select Menu Interaction: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			event.replyEmbeds(ResponseBuilder.getExceptionEmbed(e)).queue();
 		}
 	}
 
@@ -581,8 +587,9 @@ public class InteractionHandler extends ListenerAdapter {
 			} else {
 				modal.handleModal(event, event.getValues());
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			DIH4JDALogger.error(String.format("A %s was raised while handling a Modal Interaction: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
+			event.replyEmbeds(ResponseBuilder.getExceptionEmbed(e)).queue();
 		}
 	}
 
