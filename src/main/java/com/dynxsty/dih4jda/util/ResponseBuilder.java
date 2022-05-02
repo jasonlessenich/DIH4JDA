@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+// TODO v1.5: Docs
 public class ResponseBuilder {
 
 	private ResponseBuilder() {}
@@ -73,6 +74,7 @@ public class ResponseBuilder {
 		return replaceExceptionVariables(exceptionEmbed, e);
 	}
 
+	// TODO v1.5: Docs
 	public static void setExceptionEmbed(MessageEmbed exceptionEmbed) {
 		ResponseBuilder.exceptionEmbed = exceptionEmbed;
 	}
@@ -81,6 +83,7 @@ public class ResponseBuilder {
 		return replacePermissionVariables(permissionEmbed, permission);
 	}
 
+	// TODO v1.5: Docs
 	public static void setPermissionEmbed(MessageEmbed permissionEmbed) {
 		ResponseBuilder.permissionEmbed = permissionEmbed;
 	}
