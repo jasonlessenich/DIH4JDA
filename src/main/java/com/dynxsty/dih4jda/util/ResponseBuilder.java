@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 
 public class ResponseBuilder {
 
+	private ResponseBuilder() {}
+
 	private static final Pattern REPLACEMENT_REGEX = Pattern.compile("\\{(\\w+)}");
 
 	private static final Map<String, Function<Exception, String>> exceptionReplacements = new HashMap<>();
