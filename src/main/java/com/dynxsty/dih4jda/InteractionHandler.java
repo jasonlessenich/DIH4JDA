@@ -1,6 +1,7 @@
 package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
+import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import com.dynxsty.dih4jda.interactions.commands.slash_command.autocomplete.AutoCompleteHandler;
 import com.dynxsty.dih4jda.interactions.commands.context_command.MessageContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.context_command.MessageContextInteraction;

@@ -1,6 +1,6 @@
 package com.dynxsty.dih4jda.interactions.commands.slash_command;
 
-import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.ExecutableCommand;
+import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
 /**

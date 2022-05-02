@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.interactions.commands.slash_command.dao;
+package com.dynxsty.dih4jda.interactions.commands;
 
 import com.dynxsty.dih4jda.interactions.commands.slash_command.autocomplete.AutoCompleteHandler;
 import com.dynxsty.dih4jda.interactions.modal.ModalHandler;

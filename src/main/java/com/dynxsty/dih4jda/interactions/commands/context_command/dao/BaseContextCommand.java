@@ -1,10 +1,11 @@
 package com.dynxsty.dih4jda.interactions.commands.context_command.dao;
 
 import com.dynxsty.dih4jda.DIH4JDALogger;
+import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
-public abstract class BaseContextCommand {
+public abstract class BaseContextCommand extends ExecutableCommand {
 	private CommandData commandData;
 
 	protected BaseContextCommand() {
