@@ -1,8 +1,12 @@
 package com.dynxsty.dih4jda.util;
 
-import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.GlobalSlashCommand;
 import net.dv8tion.jda.api.entities.Guild;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Constructor;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Utility class for working with classes.
@@ -34,13 +38,19 @@ public class ClassUtils {
 	 * @return The Instance as a generic Object.
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	public static @NotNull Object getInstance(Guild guild, Class<?> clazz) throws ReflectiveOperationException {
-		if (guild != null || !clazz.getSuperclass().equals(GlobalSlashCommand.class)) {
-			try {
-				return clazz.getConstructor(Guild.class).newInstance(guild);
-			} catch (NoSuchMethodException ignored) {
+	public static Object getInstance(@Nullable Guild guild, Class<?> clazz) throws ReflectiveOperationException {
+		for (Constructor<?> constructor : clazz.getConstructors()) {
+			List<Class<?>> params = Arrays.asList(constructor.getParameterTypes());
+			if (params.contains(Guild.class)) {
+				if (guild != null) {
+					return clazz.getConstructor(Guild.class).newInstance(guild);
+				}
+			} else if (params.isEmpty()) {
+				return clazz.getConstructor().newInstance();
+			} else {
+				throw new IllegalArgumentException("Cannot access constructor with types: " + params);
 			}
 		}
-		return clazz.getConstructor().newInstance();
+		return null;
 	}
 }

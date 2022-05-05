@@ -1,6 +1,7 @@
-package com.dynxsty.dih4jda.interactions.commands.slash_command.dao;
+package com.dynxsty.dih4jda.interactions.commands;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.Arrays;
@@ -9,10 +10,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class GuildSlashCommand extends BaseSlashCommand {
+// TODO v1.5: Documentation
+public abstract class GuildInteraction extends ComponentHandler {
+
+	private boolean isGuildCommand = true;
+
 	private Set<Guild> whitelistedGuilds = new HashSet<>();
 
 	private Set<Guild> blacklistedGuilds = new HashSet<>();
+
+	private Set<Permission> requiredPermissions = new HashSet<>();
 
 	/**
 	 * Allows a set of {@link Guild}s to update their Slash Commands.
@@ -61,9 +68,25 @@ public abstract class GuildSlashCommand extends BaseSlashCommand {
 	public Set<Guild> getGuilds(JDA jda) {
 		Set<Guild> guilds = new HashSet<>(jda.getGuilds());
 		guilds.removeIf(g -> blacklistedGuilds.contains(g));
-		if (whitelistedGuilds.size() > 0) {
+		if (!whitelistedGuilds.isEmpty()) {
 			guilds = whitelistedGuilds;
 		}
 		return guilds;
+	}
+
+	public boolean isGuildCommand() {
+		return isGuildCommand;
+	}
+
+	public void setGuildCommand(boolean guildCommand) {
+		isGuildCommand = guildCommand;
+	}
+
+	public Set<Permission> getRequiredPermissions() {
+		return requiredPermissions;
+	}
+
+	public void requirePermissions(Permission... requiredPermissions) {
+		this.requiredPermissions = Arrays.stream(requiredPermissions).collect(Collectors.toSet());
 	}
 }

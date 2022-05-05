@@ -1,5 +1,6 @@
 package com.dynxsty.dih4jda.util;
 
+import com.dynxsty.dih4jda.DIH4JDALogger;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import org.jetbrains.annotations.Contract;
@@ -105,4 +106,16 @@ public class CommandUtils {
 	public static @NotNull String buildCommandPath(String... args) {
 		return String.join("/", args);
 	}
+
+	public static boolean isCommandData(List<Command> allCommands, Command command, Object data) {
+		boolean equals = false;
+		if (data instanceof CommandData) equals = CommandUtils.equals((CommandData) data, command);
+		if (data instanceof SlashCommandData) equals = CommandUtils.equals((SlashCommandData) data, command);
+		if (equals) {
+			allCommands.remove(command);
+			DIH4JDALogger.info(String.format("Found duplicate %s command, which will be ignored: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+		}
+		return equals;
+	}
+
 }

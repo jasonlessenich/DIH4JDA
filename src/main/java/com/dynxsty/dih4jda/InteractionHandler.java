@@ -1,17 +1,10 @@
 package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
-import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
-import com.dynxsty.dih4jda.interactions.commands.slash_command.autocomplete.AutoCompleteHandler;
-import com.dynxsty.dih4jda.interactions.commands.context_command.MessageContextCommand;
-import com.dynxsty.dih4jda.interactions.commands.context_command.MessageContextInteraction;
-import com.dynxsty.dih4jda.interactions.commands.context_command.UserContextCommand;
-import com.dynxsty.dih4jda.interactions.commands.context_command.UserContextInteraction;
-import com.dynxsty.dih4jda.interactions.commands.context_command.dao.BaseContextCommand;
-import com.dynxsty.dih4jda.interactions.commands.context_command.dao.GlobalContextCommand;
-import com.dynxsty.dih4jda.interactions.commands.context_command.dao.GuildContextCommand;
-import com.dynxsty.dih4jda.interactions.commands.slash_command.SlashCommandInteraction;
-import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.*;
+import com.dynxsty.dih4jda.interactions.commands.ComponentHandler;
+import com.dynxsty.dih4jda.interactions.commands.ContextCommand;
+import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
+import com.dynxsty.dih4jda.interactions.commands.autocomplete.AutoCompleteHandler;
 import com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder;
 import com.dynxsty.dih4jda.interactions.components.button.ButtonHandler;
 import com.dynxsty.dih4jda.interactions.modal.ModalHandler;
@@ -64,21 +57,21 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @see InteractionHandler#findSlashCommands()
 	 */
-	private final Map<String, SlashCommandInteraction> slashCommandIndex;
+	private final Map<String, SlashCommand> slashCommandIndex;
 
 	/**
-	 * An Index of all {@link MessageContextCommand}s.
+	 * An Index of all {@link ContextCommand.Message}s.
 	 *
 	 * @see InteractionHandler#findContextCommands()
 	 */
-	private final Map<String, MessageContextInteraction> messageContextIndex;
+	private final Map<String, ContextCommand.Message> messageContextIndex;
 
 	/**
-	 * An Index of all {@link UserContextCommand}s.
+	 * An Index of all {@link ContextCommand.User}s.
 	 *
 	 * @see InteractionHandler#findContextCommands()
 	 */
-	private final Map<String, UserContextInteraction> userContextIndex;
+	private final Map<String, ContextCommand.User> userContextIndex;
 
 	/**
 	 * An Index of all {@link AutoCompleteHandler}s.
@@ -90,28 +83,26 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * An Index of all {@link ButtonHandler}s.
 	 *
-	 * @see InteractionHandler#findInteractionsHandlers(ExecutableCommand)
+	 * @see InteractionHandler#findInteractionsHandlers(ComponentHandler)
 	 */
 	private final Map<String, ButtonHandler> buttonIndex;
 
 	/**
 	 * An Index of all {@link SelectMenuHandler}s.
 	 *
-	 * @see InteractionHandler#findInteractionsHandlers(ExecutableCommand)
+	 * @see InteractionHandler#findInteractionsHandlers(ComponentHandler)
 	 */
 	private final Map<String, SelectMenuHandler> selectMenuIndex;
 
 	/**
 	 * An Index of all {@link ModalHandler}s.
 	 *
-	 * @see InteractionHandler#findInteractionsHandlers(ExecutableCommand)
+	 * @see InteractionHandler#findInteractionsHandlers(ComponentHandler)
 	 */
 	private final Map<String, ModalHandler> modalIndex;
 
-	private final Set<Class<? extends GuildSlashCommand>> guildCommands;
-	private final Set<Class<? extends GlobalSlashCommand>> globalCommands;
-	private final Set<Class<? extends GuildContextCommand>> guildContexts;
-	private final Set<Class<? extends GlobalContextCommand>> globalContexts;
+	private final Set<Class<? extends SlashCommand>> commands;
+	private final Set<Class<? extends ContextCommand>> contexts;
 
 	/**
 	 * Constructs a new {@link InteractionHandler} from the supplied commands package.
@@ -119,10 +110,9 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param dih4jda The {@link DIH4JDA} instance.
 	 */
 	protected InteractionHandler(DIH4JDA dih4jda) {
-		this.guildCommands = new HashSet<>();
-		this.globalCommands = new HashSet<>();
-		this.guildContexts = new HashSet<>();
-		this.globalContexts = new HashSet<>();
+		this.commands = new HashSet<>();
+		this.contexts = new HashSet<>();
+
 		this.slashCommandIndex = new HashMap<>();
 		this.messageContextIndex = new HashMap<>();
 		this.userContextIndex = new HashMap<>();
@@ -147,21 +137,21 @@ public class InteractionHandler extends ListenerAdapter {
 		findContextCommands();
 		// register commands for each guild
 		for (Guild guild : dih4jda.getJDA().getGuilds()) {
-			Set<CommandData> commands = new HashSet<>();
-			commands.addAll(getGuildSlashCommandData(guild));
-			commands.addAll(getGuildContextCommandData(guild));
-			guild.updateCommands().addCommands(commands).queue();
-			DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", commands.size(), guild.getName(), commands.stream().map(CommandData::getName).collect(Collectors.joining(", "))), DIH4JDALogger.Type.COMMANDS_QUEUED);
+			Set<CommandData> data = new HashSet<>();
+			data.addAll(getSlashCommandData(guild));
+			data.addAll(getContextCommandData(guild));
+			guild.updateCommands().addCommands(data).queue();
+			DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", data.size(), guild.getName(), data.stream().map(CommandData::getName).collect(Collectors.joining(", "))), DIH4JDALogger.Type.COMMANDS_QUEUED);
 		}
 		final List<Command> existingData = dih4jda.getJDA().retrieveCommands().complete();
 		List<Command> allCommands = new ArrayList<>(existingData);
-		Set<SlashCommandData> slashData = new HashSet<>(getGlobalSlashCommandData());
-		Set<CommandData> commandData = new HashSet<>(getGlobalContextCommandData());
+		Set<SlashCommandData> slashData = new HashSet<>(getSlashCommandData(null));
+		Set<CommandData> commandData = new HashSet<>(getContextCommandData(null));
 		// check if smart queuing was disabled
 		if (dih4jda.isSmartQueuing() && allCommands.size() > 0) {
 			DIH4JDALogger.info(String.format("Found %s existing global command(s). Trying to just queue edited commands...", allCommands.size()), DIH4JDALogger.Type.SMART_QUEUE);
-			commandData.removeIf(command -> existingData.stream().anyMatch(data -> isCommandData(allCommands, data, command)));
-			slashData.removeIf(command -> existingData.stream().anyMatch(data -> isCommandData(allCommands, data, command)));
+			commandData.removeIf(command -> existingData.stream().anyMatch(data -> CommandUtils.isCommandData(allCommands, data, command)));
+			slashData.removeIf(command -> existingData.stream().anyMatch(data -> CommandUtils.isCommandData(allCommands, data, command)));
 			// remove unknown commands
 			if (allCommands.size() > 0) {
 				DIH4JDALogger.info(String.format("Found %s unknown command(s). Attempting deletion.", allCommands.size()), DIH4JDALogger.Type.SMART_QUEUE);
@@ -181,45 +171,33 @@ public class InteractionHandler extends ListenerAdapter {
 		registerCommandPrivileges(dih4jda.getJDA());
 	}
 
-	private boolean isCommandData(List<Command> allCommands, Command command, Object data) {
-		boolean equals = false;
-		if (data instanceof CommandData) equals = CommandUtils.equals((CommandData) data, command);
-		if (data instanceof SlashCommandData) equals = CommandUtils.equals((SlashCommandData) data, command);
-		if (equals) {
-			allCommands.remove(command);
-			DIH4JDALogger.info(String.format("Found duplicate %s command, which will be ignored: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
-		}
-		return equals;
-	}
-
 	/**
 	 * Finds all Slash Commands using {@link Reflections}.
-	 * Loops through all classes found in the commands package that is either a subclass of
-	 * {@link GuildSlashCommand} or {@link GlobalSlashCommand}.
+	 * Loops through all classes found in the commands package that is a subclass of
+	 * {@link SlashCommand}.
 	 */
 	private void findSlashCommands() {
-		Reflections commands = new Reflections(dih4jda.getCommandsPackage());
-		guildCommands.addAll(commands.getSubTypesOf(GuildSlashCommand.class));
-		globalCommands.addAll(commands.getSubTypesOf(GlobalSlashCommand.class));
+		Reflections classes = new Reflections(dih4jda.getCommandsPackage());
+		commands.addAll(classes.getSubTypesOf(SlashCommand.class));
 	}
 
 	/**
 	 * Finds all Context Commands using {@link Reflections}.
-	 * Loops through all classes found in the commands package that is either a subclass of
-	 * {@link GuildContextCommand} or {@link GlobalContextCommand}.
+	 * Loops through all classes found in the commands package that is a subclass of
+	 * {@link ContextCommand}.
 	 */
 	private void findContextCommands() {
-		Reflections commands = new Reflections(dih4jda.getCommandsPackage());
-		guildContexts.addAll(commands.getSubTypesOf(GuildContextCommand.class));
-		globalContexts.addAll(commands.getSubTypesOf(GlobalContextCommand.class));
+		Reflections classes = new Reflections(dih4jda.getCommandsPackage());
+		contexts.addAll(classes.getSubTypesOf(ContextCommand.class));
+		contexts.removeAll(List.of(ContextCommand.User.class, ContextCommand.Message.class));
 	}
 
 	/**
 	 * Finds all Interaction Handlers and adds them to their corresponding index.
 	 *
-	 * @param command The {@link ExecutableCommand}.
+	 * @param command The {@link ComponentHandler}.
 	 */
-	private void findInteractionsHandlers(ExecutableCommand command) {
+	private void findInteractionsHandlers(ComponentHandler command) {
 		command.getHandledButtonIds().forEach(s -> this.buttonIndex.put(s, (ButtonHandler) command));
 		command.getHandledSelectMenuIds().forEach(s -> this.selectMenuIndex.put(s, (SelectMenuHandler) command));
 		command.getHandledModalIds().forEach(s -> this.modalIndex.put(s, (ModalHandler) command));
@@ -236,21 +214,24 @@ public class InteractionHandler extends ListenerAdapter {
 			guild.retrieveCommands().queue(commands -> {
 				for (Command command : commands) {
 					if (privileges.containsKey(command.getId())) continue;
-					Optional<SlashCommandInteraction> interactionOptional = slashCommandIndex
+					Optional<SlashCommand> interactionOptional = slashCommandIndex
 							.keySet()
 							.stream()
 							.filter(p -> p.equals(command.getName()) || p.split("/")[0].equals(command.getName()))
 							.map(slashCommandIndex::get)
-							.filter(p -> p.getPrivileges() != null && p.getPrivileges().length > 0)
+							.filter(p -> p.getCommandPrivileges() != null && p.getCommandPrivileges().length > 0)
 							.findFirst();
 					if (interactionOptional.isPresent()) {
-						SlashCommandInteraction interaction = interactionOptional.get();
-						if (interaction.getBaseClass().getSuperclass().equals(GlobalSlashCommand.class)) {
-							DIH4JDALogger.error(String.format("Can not register command privileges for global command %s (%s).", command.getName(), interaction.getBaseClass().getSimpleName()));
+						SlashCommand interaction = interactionOptional.get();
+						if (!interaction.isGuildCommand()) {
+							DIH4JDALogger.error(String.format("Can not register command privileges for global command %s (%s).", command.getName(), interaction.getClass().getSimpleName()));
 							continue;
 						}
-						privileges.put(command.getId(), new HashSet<>(Arrays.asList(interaction.getPrivileges())));
-						DIH4JDALogger.info(String.format("[%s] Registered privileges for command %s: %s", guild.getName(), command.getName(), Arrays.stream(interaction.getPrivileges()).map(CommandPrivilege::toData).collect(Collectors.toList())), DIH4JDALogger.Type.COMMAND_PRIVILEGE_REGISTERED);
+						privileges.put(command.getId(), new HashSet<>(Arrays.asList(interaction.getCommandPrivileges())));
+						DIH4JDALogger.info(String.format("[%s] Registered privileges for command %s: %s", guild.getName(), command.getName(),
+								Arrays.stream(interaction.getCommandPrivileges())
+										.map(CommandPrivilege::toData)
+										.collect(Collectors.toList())), DIH4JDALogger.Type.COMMAND_PRIVILEGE_REGISTERED);
 					}
 					if (privileges.isEmpty()) continue;
 					guild.updateCommandPrivileges(privileges).queue();
@@ -266,36 +247,22 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param guild The command's guild.
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private Set<SlashCommandData> getGuildSlashCommandData(@NotNull Guild guild) throws ReflectiveOperationException {
-		Set<SlashCommandData> commands = new HashSet<>();
-		for (Class<? extends GuildSlashCommand> c : guildCommands) {
-			GuildSlashCommand instance = (GuildSlashCommand) ClassUtils.getInstance(guild, c);
-			if (!instance.getGuilds(guild.getJDA()).contains(guild)) {
+	private Set<SlashCommandData> getSlashCommandData(@Nullable Guild guild) throws ReflectiveOperationException {
+		Set<SlashCommandData> data = new HashSet<>();
+		for (Class<? extends SlashCommand> c : commands) {
+			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(guild, c);
+			if (instance == null || guild == null && instance.isGuildCommand()) continue;
+			if (guild != null && !instance.getGuilds(guild.getJDA()).contains(guild)) {
 				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
 				continue;
 			}
-			commands.add(getBaseCommandData(instance, c, guild));
+			data.add(getBaseCommandData(instance, c, guild));
 		}
-		return commands;
+		return data;
 	}
 
 	/**
-	 * Gets all Global commands registered in {@link InteractionHandler#findSlashCommands()} and adds
-	 * them to the {@link InteractionHandler#slashCommandIndex}.
-	 *
-	 * @throws ReflectiveOperationException If an error occurs.
-	 */
-	private Set<SlashCommandData> getGlobalSlashCommandData() throws ReflectiveOperationException {
-		Set<SlashCommandData> commands = new HashSet<>();
-		for (Class<? extends GlobalSlashCommand> c : globalCommands) {
-			GlobalSlashCommand instance = (GlobalSlashCommand) ClassUtils.getInstance(null, c);
-			commands.add(getBaseCommandData(instance, c, null));
-		}
-		return commands;
-	}
-
-	/**
-	 * Gets the complete {@link SlashCommandData} (including Subcommands & Subcommand Groups) of a single {@link BaseSlashCommand}.
+	 * Gets the complete {@link SlashCommandData} (including Subcommands & Subcommand Groups) of a single {@link SlashCommand}.
 	 *
 	 * @param command      The base command's instance.
 	 * @param commandClass The base command's class.
@@ -303,7 +270,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return The new {@link CommandListUpdateAction}.
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private SlashCommandData getBaseCommandData(@NotNull BaseSlashCommand command, Class<? extends BaseSlashCommand> commandClass, @Nullable Guild guild) throws ReflectiveOperationException {
+	private SlashCommandData getBaseCommandData(@NotNull SlashCommand command, Class<? extends SlashCommand> commandClass, @Nullable Guild guild) throws ReflectiveOperationException {
 		// find component (and modal) handlers
 		this.findInteractionsHandlers(command);
 		if (command.getCommandData() == null) {
@@ -318,12 +285,12 @@ public class InteractionHandler extends ListenerAdapter {
 			commandData.addSubcommands(this.getSubcommandData(command, command.getSubcommands(), null, guild));
 		}
 		if (command.getSubcommandGroups() == null && command.getSubcommands() == null) {
-			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), new SlashCommandInteraction(command, commandClass, command.getCommandPrivileges()));
+			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), command);
 			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s", command.getCommandData().getName()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 			if (command.shouldHandleAutoComplete()) {
 				if (Checks.checkImplementation(command.getClass(), AutoCompleteHandler.class)) {
 					autoCompleteIndex.put(commandData.getName(), (AutoCompleteHandler) command);
-					DIH4JDALogger.info("\t\t[^] Enabled AutoComplete Handling", DIH4JDALogger.Type.HANDLE_AUTOCOMPLETE);
+					DIH4JDALogger.info("\t\t[*] Enabled Auto Complete Handling", DIH4JDALogger.Type.HANDLE_AUTOCOMPLETE);
 				}
 			}
 		}
@@ -331,17 +298,17 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets all {@link SubcommandGroupData} (including Subcommands) of a single {@link BaseSlashCommand}.
+	 * Gets all {@link SubcommandGroupData} (including Subcommands) of a single {@link SlashCommand}.
 	 *
 	 * @param command The base command's instance.
 	 * @param guild   The current guild (if available)
 	 * @return All {@link SubcommandGroupData} stored in a List.
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private Set<SubcommandGroupData> getSubcommandGroupData(@NotNull BaseSlashCommand command, @Nullable Guild guild) throws ReflectiveOperationException {
+	private Set<SubcommandGroupData> getSubcommandGroupData(@NotNull SlashCommand command, @Nullable Guild guild) throws ReflectiveOperationException {
 		Set<SubcommandGroupData> groupDataList = new HashSet<>();
-		for (Class<? extends SubcommandGroup> group : command.getSubcommandGroups()) {
-			SubcommandGroup instance = (SubcommandGroup) ClassUtils.getInstance(guild, group);
+		for (Class<? extends SlashCommand.SubcommandGroup> group : command.getSubcommandGroups()) {
+			SlashCommand.SubcommandGroup instance = (SlashCommand.SubcommandGroup) ClassUtils.getInstance(guild, group);
 			if (instance.getSubcommandGroupData() == null) {
 				DIH4JDALogger.warn(String.format("Class %s is missing SubcommandGroupData. It will be ignored.", group.getName()));
 				continue;
@@ -351,14 +318,14 @@ public class InteractionHandler extends ListenerAdapter {
 				continue;
 			}
 			SubcommandGroupData groupData = instance.getSubcommandGroupData();
-			groupData.addSubcommands(this.getSubcommandData(command, instance.getSubcommands(), groupData.getName(), guild));
+			groupData.addSubcommands(getSubcommandData(command, instance.getSubcommands(), groupData.getName(), guild));
 			groupDataList.add(groupData);
 		}
 		return groupDataList;
 	}
 
 	/**
-	 * Gets all {@link SubcommandData} from the given array of {@link Subcommand} classes.
+	 * Gets all {@link SubcommandData} from the given array of {@link SlashCommand.Subcommand} classes.
 	 *
 	 * @param command      The base command's instance.
 	 * @param subClasses   All sub command classes.
@@ -367,10 +334,10 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return The new {@link CommandListUpdateAction}.
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private Set<SubcommandData> getSubcommandData(BaseSlashCommand command, Class<? extends Subcommand>[] subClasses, @Nullable String subGroupName, @Nullable Guild guild) throws ReflectiveOperationException {
+	private Set<SubcommandData> getSubcommandData(SlashCommand command, Class<? extends SlashCommand.Subcommand>[] subClasses, @Nullable String subGroupName, @Nullable Guild guild) throws ReflectiveOperationException {
 		Set<SubcommandData> subDataList = new HashSet<>();
-		for (Class<? extends Subcommand> sub : subClasses) {
-			Subcommand instance = (Subcommand) ClassUtils.getInstance(guild, sub);
+		for (Class<? extends SlashCommand.Subcommand> sub : subClasses) {
+			SlashCommand.Subcommand instance = (SlashCommand.Subcommand) ClassUtils.getInstance(guild, sub);
 			if (instance.getSubcommandData() == null) {
 				DIH4JDALogger.warn(String.format("Class %s is missing SubcommandData. It will be ignored.", sub.getName()));
 				continue;
@@ -382,12 +349,12 @@ public class InteractionHandler extends ListenerAdapter {
 			} else {
 				commandPath = CommandUtils.buildCommandPath(command.getCommandData().getName(), subGroupName, instance.getSubcommandData().getName());
 			}
-			slashCommandIndex.put(commandPath, new SlashCommandInteraction(instance, sub, command.getCommandPrivileges()));
+			slashCommandIndex.put(commandPath, command);
 			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s", commandPath), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 			if (instance.shouldHandleAutoComplete()) {
 				if (Checks.checkImplementation(instance.getClass(), AutoCompleteHandler.class)) {
 					autoCompleteIndex.put(commandPath, (AutoCompleteHandler) instance);
-					DIH4JDALogger.info("\t\t[^] Enabled AutoComplete Handling", DIH4JDALogger.Type.HANDLE_AUTOCOMPLETE);
+					DIH4JDALogger.info("\t\t[*] Enabled Auto Complete Handling", DIH4JDALogger.Type.HANDLE_AUTOCOMPLETE);
 				}
 			}
 			subDataList.add(instance.getSubcommandData());
@@ -402,52 +369,37 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param guild The context command's guild.
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private Set<CommandData> getGuildContextCommandData(@NotNull Guild guild) throws ReflectiveOperationException {
+	private Set<CommandData> getContextCommandData(@Nullable Guild guild) throws ReflectiveOperationException {
 		Set<CommandData> commands = new HashSet<>();
-		for (Class<? extends GuildContextCommand> c : this.guildContexts) {
-			GuildContextCommand instance = (GuildContextCommand) ClassUtils.getInstance(guild, c);
-			if (!instance.getGuilds(guild.getJDA()).contains(guild)) {
+		for (Class<? extends ContextCommand> c : contexts) {
+			ContextCommand instance = (ContextCommand) ClassUtils.getInstance(guild, c);
+			if (instance == null || guild == null && instance.isGuildCommand()) continue;
+			if (guild != null && !instance.getGuilds(guild.getJDA()).contains(guild)) {
 				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.CONTEXT_COMMAND_SKIPPED);
 				continue;
 			}
-			commands.add(this.getContextCommandData(instance, c));
+			commands.add(getContextCommandData(instance, c));
 		}
 		return commands;
 	}
 
 	/**
-	 * Gets all Global Context commands registered in {@link InteractionHandler#findContextCommands()} and
-	 * returns their {@link CommandData} as a List.
-	 */
-	private Set<CommandData> getGlobalContextCommandData() throws ReflectiveOperationException {
-		Set<CommandData> commands = new HashSet<>();
-		for (Class<? extends GlobalContextCommand> c : this.globalContexts) {
-			GlobalContextCommand instance = (GlobalContextCommand) ClassUtils.getInstance(null, c);
-			CommandData data = this.getContextCommandData(instance, c);
-			if (data != null) {
-				commands.add(data);
-			}
-		}
-		return commands;
-	}
-
-	/**
-	 * Gets the complete {@link CommandData} from a single {@link BaseContextCommand}.
+	 * Gets the complete {@link CommandData} from a single {@link ContextCommand}.
 	 *
 	 * @param command      The base context command's instance.
 	 * @param commandClass The base context command's class.
 	 * @return The new {@link CommandListUpdateAction}.
 	 */
-	private CommandData getContextCommandData(@NotNull BaseContextCommand command, Class<? extends BaseContextCommand> commandClass) {
+	private CommandData getContextCommandData(@NotNull ContextCommand command, Class<? extends ContextCommand> commandClass) {
 		if (command.getCommandData() == null) {
 			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
 			return null;
 		}
 		CommandData commandData = command.getCommandData();
 		if (commandData.getType() == Command.Type.MESSAGE) {
-			messageContextIndex.put(commandData.getName(), new MessageContextInteraction((MessageContextCommand) command));
+			messageContextIndex.put(commandData.getName(), (ContextCommand.Message) command);
 		} else if (commandData.getType() == Command.Type.USER) {
-			userContextIndex.put(commandData.getName(), new UserContextInteraction((UserContextCommand) command));
+			userContextIndex.put(commandData.getName(), (ContextCommand.User) command);
 		} else {
 			DIH4JDALogger.error(String.format("Invalid Command Type \"%s\" for Context Command! This command will be ignored.", commandData.getType()));
 			return null;
@@ -457,18 +409,18 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Handles a single {@link SlashCommandInteraction}.
+	 * Handles a single {@link SlashCommand}.
 	 * If a {@link SlashCommandInteractionEvent} is fired the corresponding class is found and the command is executed.
 	 *
 	 * @param event The {@link SlashCommandInteractionEvent} that was fired.
 	 */
 	private void handleSlashCommand(SlashCommandInteractionEvent event) {
 		try {
-			SlashCommandInteraction command = slashCommandIndex.get(event.getCommandPath());
+			SlashCommand command = slashCommandIndex.get(event.getCommandPath());
 			if (command == null) {
 				throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", event.getCommandPath()));
 			} else {
-				command.getHandler().handleSlashCommand(event);
+				command.execute(event);
 			}
 		} catch (Exception e) {
 			DIH4JDALogger.error(String.format("A %s was raised while handling a Slash Command: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
@@ -477,18 +429,18 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Handles a single {@link UserContextInteraction}.
+	 * Handles a single {@link ContextCommand.User}.
 	 * If a {@link UserContextInteractionEvent} is fired the corresponding class is found and the command is executed.
 	 *
 	 * @param event The {@link UserContextInteractionEvent} that was fired.
 	 */
 	private void handleUserContextCommand(UserContextInteractionEvent event) {
 		try {
-			UserContextInteraction context = userContextIndex.get(event.getCommandPath());
+			ContextCommand.User context = userContextIndex.get(event.getCommandPath());
 			if (context == null) {
 				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 			} else {
-				context.getHandler().handleUserContextCommand(event);
+				context.execute(event);
 			}
 		} catch (Exception e) {
 			DIH4JDALogger.error(String.format("A %s was raised while handling a User Context Command: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
@@ -497,18 +449,18 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Handles a single {@link MessageContextInteraction}.
+	 * Handles a single {@link ContextCommand.Message}.
 	 * If a {@link MessageContextInteractionEvent} is fired the corresponding class is found and the command is executed.
 	 *
 	 * @param event The {@link MessageContextInteractionEvent} that was fired.
 	 */
 	private void handleMessageContextCommand(MessageContextInteractionEvent event) {
 		try {
-			MessageContextInteraction context = messageContextIndex.get(event.getCommandPath());
+			ContextCommand.Message context = messageContextIndex.get(event.getCommandPath());
 			if (context == null) {
 				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 			} else {
-				context.getHandler().handleMessageContextCommand(event);
+				context.execute(event);
 			}
 		} catch (Exception e) {
 			DIH4JDALogger.error(String.format("A %s was raised while handling a Message Context Command: %s", e.getClass().getSimpleName(), e.getMessage()), DIH4JDALogger.Type.COMMAND_EXCEPTION);
