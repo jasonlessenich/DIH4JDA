@@ -18,13 +18,17 @@ public class SmartQueue {
 	// TODO v1.5: Documentation
 	protected static void queueGlobal(JDA jda, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
 		final List<Command> existingData = jda.retrieveCommands().complete();
-		removeDuplicates(jda, existingData, slashData, commandData, null);
+		if (!existingData.isEmpty()) {
+			removeDuplicates(jda, existingData, slashData, commandData, null);
+		}
 	}
 
 	// TODO v1.5: Documentation
 	protected static void queueGuild(Guild guild, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
 		final List<Command> existingData = guild.retrieveCommands().complete();
-		removeDuplicates(guild.getJDA(), existingData, slashData, commandData, guild);
+		if (!existingData.isEmpty()) {
+			removeDuplicates(guild.getJDA(), existingData, slashData, commandData, guild);
+		}
 	}
 
 	// TODO v1.5: Documentation
