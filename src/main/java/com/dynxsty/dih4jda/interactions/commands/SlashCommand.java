@@ -3,7 +3,6 @@ package com.dynxsty.dih4jda.interactions.commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
-import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
 // TODO v1.5: Documentation
 public abstract class SlashCommand extends ExecutableCommand implements SlashCommandHandler {

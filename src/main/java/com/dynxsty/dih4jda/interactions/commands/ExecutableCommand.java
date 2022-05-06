@@ -6,11 +6,12 @@ import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 // TODO v1.5: Documentation
-public class ExecutableCommand extends ComponentHandler implements GuildInteraction {
+public abstract class ExecutableCommand extends ComponentHandler {
 
 
 	private final Set<Long> whitelistedGuilds = new HashSet<>();
@@ -28,31 +29,52 @@ public class ExecutableCommand extends ComponentHandler implements GuildInteract
 		this.requiredPermissions = Arrays.stream(requiredPermissions).collect(Collectors.toSet());
 	}
 
-	@Override
+	/**
+	 * Allows a set of {@link Guild}s to update their Slash Commands.
+	 *
+	 * @param whitelisted An array of {@link Long}s.
+	 */
 	public void whitelistGuilds(Long... whitelisted) {
 		if (!isGuildCommand) throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
 		whitelistedGuilds.addAll(Arrays.asList(whitelisted));
 	}
 
-	@Override
+	/**
+	 * Prevents the given set of {@link Guild}s from updating their Slash Commands.
+	 *
+	 * @param blacklisted An array of {@link Long}s.
+	 */
 	public void blacklistGuilds(Long... blacklisted) {
 		if (!isGuildCommand) throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
 		blacklistedGuilds.addAll(Arrays.asList(blacklisted));
 	}
 
-	@Override
+	/**
+	 * Allows a set of {@link Guild}s to update their Slash Commands.
+	 *
+	 * @param whitelisted An array of {@link Guild}s.
+	 */
 	public void whitelistGuilds(Guild... whitelisted) {
 		if (!isGuildCommand) throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
 		whitelistedGuilds.addAll(Arrays.stream(whitelisted).map(Guild::getIdLong).collect(Collectors.toSet()));
 	}
 
-	@Override
+	/**
+	 * Prevents the given set of {@link Guild}s from updating their Slash Commands.
+	 *
+	 * @param blacklisted An array of {@link Guild}s.
+	 */
 	public void blacklistGuilds(Guild... blacklisted) {
 		if (!isGuildCommand) throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
 		blacklistedGuilds.addAll(Arrays.stream(blacklisted).map(Guild::getIdLong).collect(Collectors.toSet()));
 	}
 
-	@Override
+	/**
+	 * Gets all Guilds whose Slash Commands should be updated.
+	 *
+	 * @param jda The {@link JDA} instance.
+	 * @return A {@link List} with all Guilds.
+	 */
 	public Set<Guild> getGuilds(JDA jda) {
 		Set<Guild> guilds = new HashSet<>(jda.getGuilds());
 		guilds.removeIf(g -> blacklistedGuilds.contains(g.getIdLong()));
@@ -62,13 +84,11 @@ public class ExecutableCommand extends ComponentHandler implements GuildInteract
 		return guilds;
 	}
 
-	@Override
 	public boolean isGuildCommand() {
 		return isGuildCommand;
 	}
 
 	// TODO v1.5: Documentation
-	@Override
 	public void setGuildCommand(boolean guildCommand) {
 		isGuildCommand = guildCommand;
 	}

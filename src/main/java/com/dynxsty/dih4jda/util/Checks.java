@@ -1,7 +1,6 @@
 package com.dynxsty.dih4jda.util;
 
 import com.dynxsty.dih4jda.DIH4JDALogger;
-import com.dynxsty.dih4jda.interactions.commands.GuildInteraction;
 
 /**
  * Utility class for checking certain conditions.
