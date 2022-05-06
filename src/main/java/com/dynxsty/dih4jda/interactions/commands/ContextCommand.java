@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 // TODO v1.5: Documentation
-public abstract class ContextCommand extends GuildInteraction {
+public abstract class ContextCommand extends ExecutableCommand {
 	private CommandData commandData;
 
 	protected ContextCommand() {
@@ -17,6 +17,7 @@ public abstract class ContextCommand extends GuildInteraction {
 		return commandData;
 	}
 
+	// TODO v1.5: Documentation
 	public void setCommandData(CommandData commandData) {
 		if (commandData.getType() == Command.Type.MESSAGE || commandData.getType() == Command.Type.USER) {
 			this.commandData = commandData;

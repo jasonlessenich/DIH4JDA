@@ -6,20 +6,19 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 
 // TODO v1.5: Documentation
-public abstract class SlashCommand extends GuildInteraction implements ExecutableSlashCommand {
+public abstract class SlashCommand extends ExecutableCommand implements SlashCommandHandler {
 
 	private SlashCommandData data;
 	private Class<? extends Subcommand>[] subcommands;
 	private Class<? extends SubcommandGroup>[] subcommandGroups;
-	private CommandPrivilege[] privileges;
 
-	protected SlashCommand() {
-	}
+	protected SlashCommand() {}
 
 	public SlashCommandData getCommandData() {
 		return data;
 	}
 
+	// TODO v1.5: Documentation
 	public void setCommandData(SlashCommandData commandData) {
 		this.data = commandData;
 	}
@@ -28,6 +27,7 @@ public abstract class SlashCommand extends GuildInteraction implements Executabl
 		return subcommands;
 	}
 
+	// TODO v1.5: Documentation
 	@SafeVarargs
 	public final void setSubcommands(Class<? extends Subcommand>... classes) {
 		this.subcommands = classes;
@@ -37,27 +37,21 @@ public abstract class SlashCommand extends GuildInteraction implements Executabl
 		return subcommandGroups;
 	}
 
+	// TODO v1.5: Documentation
 	@SafeVarargs
 	public final void setSubcommandGroups(Class<? extends SubcommandGroup>... classes) {
 		this.subcommandGroups = classes;
 	}
 
-	public CommandPrivilege[] getCommandPrivileges() {
-		return privileges;
-	}
-
-	public void setCommandPrivileges(CommandPrivilege... commandPrivileges) {
-		this.privileges = commandPrivileges;
-	}
-
 	// TODO v1.5: Documentation
-	public abstract static class Subcommand extends ComponentHandler implements ExecutableSlashCommand {
+	public abstract static class Subcommand extends ExecutableCommand implements SlashCommandHandler {
 		private SubcommandData data;
 
 		public SubcommandData getSubcommandData() {
 			return data;
 		}
 
+		// TODO v1.5: Documentation
 		public void setSubcommandData(SubcommandData subCommandData) {
 			this.data = subCommandData;
 		}
@@ -72,6 +66,7 @@ public abstract class SlashCommand extends GuildInteraction implements Executabl
 			return data;
 		}
 
+		// TODO v1.5: Documentation
 		public void setSubcommandGroupData(SubcommandGroupData subcommandGroupData) {
 			this.data = subcommandGroupData;
 		}
@@ -80,6 +75,7 @@ public abstract class SlashCommand extends GuildInteraction implements Executabl
 			return subcommands;
 		}
 
+		// TODO v1.5: Documentation
 		@SafeVarargs
 		public final void setSubcommands(Class<? extends Subcommand>... classes) {
 			this.subcommands = classes;
