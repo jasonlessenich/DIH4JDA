@@ -41,10 +41,16 @@ public class SmartQueue {
 		boolean global = guild == null;
 		DIH4JDALogger.info(String.format("Found %s existing %s command(s)", existing.size(), global ? "global" : "guild"), DIH4JDALogger.Type.SMART_QUEUE);
 		// remove already-existing commands
-		commands.removeIf(cmd -> commandData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data, false)) ||
-				slashData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data, false)));
-		commandData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data, true)));
-		slashData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data, true)));
+		commands.removeIf(cmd -> {
+			if (commandData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data)) ||
+					slashData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data))) {
+				DIH4JDALogger.info(String.format("Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+				return true;
+			}
+			return false;
+		});
+		commandData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data)));
+		slashData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data)));
 		// remove unknown commands
 		if (!commands.isEmpty()) {
 			for (Command command : commands) {

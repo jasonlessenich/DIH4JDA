@@ -149,15 +149,12 @@ public class CommandUtils {
 	}
 
 	// TODO v1.5: Documentation
-	public static boolean isEqual(Command command, Object data, boolean quiet) {
+	public static boolean isEqual(Command command, Object data) {
 		boolean equals;
 		if (command.getType() == Command.Type.SLASH) {
 			equals = CommandUtils.equals((SlashCommandData) data, CommandUtils.toSlashCommandData(command));
 		} else {
 			equals = CommandUtils.equals((CommandData) data, CommandUtils.toCommandData(command));
-		}
-		if (equals && !quiet) {
-			DIH4JDALogger.info(String.format("Found duplicate %s command, which will be ignored: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
 		}
 		return equals;
 	}
