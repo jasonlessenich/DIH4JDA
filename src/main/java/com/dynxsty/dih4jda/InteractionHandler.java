@@ -13,6 +13,7 @@ import com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenuHandler
 import com.dynxsty.dih4jda.util.Checks;
 import com.dynxsty.dih4jda.util.ClassUtils;
 import com.dynxsty.dih4jda.util.CommandUtils;
+import kotlin.Pair;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -135,31 +136,34 @@ public class InteractionHandler extends ListenerAdapter {
 		findContextCommands();
 		// register commands for each guild
 		for (Guild guild : dih4jda.getJDA().getGuilds()) {
-			Set<SlashCommandData> slashData =  new HashSet<>(getSlashCommandData(guild));
-			Set<CommandData> commandData = new HashSet<>(getContextCommandData(guild));
-			if (dih4jda.isSmartQueuing() && !slashData.isEmpty() || !commandData.isEmpty()) {
-				SmartQueue.queueGuild(guild, slashData, commandData);
+			Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(guild), getContextCommandData(guild));
+			if (dih4jda.isSmartQueuing()) {
+				data = SmartQueue.queueGuild(guild, data.component1(), data.component2());
 			}
-			commandData.addAll(slashData);
-			// queue guild commands
-			if (!commandData.isEmpty()) {
-				guild.updateCommands().addCommands(commandData).queue();
-				DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", commandData.size(), guild.getName(),
-						commandData.stream().map(CommandData::getName).collect(Collectors.joining(", "))), DIH4JDALogger.Type.COMMANDS_QUEUED);
+			if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
+				guild.updateCommands()
+						.addCommands(data.component1())
+						.addCommands(data.component2())
+						.queue();
+				DIH4JDALogger.info(String.format("Queued %s new command(s) in guild %s: %s", data.component1().size() + data.component2().size(), guild.getName(),
+						CommandUtils.getNames(data.component2(), data.component1())), DIH4JDALogger.Type.COMMANDS_QUEUED);
+			} else {
+				DIH4JDALogger.info(String.format("Queued 0 new command(s) in guild %s", guild.getName()), DIH4JDALogger.Type.COMMANDS_QUEUED);
 			}
 		}
-		Set<SlashCommandData> slashData = new HashSet<>(getSlashCommandData(null));
-		Set<CommandData> commandData = new HashSet<>(getContextCommandData(null));
-		// Smart Queue Global commands
-		if (dih4jda.isSmartQueuing() && !slashData.isEmpty() || !commandData.isEmpty()) {
-			SmartQueue.queueGlobal(dih4jda.getJDA(), slashData, commandData);
+		Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(null), getContextCommandData(null));
+		// check if smart queuing was disabled
+		if (dih4jda.isSmartQueuing()) {
+			data = SmartQueue.queueGlobal(dih4jda.getJDA(), data.component1(), data.component2());
 		}
-		commandData.addAll(slashData);
 		// queue all global commands
-		if (!commandData.isEmpty()) {
-			dih4jda.getJDA().updateCommands().addCommands(commandData).queue();
-			DIH4JDALogger.info(String.format("Queued %s global command(s): %s", commandData.size(),
-					commandData.stream().map(CommandData::getName).collect(Collectors.joining(", "))), DIH4JDALogger.Type.COMMANDS_QUEUED);
+		if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
+			dih4jda.getJDA().updateCommands()
+					.addCommands(data.component1())
+					.addCommands(data.component2())
+					.queue();
+			DIH4JDALogger.info(String.format("Queued %s new global command(s): %s", data.component1().size() + data.component2().size(),
+					CommandUtils.getNames(data.component2(), data.component1())), DIH4JDALogger.Type.COMMANDS_QUEUED);
 		}
 	}
 

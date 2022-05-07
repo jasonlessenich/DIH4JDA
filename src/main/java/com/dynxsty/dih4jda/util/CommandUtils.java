@@ -7,6 +7,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CommandUtils {
@@ -15,20 +17,17 @@ public class CommandUtils {
 	 * Compares a {@link SlashCommandData} (Slash Command) and a {@link Command} object.
 	 *
 	 * @param data    The {@link SlashCommandData}
-	 * @param command The {@link Command} object.
+	 * @param command The other {@link SlashCommandData} object.
 	 * @return Whether the {@link Command} object has the same properties as the {@link CommandData}. Assuming they're both the same.
 	 */
-	public static boolean equals(SlashCommandData data, Command command) {
-		if (command.getType() != Command.Type.SLASH) return false;
-		SlashCommandData commandData = CommandUtils.toSlashCommandData(command);
-		if (!data.getName().equals(commandData.getName())) return false;
-		if (!data.getDescription().equals(commandData.getDescription())) return false;
-		if (!data.getOptions().equals(commandData.getOptions())) return false;
-		if (!data.getSubcommandGroups().equals(commandData.getSubcommandGroups())) return false;
-		if (!data.getSubcommandGroups().stream().map(SubcommandGroupData::getSubcommands).collect(Collectors.toList()).equals(
-				commandData.getSubcommandGroups().stream().map(SubcommandGroupData::getSubcommands).collect(Collectors.toList())))
-			return false;
-		return data.getSubcommands().equals(commandData.getSubcommands());
+	public static boolean equals(SlashCommandData data, SlashCommandData command) {
+		if (data.getType() != command.getType()) return false;
+		if (!data.getName().equals(command.getName())) return false;
+		if (!data.getDescription().equals(command.getDescription())) return false;
+		if (!command.getOptions().stream().allMatch(o -> data.getOptions().stream().anyMatch(op -> equals(o, op)))) return false;
+		if (!command.getSubcommandGroups().stream().allMatch(o -> data.getSubcommandGroups().stream().anyMatch(op -> equals(o, op)))) return false;
+		if (!command.getSubcommands().stream().allMatch(o -> data.getSubcommands().stream().anyMatch(op -> equals(o, op)))) return false;
+		return command.getSubcommands().stream().allMatch(o -> data.getSubcommands().stream().anyMatch(op -> equals(o, op)));
 	}
 
 	/**
@@ -38,11 +37,34 @@ public class CommandUtils {
 	 * @param command The {@link Command} object.
 	 * @return Whether the {@link Command} object has the same properties as the {@link CommandData}. Assuming they're both the same.
 	 */
-	public static boolean equals(CommandData data, Command command) {
-		if (command.getType() != Command.Type.MESSAGE && command.getType() != Command.Type.USER) return false;
-		CommandData commandData = CommandUtils.toCommandData(command);
-		if (!data.getName().equals(commandData.getName())) return false;
-		return data.getType() == command.getType();
+	public static boolean equals(CommandData data, CommandData command) {
+		if (data.getType() != command.getType()) return false;
+		return data.getName().equals(command.getName());
+	}
+
+	// TODO v1.5: Documentation
+	public static boolean equals(SubcommandData data, SubcommandData command) {
+		if (!data.getName().equals(command.getName())) return false;
+		if (!data.getDescription().equals(command.getDescription())) return false;
+		return data.getOptions().stream().allMatch(o -> command.getOptions().stream().anyMatch(op -> equals(o, op)));
+	}
+
+	// TODO v1.5: Documentation
+	public static boolean equals(SubcommandGroupData data, SubcommandGroupData group) {
+		if (!data.getName().equals(group.getName())) return false;
+		if (!data.getDescription().equals(group.getDescription())) return false;
+		return data.getSubcommands().stream().allMatch(o -> group.getSubcommands().stream().anyMatch(op -> equals(o, op)));
+	}
+
+	// TODO v1.5: Documentation
+	public static boolean equals(OptionData data, OptionData option) {
+		if (data.getType() != option.getType()) return false;
+		if (!data.getName().equals(option.getName())) return false;
+		if (!data.getDescription().equals(option.getDescription())) return false;
+		if (!data.getChoices().equals(option.getChoices())) return false;
+		if (!data.getChannelTypes().equals(option.getChannelTypes())) return false;
+		if (!Objects.equals(data.getMaxValue(), option.getMaxValue())) return false;
+		return Objects.equals(data.getMinValue(), option.getMinValue());
 	}
 
 	/**
@@ -53,22 +75,31 @@ public class CommandUtils {
 	 */
 	public static SlashCommandData toSlashCommandData(Command command) {
 		if (command.getType() != Command.Type.SLASH) throw new IllegalArgumentException("Command is not of Type SLASH");
-		SlashCommandData data = Commands.slash(command.getName(), command.getDescription())
+		return Commands.slash(command.getName(), command.getDescription())
 				.addOptions(CommandUtils.toOptionData(command.getOptions()))
-				.setDefaultEnabled(command.isDefaultEnabled());
-		data.addSubcommandGroups(command.getSubcommandGroups()
-				.stream()
-				.map(s -> new SubcommandGroupData(s.getName(), s.getDescription()).addSubcommands(
-						s.getSubcommands().stream()
-								.map(c -> new SubcommandData(c.getName(), c.getDescription()))
-								.collect(Collectors.toList())
-				)).collect(Collectors.toList()));
-		data.addSubcommands(command.getSubcommands()
-				.stream()
-				.map(s -> new SubcommandData(s.getName(), s.getDescription())
-						.addOptions(CommandUtils.toOptionData(s.getOptions()))
-				).collect(Collectors.toList()));
-		return data;
+				.setDefaultEnabled(command.isDefaultEnabled())
+				.addSubcommands(toSubcommandData(command.getSubcommands()))
+				.addSubcommandGroups(toSubcommandGroupData(command.getSubcommandGroups()));
+	}
+
+	// TODO v1.5: Documentation
+	public static List<SubcommandData> toSubcommandData(List<Command.Subcommand> subcommands) {
+		return subcommands.stream()
+				.map(o -> {
+					SubcommandData data = new SubcommandData(o.getName(), o.getDescription());
+					if (!o.getOptions().isEmpty()) data.addOptions(toOptionData(o.getOptions()));
+					return data;
+				}).collect(Collectors.toList());
+	}
+
+	// TODO v1.5: Documentation
+	public static List<SubcommandGroupData> toSubcommandGroupData(List<Command.SubcommandGroup> groups) {
+		return groups.stream()
+				.map(o -> {
+					SubcommandGroupData data = new SubcommandGroupData(o.getName(), o.getDescription());
+					if (!o.getSubcommands().isEmpty()) data.addSubcommands(toSubcommandData(o.getSubcommands()));
+					return data;
+				}).collect(Collectors.toList());
 	}
 
 	/**
@@ -79,8 +110,18 @@ public class CommandUtils {
 	 */
 	public static List<OptionData> toOptionData(List<Command.Option> options) {
 		return options.stream()
-				.map(o -> new OptionData(o.getType(), o.getName(), o.getDescription(), o.isRequired(), o.isAutoComplete()))
-				.collect(Collectors.toList());
+				.map(o -> {
+					OptionData data = new OptionData(o.getType(), o.getName(), o.getDescription(), o.isRequired(), o.isAutoComplete());
+					if (o.getMaxValue() != null) {
+						data.setMaxValue(o.getMaxValue().getClass().isInstance(Long.class) ? o.getMaxValue().longValue() : o.getMaxValue().doubleValue());
+					}
+					if (o.getMinValue() != null) {
+						data.setMinValue(o.getMinValue().getClass().isInstance(Long.class) ? o.getMinValue().longValue() : o.getMinValue().doubleValue());
+					}
+					if (!o.getChoices().isEmpty()) data.addChoices(o.getChoices());
+					if (!o.getChannelTypes().isEmpty()) data.setChannelTypes(o.getChannelTypes());
+					return data;
+				}).collect(Collectors.toList());
 	}
 
 	/**
@@ -107,15 +148,26 @@ public class CommandUtils {
 		return String.join("/", args);
 	}
 
-	public static boolean isCommandData(List<Command> allCommands, Command command, Object data) {
-		boolean equals = false;
-		if (data instanceof CommandData) equals = CommandUtils.equals((CommandData) data, command);
-		if (data instanceof SlashCommandData) equals = CommandUtils.equals((SlashCommandData) data, command);
+	// TODO v1.5: Documentation
+	public static boolean isEqual(Command command, Object data) {
+		boolean equals;
+		if (command.getType() == Command.Type.SLASH) {
+			equals = CommandUtils.equals((SlashCommandData) data, CommandUtils.toSlashCommandData(command));
+		} else {
+			equals = CommandUtils.equals((CommandData) data, CommandUtils.toCommandData(command));
+		}
 		if (equals) {
-			allCommands.remove(command);
 			DIH4JDALogger.info(String.format("Found duplicate %s command, which will be ignored: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
 		}
 		return equals;
+	}
+
+	// TODO v1.5: Documentation
+	public static String getNames(Set<CommandData> command, Set<SlashCommandData> slash) {
+		StringBuilder names = new StringBuilder();
+		command.forEach(c -> names.append(", ").append(c.getName()));
+		slash.forEach(c -> names.append(", /").append(c.getName()));
+		return names.substring(2);
 	}
 
 }

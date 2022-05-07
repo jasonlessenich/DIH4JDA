@@ -1,6 +1,7 @@
 package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.util.CommandUtils;
+import kotlin.Pair;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -9,46 +10,52 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 // TODO v1.5: Documentation
+// FIXME: 06.05.2022
 public class SmartQueue {
 
 	// TODO v1.5: Documentation
-	protected static void queueGlobal(JDA jda, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
-		final List<Command> existingData = jda.retrieveCommands().complete();
-		if (!existingData.isEmpty()) {
-			removeDuplicates(jda, existingData, slashData, commandData, null);
+	protected static Pair<Set<SlashCommandData>, Set<CommandData>> queueGlobal(JDA jda, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
+		final List<Command> existing = jda.retrieveCommands().complete();
+		if (!existing.isEmpty()) {
+			return removeDuplicates(jda, existing, slashData, commandData, null);
 		}
+		return new Pair<>(slashData, commandData);
 	}
 
 	// TODO v1.5: Documentation
-	protected static void queueGuild(Guild guild, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
-		final List<Command> existingData = guild.retrieveCommands().complete();
-		if (!existingData.isEmpty()) {
-			removeDuplicates(guild.getJDA(), existingData, slashData, commandData, guild);
+	protected static Pair<Set<SlashCommandData>, Set<CommandData>> queueGuild(Guild guild, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
+		final List<Command> existing = guild.retrieveCommands().complete();
+		if (!existing.isEmpty()) {
+			return removeDuplicates(guild.getJDA(), existing, slashData, commandData, guild);
 		}
+		return new Pair<>(slashData, commandData);
 	}
 
 	// TODO v1.5: Documentation
-	private static void removeDuplicates(JDA jda, List<Command> existingData, Set<SlashCommandData> slashData, Set<CommandData> commandData, @Nullable Guild guild) {
-		List<Command> queue = new ArrayList<>(existingData);
-		DIH4JDALogger.info(String.format("Found %s existing %s command(s). Trying to just queue edited commands...",
-				existingData.size(), guild == null ? "global" : "guild"), DIH4JDALogger.Type.SMART_QUEUE);
-		commandData.removeIf(command -> existingData.stream().anyMatch(data -> CommandUtils.isCommandData(queue, data, command)));
-		slashData.removeIf(command -> existingData.stream().anyMatch(data -> CommandUtils.isCommandData(queue, data, command)));
+	private static Pair<Set<SlashCommandData>, Set<CommandData>> removeDuplicates(JDA jda, final List<Command> existing, Set<SlashCommandData> slashData, Set<CommandData> commandData, @Nullable Guild guild) {
+		List<Command> commands = new ArrayList<>(existing);
+		boolean global = guild == null;
+		DIH4JDALogger.info(String.format("Found %s existing %s command(s)", existing.size(), global ? "global" : "guild"), DIH4JDALogger.Type.SMART_QUEUE);
+		// remove already-existing commands
+		commands.removeIf(cmd -> commandData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data)) ||
+				slashData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data)));
+		commandData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data)));
+		slashData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data)));
 		// remove unknown commands
-		if (!queue.isEmpty()) {
-			DIH4JDALogger.info(String.format("Found %s unknown command(s). Attempting deletion.", queue.size()), DIH4JDALogger.Type.SMART_QUEUE);
-			for (Command command : queue) {
-				DIH4JDALogger.info(String.format("Deleting unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
-				if (guild == null) {
-					jda.deleteCommandById(command.getId()).queue();
-				} else {
-					guild.deleteCommandById(command.getId()).queue();
+		if (!commands.isEmpty()) {
+			for (Command command : commands) {
+				if (existing.contains(command)) {
+					DIH4JDALogger.info(String.format("Deleting unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+					if (guild == null) jda.deleteCommandById(command.getId()).queue();
+					else guild.deleteCommandById(command.getId()).queue();
 				}
 			}
 		}
+		return new Pair<>(slashData, commandData);
 	}
 }
