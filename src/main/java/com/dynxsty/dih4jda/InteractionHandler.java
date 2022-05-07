@@ -147,8 +147,6 @@ public class InteractionHandler extends ListenerAdapter {
 						.queue();
 				DIH4JDALogger.info(String.format("Queued %s new command(s) in guild %s: %s", data.component1().size() + data.component2().size(), guild.getName(),
 						CommandUtils.getNames(data.component2(), data.component1())), DIH4JDALogger.Type.COMMANDS_QUEUED);
-			} else {
-				DIH4JDALogger.info(String.format("Queued 0 new command(s) in guild %s", guild.getName()), DIH4JDALogger.Type.COMMANDS_QUEUED);
 			}
 		}
 		Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(null), getContextCommandData(null));
