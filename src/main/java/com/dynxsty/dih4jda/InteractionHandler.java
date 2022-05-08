@@ -15,6 +15,7 @@ import com.dynxsty.dih4jda.util.Checks;
 import com.dynxsty.dih4jda.util.ClassUtils;
 import com.dynxsty.dih4jda.util.CommandUtils;
 import kotlin.Pair;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -145,10 +147,7 @@ public class InteractionHandler extends ListenerAdapter {
 				data = SmartQueue.queueGuild(guild, data.component1(), data.component2());
 			}
 			if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
-				guild.updateCommands()
-						.addCommands(data.component1())
-						.addCommands(data.component2())
-						.queue();
+				upsert(guild, data.component1(), data.component2());
 				DIH4JDALogger.info(String.format("Queued %s new command(s) in guild %s: %s", data.component1().size() + data.component2().size(), guild.getName(),
 						CommandUtils.getNames(data.component2(), data.component1())), DIH4JDALogger.Type.COMMANDS_QUEUED);
 			}
@@ -158,15 +157,22 @@ public class InteractionHandler extends ListenerAdapter {
 		if (dih4jda.isSmartQueuing()) {
 			data = SmartQueue.queueGlobal(dih4jda.getJDA(), data.component1(), data.component2());
 		}
-		// queue all global commands
+		// upsert all global commands
 		if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
-			dih4jda.getJDA().updateCommands()
-					.addCommands(data.component1())
-					.addCommands(data.component2())
-					.queue();
+			upsert(dih4jda.getJDA(), data.component1(), data.component2());
 			DIH4JDALogger.info(String.format("Queued %s new global command(s): %s", data.component1().size() + data.component2().size(),
 					CommandUtils.getNames(data.component2(), data.component1())), DIH4JDALogger.Type.COMMANDS_QUEUED);
 		}
+	}
+
+	private void upsert(JDA jda, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
+		slashData.forEach(data -> jda.upsertCommand(data).queue());
+		commandData.forEach(data -> jda.upsertCommand(data).queue());
+	}
+
+	private void upsert(Guild guild, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
+		slashData.forEach(data -> guild.upsertCommand(data).queue());
+		commandData.forEach(data -> guild.upsertCommand(data).queue());
 	}
 
 	/**
