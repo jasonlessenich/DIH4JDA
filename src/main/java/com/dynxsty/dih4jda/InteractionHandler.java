@@ -165,11 +165,13 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 	}
 
+	// TODO v1.5: Documentation
 	private void upsert(JDA jda, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
 		slashData.forEach(data -> jda.upsertCommand(data).queue());
 		commandData.forEach(data -> jda.upsertCommand(data).queue());
 	}
 
+	// TODO v1.5: Documentation
 	private void upsert(Guild guild, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
 		slashData.forEach(data -> guild.upsertCommand(data).queue());
 		commandData.forEach(data -> guild.upsertCommand(data).queue());
@@ -371,9 +373,12 @@ public class InteractionHandler extends ListenerAdapter {
 
 	// TODO v1.5: Documentation
 	protected static void fireEvent(Set<Class<? extends DIH4JDAListenerAdapter>> listeners, String name, Object... args) {
+		System.out.println(listeners.stream().map(Class::getSimpleName).collect(Collectors.toList()));
 		for (Class<? extends DIH4JDAListenerAdapter> listener : listeners) {
 			for (Method method : listener.getMethods()) {
-				if (!Arrays.asList(listener.getSuperclass().getMethods()).contains(method)) continue;
+				if (Arrays.stream(listener.getSuperclass().getMethods()).noneMatch(m -> method.getName().equals(m.getName()))) {
+					continue;
+				}
 				if (method.getName().equals(name)) {
 					try {
 						method.invoke(listener.getConstructor().newInstance(), args);
