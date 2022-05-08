@@ -1,7 +1,6 @@
 package com.dynxsty.dih4jda.util;
 
 import net.dv8tion.jda.api.entities.Guild;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Constructor;

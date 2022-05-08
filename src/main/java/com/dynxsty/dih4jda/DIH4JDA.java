@@ -1,9 +1,12 @@
 package com.dynxsty.dih4jda;
 
+import com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter;
+import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import org.reflections.Reflections;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -32,6 +35,8 @@ public class DIH4JDA extends ListenerAdapter {
 	private final boolean registerOnStartup;
 	private final boolean smartQueuing;
 
+	private final Set<Class<? extends DIH4JDAListenerAdapter>> listeners;
+
 	private InteractionHandler handler;
 
 	/**
@@ -53,6 +58,8 @@ public class DIH4JDA extends ListenerAdapter {
 		} else {
 			this.blockedLogTypes = Arrays.stream(blockedLogTypes).collect(Collectors.toSet());
 		}
+		this.listeners = new HashSet<>();
+		findListenerClasses();
 		jda.addEventListener(this);
 	}
 
@@ -82,27 +89,44 @@ public class DIH4JDA extends ListenerAdapter {
 		handler.registerInteractions();
 	}
 
+	// TODO v1.5: Documentation
 	public JDA getJDA() {
 		return jda;
 	}
 
+	// TODO v1.5: Documentation
 	public String getCommandsPackage() {
 		return commandsPackage;
 	}
 
+	// TODO v1.5: Documentation
 	public long getOwnerId() {
 		return ownerId;
 	}
 
+	// TODO v1.5: Documentation
 	public Set<DIH4JDALogger.Type> getBlockedLogTypes() {
 		return blockedLogTypes;
 	}
 
+	// TODO v1.5: Documentation
 	public boolean isRegisterOnStartup() {
 		return registerOnStartup;
 	}
 
+	// TODO v1.5: Documentation
 	public boolean isSmartQueuing() {
 		return smartQueuing;
+	}
+
+	// TODO v1.5: Documentation
+	private void findListenerClasses() {
+		Reflections classes = new Reflections(commandsPackage);
+		listeners.addAll(classes.getSubTypesOf(DIH4JDAListenerAdapter.class));
+	}
+
+	// TODO v1.5: Documentation
+	protected Set<Class<? extends DIH4JDAListenerAdapter>> getListeners() {
+		return listeners;
 	}
 }
