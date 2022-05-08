@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
  */
 public class DIH4JDABuilder {
 	private final JDA jda;
-	private long ownerId;
 	private String commandsPackage;
 	private DIH4JDALogger.Type[] blockedLogTypes;
 	private boolean registerOnStartup = true;
@@ -29,19 +28,6 @@ public class DIH4JDABuilder {
 	 */
 	public static DIH4JDABuilder setJDA(JDA instance) {
 		return new DIH4JDABuilder(instance);
-	}
-
-	/**
-	 * Sets the owner of the Bot. This is used for admin-only commands which can only be executed by the specified owner.
-	 * <p>
-	 * If this is not set admin-only commands will not work.
-	 *
-	 * @param id The ID of the owner.
-	 */
-	@Nonnull
-	public DIH4JDABuilder setOwnerId(long id) {
-		ownerId = id;
-		return this;
 	}
 
 	/**
@@ -103,6 +89,6 @@ public class DIH4JDABuilder {
 		if (ClasspathHelper.forPackage(commandsPackage).isEmpty()) {
 			throw new InvalidPackageException("Package " + commandsPackage + " does not exist.");
 		}
-		return new DIH4JDA(jda, commandsPackage, ownerId, this.registerOnStartup, smartQueuing, blockedLogTypes);
+		return new DIH4JDA(jda, commandsPackage, registerOnStartup, smartQueuing, blockedLogTypes);
 	}
 }

@@ -30,7 +30,6 @@ public class DIH4JDA extends ListenerAdapter {
 
 	private final JDA jda;
 	private final String commandsPackage;
-	private final long ownerId;
 	private final Set<DIH4JDALogger.Type> blockedLogTypes;
 	private final boolean registerOnStartup;
 	private final boolean smartQueuing;
@@ -44,12 +43,10 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param jda             The {@link JDA} instance the handler is to be used for.
 	 * @param commandsPackage The package that houses the command classes.
-	 * @param ownerId         The ID of the owner - used for admin-only commands.
 	 * @param blockedLogTypes All Logs that should be blocked.
 	 */
-	protected DIH4JDA(JDA jda, String commandsPackage, long ownerId, boolean registerOnStartup, boolean smartQueuing, DIH4JDALogger.Type... blockedLogTypes) {
+	protected DIH4JDA(JDA jda, String commandsPackage, boolean registerOnStartup, boolean smartQueuing, DIH4JDALogger.Type... blockedLogTypes) {
 		this.jda = jda;
-		this.ownerId = ownerId;
 		this.commandsPackage = commandsPackage;
 		this.registerOnStartup = registerOnStartup;
 		this.smartQueuing = smartQueuing;
@@ -97,11 +94,6 @@ public class DIH4JDA extends ListenerAdapter {
 	// TODO v1.5: Documentation
 	public String getCommandsPackage() {
 		return commandsPackage;
-	}
-
-	// TODO v1.5: Documentation
-	public long getOwnerId() {
-		return ownerId;
 	}
 
 	// TODO v1.5: Documentation
