@@ -203,7 +203,7 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * Creates guild commands from the given (Slash-) CommandData
 	 *
-	 * @param jda         The {@link JDA} instance.
+	 * @param guild       The {@link Guild}.
 	 * @param slashData   A set of {@link SlashCommandData}.
 	 * @param commandData A set of {@link CommandData},
 	 */
