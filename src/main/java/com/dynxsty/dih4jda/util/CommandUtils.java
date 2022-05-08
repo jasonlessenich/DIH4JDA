@@ -1,6 +1,5 @@
 package com.dynxsty.dih4jda.util;
 
-import com.dynxsty.dih4jda.DIH4JDALogger;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import org.jetbrains.annotations.Contract;
