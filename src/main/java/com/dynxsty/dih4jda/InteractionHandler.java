@@ -4,8 +4,8 @@ import com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import com.dynxsty.dih4jda.interactions.commands.ComponentHandler;
 import com.dynxsty.dih4jda.interactions.commands.ContextCommand;
+import com.dynxsty.dih4jda.interactions.commands.ExecutableSlashCommand;
 import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
-import com.dynxsty.dih4jda.interactions.commands.SlashCommandHandler;
 import com.dynxsty.dih4jda.interactions.commands.autocomplete.AutoCompleteHandler;
 import com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder;
 import com.dynxsty.dih4jda.interactions.components.button.ButtonHandler;
@@ -16,6 +16,7 @@ import com.dynxsty.dih4jda.util.ClassUtils;
 import com.dynxsty.dih4jda.util.CommandUtils;
 import kotlin.Pair;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -54,11 +56,11 @@ public class InteractionHandler extends ListenerAdapter {
 	private final DIH4JDA dih4jda;
 
 	/**
-	 * An Index of all Slash Command Interactions.
+	 * An Index of all {@link ExecutableSlashCommand}s.
 	 *
 	 * @see InteractionHandler#findSlashCommands()
 	 */
-	private final Map<String, SlashCommandHandler> slashCommandIndex;
+	private final Map<String, ExecutableSlashCommand> slashCommandIndex;
 
 	/**
 	 * An Index of all {@link ContextCommand.Message}s.
@@ -122,31 +124,6 @@ public class InteractionHandler extends ListenerAdapter {
 		this.selectMenuIndex = new HashMap<>();
 		this.modalIndex = new HashMap<>();
 		this.dih4jda = dih4jda;
-	}
-
-	/**
-	 * Fires an event from the {@link DIH4JDAListenerAdapter}.
-	 *
-	 * @param listeners A set of all classes that extend the {@link DIH4JDAListenerAdapter}.
-	 * @param name      The event's name.
-	 * @param args      The event's arguments.
-	 */
-	private static void fireEvent(Set<Class<? extends DIH4JDAListenerAdapter>> listeners, String name, Object... args) {
-		for (Class<? extends DIH4JDAListenerAdapter> listener : listeners) {
-			for (Method method : listener.getMethods()) {
-				if (Arrays.stream(listener.getSuperclass().getMethods())
-						.noneMatch(m -> method.getName().equals(m.getName()))) {
-					continue;
-				}
-				if (method.getName().equals(name)) {
-					try {
-						method.invoke(listener.getConstructor().newInstance(), args);
-					} catch (ReflectiveOperationException e) {
-						DIH4JDALogger.error(e.getMessage());
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -417,11 +394,13 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link SlashCommandInteractionEvent} that was fired.
 	 */
 	private void handleSlashCommand(SlashCommandInteractionEvent event) throws Exception {
-		SlashCommandHandler command = slashCommandIndex.get(event.getCommandPath());
+		ExecutableSlashCommand command = slashCommandIndex.get(event.getCommandPath());
 		if (command == null) {
 			throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", event.getCommandPath()));
 		} else {
-			command.execute(event);
+			if (!checkPermissions(event.getInteraction(), command.getRequiredPermissions())) {
+				command.execute(event);
+			}
 		}
 	}
 
@@ -436,7 +415,9 @@ public class InteractionHandler extends ListenerAdapter {
 		if (context == null) {
 			throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 		} else {
-			context.execute(event);
+			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())) {
+				context.execute(event);
+			}
 		}
 	}
 
@@ -451,7 +432,9 @@ public class InteractionHandler extends ListenerAdapter {
 		if (context == null) {
 			throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 		} else {
-			context.execute(event);
+			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())) {
+				context.execute(event);
+			}
 		}
 	}
 
@@ -511,6 +494,48 @@ public class InteractionHandler extends ListenerAdapter {
 		} else {
 			modal.handleModal(event, event.getValues());
 		}
+	}
+
+	/**
+	 * Fires an event from the {@link DIH4JDAListenerAdapter}.
+	 *
+	 * @param listeners A set of all classes that extend the {@link DIH4JDAListenerAdapter}.
+	 * @param name      The event's name.
+	 * @param args      The event's arguments.
+	 */
+	private void fireEvent(Set<Class<? extends DIH4JDAListenerAdapter>> listeners, String name, Object... args) {
+		for (Class<? extends DIH4JDAListenerAdapter> listener : listeners) {
+			for (Method method : listener.getMethods()) {
+				if (Arrays.stream(listener.getSuperclass().getMethods())
+						.noneMatch(m -> method.getName().equals(m.getName()))) {
+					continue;
+				}
+				if (method.getName().equals(name)) {
+					try {
+						method.invoke(listener.getConstructor().newInstance(), args);
+					} catch (ReflectiveOperationException e) {
+						DIH4JDALogger.error(e.getMessage());
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks the user's permissions to fire the {@link DIH4JDAListenerAdapter#onInsufficientPermissions} event, if needed.
+	 *
+	 * @param interaction The {@link CommandInteraction}.
+	 * @param permissions A set of {@link Permission}s.
+	 * @return Whether the event was fired.
+	 */
+	private boolean checkPermissions(CommandInteraction interaction, Set<Permission> permissions) {
+		if (interaction.isFromGuild() && interaction.getMember() != null) {
+			if (!interaction.getMember().hasPermission(permissions)) {
+				fireEvent(dih4jda.getListeners(), "onInsufficientPermissions", interaction, permissions);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

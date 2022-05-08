@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 // TODO v1.5: Documentation
-public abstract class SlashCommand extends ExecutableCommand implements SlashCommandHandler {
+public abstract class SlashCommand extends ExecutableSlashCommand {
 
 	private SlashCommandData data;
 	private Class<? extends Subcommand>[] subcommands;
@@ -43,7 +43,7 @@ public abstract class SlashCommand extends ExecutableCommand implements SlashCom
 	}
 
 	// TODO v1.5: Documentation
-	public abstract static class Subcommand extends ExecutableCommand implements SlashCommandHandler {
+	public abstract static class Subcommand extends ExecutableSlashCommand {
 		private SubcommandData data;
 
 		public SubcommandData getSubcommandData() {

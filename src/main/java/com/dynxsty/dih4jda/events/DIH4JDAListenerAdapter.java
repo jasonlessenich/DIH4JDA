@@ -17,6 +17,6 @@ public abstract class DIH4JDAListenerAdapter {
     public void onModalException(ModalInteraction interaction, Exception e) {}
 
     // Other
-    public void onInsufficientPermission(CommandInteraction interaction, Set<Permission> permissions) {}
+    public void onInsufficientPermissions(CommandInteraction interaction, Set<Permission> permissions) {}
 }
 

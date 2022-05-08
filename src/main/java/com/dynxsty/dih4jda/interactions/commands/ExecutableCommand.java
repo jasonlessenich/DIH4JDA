@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 
 // TODO v1.5: Documentation
 public abstract class ExecutableCommand extends ComponentHandler {
-
-
+	
 	private final Set<Long> whitelistedGuilds = new HashSet<>();
 	private final Set<Long> blacklistedGuilds = new HashSet<>();
 	protected Set<Permission> requiredPermissions = new HashSet<>();
