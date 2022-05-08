@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  */
 public class DIH4JDABuilder {
 	private final JDA jda;
-	private String commandsPackage;
+	private String reflectionsPackage;
 	private DIH4JDALogger.Type[] blockedLogTypes;
 	private boolean registerOnStartup = true;
 	private boolean smartQueuing = true;
@@ -36,8 +36,8 @@ public class DIH4JDABuilder {
 	 * @param pack The package's name.
 	 */
 	@Nonnull
-	public DIH4JDABuilder setCommandsPackage(@Nonnull String pack) {
-		commandsPackage = pack;
+	public DIH4JDABuilder setReflectionsPackage(@Nonnull String pack) {
+		reflectionsPackage = pack;
 		return this;
 	}
 
@@ -86,9 +86,9 @@ public class DIH4JDABuilder {
 	 */
 	public DIH4JDA build() throws DIH4JDAException {
 		if (jda == null) throw new IllegalStateException("JDA instance may not be empty.");
-		if (ClasspathHelper.forPackage(commandsPackage).isEmpty()) {
-			throw new InvalidPackageException("Package " + commandsPackage + " does not exist.");
+		if (ClasspathHelper.forPackage(reflectionsPackage).isEmpty()) {
+			throw new InvalidPackageException("Package " + reflectionsPackage + " does not exist.");
 		}
-		return new DIH4JDA(jda, commandsPackage, registerOnStartup, smartQueuing, blockedLogTypes);
+		return new DIH4JDA(jda, reflectionsPackage, registerOnStartup, smartQueuing, blockedLogTypes);
 	}
 }

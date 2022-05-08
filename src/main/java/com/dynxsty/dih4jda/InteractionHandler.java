@@ -26,14 +26,11 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.callbacks.IReplyCallback;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
-import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -183,7 +180,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * {@link SlashCommand}.
 	 */
 	private void findSlashCommands() {
-		Reflections classes = new Reflections(dih4jda.getCommandsPackage());
+		Reflections classes = new Reflections(dih4jda.getReflectionsPackage());
 		commands.addAll(classes.getSubTypesOf(SlashCommand.class));
 	}
 
@@ -193,7 +190,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * {@link ContextCommand}.
 	 */
 	private void findContextCommands() {
-		Reflections classes = new Reflections(dih4jda.getCommandsPackage());
+		Reflections classes = new Reflections(dih4jda.getReflectionsPackage());
 		contexts.addAll(classes.getSubTypesOf(ContextCommand.class));
 		contexts.removeAll(List.of(ContextCommand.User.class, ContextCommand.Message.class));
 	}
