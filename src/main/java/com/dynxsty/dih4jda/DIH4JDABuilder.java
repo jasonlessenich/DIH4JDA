@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.JDA;
 import org.reflections.util.ClasspathHelper;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Builder-System used to build {@link DIH4JDA}.
@@ -13,6 +15,7 @@ import javax.annotation.Nonnull;
 public class DIH4JDABuilder {
 	private final JDA jda;
 	private String commandsPackage;
+	private Executor executor = ForkJoinPool.commonPool();
 	private DIH4JDALogger.Type[] blockedLogTypes;
 	private boolean registerOnStartup = true;
 	private boolean smartQueuing = true;
@@ -39,6 +42,17 @@ public class DIH4JDABuilder {
 	@Nonnull
 	public DIH4JDABuilder setCommandsPackage(@Nonnull String pack) {
 		commandsPackage = pack;
+		return this;
+	}
+
+	/**
+	 * Sets the Executor that will be used to execute all commands.
+	 *
+	 * @param executor The Executor.
+	 */
+	@Nonnull
+	public DIH4JDABuilder setExecutor(@Nonnull Executor executor) {
+		this.executor = executor;
 		return this;
 	}
 
@@ -86,10 +100,14 @@ public class DIH4JDABuilder {
 	 * @return the built, usable {@link DIH4JDA}
 	 */
 	public DIH4JDA build() throws DIH4JDAException {
+		if (Runtime.getRuntime().availableProcessors() == 1) {
+			DIH4JDALogger.warn("You are running DIH4JDA on a single core CPU. A special system property was set to disable asynchronous command execution.");
+			System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "1");
+		}
 		if (jda == null) throw new IllegalStateException("JDA instance may not be empty.");
 		if (ClasspathHelper.forPackage(commandsPackage).isEmpty()) {
 			throw new InvalidPackageException("Package " + commandsPackage + " does not exist.");
 		}
-		return new DIH4JDA(jda, commandsPackage, registerOnStartup, smartQueuing, blockedLogTypes);
+		return new DIH4JDA(jda, commandsPackage, registerOnStartup, smartQueuing, executor, blockedLogTypes);
 	}
 }

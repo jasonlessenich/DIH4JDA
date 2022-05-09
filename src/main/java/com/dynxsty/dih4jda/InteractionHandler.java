@@ -39,7 +39,11 @@ import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -580,7 +584,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -596,7 +600,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -612,7 +616,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -628,7 +632,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onAutoCompleteException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -644,7 +648,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -660,7 +664,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -676,6 +680,6 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onModalException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 }
