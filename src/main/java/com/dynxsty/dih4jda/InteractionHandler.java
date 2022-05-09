@@ -580,7 +580,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -596,7 +596,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -612,7 +612,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -628,7 +628,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onAutoCompleteException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -644,7 +644,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -660,7 +660,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 
 	/**
@@ -676,6 +676,6 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onModalException", event.getInteraction(), e);
 			}
-		});
+		}, dih4jda.getExecutor());
 	}
 }

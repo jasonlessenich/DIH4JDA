@@ -10,6 +10,7 @@ import org.reflections.Reflections;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +35,7 @@ public class DIH4JDA extends ListenerAdapter {
 	private final boolean registerOnStartup;
 	private final boolean smartQueuing;
 	private final Set<DIH4JDAListenerAdapter> listeners;
+	private final Executor executor;
 	private InteractionHandler handler;
 
 	/**
@@ -43,7 +45,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @param commandsPackage The package that houses the command classes.
 	 * @param blockedLogTypes All Logs that should be blocked.
 	 */
-	protected DIH4JDA(JDA jda, String commandsPackage, boolean registerOnStartup, boolean smartQueuing, DIH4JDALogger.Type... blockedLogTypes) {
+	protected DIH4JDA(JDA jda, String commandsPackage, boolean registerOnStartup, boolean smartQueuing, Executor executor, DIH4JDALogger.Type... blockedLogTypes) {
 		this.jda = jda;
 		this.commandsPackage = commandsPackage;
 		this.registerOnStartup = registerOnStartup;
@@ -53,6 +55,7 @@ public class DIH4JDA extends ListenerAdapter {
 		} else {
 			this.blockedLogTypes = Arrays.stream(blockedLogTypes).collect(Collectors.toSet());
 		}
+		this.executor = executor;
 		this.listeners = new HashSet<>();
 		jda.addEventListener(this);
 	}
@@ -95,6 +98,13 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	public String getCommandsPackage() {
 		return commandsPackage;
+	}
+
+	/**
+	 * @return The executor that is used to execute the commands.
+	 */
+	public Executor getExecutor() {
+		return executor;
 	}
 
 	/**
