@@ -397,123 +397,6 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Handles a single {@link SlashCommand} or {@link SlashCommand.Subcommand}.
-	 * If a {@link SlashCommandInteractionEvent} is fired the corresponding class is found and the command is executed.
-	 *
-	 * @param event The {@link SlashCommandInteractionEvent} that was fired.
-	 */
-	private void handleSlashCommand(SlashCommandInteractionEvent event) throws Exception {
-		String path = event.getCommandPath();
-		CommandRequirements req = slashCommandIndex.containsKey(path) ? slashCommandIndex.get(path) : subcommandIndex.get(path);
-		if (req == null) {
-			throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", path));
-		} else {
-			if (!checkPermissions(event.getInteraction(), req.getRequiredPermissions())
-					&& !checkUser(event.getInteraction(), req.getRequiredUsers())) {
-				if (slashCommandIndex.containsKey(event.getCommandPath())) {
-					slashCommandIndex.get(path).execute(event);
-				} else {
-					subcommandIndex.get(path).execute(event);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Handles a single {@link ContextCommand.User}.
-	 * If a {@link UserContextInteractionEvent} is fired the corresponding class is found and the command is executed.
-	 *
-	 * @param event The {@link UserContextInteractionEvent} that was fired.
-	 */
-	private void handleUserContextCommand(UserContextInteractionEvent event) throws Exception {
-		ContextCommand.User context = userContextIndex.get(event.getCommandPath());
-		if (context == null) {
-			throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
-		} else {
-			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())
-					&& !checkUser(event.getInteraction(), context.getRequiredUsers())) {
-				context.execute(event);
-			}
-		}
-	}
-
-	/**
-	 * Handles a single {@link ContextCommand.Message}.
-	 * If a {@link MessageContextInteractionEvent} is fired the corresponding class is found and the command is executed.
-	 *
-	 * @param event The {@link MessageContextInteractionEvent} that was fired.
-	 */
-	private void handleMessageContextCommand(MessageContextInteractionEvent event) throws Exception {
-		ContextCommand.Message context = messageContextIndex.get(event.getCommandPath());
-		if (context == null) {
-			throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
-		} else {
-			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())
-					&& !checkUser(event.getInteraction(), context.getRequiredUsers())) {
-				context.execute(event);
-			}
-		}
-	}
-
-	/**
-	 * Handles a single {@link CommandAutoCompleteInteractionEvent}.
-	 * If a {@link CommandAutoCompleteInteractionEvent} is fired the corresponding class is found and the command is executed.
-	 *
-	 * @param event The {@link CommandAutoCompleteInteractionEvent} that was fired.
-	 */
-	private void handleAutoComplete(CommandAutoCompleteInteractionEvent event) {
-		AutoCompleteHandler component = autoCompleteIndex.get(event.getCommandPath());
-		if (component != null) {
-			component.handleAutoComplete(event, event.getFocusedOption());
-		}
-	}
-
-	/**
-	 * Handles a single {@link ButtonInteractionEvent}.
-	 * If a {@link ButtonInteractionEvent} is fired the corresponding class is found and the command is executed.
-	 *
-	 * @param event The {@link ButtonInteractionEvent} that was fired.
-	 */
-	private void handleButton(ButtonInteractionEvent event) {
-		ButtonHandler component = buttonIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
-		if (component == null) {
-			DIH4JDALogger.warn(String.format("Button with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.BUTTON_NOT_FOUND);
-		} else {
-			component.handleButton(event, event.getButton());
-		}
-	}
-
-	/**
-	 * Handles a single {@link SelectMenuInteractionEvent}.
-	 * If a {@link SelectMenuInteractionEvent} is fired the corresponding class is found and the command is executed.
-	 *
-	 * @param event The {@link SelectMenuInteractionEvent} that was fired.
-	 */
-	private void handleSelectMenu(SelectMenuInteractionEvent event) {
-		SelectMenuHandler component = selectMenuIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
-		if (component == null) {
-			DIH4JDALogger.warn(String.format("Select Menu with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND);
-		} else {
-			component.handleSelectMenu(event, event.getValues());
-		}
-	}
-
-	/**
-	 * Handles a single {@link ModalInteractionEvent}.
-	 * If a {@link ModalInteractionEvent} is fired the corresponding class is found and the command is executed.
-	 *
-	 * @param event The {@link ModalInteractionEvent} that was fired.
-	 */
-	private void handleModal(ModalInteractionEvent event) {
-		ModalHandler modal = modalIndex.get(ComponentIdBuilder.split(event.getModalId())[0]);
-		if (modal == null) {
-			DIH4JDALogger.warn(String.format("Modal with id \"%s\" could not be found.", event.getModalId()), DIH4JDALogger.Type.MODAL_NOT_FOUND);
-		} else {
-			modal.handleModal(event, event.getValues());
-		}
-	}
-
-	/**
 	 * Fires an event from the {@link DIH4JDAListenerAdapter}.
 	 *
 	 * @param listeners A set of all classes that extend the {@link DIH4JDAListenerAdapter}.
@@ -574,13 +457,24 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	@Override
 	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
-		CompletableFuture.runAsync(() -> {
-			try {
-				handleSlashCommand(event);
-			} catch (Exception e) {
-				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
+		try {
+			String path = event.getCommandPath();
+			CommandRequirements req = slashCommandIndex.containsKey(path) ? slashCommandIndex.get(path) : subcommandIndex.get(path);
+			if (req == null) {
+				throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", path));
+			} else {
+				if (!checkPermissions(event.getInteraction(), req.getRequiredPermissions())
+						&& !checkUser(event.getInteraction(), req.getRequiredUsers())) {
+					if (slashCommandIndex.containsKey(event.getCommandPath())) {
+						slashCommandIndex.get(path).execute(event);
+					} else {
+						subcommandIndex.get(path).execute(event);
+					}
+				}
 			}
-		});
+		} catch (Exception e) {
+			fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
+		}
 	}
 
 	/**
@@ -590,13 +484,19 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	@Override
 	public void onUserContextInteraction(@NotNull UserContextInteractionEvent event) {
-		CompletableFuture.runAsync(() -> {
-			try {
-				handleUserContextCommand(event);
-			} catch (Exception e) {
-				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
+		try {
+			ContextCommand.User context = userContextIndex.get(event.getCommandPath());
+			if (context == null) {
+				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
+			} else {
+				if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())
+						&& !checkUser(event.getInteraction(), context.getRequiredUsers())) {
+					context.execute(event);
+				}
 			}
-		});
+		} catch (Exception e) {
+			fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
+		}
 	}
 
 	/**
@@ -606,13 +506,19 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	@Override
 	public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
-		CompletableFuture.runAsync(() -> {
-			try {
-				handleMessageContextCommand(event);
-			} catch (Exception e) {
-				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
+		try {
+			ContextCommand.Message context = messageContextIndex.get(event.getCommandPath());
+			if (context == null) {
+				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
+			} else {
+				if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())
+						&& !checkUser(event.getInteraction(), context.getRequiredUsers())) {
+					context.execute(event);
+				}
 			}
-		});
+		} catch (Exception e) {
+			fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
+		}
 	}
 
 	/**
@@ -622,13 +528,14 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	@Override
 	public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
-		CompletableFuture.runAsync(() -> {
-			try {
-				handleAutoComplete(event);
-			} catch (Exception e) {
-				fireEvent(dih4jda.getListeners(), "onAutoCompleteException", event.getInteraction(), e);
+		try {
+			AutoCompleteHandler component = autoCompleteIndex.get(event.getCommandPath());
+			if (component != null) {
+				component.handleAutoComplete(event, event.getFocusedOption());
 			}
-		});
+		} catch (Exception e) {
+			fireEvent(dih4jda.getListeners(), "onAutoCompleteException", event.getInteraction(), e);
+		}
 	}
 
 	/**
@@ -638,13 +545,16 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	@Override
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
-		CompletableFuture.runAsync(() -> {
-			try {
-				handleButton(event);
-			} catch (Exception e) {
-				fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
+		try {
+			ButtonHandler component = buttonIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
+			if (component == null) {
+				DIH4JDALogger.warn(String.format("Button with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.BUTTON_NOT_FOUND);
+			} else {
+				component.handleButton(event, event.getButton());
 			}
-		});
+		} catch (Exception e) {
+			fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
+		}
 	}
 
 	/**
@@ -654,13 +564,16 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	@Override
 	public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
-		CompletableFuture.runAsync(() -> {
-			try {
-				handleSelectMenu(event);
-			} catch (Exception e) {
-				fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
+		try {
+			SelectMenuHandler component = selectMenuIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
+			if (component == null) {
+				DIH4JDALogger.warn(String.format("Select Menu with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND);
+			} else {
+				component.handleSelectMenu(event, event.getValues());
 			}
-		});
+		} catch (Exception e) {
+			fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
+		}
 	}
 
 	/**
@@ -670,12 +583,15 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	@Override
 	public void onModalInteraction(@NotNull ModalInteractionEvent event) {
-		CompletableFuture.runAsync(() -> {
-			try {
-				handleModal(event);
-			} catch (Exception e) {
-				fireEvent(dih4jda.getListeners(), "onModalException", event.getInteraction(), e);
+		try {
+			ModalHandler modal = modalIndex.get(ComponentIdBuilder.split(event.getModalId())[0]);
+			if (modal == null) {
+				DIH4JDALogger.warn(String.format("Modal with id \"%s\" could not be found.", event.getModalId()), DIH4JDALogger.Type.MODAL_NOT_FOUND);
+			} else {
+				modal.handleModal(event, event.getValues());
 			}
-		});
+		} catch (Exception e) {
+			fireEvent(dih4jda.getListeners(), "onModalException", event.getInteraction(), e);
+		}
 	}
 }
