@@ -11,12 +11,25 @@ import java.util.Set;
 public abstract class DIH4JDAListenerAdapter {
 
     // Exceptions
+
+    // TODO v1.5: Documentation
     public void onCommandException(CommandInteraction interaction, Exception e) {}
+
+    // TODO v1.5: Documentation
     public void onComponentException(ComponentInteraction interaction, Exception e) {}
+
+    // TODO v1.5: Documentation
     public void onAutoCompleteException(CommandAutoCompleteInteraction interaction, Exception e) {}
+
+    // TODO v1.5: Documentation
     public void onModalException(ModalInteraction interaction, Exception e) {}
 
     // Other
+
+    // TODO v1.5: Documentation
     public void onInsufficientPermissions(CommandInteraction interaction, Set<Permission> permissions) {}
+
+    // TODO v1.5: Documentation
+    public void onUserNotAllowed(CommandInteraction interaction, Set<Long> userIds) {}
 }
 

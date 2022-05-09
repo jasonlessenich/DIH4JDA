@@ -398,7 +398,8 @@ public class InteractionHandler extends ListenerAdapter {
 		if (command == null) {
 			throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", event.getCommandPath()));
 		} else {
-			if (!checkPermissions(event.getInteraction(), command.getRequiredPermissions())) {
+			if (!checkPermissions(event.getInteraction(), command.getRequiredPermissions())
+					&& !checkUser(event.getInteraction(), command.getRequiredUsers())) {
 				command.execute(event);
 			}
 		}
@@ -415,7 +416,8 @@ public class InteractionHandler extends ListenerAdapter {
 		if (context == null) {
 			throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 		} else {
-			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())) {
+			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())
+					&& !checkUser(event.getInteraction(), context.getRequiredUsers())) {
 				context.execute(event);
 			}
 		}
@@ -432,7 +434,8 @@ public class InteractionHandler extends ListenerAdapter {
 		if (context == null) {
 			throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 		} else {
-			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())) {
+			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())
+					&& !checkUser(event.getInteraction(), context.getRequiredUsers())) {
 				context.execute(event);
 			}
 		}
@@ -529,11 +532,26 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return Whether the event was fired.
 	 */
 	private boolean checkPermissions(CommandInteraction interaction, Set<Permission> permissions) {
-		if (interaction.isFromGuild() && interaction.getMember() != null) {
+		if (!permissions.isEmpty() && interaction.isFromGuild() && interaction.getMember() != null) {
 			if (!interaction.getMember().hasPermission(permissions)) {
 				fireEvent(dih4jda.getListeners(), "onInsufficientPermissions", interaction, permissions);
 				return true;
 			}
+		}
+		return false;
+	}
+
+	/**
+	 * Checks the user to fire the {@link DIH4JDAListenerAdapter#onUserNotAllowed} event, if needed.
+	 *
+	 * @param interaction The {@link CommandInteraction}.
+	 * @param userIds A set of {@link Long}s, representing the user ids.
+	 * @return Whether the event was fired.
+	 */
+	private boolean checkUser(CommandInteraction interaction, Set<Long> userIds) {
+		if (!userIds.isEmpty() && !userIds.contains(interaction.getUser().getIdLong())) {
+			fireEvent(dih4jda.getListeners(), "onUserNotAllowed", interaction, userIds);
+			return true;
 		}
 		return false;
 	}

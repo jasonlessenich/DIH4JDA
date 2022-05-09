@@ -15,17 +15,19 @@ public abstract class ExecutableCommand extends ComponentHandler {
 	
 	private final Set<Long> whitelistedGuilds = new HashSet<>();
 	private final Set<Long> blacklistedGuilds = new HashSet<>();
-	protected Set<Permission> requiredPermissions = new HashSet<>();
+	private final Set<Permission> requiredPermissions = new HashSet<>();
+	private final Set<Long> requiredUsers = new HashSet<>();
 	private boolean isGuildCommand = true;
 
-	public Set<Permission> getRequiredPermissions() {
-		return requiredPermissions;
+	// TODO v1.5: Documentation
+	public void requirePermissions(Permission... permissions) {
+		if (!isGuildCommand) throw new UnsupportedOperationException("Cannot require User Permissions for Global Commands!");
+		requiredPermissions.addAll(Arrays.asList(permissions));
 	}
 
 	// TODO v1.5: Documentation
-	public void requirePermissions(Permission... requiredPermissions) {
-		if (!isGuildCommand) throw new UnsupportedOperationException("Cannot require User Permissions for Global Commands!");
-		this.requiredPermissions = Arrays.stream(requiredPermissions).collect(Collectors.toSet());
+	public void requireUsers(Long... users) {
+		requiredUsers.addAll(Arrays.asList(users));
 	}
 
 	/**
@@ -90,5 +92,13 @@ public abstract class ExecutableCommand extends ComponentHandler {
 	// TODO v1.5: Documentation
 	public void setGuildCommand(boolean guildCommand) {
 		isGuildCommand = guildCommand;
+	}
+
+	public Set<Permission> getRequiredPermissions() {
+		return requiredPermissions;
+	}
+
+	public Set<Long> getRequiredUsers() {
+		return requiredUsers;
 	}
 }
