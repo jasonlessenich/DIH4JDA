@@ -1,7 +1,7 @@
 package com.dynxsty.dih4jda.interactions.commands;
 
+import com.dynxsty.dih4jda.DIH4JDA;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 
 import java.util.Arrays;
@@ -10,25 +10,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-// TODO v1.5: Documentation
-public abstract class ExecutableCommand extends ComponentHandler {
-	
+public abstract class ExecutableCommand extends CommandRequirements {
 	private final Set<Long> whitelistedGuilds = new HashSet<>();
 	private final Set<Long> blacklistedGuilds = new HashSet<>();
-	private final Set<Permission> requiredPermissions = new HashSet<>();
-	private final Set<Long> requiredUsers = new HashSet<>();
-	private boolean isGuildCommand = true;
-
-	// TODO v1.5: Documentation
-	public void requirePermissions(Permission... permissions) {
-		if (!isGuildCommand) throw new UnsupportedOperationException("Cannot require User Permissions for Global Commands!");
-		requiredPermissions.addAll(Arrays.asList(permissions));
-	}
-
-	// TODO v1.5: Documentation
-	public void requireUsers(Long... users) {
-		requiredUsers.addAll(Arrays.asList(users));
-	}
+	private boolean isGuildCommand = DIH4JDA.defaultGuildCommands;
 
 	/**
 	 * Allows a set of {@link Guild}s to update their Slash Commands.
@@ -92,13 +77,5 @@ public abstract class ExecutableCommand extends ComponentHandler {
 	// TODO v1.5: Documentation
 	public void setGuildCommand(boolean guildCommand) {
 		isGuildCommand = guildCommand;
-	}
-
-	public Set<Permission> getRequiredPermissions() {
-		return requiredPermissions;
-	}
-
-	public Set<Long> getRequiredUsers() {
-		return requiredUsers;
 	}
 }

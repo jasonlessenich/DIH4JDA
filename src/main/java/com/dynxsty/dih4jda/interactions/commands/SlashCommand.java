@@ -1,17 +1,20 @@
 package com.dynxsty.dih4jda.interactions.commands;
 
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 // TODO v1.5: Documentation
-public abstract class SlashCommand extends ExecutableSlashCommand {
+public abstract class SlashCommand extends ExecutableCommand {
 
 	private SlashCommandData data;
 	private Class<? extends Subcommand>[] subcommands;
 	private Class<? extends SubcommandGroup>[] subcommandGroups;
 
 	protected SlashCommand() {}
+
+	public void execute(SlashCommandInteractionEvent event) {}
 
 	public SlashCommandData getCommandData() {
 		return data;
@@ -43,7 +46,7 @@ public abstract class SlashCommand extends ExecutableSlashCommand {
 	}
 
 	// TODO v1.5: Documentation
-	public abstract static class Subcommand extends ExecutableSlashCommand {
+	public abstract static class Subcommand extends CommandRequirements {
 		private SubcommandData data;
 
 		public SubcommandData getSubcommandData() {
@@ -54,6 +57,8 @@ public abstract class SlashCommand extends ExecutableSlashCommand {
 		public void setSubcommandData(SubcommandData subCommandData) {
 			this.data = subCommandData;
 		}
+
+		public abstract void execute(SlashCommandInteractionEvent event);
 	}
 
 	// TODO v1.5: Documentation

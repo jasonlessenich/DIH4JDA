@@ -2,9 +2,9 @@ package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
+import com.dynxsty.dih4jda.interactions.commands.CommandRequirements;
 import com.dynxsty.dih4jda.interactions.commands.ComponentHandler;
 import com.dynxsty.dih4jda.interactions.commands.ContextCommand;
-import com.dynxsty.dih4jda.interactions.commands.ExecutableSlashCommand;
 import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import com.dynxsty.dih4jda.interactions.commands.autocomplete.AutoCompleteHandler;
 import com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder;
@@ -56,11 +56,18 @@ public class InteractionHandler extends ListenerAdapter {
 	private final DIH4JDA dih4jda;
 
 	/**
-	 * An Index of all {@link ExecutableSlashCommand}s.
+	 * An Index of all {@link SlashCommand}s.
 	 *
 	 * @see InteractionHandler#findSlashCommands()
 	 */
-	private final Map<String, ExecutableSlashCommand> slashCommandIndex;
+	private final Map<String, SlashCommand> slashCommandIndex;
+
+	/**
+	 * An Index of all {@link SlashCommand.Subcommand}s.
+	 *
+	 * @see InteractionHandler#findSlashCommands()
+	 */
+	private final Map<String, SlashCommand.Subcommand> subcommandIndex;
 
 	/**
 	 * An Index of all {@link ContextCommand.Message}s.
@@ -113,17 +120,19 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param dih4jda The {@link DIH4JDA} instance.
 	 */
 	protected InteractionHandler(DIH4JDA dih4jda) {
-		this.commands = new HashSet<>();
-		this.contexts = new HashSet<>();
-
-		this.slashCommandIndex = new HashMap<>();
-		this.messageContextIndex = new HashMap<>();
-		this.userContextIndex = new HashMap<>();
-		this.autoCompleteIndex = new HashMap<>();
-		this.buttonIndex = new HashMap<>();
-		this.selectMenuIndex = new HashMap<>();
-		this.modalIndex = new HashMap<>();
 		this.dih4jda = dih4jda;
+
+		commands = new HashSet<>();
+		contexts = new HashSet<>();
+
+		slashCommandIndex = new HashMap<>();
+		subcommandIndex = new HashMap<String, SlashCommand.Subcommand>();
+		messageContextIndex = new HashMap<>();
+		userContextIndex = new HashMap<>();
+		autoCompleteIndex = new HashMap<>();
+		buttonIndex = new HashMap<>();
+		selectMenuIndex = new HashMap<>();
+		modalIndex = new HashMap<>();
 	}
 
 	/**
@@ -330,7 +339,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} else {
 				commandPath = CommandUtils.buildCommandPath(command.getCommandData().getName(), subGroupName, instance.getSubcommandData().getName());
 			}
-			slashCommandIndex.put(commandPath, instance);
+			subcommandIndex.put(commandPath, instance);
 			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s", commandPath), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 			if (instance.shouldHandleAutoComplete() && Checks.checkImplementation(instance.getClass(), AutoCompleteHandler.class)) {
 				autoCompleteIndex.put(commandPath, (AutoCompleteHandler) instance);
@@ -388,19 +397,21 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Handles a single {@link SlashCommand}.
+	 * Handles a single {@link SlashCommand} or {@link SlashCommand.Subcommand}.
 	 * If a {@link SlashCommandInteractionEvent} is fired the corresponding class is found and the command is executed.
 	 *
 	 * @param event The {@link SlashCommandInteractionEvent} that was fired.
 	 */
 	private void handleSlashCommand(SlashCommandInteractionEvent event) throws Exception {
-		ExecutableSlashCommand command = slashCommandIndex.get(event.getCommandPath());
-		if (command == null) {
-			throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", event.getCommandPath()));
+		String path = event.getCommandPath();
+		CommandRequirements req = slashCommandIndex.containsKey(path) ? slashCommandIndex.get(path) : subcommandIndex.get(path);
+		if (req == null) {
+			throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", path));
 		} else {
-			if (!checkPermissions(event.getInteraction(), command.getRequiredPermissions())
-					&& !checkUser(event.getInteraction(), command.getRequiredUsers())) {
-				command.execute(event);
+			if (!checkPermissions(event.getInteraction(), req.getRequiredPermissions())
+					&& !checkUser(event.getInteraction(), req.getRequiredUsers())) {
+				if (slashCommandIndex.containsKey(event.getCommandPath())) slashCommandIndex.get(path).execute(event);
+				else subcommandIndex.get(path).execute(event);
 			}
 		}
 	}

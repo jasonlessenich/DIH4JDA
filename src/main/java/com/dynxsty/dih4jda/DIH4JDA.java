@@ -37,6 +37,8 @@ public class DIH4JDA extends ListenerAdapter {
 
 	private InteractionHandler handler;
 
+	public static boolean defaultGuildCommands = true;
+
 	/**
 	 * Constructs a new DIH4JDA instance
 	 *
