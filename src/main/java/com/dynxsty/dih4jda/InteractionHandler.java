@@ -410,8 +410,11 @@ public class InteractionHandler extends ListenerAdapter {
 		} else {
 			if (!checkPermissions(event.getInteraction(), req.getRequiredPermissions())
 					&& !checkUser(event.getInteraction(), req.getRequiredUsers())) {
-				if (slashCommandIndex.containsKey(event.getCommandPath())) slashCommandIndex.get(path).execute(event);
-				else subcommandIndex.get(path).execute(event);
+				if (slashCommandIndex.containsKey(event.getCommandPath())) {
+					slashCommandIndex.get(path).execute(event);
+				} else {
+					subcommandIndex.get(path).execute(event);
+				}
 			}
 		}
 	}
@@ -552,7 +555,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Checks the user to fire the {@link DIH4JDAListenerAdapter#onUserNotAllowed} event, if needed.
 	 *
 	 * @param interaction The {@link CommandInteraction}.
-	 * @param userIds A set of {@link Long}s, representing the user ids.
+	 * @param userIds     A set of {@link Long}s, representing the user ids.
 	 * @return Whether the event was fired.
 	 * @since v1.5
 	 */

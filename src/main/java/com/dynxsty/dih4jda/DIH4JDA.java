@@ -39,9 +39,9 @@ public class DIH4JDA extends ListenerAdapter {
 	/**
 	 * Constructs a new DIH4JDA instance
 	 *
-	 * @param jda                The {@link JDA} instance the handler is to be used for.
+	 * @param jda             The {@link JDA} instance the handler is to be used for.
 	 * @param commandsPackage The package that houses the command classes.
-	 * @param blockedLogTypes    All Logs that should be blocked.
+	 * @param blockedLogTypes All Logs that should be blocked.
 	 */
 	protected DIH4JDA(JDA jda, String commandsPackage, boolean registerOnStartup, boolean smartQueuing, DIH4JDALogger.Type... blockedLogTypes) {
 		this.jda = jda;
@@ -120,6 +120,7 @@ public class DIH4JDA extends ListenerAdapter {
 
 	/**
 	 * Allows to add Listener classes (that extend {@link DIH4JDAListenerAdapter}).
+	 *
 	 * @since v1.5
 	 */
 	public void addListeners(Object... classes) {

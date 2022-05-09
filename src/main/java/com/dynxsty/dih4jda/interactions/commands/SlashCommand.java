@@ -158,7 +158,7 @@ public abstract class SlashCommand extends ExecutableCommand {
 		 * Sets all Subcommands that belong to this subcommand group.
 		 *
 		 * @param classes The classes (must extend {@link Subcommand}) which should be registered as subcommands
-		 * of this subcommand group.
+		 *                of this subcommand group.
 		 */
 		@SafeVarargs
 		public final void setSubcommands(Class<? extends Subcommand>... classes) {

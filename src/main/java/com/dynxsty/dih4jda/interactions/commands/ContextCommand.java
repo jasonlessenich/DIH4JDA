@@ -9,8 +9,8 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * Model class which represents a single Context Command.
  *
- * @see ContextCommand.User#execute(UserContextInteractionEvent) 
- * @see ContextCommand.Message#execute(MessageContextInteractionEvent) 
+ * @see ContextCommand.User#execute(UserContextInteractionEvent)
+ * @see ContextCommand.Message#execute(MessageContextInteractionEvent)
  */
 public abstract class ContextCommand extends ExecutableCommand {
 	private CommandData commandData;
@@ -26,8 +26,8 @@ public abstract class ContextCommand extends ExecutableCommand {
 	 * Sets this commands' {@link CommandData}.
 	 *
 	 * @param commandData The corresponding {@link CommandData} which should be used for this context command.
-	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#user(String) 
-	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#message(String) 
+	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#user(String)
+	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#message(String)
 	 */
 	public void setCommandData(CommandData commandData) {
 		if (commandData.getType() == Command.Type.MESSAGE || commandData.getType() == Command.Type.USER) {

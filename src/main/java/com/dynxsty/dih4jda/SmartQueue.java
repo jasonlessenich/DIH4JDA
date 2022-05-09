@@ -15,6 +15,7 @@ import java.util.Set;
 
 /**
  * Utility class that contains some useful methods regarding the SmartQueue functionality.
+ *
  * @since v1.5
  */
 public class SmartQueue {
