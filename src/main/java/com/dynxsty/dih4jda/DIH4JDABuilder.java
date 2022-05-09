@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  */
 public class DIH4JDABuilder {
 	private final JDA jda;
-	private String reflectionsPackage;
+	private String commandsPackage;
 	private DIH4JDALogger.Type[] blockedLogTypes;
 	private boolean registerOnStartup = true;
 	private boolean smartQueuing = true;
@@ -31,13 +31,14 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Sets the package that houses all Command classes. DIH4JDA then uses Reflection to "scan" the package for these classes.
+	 * Sets the package that houses all Command classes. DIH4JDA then uses the {@link org.reflections.Reflections} API to "scan" the package for all
+	 * command classes.
 	 *
 	 * @param pack The package's name.
 	 */
 	@Nonnull
-	public DIH4JDABuilder setReflectionsPackage(@Nonnull String pack) {
-		reflectionsPackage = pack;
+	public DIH4JDABuilder setCommandsPackage(@Nonnull String pack) {
+		commandsPackage = pack;
 		return this;
 	}
 
@@ -86,9 +87,9 @@ public class DIH4JDABuilder {
 	 */
 	public DIH4JDA build() throws DIH4JDAException {
 		if (jda == null) throw new IllegalStateException("JDA instance may not be empty.");
-		if (ClasspathHelper.forPackage(reflectionsPackage).isEmpty()) {
-			throw new InvalidPackageException("Package " + reflectionsPackage + " does not exist.");
+		if (ClasspathHelper.forPackage(commandsPackage).isEmpty()) {
+			throw new InvalidPackageException("Package " + commandsPackage + " does not exist.");
 		}
-		return new DIH4JDA(jda, reflectionsPackage, registerOnStartup, smartQueuing, blockedLogTypes);
+		return new DIH4JDA(jda, commandsPackage, registerOnStartup, smartQueuing, blockedLogTypes);
 	}
 }

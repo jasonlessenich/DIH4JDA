@@ -204,7 +204,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * {@link SlashCommand}.
 	 */
 	private void findSlashCommands() {
-		Reflections classes = new Reflections(dih4jda.getReflectionsPackage());
+		Reflections classes = new Reflections(dih4jda.getCommandsPackage());
 		commands.addAll(classes.getSubTypesOf(SlashCommand.class));
 	}
 
@@ -214,7 +214,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * {@link ContextCommand}.
 	 */
 	private void findContextCommands() {
-		Reflections classes = new Reflections(dih4jda.getReflectionsPackage());
+		Reflections classes = new Reflections(dih4jda.getCommandsPackage());
 		contexts.addAll(classes.getSubTypesOf(ContextCommand.class));
 		contexts.removeAll(List.of(ContextCommand.User.class, ContextCommand.Message.class));
 	}
@@ -518,20 +518,21 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param args      The event's arguments.
 	 * @since v1.5
 	 */
-	private void fireEvent(Set<Class<? extends DIH4JDAListenerAdapter>> listeners, String name, Object... args) {
-		for (Class<? extends DIH4JDAListenerAdapter> listener : listeners) {
-			for (Method method : listener.getMethods()) {
-				if (Arrays.stream(listener.getSuperclass().getMethods())
-						.noneMatch(m -> method.getName().equals(m.getName()))) {
-					continue;
-				}
-				if (method.getName().equals(name)) {
-					try {
-						method.invoke(listener.getConstructor().newInstance(), args);
-					} catch (ReflectiveOperationException e) {
-						DIH4JDALogger.error(e.getMessage());
+	private void fireEvent(Set<Object> listeners, String name, Object... args) {
+		for (Object listener : listeners) {
+			try {
+				DIH4JDAListenerAdapter adapter = (DIH4JDAListenerAdapter) listener;
+				for (Method method : listener.getClass().getMethods()) {
+					if (Arrays.stream(adapter.getClass().getMethods())
+							.noneMatch(m -> method.getName().equals(m.getName()))) {
+						continue;
+					}
+					if (method.getName().equals(name)) {
+						method.invoke(listener.getClass().getConstructor().newInstance(), args);
 					}
 				}
+			} catch (ReflectiveOperationException e) {
+				DIH4JDALogger.error(e.getMessage());
 			}
 		}
 	}

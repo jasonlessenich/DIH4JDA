@@ -29,23 +29,23 @@ public class DIH4JDA extends ListenerAdapter {
 
 	public static boolean defaultGuildCommands = true;
 	private final JDA jda;
-	private final String reflectionsPackage;
+	private final String commandsPackage;
 	private final Set<DIH4JDALogger.Type> blockedLogTypes;
 	private final boolean registerOnStartup;
 	private final boolean smartQueuing;
-	private final Set<Class<? extends DIH4JDAListenerAdapter>> listeners;
+	private final Set<Object> listeners;
 	private InteractionHandler handler;
 
 	/**
 	 * Constructs a new DIH4JDA instance
 	 *
 	 * @param jda                The {@link JDA} instance the handler is to be used for.
-	 * @param reflectionsPackage The package that houses the command classes.
+	 * @param commandsPackage The package that houses the command classes.
 	 * @param blockedLogTypes    All Logs that should be blocked.
 	 */
-	protected DIH4JDA(JDA jda, String reflectionsPackage, boolean registerOnStartup, boolean smartQueuing, DIH4JDALogger.Type... blockedLogTypes) {
+	protected DIH4JDA(JDA jda, String commandsPackage, boolean registerOnStartup, boolean smartQueuing, DIH4JDALogger.Type... blockedLogTypes) {
 		this.jda = jda;
-		this.reflectionsPackage = reflectionsPackage;
+		this.commandsPackage = commandsPackage;
 		this.registerOnStartup = registerOnStartup;
 		this.smartQueuing = smartQueuing;
 		if (blockedLogTypes == null || blockedLogTypes.length < 1) {
@@ -54,7 +54,6 @@ public class DIH4JDA extends ListenerAdapter {
 			this.blockedLogTypes = Arrays.stream(blockedLogTypes).collect(Collectors.toSet());
 		}
 		this.listeners = new HashSet<>();
-		findListenerClasses();
 		jda.addEventListener(this);
 	}
 
@@ -65,7 +64,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	@Override
 	public void onReady(@NotNull ReadyEvent event) {
-		if (getReflectionsPackage() == null) return;
+		if (getCommandsPackage() == null) return;
 		DIH4JDALogger.blockedLogTypes = blockedLogTypes;
 		handler = new InteractionHandler(this);
 		getJDA().addEventListener(handler);
@@ -94,8 +93,8 @@ public class DIH4JDA extends ListenerAdapter {
 	/**
 	 * @return The provided package that is used with the {@link Reflections} API.
 	 */
-	public String getReflectionsPackage() {
-		return reflectionsPackage;
+	public String getCommandsPackage() {
+		return commandsPackage;
 	}
 
 	/**
@@ -123,16 +122,23 @@ public class DIH4JDA extends ListenerAdapter {
 	 * Finds all classes that extend {@link DIH4JDAListenerAdapter} by using the {@link Reflections} API.
 	 * @since v1.5
 	 */
-	private void findListenerClasses() {
-		Reflections classes = new Reflections(reflectionsPackage);
-		listeners.addAll(classes.getSubTypesOf(DIH4JDAListenerAdapter.class));
+	public void addListeners(Object... classes) {
+		for (Object o : classes) {
+			try {
+				// check if class extends the ListenerAdapter
+				DIH4JDAListenerAdapter adapter = (DIH4JDAListenerAdapter) o;
+			} catch (ClassCastException e) {
+				throw new IllegalArgumentException("Listener classes must extend DIH4JDAListenerAdapter!");
+			}
+		}
+		listeners.add(Arrays.asList(classes));
 	}
 
 	/**
 	 * @return A set of all Listener classes.
-	 * @see DIH4JDA#findListenerClasses()
+	 * @see DIH4JDA#addListeners(Object...)
 	 */
-	protected Set<Class<? extends DIH4JDAListenerAdapter>> getListeners() {
+	protected Set<Object> getListeners() {
 		return listeners;
 	}
 }
