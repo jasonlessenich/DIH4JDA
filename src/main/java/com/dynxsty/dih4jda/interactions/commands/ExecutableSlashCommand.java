@@ -4,5 +4,5 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 
 // TODO v1.5: Documentation
 public abstract class ExecutableSlashCommand extends ExecutableCommand {
-	public abstract void execute(SlashCommandInteractionEvent event);
+	public void execute(SlashCommandInteractionEvent event) {}
 }
