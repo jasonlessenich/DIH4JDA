@@ -11,7 +11,7 @@ import java.util.List;
  * This is best used with the {@link com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder}.
  *
  * <pre>{@code
- * public class TestCommand extends GuildSlashCommand implements ModalHandler {
+ * public class TestCommand extends SlashCommand implements ModalHandler {
  *
  *     public TestCommand(Guild guild) {
  *         setCommandData(Commands.slash("test", "test description"));
@@ -19,7 +19,7 @@ import java.util.List;
  *     }
  *
  *     @Override
- *     public void handleSlashCommand(SlashCommandInteractionEvent event) {
+ *     public void execute(SlashCommandInteractionEvent event) {
  * 		Role applied = [...]
  * 		TextInput email = TextInput.create("email", "Email", TextInputStyle.SHORT)
  * 				.setPlaceholder("Enter your E-mail")

@@ -1,14 +1,14 @@
-package com.dynxsty.dih4jda.interactions.commands.slash_command.autocomplete;
+package com.dynxsty.dih4jda.interactions.commands.autocomplete;
 
-import com.dynxsty.dih4jda.interactions.commands.slash_command.dao.ExecutableCommand;
+import com.dynxsty.dih4jda.interactions.commands.ComponentHandler;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 
 /**
- * Interface that must be implemented for all classes that have {@link ExecutableCommand#enableAutoCompleteHandling()} set.
+ * Interface that must be implemented for all classes that have {@link ComponentHandler#enableAutoCompleteHandling()} set.
  *
  * <pre>{@code
- * public class PingCommand extends GuildSlashCommand implements AutoCompleteHandler {
+ * public class PingCommand extends SlashCommand implements AutoCompleteHandler {
  *
  *     public PingCommand(Guild guild) {
  *         setCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id", true, true));
@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
  *     }
  *
  *     @Override
- *     public void handleSlashCommand(SlashCommandInteractionEvent event) {
+ *     public void execute(SlashCommandInteractionEvent event) {
  *         OptionMapping mapping = event.getOption("user-id");
  *         String userId = mapping.getAsString();
  *         event.replyFormat("Ping! <@%s>", userId).queue();
