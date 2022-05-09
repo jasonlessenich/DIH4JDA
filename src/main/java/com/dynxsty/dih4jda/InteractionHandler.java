@@ -526,6 +526,9 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @since v1.5
 	 */
 	private void fireEvent(Set<DIH4JDAListenerAdapter> listeners, String name, Object... args) {
+		if (listeners.isEmpty()) {
+			DIH4JDALogger.warn(String.format("%s was fired, but not handled (No listener registered) ", name), DIH4JDALogger.Type.EVENT_FIRED);
+		}
 		for (DIH4JDAListenerAdapter listener : listeners) {
 			try {
 				for (Method method : listener.getClass().getMethods()) {
