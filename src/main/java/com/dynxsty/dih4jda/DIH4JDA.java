@@ -33,7 +33,7 @@ public class DIH4JDA extends ListenerAdapter {
 	private final Set<DIH4JDALogger.Type> blockedLogTypes;
 	private final boolean registerOnStartup;
 	private final boolean smartQueuing;
-	private final Set<Object> listeners;
+	private final Set<DIH4JDAListenerAdapter> listeners;
 	private InteractionHandler handler;
 
 	/**
@@ -127,18 +127,18 @@ public class DIH4JDA extends ListenerAdapter {
 			try {
 				// check if class extends the ListenerAdapter
 				DIH4JDAListenerAdapter adapter = (DIH4JDAListenerAdapter) o;
+				listeners.add(adapter);
 			} catch (ClassCastException e) {
 				throw new IllegalArgumentException("Listener classes must extend DIH4JDAListenerAdapter!");
 			}
 		}
-		listeners.add(Arrays.asList(classes));
 	}
 
 	/**
 	 * @return A set of all Listener classes.
 	 * @see DIH4JDA#addListeners(Object...)
 	 */
-	protected Set<Object> getListeners() {
+	protected Set<DIH4JDAListenerAdapter> getListeners() {
 		return listeners;
 	}
 }

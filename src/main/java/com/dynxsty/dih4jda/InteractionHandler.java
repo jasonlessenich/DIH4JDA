@@ -518,15 +518,10 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param args      The event's arguments.
 	 * @since v1.5
 	 */
-	private void fireEvent(Set<Object> listeners, String name, Object... args) {
-		for (Object listener : listeners) {
+	private void fireEvent(Set<DIH4JDAListenerAdapter> listeners, String name, Object... args) {
+		for (DIH4JDAListenerAdapter listener : listeners) {
 			try {
-				DIH4JDAListenerAdapter adapter = (DIH4JDAListenerAdapter) listener;
 				for (Method method : listener.getClass().getMethods()) {
-					if (Arrays.stream(adapter.getClass().getMethods())
-							.noneMatch(m -> method.getName().equals(m.getName()))) {
-						continue;
-					}
 					if (method.getName().equals(name)) {
 						method.invoke(listener.getClass().getConstructor().newInstance(), args);
 					}
