@@ -27,24 +27,21 @@ import java.util.stream.Collectors;
  */
 public class DIH4JDA extends ListenerAdapter {
 
+	public static boolean defaultGuildCommands = true;
 	private final JDA jda;
 	private final String reflectionsPackage;
 	private final Set<DIH4JDALogger.Type> blockedLogTypes;
 	private final boolean registerOnStartup;
 	private final boolean smartQueuing;
-
 	private final Set<Class<? extends DIH4JDAListenerAdapter>> listeners;
-
 	private InteractionHandler handler;
-
-	public static boolean defaultGuildCommands = true;
 
 	/**
 	 * Constructs a new DIH4JDA instance
 	 *
-	 * @param jda             The {@link JDA} instance the handler is to be used for.
+	 * @param jda                The {@link JDA} instance the handler is to be used for.
 	 * @param reflectionsPackage The package that houses the command classes.
-	 * @param blockedLogTypes All Logs that should be blocked.
+	 * @param blockedLogTypes    All Logs that should be blocked.
 	 */
 	protected DIH4JDA(JDA jda, String reflectionsPackage, boolean registerOnStartup, boolean smartQueuing, DIH4JDALogger.Type... blockedLogTypes) {
 		this.jda = jda;
@@ -83,42 +80,58 @@ public class DIH4JDA extends ListenerAdapter {
 	 * Registers all Interactions and replaces the old ones.
 	 * Please note that global commands may need up to an hour before they're fully registered.
 	 */
-	public void registerInteractions() throws Exception {
+	public void registerInteractions() throws ReflectiveOperationException {
 		handler.registerInteractions();
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * @return The {@link JDA} instance.
+	 */
 	public JDA getJDA() {
 		return jda;
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * @return The provided package that is used with the {@link Reflections} API.
+	 */
 	public String getReflectionsPackage() {
 		return reflectionsPackage;
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * @return A set with all blocked {@link DIH4JDALogger.Type}s.
+	 */
 	public Set<DIH4JDALogger.Type> getBlockedLogTypes() {
 		return blockedLogTypes;
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * @return Whether commands should be registered on each {@link ListenerAdapter#onReady(ReadyEvent)} event.
+	 */
 	public boolean isRegisterOnStartup() {
 		return registerOnStartup;
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * @return Whether the SmartQueue Functionality is enabled.
+	 */
 	public boolean isSmartQueuing() {
 		return smartQueuing;
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * Finds all classes that extend {@link DIH4JDAListenerAdapter} by using the {@link Reflections} API.
+	 * @since v1.5
+	 */
 	private void findListenerClasses() {
 		Reflections classes = new Reflections(reflectionsPackage);
 		listeners.addAll(classes.getSubTypesOf(DIH4JDAListenerAdapter.class));
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * @return A set of all Listener classes.
+	 * @see DIH4JDA#findListenerClasses()
+	 */
 	protected Set<Class<? extends DIH4JDAListenerAdapter>> getListeners() {
 		return listeners;
 	}

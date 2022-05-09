@@ -126,7 +126,7 @@ public class InteractionHandler extends ListenerAdapter {
 		contexts = new HashSet<>();
 
 		slashCommandIndex = new HashMap<>();
-		subcommandIndex = new HashMap<String, SlashCommand.Subcommand>();
+		subcommandIndex = new HashMap<>();
 		messageContextIndex = new HashMap<>();
 		userContextIndex = new HashMap<>();
 		autoCompleteIndex = new HashMap<>();
@@ -152,7 +152,7 @@ public class InteractionHandler extends ListenerAdapter {
 			Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(guild), getContextCommandData(guild));
 			// check if smart queuing is enabled
 			if (dih4jda.isSmartQueuing()) {
-				data = SmartQueue.queueGuild(guild, data.component1(), data.component2());
+				data = SmartQueue.checkGuild(guild, data.component1(), data.component2());
 			}
 			// upsert all guild commands
 			if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
@@ -164,7 +164,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(null), getContextCommandData(null));
 		// check if smart queuing is enabled
 		if (dih4jda.isSmartQueuing()) {
-			data = SmartQueue.queueGlobal(dih4jda.getJDA(), data.component1(), data.component2());
+			data = SmartQueue.checkGlobal(dih4jda.getJDA(), data.component1(), data.component2());
 		}
 		// upsert all global commands
 		if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
@@ -516,6 +516,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param listeners A set of all classes that extend the {@link DIH4JDAListenerAdapter}.
 	 * @param name      The event's name.
 	 * @param args      The event's arguments.
+	 * @since v1.5
 	 */
 	private void fireEvent(Set<Class<? extends DIH4JDAListenerAdapter>> listeners, String name, Object... args) {
 		for (Class<? extends DIH4JDAListenerAdapter> listener : listeners) {
@@ -541,13 +542,12 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param permissions A set of {@link Permission}s.
 	 * @return Whether the event was fired.
+	 * @since v1.5
 	 */
 	private boolean checkPermissions(CommandInteraction interaction, Set<Permission> permissions) {
-		if (!permissions.isEmpty() && interaction.isFromGuild() && interaction.getMember() != null) {
-			if (!interaction.getMember().hasPermission(permissions)) {
-				fireEvent(dih4jda.getListeners(), "onInsufficientPermissions", interaction, permissions);
-				return true;
-			}
+		if (!permissions.isEmpty() && interaction.isFromGuild() && interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
+			fireEvent(dih4jda.getListeners(), "onInsufficientPermissions", interaction, permissions);
+			return true;
 		}
 		return false;
 	}
@@ -558,6 +558,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param userIds A set of {@link Long}s, representing the user ids.
 	 * @return Whether the event was fired.
+	 * @since v1.5
 	 */
 	private boolean checkUser(CommandInteraction interaction, Set<Long> userIds) {
 		if (!userIds.isEmpty() && !userIds.contains(interaction.getUser().getIdLong())) {

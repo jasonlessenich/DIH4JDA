@@ -9,7 +9,7 @@ import java.util.List;
  * All select menus that match the identifier will execute this class's implementation of the {@link SelectMenuHandler#handleSelectMenu} method.
  *
  * <pre>{@code
- * public class TestCommand extends GuildSlashCommand implements SelectMenuHandler {
+ * public class TestCommand extends SlashCommand implements SelectMenuHandler {
  *
  *     public TestCommand(Guild guild) {
  *         setCommandData(Commands.slash("test", "test description"));
@@ -17,7 +17,7 @@ import java.util.List;
  *     }
  *
  *    @Override
- *    public void handleSlashCommand(SlashCommandInteractionEvent event) {
+ *    public void execute(SlashCommandInteractionEvent event) {
  * 		List<Role> roles = [...]
  * 		SelectMenu.Builder menu = SelectMenu.create("test-select-menu");
  * 		for (Role role : roles) {

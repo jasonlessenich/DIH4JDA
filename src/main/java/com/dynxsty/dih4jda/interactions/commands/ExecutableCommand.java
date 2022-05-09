@@ -74,7 +74,9 @@ public abstract class ExecutableCommand extends CommandRequirements {
 		return isGuildCommand;
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * @param guildCommand Whether this command should be queued as a guild command.
+	 */
 	public void setGuildCommand(boolean guildCommand) {
 		isGuildCommand = guildCommand;
 	}

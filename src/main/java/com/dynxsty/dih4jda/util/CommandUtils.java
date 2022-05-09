@@ -12,50 +12,77 @@ import java.util.stream.Collectors;
 
 public class CommandUtils {
 
+	private CommandUtils() {
+	}
+
 	/**
-	 * Compares a {@link SlashCommandData} (Slash Command) and a {@link Command} object.
+	 * Compares two {@link SlashCommandData} (Slash Command) objects.
 	 *
 	 * @param data    The {@link SlashCommandData}
 	 * @param command The other {@link SlashCommandData} object.
-	 * @return Whether the {@link Command} object has the same properties as the {@link CommandData}. Assuming they're both the same.
+	 * @return Whether both {@link SlashCommandData} objects share the same properties.
 	 */
 	public static boolean equals(SlashCommandData data, SlashCommandData command) {
 		if (data.getType() != command.getType()) return false;
 		if (!data.getName().equals(command.getName())) return false;
 		if (!data.getDescription().equals(command.getDescription())) return false;
-		if (!command.getOptions().stream().allMatch(o -> data.getOptions().stream().anyMatch(op -> equals(o, op)))) return false;
-		if (!command.getSubcommandGroups().stream().allMatch(o -> data.getSubcommandGroups().stream().anyMatch(op -> equals(o, op)))) return false;
-		if (!command.getSubcommands().stream().allMatch(o -> data.getSubcommands().stream().anyMatch(op -> equals(o, op)))) return false;
+		if (!command.getOptions().stream().allMatch(o -> data.getOptions().stream().anyMatch(op -> equals(o, op)))) {
+			return false;
+		}
+		if (!command.getSubcommandGroups().stream().allMatch(o -> data.getSubcommandGroups().stream().anyMatch(op -> equals(o, op)))) {
+			return false;
+		}
+		if (!command.getSubcommands().stream().allMatch(o -> data.getSubcommands().stream().anyMatch(op -> equals(o, op)))) {
+			return false;
+		}
 		return command.getSubcommands().stream().allMatch(o -> data.getSubcommands().stream().anyMatch(op -> equals(o, op)));
 	}
 
 	/**
-	 * Compares a {@link CommandData} (Context Command) and a {@link Command} object.
+	 * Compares two {@link CommandData} (Context Command) objects.
 	 *
 	 * @param data    The {@link CommandData}
-	 * @param command The {@link Command} object.
-	 * @return Whether the {@link Command} object has the same properties as the {@link CommandData}. Assuming they're both the same.
+	 * @param command The other {@link CommandData} object.
+	 * @return Whether both {@link CommandData} objects share the same properties.
 	 */
 	public static boolean equals(CommandData data, CommandData command) {
 		if (data.getType() != command.getType()) return false;
 		return data.getName().equals(command.getName());
 	}
 
-	// TODO v1.5: Documentation
-	public static boolean equals(SubcommandData data, SubcommandData command) {
-		if (!data.getName().equals(command.getName())) return false;
-		if (!data.getDescription().equals(command.getDescription())) return false;
-		return data.getOptions().stream().allMatch(o -> command.getOptions().stream().anyMatch(op -> equals(o, op)));
+	/**
+	 * Compares two {@link SubcommandData} objects.
+	 *
+	 * @param data       The {@link SubcommandData}
+	 * @param subcommand The other {@link SubcommandData} object.
+	 * @return Whether both {@link SubcommandData} objects share the same properties.
+	 */
+	public static boolean equals(SubcommandData data, SubcommandData subcommand) {
+		if (!data.getName().equals(subcommand.getName())) return false;
+		if (!data.getDescription().equals(subcommand.getDescription())) return false;
+		return data.getOptions().stream().allMatch(o -> subcommand.getOptions().stream().anyMatch(op -> equals(o, op)));
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * Compares two {@link SubcommandGroupData} objects.
+	 *
+	 * @param data  The {@link SubcommandGroupData}
+	 * @param group The other {@link SubcommandGroupData} object.
+	 * @return Whether both {@link SubcommandGroupData} objects share the same properties.
+	 */
 	public static boolean equals(SubcommandGroupData data, SubcommandGroupData group) {
 		if (!data.getName().equals(group.getName())) return false;
 		if (!data.getDescription().equals(group.getDescription())) return false;
 		return data.getSubcommands().stream().allMatch(o -> group.getSubcommands().stream().anyMatch(op -> equals(o, op)));
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * Compares two {@link OptionData} objects.
+	 *
+	 * @param data   The {@link OptionData}
+	 * @param option The other {@link OptionData} object.
+	 * @return Whether both {@link OptionData} objects share the same properties.
+	 */
 	public static boolean equals(OptionData data, OptionData option) {
 		if (data.getType() != option.getType()) return false;
 		if (!data.getName().equals(option.getName())) return false;
@@ -81,7 +108,12 @@ public class CommandUtils {
 				.addSubcommandGroups(toSubcommandGroupData(command.getSubcommandGroups()));
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * Converts the given List of {@link Command.Subcommand}s to a List of {@link SubcommandData}.
+	 *
+	 * @param subcommands The List of {@link Command.Subcommand}s.
+	 * @return The List of {@link SubcommandData}.
+	 */
 	public static List<SubcommandData> toSubcommandData(List<Command.Subcommand> subcommands) {
 		return subcommands.stream()
 				.map(o -> {
@@ -91,7 +123,12 @@ public class CommandUtils {
 				}).collect(Collectors.toList());
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * Converts the given List of {@link Command.SubcommandGroup}s to a List of {@link SubcommandGroupData}.
+	 *
+	 * @param groups The List of {@link Command.SubcommandGroup}s.
+	 * @return The List of {@link SubcommandGroupData}.
+	 */
 	public static List<SubcommandGroupData> toSubcommandGroupData(List<Command.SubcommandGroup> groups) {
 		return groups.stream()
 				.map(o -> {
@@ -147,7 +184,13 @@ public class CommandUtils {
 		return String.join("/", args);
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * Checks if the {@link Command} is equal to the given {@link CommandData}.
+	 *
+	 * @param command The {@link Command}.
+	 * @param data    The {@link CommandData}.
+	 * @return Whether the given Command originates from the given CommandData.
+	 */
 	public static boolean isEqual(Command command, Object data) {
 		boolean equals;
 		if (command.getType() == Command.Type.SLASH) {
@@ -158,7 +201,13 @@ public class CommandUtils {
 		return equals;
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * Builds a formatted string out of the given sets of CommandData.
+	 *
+	 * @param command A set of {@link CommandData}.
+	 * @param slash   A set of {@link SlashCommandData}.
+	 * @return The formatted String.
+	 */
 	public static String getNames(Set<CommandData> command, Set<SlashCommandData> slash) {
 		StringBuilder names = new StringBuilder();
 		command.forEach(c -> names.append(", ").append(c.getName()));

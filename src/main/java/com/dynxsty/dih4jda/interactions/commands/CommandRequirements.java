@@ -10,12 +10,20 @@ public abstract class CommandRequirements extends ComponentHandler {
 	private final Set<Permission> requiredPermissions = new HashSet<>();
 	private final Set<Long> requiredUsers = new HashSet<>();
 
-	// TODO v1.5: Documentation
+	/**
+	 * Allows to require a set of {@link Permission}s which are needed to execute the corresponding command.
+	 *
+	 * @param permissions The set of {@link Permission}s.
+	 */
 	public void requirePermissions(Permission... permissions) {
 		requiredPermissions.addAll(Arrays.asList(permissions));
 	}
 
-	// TODO v1.5: Documentation
+	/**
+	 * Allows to require a set of {@link Long}s (user Ids) which are able to execute the corresponding command.
+	 *
+	 * @param users The set of {@link Long}s (user Ids).
+	 */
 	public void requireUsers(Long... users) {
 		requiredUsers.addAll(Arrays.asList(users));
 	}
