@@ -119,7 +119,7 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Finds all classes that extend {@link DIH4JDAListenerAdapter} by using the {@link Reflections} API.
+	 * Allows to add Listener classes (that extend {@link DIH4JDAListenerAdapter}).
 	 * @since v1.5
 	 */
 	public void addListeners(Object... classes) {
