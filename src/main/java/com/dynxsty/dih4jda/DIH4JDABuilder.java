@@ -87,7 +87,7 @@ public class DIH4JDABuilder {
 	 * This will disable the Smart Queueing functionality.
 	 * If Smart Queueing is disabled Global Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call,
 	 * thus, making Global Commands unusable for about an hour, until they're registered again. <br>
-	 * By default, this also deletes unknown commands. This behaviour can be disabled with {@link DIH4JDABuilder#disableSmartQueueRemoveUnknown()}.
+	 * By default, this also deletes unknown/unused commands. This behaviour can be disabled with {@link DIH4JDABuilder#disableSmartQueueRemoveUnknown()}.
 	 */
 	@Nonnull
 	public DIH4JDABuilder disableSmartQueuing() {
