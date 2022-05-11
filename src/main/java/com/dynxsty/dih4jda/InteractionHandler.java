@@ -2,10 +2,7 @@ package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
-import com.dynxsty.dih4jda.interactions.commands.CommandRequirements;
-import com.dynxsty.dih4jda.interactions.commands.ComponentHandler;
-import com.dynxsty.dih4jda.interactions.commands.ContextCommand;
-import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
+import com.dynxsty.dih4jda.interactions.commands.*;
 import com.dynxsty.dih4jda.interactions.commands.autocomplete.AutoCompleteHandler;
 import com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder;
 import com.dynxsty.dih4jda.interactions.components.button.ButtonHandler;
@@ -126,9 +123,14 @@ public class InteractionHandler extends ListenerAdapter {
 	protected InteractionHandler(DIH4JDA dih4jda) {
 		this.dih4jda = dih4jda;
 
-		commands = new HashSet<>();
-		contexts = new HashSet<>();
+		commands = findSlashCommands();
+		contexts = findContextCommands();
+		// remove own implementations
+		contexts.removeAll(List.of(
+				ContextCommand.User.class,
+				ContextCommand.Message.class));
 
+		// initialize indexes
 		slashCommandIndex = new HashMap<>();
 		subcommandIndex = new HashMap<>();
 		messageContextIndex = new HashMap<>();
@@ -148,9 +150,6 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
 	public void registerInteractions() throws ReflectiveOperationException {
-		// find all commands
-		findSlashCommands();
-		findContextCommands();
 		// register commands for each guild
 		for (Guild guild : dih4jda.getJDA().getGuilds()) {
 			Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(guild), getContextCommandData(guild));
@@ -207,9 +206,9 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link SlashCommand}.
 	 */
-	private void findSlashCommands() {
+	private Set<Class<? extends SlashCommand>> findSlashCommands() {
 		Reflections classes = new Reflections(dih4jda.getCommandsPackage());
-		commands.addAll(classes.getSubTypesOf(SlashCommand.class));
+		return classes.getSubTypesOf(SlashCommand.class);
 	}
 
 	/**
@@ -217,10 +216,9 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link ContextCommand}.
 	 */
-	private void findContextCommands() {
+	private Set<Class<? extends ContextCommand>> findContextCommands() {
 		Reflections classes = new Reflections(dih4jda.getCommandsPackage());
-		contexts.addAll(classes.getSubTypesOf(ContextCommand.class));
-		contexts.removeAll(List.of(ContextCommand.User.class, ContextCommand.Message.class));
+		return classes.getSubTypesOf(ContextCommand.class);
 	}
 
 	/**
@@ -245,7 +243,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Set<SlashCommandData> data = new HashSet<>();
 		for (Class<? extends SlashCommand> c : commands) {
 			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(guild, c);
-			if (instance == null || guild == null && instance.isGuildCommand()) continue;
+			if (instance == null || guild == null && instance.getType() == ExecutableCommand.Type.GUILD) continue;
 			if (guild != null && !instance.getGuilds(guild.getJDA()).contains(guild)) {
 				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
 			} else {
@@ -365,7 +363,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Set<CommandData> data = new HashSet<>();
 		for (Class<? extends ContextCommand> c : contexts) {
 			ContextCommand instance = (ContextCommand) ClassUtils.getInstance(guild, c);
-			if (instance == null || guild == null && instance.isGuildCommand()) continue;
+			if (instance == null || guild == null && instance.getType() == ExecutableCommand.Type.GUILD) continue;
 			if (guild != null && !instance.getGuilds(guild.getJDA()).contains(guild)) {
 				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.CONTEXT_COMMAND_SKIPPED);
 			} else {

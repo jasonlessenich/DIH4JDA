@@ -2,6 +2,7 @@ package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import com.dynxsty.dih4jda.exceptions.InvalidPackageException;
+import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import net.dv8tion.jda.api.JDA;
 import org.reflections.util.ClasspathHelper;
 
@@ -84,13 +85,23 @@ public class DIH4JDABuilder {
 	/**
 	 * <b>NOT RECOMMENDED</b> (unless there are some bugs) <br>
 	 * This will disable the Smart Queueing functionality.
-	 * If Smart Queueing is disabled Global Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call,
+	 * If SmartQueue is disabled Global Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call,
 	 * thus, making Global Commands unusable for about an hour, until they're registered again. <br>
 	 * Smart Queuing also includes the automatic removal of unknown/unused Global Interactions.
 	 */
 	@Nonnull
-	public DIH4JDABuilder disableSmartQueuing() {
+	public DIH4JDABuilder disableSmartQueue() {
 		smartQueuing = false;
+		return this;
+	}
+
+	/**
+	 * Sets the default {@link ExecutableCommand.Type} for all Commands.
+	 *
+	 * @param type The {@link ExecutableCommand.Type}.
+	 */
+	public DIH4JDABuilder setDefaultCommandType(ExecutableCommand.Type type) {
+		DIH4JDA.defaultCommandType = type;
 		return this;
 	}
 
@@ -104,7 +115,6 @@ public class DIH4JDABuilder {
 			DIH4JDALogger.warn("You are running DIH4JDA on a single core CPU. A special system property was set to disable asynchronous command execution.");
 			System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "1");
 		}
-		if (jda == null) throw new IllegalStateException("JDA instance may not be empty.");
 		if (ClasspathHelper.forPackage(commandsPackage).isEmpty()) {
 			throw new InvalidPackageException("Package " + commandsPackage + " does not exist.");
 		}
