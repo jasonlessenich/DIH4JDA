@@ -64,11 +64,11 @@ public class SmartQueue {
 	 * @param slashData   	The set of {@link SlashCommandData}.
 	 * @param commandData 	The set of {@link CommandData}.
 	 * @param guild       	An optional guild parameter which is used with {@link SmartQueue#checkGuild(Guild, Set, Set, boolean)}.
-	 * @param removeUnknown Whether unknown commands should be removed.
+	 * @param deleteUnknown Whether unknown commands should be removed.
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */
-	private static Pair<Set<SlashCommandData>, Set<CommandData>> removeDuplicates(JDA jda, final List<Command> existing, Set<SlashCommandData> slashData, Set<CommandData> commandData, @Nullable Guild guild, boolean removeUnknown) {
+	private static Pair<Set<SlashCommandData>, Set<CommandData>> removeDuplicates(JDA jda, final List<Command> existing, Set<SlashCommandData> slashData, Set<CommandData> commandData, @Nullable Guild guild, boolean deleteUnknown) {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
 		DIH4JDALogger.info(String.format("Found %s existing %s command(s)", existing.size(), global ? "global" : "guild"), DIH4JDALogger.Type.SMART_QUEUE);
@@ -84,14 +84,18 @@ public class SmartQueue {
 		commandData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data)));
 		slashData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data)));
 		// remove unknown commands, if enabled
-		if (!commands.isEmpty() && removeUnknown) {
+		if (!commands.isEmpty()) {
 			for (Command command : commands) {
 				if (existing.contains(command)) {
-					DIH4JDALogger.info(String.format("Deleting unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
-					if (guild == null) {
-						jda.deleteCommandById(command.getId()).queue();
+					if (deleteUnknown) {
+						DIH4JDALogger.info(String.format("Deleting unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+						if (guild == null) {
+							jda.deleteCommandById(command.getId()).queue();
+						} else {
+							guild.deleteCommandById(command.getId()).queue();
+						}
 					} else {
-						guild.deleteCommandById(command.getId()).queue();
+						DIH4JDALogger.info(String.format("Ignored unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
 					}
 				}
 			}
