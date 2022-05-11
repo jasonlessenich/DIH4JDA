@@ -19,6 +19,7 @@ public class DIH4JDABuilder {
 	private DIH4JDALogger.Type[] blockedLogTypes;
 	private boolean registerOnStartup = true;
 	private boolean smartQueuing = true;
+	private boolean smartQueueDeleteUnknown = true;
 
 	private DIH4JDABuilder(@Nonnull JDA jda) {
 		this.jda = jda;
@@ -86,11 +87,20 @@ public class DIH4JDABuilder {
 	 * This will disable the Smart Queueing functionality.
 	 * If Smart Queueing is disabled Global Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call,
 	 * thus, making Global Commands unusable for about an hour, until they're registered again. <br>
-	 * Smart Queuing also includes the automatic removal of unknown/unused Global Interactions.
+	 * By default, this also deletes unknown commands. This behaviour can be disabled with {@link DIH4JDABuilder#disableSmartQueueRemoveUnknown()}.
 	 */
 	@Nonnull
 	public DIH4JDABuilder disableSmartQueuing() {
 		smartQueuing = false;
+		return this;
+	}
+
+	/**
+	 * Disables deletion of unknown/unused commands when using SmartQueue.
+	 */
+	@Nonnull
+	public DIH4JDABuilder disableSmartQueueRemoveUnknown() {
+		smartQueueDeleteUnknown = false;
 		return this;
 	}
 
@@ -108,6 +118,6 @@ public class DIH4JDABuilder {
 		if (ClasspathHelper.forPackage(commandsPackage).isEmpty()) {
 			throw new InvalidPackageException("Package " + commandsPackage + " does not exist.");
 		}
-		return new DIH4JDA(jda, commandsPackage, registerOnStartup, smartQueuing, executor, blockedLogTypes);
+		return new DIH4JDA(jda, commandsPackage, registerOnStartup, smartQueuing, smartQueueDeleteUnknown, executor, blockedLogTypes);
 	}
 }
