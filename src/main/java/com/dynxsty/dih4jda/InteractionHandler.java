@@ -156,7 +156,7 @@ public class InteractionHandler extends ListenerAdapter {
 			Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(guild), getContextCommandData(guild));
 			// check if smart queuing is enabled
 			if (dih4jda.isSmartQueuing()) {
-				data = SmartQueue.checkGuild(guild, data.component1(), data.component2());
+				data = SmartQueue.checkGuild(guild, data.component1(), data.component2(), dih4jda.isDeletingUnknownCommands());
 			}
 			// upsert all guild commands
 			if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
@@ -168,7 +168,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(null), getContextCommandData(null));
 		// check if smart queuing is enabled
 		if (dih4jda.isSmartQueuing()) {
-			data = SmartQueue.checkGlobal(dih4jda.getJDA(), data.component1(), data.component2());
+			data = SmartQueue.checkGlobal(dih4jda.getJDA(), data.component1(), data.component2(), dih4jda.isDeletingUnknownCommands());
 		}
 		// upsert all global commands
 		if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
