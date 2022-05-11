@@ -40,7 +40,7 @@ public class SmartQueue {
 	}
 
 	/**
-	 * Compares CommandData with already existing Commands, removed duplicates and, if enabled, deleted unknown commands.
+	 * Compares CommandData with already existing Commands, removed duplicates and, if enabled, deletes unknown commands.
 	 *
 	 * @param guild       The {@link Guild} which is used to retrieve the already existing commands.
 	 * @param slashData   The set of {@link SlashCommandData}.
