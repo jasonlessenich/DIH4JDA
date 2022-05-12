@@ -1,4 +1,4 @@
-package com.dynxsty.dih4jda.interactions.components;
+package com.dynxsty.dih4jda.interactions;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

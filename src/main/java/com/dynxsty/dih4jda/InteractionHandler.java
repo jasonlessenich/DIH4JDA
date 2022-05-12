@@ -4,10 +4,7 @@ import com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import com.dynxsty.dih4jda.interactions.commands.*;
 import com.dynxsty.dih4jda.interactions.commands.autocomplete.AutoCompleteHandler;
-import com.dynxsty.dih4jda.interactions.components.ComponentIdBuilder;
-import com.dynxsty.dih4jda.interactions.components.button.ButtonHandler;
-import com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenuHandler;
-import com.dynxsty.dih4jda.interactions.modal.ModalHandler;
+import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
 import com.dynxsty.dih4jda.util.Checks;
 import com.dynxsty.dih4jda.util.ClassUtils;
 import com.dynxsty.dih4jda.util.CommandUtils;
@@ -92,25 +89,11 @@ public class InteractionHandler extends ListenerAdapter {
 	private final Map<String, AutoCompleteHandler> autoCompleteIndex;
 
 	/**
-	 * An Index of all {@link ButtonHandler}s.
+	 * An Index of all {@link ComponentHandler}s.
 	 *
 	 * @see InteractionHandler#findInteractionsHandlers(ComponentHandler)
 	 */
-	private final Map<String, ButtonHandler> buttonIndex;
-
-	/**
-	 * An Index of all {@link SelectMenuHandler}s.
-	 *
-	 * @see InteractionHandler#findInteractionsHandlers(ComponentHandler)
-	 */
-	private final Map<String, SelectMenuHandler> selectMenuIndex;
-
-	/**
-	 * An Index of all {@link ModalHandler}s.
-	 *
-	 * @see InteractionHandler#findInteractionsHandlers(ComponentHandler)
-	 */
-	private final Map<String, ModalHandler> modalIndex;
+	private final Map<String, ComponentHandler> handlerIndex;
 
 	private final Set<Class<? extends SlashCommand>> commands;
 	private final Set<Class<? extends ContextCommand>> contexts;
@@ -136,9 +119,7 @@ public class InteractionHandler extends ListenerAdapter {
 		messageContextIndex = new HashMap<>();
 		userContextIndex = new HashMap<>();
 		autoCompleteIndex = new HashMap<>();
-		buttonIndex = new HashMap<>();
-		selectMenuIndex = new HashMap<>();
-		modalIndex = new HashMap<>();
+		handlerIndex = new HashMap<>();
 	}
 
 	/**
@@ -227,9 +208,9 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param command The {@link ComponentHandler}.
 	 */
 	private void findInteractionsHandlers(ComponentHandler command) {
-		command.getHandledButtonIds().forEach(s -> buttonIndex.put(s, (ButtonHandler) command));
-		command.getHandledSelectMenuIds().forEach(s -> selectMenuIndex.put(s, (SelectMenuHandler) command));
-		command.getHandledModalIds().forEach(s -> modalIndex.put(s, (ModalHandler) command));
+		command.getHandledButtonIds().forEach(s -> handlerIndex.put(s, command));
+		command.getHandledSelectMenuIds().forEach(s -> handlerIndex.put(s, command));
+		command.getHandledModalIds().forEach(s -> handlerIndex.put(s, command));
 	}
 
 	/**
@@ -477,7 +458,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link ButtonInteractionEvent} that was fired.
 	 */
 	private void handleButton(ButtonInteractionEvent event) {
-		ButtonHandler component = buttonIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
+		ComponentHandler component = handlerIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
 		if (component == null) {
 			DIH4JDALogger.warn(String.format("Button with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.BUTTON_NOT_FOUND);
 		} else {
@@ -492,7 +473,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link SelectMenuInteractionEvent} that was fired.
 	 */
 	private void handleSelectMenu(SelectMenuInteractionEvent event) {
-		SelectMenuHandler component = selectMenuIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
+		ComponentHandler component = handlerIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
 		if (component == null) {
 			DIH4JDALogger.warn(String.format("Select Menu with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND);
 		} else {
@@ -507,7 +488,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link ModalInteractionEvent} that was fired.
 	 */
 	private void handleModal(ModalInteractionEvent event) {
-		ModalHandler modal = modalIndex.get(ComponentIdBuilder.split(event.getModalId())[0]);
+		ComponentHandler modal = handlerIndex.get(ComponentIdBuilder.split(event.getModalId())[0]);
 		if (modal == null) {
 			DIH4JDALogger.warn(String.format("Modal with id \"%s\" could not be found.", event.getModalId()), DIH4JDALogger.Type.MODAL_NOT_FOUND);
 		} else {

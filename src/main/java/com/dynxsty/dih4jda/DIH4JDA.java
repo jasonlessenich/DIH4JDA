@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public class DIH4JDA extends ListenerAdapter {
 
-	public static ExecutableCommand.Type defaultCommandType = ExecutableCommand.Type.GUILD;
+	public static ExecutableCommand.Type defaultCommandType;
 	private final JDA jda;
 	private final String commandsPackage;
 	private final Set<DIH4JDALogger.Type> blockedLogTypes;
@@ -59,6 +59,7 @@ public class DIH4JDA extends ListenerAdapter {
 		this.executor = executor;
 		this.listeners = new HashSet<>();
 		this.handler = new InteractionHandler(this);
+		if (defaultCommandType == null) defaultCommandType = ExecutableCommand.Type.GUILD;
 		jda.addEventListener(this, handler);
 	}
 
