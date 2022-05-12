@@ -1,5 +1,6 @@
 package com.dynxsty.dih4jda;
 
+import com.dynxsty.dih4jda.config.DIH4JDAConfig;
 import com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import com.dynxsty.dih4jda.interactions.commands.*;
@@ -54,6 +55,11 @@ public class InteractionHandler extends ListenerAdapter {
 	private final DIH4JDA dih4jda;
 
 	/**
+	 * The instance's configuration;
+	 */
+	private final DIH4JDAConfig config;
+
+	/**
 	 * An Index of all {@link SlashCommand}s.
 	 *
 	 * @see InteractionHandler#findSlashCommands()
@@ -91,7 +97,7 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * An Index of all {@link ComponentHandler}s.
 	 *
-	 * @see InteractionHandler#findInteractionsHandlers(ComponentHandler)
+	 * @see InteractionHandler#findInteractionsHandlers()
 	 */
 	private final Map<String, ComponentHandler> handlerIndex;
 
@@ -103,8 +109,9 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param dih4jda The {@link DIH4JDA} instance.
 	 */
-	protected InteractionHandler(DIH4JDA dih4jda) {
+	protected InteractionHandler(DIH4JDA dih4jda) throws ReflectiveOperationException {
 		this.dih4jda = dih4jda;
+		config = dih4jda.getConfig();
 
 		commands = findSlashCommands();
 		contexts = findContextCommands();
@@ -120,10 +127,13 @@ public class InteractionHandler extends ListenerAdapter {
 		userContextIndex = new HashMap<>();
 		autoCompleteIndex = new HashMap<>();
 		handlerIndex = new HashMap<>();
+
+		// register all interaction handlers
+		findInteractionsHandlers();
 	}
 
 	/**
-	 * Finds and registers all interactions.
+	 * Registers all interactions.
 	 * This method can be accessed from the {@link DIH4JDA} instance.
 	 * <br>This is automatically executed each time the {@link ListenerAdapter#onReady(ReadyEvent)} event is executed.
 	 * (can be disabled using {@link DIH4JDABuilder#disableAutomaticCommandRegistration()})
@@ -132,11 +142,11 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	public void registerInteractions() throws ReflectiveOperationException {
 		// register commands for each guild
-		for (Guild guild : dih4jda.getJDA().getGuilds()) {
+		for (Guild guild : config.getJDA().getGuilds()) {
 			Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(guild), getContextCommandData(guild));
 			// check if smart queuing is enabled
-			if (dih4jda.isSmartQueuing()) {
-				data = SmartQueue.checkGuild(guild, data.component1(), data.component2(), dih4jda.isDeletingUnknownCommands());
+			if (config.isSmartQueuing()) {
+				data = SmartQueue.checkGuild(guild, data.component1(), data.component2(), config.isDeleteUnknownCommands());
 			}
 			// upsert all guild commands
 			if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
@@ -147,12 +157,12 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 		Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(null), getContextCommandData(null));
 		// check if smart queuing is enabled
-		if (dih4jda.isSmartQueuing()) {
-			data = SmartQueue.checkGlobal(dih4jda.getJDA(), data.component1(), data.component2(), dih4jda.isDeletingUnknownCommands());
+		if (config.isSmartQueuing()) {
+			data = SmartQueue.checkGlobal(config.getJDA(), data.component1(), data.component2(), config.isDeleteUnknownCommands());
 		}
 		// upsert all global commands
 		if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
-			upsert(dih4jda.getJDA(), data.component1(), data.component2());
+			upsert(config.getJDA(), data.component1(), data.component2());
 			DIH4JDALogger.info(String.format("Queued %s global command(s): %s", data.component1().size() + data.component2().size(),
 					CommandUtils.getNames(data.component2(), data.component1())), DIH4JDALogger.Type.COMMANDS_QUEUED);
 		}
@@ -188,7 +198,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * {@link SlashCommand}.
 	 */
 	private Set<Class<? extends SlashCommand>> findSlashCommands() {
-		Reflections classes = new Reflections(dih4jda.getCommandsPackage());
+		Reflections classes = new Reflections(config.getCommandsPackage());
 		return classes.getSubTypesOf(SlashCommand.class);
 	}
 
@@ -198,19 +208,24 @@ public class InteractionHandler extends ListenerAdapter {
 	 * {@link ContextCommand}.
 	 */
 	private Set<Class<? extends ContextCommand>> findContextCommands() {
-		Reflections classes = new Reflections(dih4jda.getCommandsPackage());
+		Reflections classes = new Reflections(config.getCommandsPackage());
 		return classes.getSubTypesOf(ContextCommand.class);
 	}
 
 	/**
 	 * Finds all Interaction Handlers and adds them to their corresponding index.
-	 *
-	 * @param command The {@link ComponentHandler}.
 	 */
-	private void findInteractionsHandlers(ComponentHandler command) {
-		command.getHandledButtonIds().forEach(s -> handlerIndex.put(s, command));
-		command.getHandledSelectMenuIds().forEach(s -> handlerIndex.put(s, command));
-		command.getHandledModalIds().forEach(s -> handlerIndex.put(s, command));
+	private void findInteractionsHandlers() throws ReflectiveOperationException {
+		Reflections classes = new Reflections(config.getCommandsPackage());
+		Set<Class<? extends ComponentHandler>> handler = classes.getSubTypesOf(ComponentHandler.class);
+		for (Class<? extends ComponentHandler> c : handler) {
+			if (!Checks.checkEmptyConstructor(c)) continue;
+			ComponentHandler instance = (ComponentHandler) ClassUtils.getInstance(null, c);
+			if (instance == null) return;
+			instance.getHandledButtonIds().forEach(s -> handlerIndex.put(s, instance));
+			instance.getHandledSelectMenuIds().forEach(s -> handlerIndex.put(s, instance));
+			instance.getHandledModalIds().forEach(s -> handlerIndex.put(s, instance));
+		}
 	}
 
 	/**
@@ -245,7 +260,6 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private SlashCommandData getBaseCommandData(@NotNull SlashCommand command, Class<? extends SlashCommand> commandClass, @Nullable Guild guild) throws ReflectiveOperationException {
 		// find component (and modal) handlers
-		this.findInteractionsHandlers(command);
 		if (command.getCommandData() == null) {
 			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
 			return null;
@@ -315,7 +329,6 @@ public class InteractionHandler extends ListenerAdapter {
 				DIH4JDALogger.warn(String.format("Class %s is missing SubcommandData. It will be ignored.", sub.getName()));
 				continue;
 			}
-			this.findInteractionsHandlers(instance);
 			String commandPath;
 			if (subGroupName == null) {
 				commandPath = CommandUtils.buildCommandPath(command.getCommandData().getName(), instance.getSubcommandData().getName());
@@ -566,7 +579,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
 			}
-		}, dih4jda.getExecutor());
+		}, config.getExecutor());
 	}
 
 	/**
@@ -582,7 +595,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
 			}
-		}, dih4jda.getExecutor());
+		}, config.getExecutor());
 	}
 
 	/**
@@ -598,7 +611,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
 			}
-		}, dih4jda.getExecutor());
+		}, config.getExecutor());
 	}
 
 	/**
@@ -614,7 +627,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onAutoCompleteException", event.getInteraction(), e);
 			}
-		}, dih4jda.getExecutor());
+		}, config.getExecutor());
 	}
 
 	/**
@@ -630,7 +643,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
 			}
-		}, dih4jda.getExecutor());
+		}, config.getExecutor());
 	}
 
 	/**
@@ -646,7 +659,7 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
 			}
-		}, dih4jda.getExecutor());
+		}, config.getExecutor());
 	}
 
 	/**
@@ -662,6 +675,6 @@ public class InteractionHandler extends ListenerAdapter {
 			} catch (Exception e) {
 				fireEvent(dih4jda.getListeners(), "onModalException", event.getInteraction(), e);
 			}
-		}, dih4jda.getExecutor());
+		}, config.getExecutor());
 	}
 }
