@@ -42,7 +42,7 @@ public class Checks {
 		for (Constructor<?> c : base.getConstructors()) {
 			if (c.getParameterCount() == 0) return true;
 		}
-		DIH4JDALogger.warn("Class %s contains unknown constructor parameters!");
+		DIH4JDALogger.warn(String.format("Class %s contains unknown constructor parameters!", base.getSimpleName()));
 		return false;
 	}
 }

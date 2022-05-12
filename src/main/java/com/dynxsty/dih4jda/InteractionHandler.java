@@ -218,10 +218,13 @@ public class InteractionHandler extends ListenerAdapter {
 	private void findInteractionsHandlers() throws ReflectiveOperationException {
 		Reflections classes = new Reflections(config.getCommandsPackage());
 		Set<Class<? extends ComponentHandler>> handler = classes.getSubTypesOf(ComponentHandler.class);
+		// remove own implementations
+		List.of(CommandRequirements.class, ExecutableCommand.class, ContextCommand.class,
+				ContextCommand.Message.class, ContextCommand.User.class, SlashCommand.class, SlashCommand.Subcommand.class)
+				.forEach(handler::remove);
 		for (Class<? extends ComponentHandler> c : handler) {
 			if (!Checks.checkEmptyConstructor(c)) continue;
-			ComponentHandler instance = (ComponentHandler) ClassUtils.getInstance(null, c);
-			if (instance == null) return;
+			ComponentHandler instance = c.getConstructor().newInstance();
 			instance.getHandledButtonIds().forEach(s -> handlerIndex.put(s, instance));
 			instance.getHandledSelectMenuIds().forEach(s -> handlerIndex.put(s, instance));
 			instance.getHandledModalIds().forEach(s -> handlerIndex.put(s, instance));
@@ -238,12 +241,12 @@ public class InteractionHandler extends ListenerAdapter {
 	private Set<SlashCommandData> getSlashCommandData(@Nullable Guild guild) throws ReflectiveOperationException {
 		Set<SlashCommandData> data = new HashSet<>();
 		for (Class<? extends SlashCommand> c : commands) {
-			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(guild, c);
+			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(c);
 			if (instance == null || (guild != null && instance.getType() != ExecutableCommand.Type.GUILD)) continue;
 			if (guild != null && !instance.getGuilds(guild.getJDA()).contains(guild)) {
 				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
 			} else {
-				data.add(getBaseCommandData(instance, c, guild));
+				data.add(getBaseCommandData(instance, c));
 			}
 		}
 		return data;
@@ -254,11 +257,10 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param command      The base command's instance.
 	 * @param commandClass The base command's class.
-	 * @param guild        The current guild (if available)
 	 * @return The new {@link CommandListUpdateAction}.
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private SlashCommandData getBaseCommandData(@NotNull SlashCommand command, Class<? extends SlashCommand> commandClass, @Nullable Guild guild) throws ReflectiveOperationException {
+	private SlashCommandData getBaseCommandData(@NotNull SlashCommand command, Class<? extends SlashCommand> commandClass) throws ReflectiveOperationException {
 		// find component (and modal) handlers
 		if (command.getCommandData() == null) {
 			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
@@ -266,10 +268,10 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 		SlashCommandData commandData = command.getCommandData();
 		if (command.getSubcommandGroups() != null) {
-			commandData.addSubcommandGroups(this.getSubcommandGroupData(command, guild));
+			commandData.addSubcommandGroups(this.getSubcommandGroupData(command));
 		}
 		if (command.getSubcommands() != null) {
-			commandData.addSubcommands(this.getSubcommandData(command, command.getSubcommands(), null, guild));
+			commandData.addSubcommands(this.getSubcommandData(command, command.getSubcommands(), null));
 		}
 		if (command.getSubcommandGroups() == null && command.getSubcommands() == null) {
 			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), command);
@@ -286,14 +288,13 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Gets all {@link SubcommandGroupData} (including Subcommands) of a single {@link SlashCommand}.
 	 *
 	 * @param command The base command's instance.
-	 * @param guild   The current guild (if available)
 	 * @return All {@link SubcommandGroupData} stored in a List.
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private Set<SubcommandGroupData> getSubcommandGroupData(@NotNull SlashCommand command, @Nullable Guild guild) throws ReflectiveOperationException {
+	private Set<SubcommandGroupData> getSubcommandGroupData(@NotNull SlashCommand command) throws ReflectiveOperationException {
 		Set<SubcommandGroupData> groupDataList = new HashSet<>();
 		for (Class<? extends SlashCommand.SubcommandGroup> group : command.getSubcommandGroups()) {
-			SlashCommand.SubcommandGroup instance = (SlashCommand.SubcommandGroup) ClassUtils.getInstance(guild, group);
+			SlashCommand.SubcommandGroup instance = (SlashCommand.SubcommandGroup) ClassUtils.getInstance(group);
 			if (instance == null) continue;
 			if (instance.getSubcommandGroupData() == null) {
 				DIH4JDALogger.warn(String.format("Class %s is missing SubcommandGroupData. It will be ignored.", group.getName()));
@@ -304,7 +305,7 @@ public class InteractionHandler extends ListenerAdapter {
 				continue;
 			}
 			SubcommandGroupData groupData = instance.getSubcommandGroupData();
-			groupData.addSubcommands(getSubcommandData(command, instance.getSubcommands(), groupData.getName(), guild));
+			groupData.addSubcommands(getSubcommandData(command, instance.getSubcommands(), groupData.getName()));
 			groupDataList.add(groupData);
 		}
 		return groupDataList;
@@ -316,14 +317,13 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param command      The base command's instance.
 	 * @param subClasses   All sub command classes.
 	 * @param subGroupName The Subcommand Group's name. (if available)
-	 * @param guild        The current guild (if available)
 	 * @return The new {@link CommandListUpdateAction}.
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private Set<SubcommandData> getSubcommandData(SlashCommand command, Class<? extends SlashCommand.Subcommand>[] subClasses, @Nullable String subGroupName, @Nullable Guild guild) throws ReflectiveOperationException {
+	private Set<SubcommandData> getSubcommandData(SlashCommand command, Class<? extends SlashCommand.Subcommand>[] subClasses, @Nullable String subGroupName) throws ReflectiveOperationException {
 		Set<SubcommandData> subDataList = new HashSet<>();
 		for (Class<? extends SlashCommand.Subcommand> sub : subClasses) {
-			SlashCommand.Subcommand instance = (SlashCommand.Subcommand) ClassUtils.getInstance(guild, sub);
+			SlashCommand.Subcommand instance = (SlashCommand.Subcommand) ClassUtils.getInstance(sub);
 			if (instance == null) continue;
 			if (instance.getSubcommandData() == null) {
 				DIH4JDALogger.warn(String.format("Class %s is missing SubcommandData. It will be ignored.", sub.getName()));
@@ -356,7 +356,7 @@ public class InteractionHandler extends ListenerAdapter {
 	private Set<CommandData> getContextCommandData(@Nullable Guild guild) throws ReflectiveOperationException {
 		Set<CommandData> data = new HashSet<>();
 		for (Class<? extends ContextCommand> c : contexts) {
-			ContextCommand instance = (ContextCommand) ClassUtils.getInstance(guild, c);
+			ContextCommand instance = (ContextCommand) ClassUtils.getInstance(c);
 			if (instance == null || (guild != null && instance.getType() != ExecutableCommand.Type.GUILD)) continue;
 			if (guild != null && !instance.getGuilds(guild.getJDA()).contains(guild)) {
 				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.CONTEXT_COMMAND_SKIPPED);

@@ -7,10 +7,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.reflections.Reflections;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Executor;
 
 /**
  * The entry-point of this Handler.
@@ -29,7 +28,7 @@ public class DIH4JDA extends ListenerAdapter {
 
     public static ExecutableCommand.Type defaultCommandType;
     private final DIH4JDAConfig config;
-    private Set<DIH4JDAListenerAdapter> listeners;
+    private final Set<DIH4JDAListenerAdapter> listeners;
     private InteractionHandler handler;
 
     /**
@@ -40,10 +39,13 @@ public class DIH4JDA extends ListenerAdapter {
     protected DIH4JDA(DIH4JDAConfig config) {
         if (defaultCommandType == null) defaultCommandType = ExecutableCommand.Type.GUILD;
         this.config = config;
+        listeners = new HashSet<>();
         try {
+            DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
             this.handler = new InteractionHandler(this);
             config.getJDA().addEventListener(this, handler);
         } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
             DIH4JDALogger.warn("Could not initialize Interaction Handler: " + e.getMessage());
         }
     }
@@ -56,7 +58,6 @@ public class DIH4JDA extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         if (config.getCommandsPackage() == null) return;
-        DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
         try {
             if (config.isRegisterOnReady() && handler != null) {
                 handler.registerInteractions();

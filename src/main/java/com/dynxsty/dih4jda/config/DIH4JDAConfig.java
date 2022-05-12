@@ -3,6 +3,7 @@ package com.dynxsty.dih4jda.config;
 import com.dynxsty.dih4jda.DIH4JDALogger;
 import net.dv8tion.jda.api.JDA;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
@@ -14,7 +15,7 @@ import java.util.concurrent.ForkJoinPool;
 public class DIH4JDAConfig {
 	private JDA jda;
 	private String commandsPackage;
-	private Set<DIH4JDALogger.Type> blockedLogTypes;
+	private Set<DIH4JDALogger.Type> blockedLogTypes = new HashSet<>();
 	private boolean registerOnReady = true;
 	private boolean smartQueuing = true;
 	private boolean deleteUnknownCommands = true;
