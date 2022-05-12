@@ -363,7 +363,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Set<CommandData> data = new HashSet<>();
 		for (Class<? extends ContextCommand> c : contexts) {
 			ContextCommand instance = (ContextCommand) ClassUtils.getInstance(guild, c);
-			if (instance == null || guild == null && instance.getType() == ExecutableCommand.Type.GUILD) continue;
+			if (instance == null || (guild != null && instance.getType() != ExecutableCommand.Type.GUILD)) continue;
 			if (guild != null && !instance.getGuilds(guild.getJDA()).contains(guild)) {
 				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.CONTEXT_COMMAND_SKIPPED);
 			} else {

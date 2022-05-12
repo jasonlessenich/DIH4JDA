@@ -79,7 +79,7 @@ public abstract class ExecutableCommand extends CommandRequirements {
     }
 
     /**
-     * @param type Whether this command should be queued as a guild command.
+     * @param type How the command should be queued.
      */
     public void setType(Type type) {
         this.type = type;
