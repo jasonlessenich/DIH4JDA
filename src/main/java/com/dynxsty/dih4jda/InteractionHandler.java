@@ -243,7 +243,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Set<SlashCommandData> data = new HashSet<>();
 		for (Class<? extends SlashCommand> c : commands) {
 			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(guild, c);
-			if (instance == null || guild == null && instance.getType() == ExecutableCommand.Type.GUILD) continue;
+			if (instance == null || (guild != null && instance.getType() != ExecutableCommand.Type.GUILD)) continue;
 			if (guild != null && !instance.getGuilds(guild.getJDA()).contains(guild)) {
 				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
 			} else {
