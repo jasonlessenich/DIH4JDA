@@ -35,6 +35,7 @@ public class DIH4JDA extends ListenerAdapter {
 	private final Set<DIH4JDALogger.Type> blockedLogTypes;
 	private final boolean registerOnReady;
 	private final boolean smartQueuing;
+	private final boolean deleteUnknownCommands;
 	private final Set<DIH4JDAListenerAdapter> listeners;
 	private final Executor executor;
 	private final InteractionHandler handler;
@@ -46,11 +47,12 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @param commandsPackage The package that houses the command classes.
 	 * @param blockedLogTypes All Logs that should be blocked.
 	 */
-	protected DIH4JDA(JDA jda, String commandsPackage, boolean registerOnReady, boolean smartQueuing, Executor executor, DIH4JDALogger.Type... blockedLogTypes) {
+	protected DIH4JDA(JDA jda, String commandsPackage, boolean registerOnReady, boolean smartQueuing, boolean deleteUnknownCommands, Executor executor, DIH4JDALogger.Type... blockedLogTypes) {
 		this.jda = jda;
 		this.commandsPackage = commandsPackage;
 		this.registerOnReady = registerOnReady;
 		this.smartQueuing = smartQueuing;
+		this.deleteUnknownCommands = deleteUnknownCommands;
 		if (blockedLogTypes == null || blockedLogTypes.length < 1) {
 			this.blockedLogTypes = new HashSet<>();
 		} else {
@@ -125,10 +127,17 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * @return Whether the SmartQueue Functionality is enabled.
+	 * @return Whether the SmartQueue functionality is enabled.
 	 */
 	public boolean isSmartQueuing() {
 		return smartQueuing;
+	}
+
+	/**
+	 * @return Whether the SmartQueueDeleteUnknown functionality is enabled.
+	 */
+	public boolean isDeletingUnknownCommands() {
+		return deleteUnknownCommands;
 	}
 
 	/**
