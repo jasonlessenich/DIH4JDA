@@ -201,7 +201,7 @@ public class InteractionHandler extends ListenerAdapter {
 				commandNames.append(", " + data.getData().getName());
 			}
 		});
-		if (!commandNames.isEmpty()) {
+		if (!commandNames.toString().isEmpty()) {
 			DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", slashData.size() + commandData.size(), guild.getName(),
 					commandNames.substring(2)), DIH4JDALogger.Type.COMMANDS_QUEUED);
 		}
