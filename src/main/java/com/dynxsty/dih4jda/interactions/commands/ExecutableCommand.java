@@ -40,30 +40,6 @@ public abstract class ExecutableCommand extends CommandRequirements {
 	}
 
 	/**
-	 * Allows a set of {@link Guild}s to update their Slash Commands.
-	 *
-	 * @param whitelisted An array of {@link Guild}s.
-	 */
-	public void whitelistGuilds(Guild... whitelisted) {
-		if (type != Type.GUILD) {
-			throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
-		}
-		whitelistedGuilds.addAll(Arrays.stream(whitelisted).map(Guild::getIdLong).collect(Collectors.toSet()));
-	}
-
-	/**
-	 * Prevents the given set of {@link Guild}s from updating their Slash Commands.
-	 *
-	 * @param blacklisted An array of {@link Guild}s.
-	 */
-	public void blacklistGuilds(Guild... blacklisted) {
-		if (type != Type.GUILD) {
-			throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
-		}
-		blacklistedGuilds.addAll(Arrays.stream(blacklisted).map(Guild::getIdLong).collect(Collectors.toSet()));
-	}
-
-	/**
 	 * Gets all Guilds whose Slash Commands should be updated.
 	 *
 	 * @param jda The {@link JDA} instance.
