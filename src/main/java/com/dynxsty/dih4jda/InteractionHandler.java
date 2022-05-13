@@ -9,7 +9,7 @@ import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
 import com.dynxsty.dih4jda.util.Checks;
 import com.dynxsty.dih4jda.util.ClassUtils;
 import com.dynxsty.dih4jda.util.CommandUtils;
-import kotlin.Pair;
+import com.dynxsty.dih4jda.util.Pair;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -146,25 +146,25 @@ public class InteractionHandler extends ListenerAdapter {
 			Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(guild), getContextCommandData(guild));
 			// check if smart queuing is enabled
 			if (config.isSmartQueuing()) {
-				data = SmartQueue.checkGuild(guild, data.component1(), data.component2(), config.isDeleteUnknownCommands());
+				data = SmartQueue.checkGuild(guild, data.getFirst(), data.getSecond(), config.isDeleteUnknownCommands());
 			}
 			// upsert all guild commands
-			if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
-				upsert(guild, data.component1(), data.component2());
-				DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", data.component1().size() + data.component2().size(), guild.getName(),
-						CommandUtils.getNames(data.component2(), data.component1())), DIH4JDALogger.Type.COMMANDS_QUEUED);
+			if (!data.getFirst().isEmpty() || !data.getSecond().isEmpty()) {
+				upsert(guild, data.getFirst(), data.getSecond());
+				DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", data.getFirst().size() + data.getSecond().size(), guild.getName(),
+						CommandUtils.getNames(data.getSecond(), data.getFirst())), DIH4JDALogger.Type.COMMANDS_QUEUED);
 			}
 		}
 		Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(null), getContextCommandData(null));
 		// check if smart queuing is enabled
 		if (config.isSmartQueuing()) {
-			data = SmartQueue.checkGlobal(config.getJDA(), data.component1(), data.component2(), config.isDeleteUnknownCommands());
+			data = SmartQueue.checkGlobal(config.getJDA(), data.getFirst(), data.getSecond(), config.isDeleteUnknownCommands());
 		}
 		// upsert all global commands
-		if (!data.component1().isEmpty() || !data.component2().isEmpty()) {
-			upsert(config.getJDA(), data.component1(), data.component2());
-			DIH4JDALogger.info(String.format("Queued %s global command(s): %s", data.component1().size() + data.component2().size(),
-					CommandUtils.getNames(data.component2(), data.component1())), DIH4JDALogger.Type.COMMANDS_QUEUED);
+		if (!data.getFirst().isEmpty() || !data.getSecond().isEmpty()) {
+			upsert(config.getJDA(), data.getFirst(), data.getSecond());
+			DIH4JDALogger.info(String.format("Queued %s global command(s): %s", data.getFirst().size() + data.getSecond().size(),
+					CommandUtils.getNames(data.getSecond(), data.getFirst())), DIH4JDALogger.Type.COMMANDS_QUEUED);
 		}
 	}
 

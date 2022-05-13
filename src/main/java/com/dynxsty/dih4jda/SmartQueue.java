@@ -1,7 +1,7 @@
 package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.util.CommandUtils;
-import kotlin.Pair;
+import com.dynxsty.dih4jda.util.Pair;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
