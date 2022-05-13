@@ -186,8 +186,16 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param commandData A set of {@link CommandData},
 	 */
 	private void upsert(Guild guild, Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData) {
-		slashData.forEach(data -> guild.upsertCommand(data.getData()).queue());
-		commandData.forEach(data -> guild.upsertCommand(data.getData()).queue());
+		slashData.forEach(data -> {
+					if (!data.getGuilds().contains(guild)) {
+						DIH4JDALogger.info("Skipping Registration of /" + data.getData().getName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
+					} else guild.upsertCommand(data.getData()).queue();
+		});
+		commandData.forEach(data -> {
+			if (!data.getGuilds().contains(guild)) {
+				DIH4JDALogger.info("Skipping Registration of " + data.getData().getName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
+			} else guild.upsertCommand(data.getData()).queue();
+		});
 	}
 
 	/**
@@ -240,7 +248,11 @@ public class InteractionHandler extends ListenerAdapter {
 		for (Class<? extends SlashCommand> c : commands) {
 			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(c);
 			if (instance != null) {
-				data.add(new UnqueuedSlashCommandData(getBaseCommandData(instance, c), instance.getType()));
+				UnqueuedSlashCommandData unqueuedData = new UnqueuedSlashCommandData(getBaseCommandData(instance, c), instance.getType());
+				if (instance.getType() == ExecutableCommand.Type.GUILD) {
+					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
+				}
+				data.add(unqueuedData);
 			}
 		}
 		return data;
@@ -351,7 +363,11 @@ public class InteractionHandler extends ListenerAdapter {
 		for (Class<? extends ContextCommand> c : contexts) {
 			ContextCommand instance = (ContextCommand) ClassUtils.getInstance(c);
 			if (instance != null) {
-				data.add(new UnqueuedCommandData(getContextCommandData(instance, c), instance.getType()));
+				UnqueuedCommandData unqueuedData = new UnqueuedCommandData(getContextCommandData(instance, c), instance.getType());
+				if (instance.getType() == ExecutableCommand.Type.GUILD) {
+					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
+				}
+				data.add(unqueuedData);
 			}
 		}
 		return data;
