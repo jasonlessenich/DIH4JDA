@@ -61,11 +61,11 @@ public class SmartQueue {
 	/**
 	 * Removes all duplicate CommandData and, if enabled, deletes unknown commands.
 	 *
-	 * @param jda         	The {@link JDA} instance.
-	 * @param existing    	A List of all existing {@link Command}s.
-	 * @param slashData   	The set of {@link SlashCommandData}.
-	 * @param commandData 	The set of {@link CommandData}.
-	 * @param guild       	An optional guild parameter which is used with {@link SmartQueue#checkGuild(Guild, Set, Set, boolean)}.
+	 * @param jda           The {@link JDA} instance.
+	 * @param existing      A List of all existing {@link Command}s.
+	 * @param slashData     The set of {@link SlashCommandData}.
+	 * @param commandData   The set of {@link CommandData}.
+	 * @param guild         An optional guild parameter which is used with {@link SmartQueue#checkGuild(Guild, Set, Set, boolean)}.
 	 * @param deleteUnknown Whether unknown commands should be removed.
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5

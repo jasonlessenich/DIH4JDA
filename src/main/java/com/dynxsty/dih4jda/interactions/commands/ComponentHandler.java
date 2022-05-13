@@ -164,7 +164,8 @@ public abstract class ComponentHandler {
 	 *
 	 * @since v1.4
 	 */
-	public void handleButton(ButtonInteractionEvent event, Button button) {}
+	public void handleButton(ButtonInteractionEvent event, Button button) {
+	}
 
 	/**
 	 * Gets all SelectMenu identifiers that should be handled.
@@ -249,7 +250,8 @@ public abstract class ComponentHandler {
 	 *
 	 * @since v1.4
 	 */
-	public void handleSelectMenu(SelectMenuInteractionEvent event, List<String> values) {}
+	public void handleSelectMenu(SelectMenuInteractionEvent event, List<String> values) {
+	}
 
 	/**
 	 * Gets all Modal identifiers that should be handled.
@@ -362,5 +364,6 @@ public abstract class ComponentHandler {
 	 *
 	 * @since v1.4
 	 */
-	public void handleModal(ModalInteractionEvent event, List<ModalMapping> values) {}
+	public void handleModal(ModalInteractionEvent event, List<ModalMapping> values) {
+	}
 }

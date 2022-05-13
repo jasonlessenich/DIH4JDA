@@ -26,86 +26,86 @@ import java.util.Set;
  */
 public class DIH4JDA extends ListenerAdapter {
 
-    public static ExecutableCommand.Type defaultCommandType;
-    private final DIH4JDAConfig config;
-    private final Set<DIH4JDAListenerAdapter> listeners;
-    private InteractionHandler handler;
+	public static ExecutableCommand.Type defaultCommandType;
+	private final DIH4JDAConfig config;
+	private final Set<DIH4JDAListenerAdapter> listeners;
+	private InteractionHandler handler;
 
-    /**
-     * Constructs a new DIH4JDA instance
-     *
-     * @param config The instance's configuration.
-     */
-    protected DIH4JDA(DIH4JDAConfig config) {
-        if (defaultCommandType == null) defaultCommandType = ExecutableCommand.Type.GUILD;
-        this.config = config;
-        listeners = new HashSet<>();
-        try {
-            DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
-            this.handler = new InteractionHandler(this);
-            config.getJDA().addEventListener(this, handler);
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
-            DIH4JDALogger.warn("Could not initialize Interaction Handler: " + e.getMessage());
-        }
-    }
+	/**
+	 * Constructs a new DIH4JDA instance
+	 *
+	 * @param config The instance's configuration.
+	 */
+	protected DIH4JDA(DIH4JDAConfig config) {
+		if (defaultCommandType == null) defaultCommandType = ExecutableCommand.Type.GUILD;
+		this.config = config;
+		listeners = new HashSet<>();
+		try {
+			DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
+			this.handler = new InteractionHandler(this);
+			config.getJDA().addEventListener(this, handler);
+		} catch (ReflectiveOperationException e) {
+			e.printStackTrace();
+			DIH4JDALogger.warn("Could not initialize Interaction Handler: " + e.getMessage());
+		}
+	}
 
-    /**
-     * Ran once the {@link JDA} instance fires the {@link ReadyEvent}.
-     *
-     * @param event The {@link ReadyEvent} that was fired.
-     */
-    @Override
-    public void onReady(@NotNull ReadyEvent event) {
-        if (config.getCommandsPackage() == null) return;
-        try {
-            if (config.isRegisterOnReady() && handler != null) {
-                handler.registerInteractions();
-            }
-        } catch (ReflectiveOperationException e) {
-            DIH4JDALogger.error("Could not register commands: " + e.getMessage());
-        }
-    }
+	/**
+	 * Ran once the {@link JDA} instance fires the {@link ReadyEvent}.
+	 *
+	 * @param event The {@link ReadyEvent} that was fired.
+	 */
+	@Override
+	public void onReady(@NotNull ReadyEvent event) {
+		if (config.getCommandsPackage() == null) return;
+		try {
+			if (config.isRegisterOnReady() && handler != null) {
+				handler.registerInteractions();
+			}
+		} catch (ReflectiveOperationException e) {
+			DIH4JDALogger.error("Could not register commands: " + e.getMessage());
+		}
+	}
 
-    /**
-     * Registers all Interactions and replaces the old ones.
-     * Please note that global commands may need up to an hour before they're fully registered.
-     */
-    public void registerInteractions() throws ReflectiveOperationException {
-        if (handler != null) {
-            handler.registerInteractions();
-        }
-    }
+	/**
+	 * Registers all Interactions and replaces the old ones.
+	 * Please note that global commands may need up to an hour before they're fully registered.
+	 */
+	public void registerInteractions() throws ReflectiveOperationException {
+		if (handler != null) {
+			handler.registerInteractions();
+		}
+	}
 
-    /**
-     * @return The instance's configuration.
-     */
-    public DIH4JDAConfig getConfig() {
-        return config;
-    }
+	/**
+	 * @return The instance's configuration.
+	 */
+	public DIH4JDAConfig getConfig() {
+		return config;
+	}
 
-    /**
-     * Allows to add Listener classes (that extend {@link DIH4JDAListenerAdapter}).
-     *
-     * @since v1.5
-     */
-    public void addListener(Object... classes) {
-        for (Object o : classes) {
-            try {
-                // check if class extends the ListenerAdapter
-                DIH4JDAListenerAdapter adapter = (DIH4JDAListenerAdapter) o;
-                listeners.add(adapter);
-            } catch (ClassCastException e) {
-                throw new IllegalArgumentException("Listener classes must extend DIH4JDAListenerAdapter!");
-            }
-        }
-    }
+	/**
+	 * Allows to add Listener classes (that extend {@link DIH4JDAListenerAdapter}).
+	 *
+	 * @since v1.5
+	 */
+	public void addListener(Object... classes) {
+		for (Object o : classes) {
+			try {
+				// check if class extends the ListenerAdapter
+				DIH4JDAListenerAdapter adapter = (DIH4JDAListenerAdapter) o;
+				listeners.add(adapter);
+			} catch (ClassCastException e) {
+				throw new IllegalArgumentException("Listener classes must extend DIH4JDAListenerAdapter!");
+			}
+		}
+	}
 
-    /**
-     * @return A set of all Listener classes.
-     * @see DIH4JDA#addListener(Object...)
-     */
-    protected Set<DIH4JDAListenerAdapter> getListeners() {
-        return listeners;
-    }
+	/**
+	 * @return A set of all Listener classes.
+	 * @see DIH4JDA#addListener(Object...)
+	 */
+	protected Set<DIH4JDAListenerAdapter> getListeners() {
+		return listeners;
+	}
 }

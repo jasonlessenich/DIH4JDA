@@ -3,9 +3,8 @@ package com.dynxsty.dih4jda;
 import com.dynxsty.dih4jda.config.DIH4JDAConfig;
 import com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
-import com.dynxsty.dih4jda.interactions.commands.*;
-import com.dynxsty.dih4jda.interactions.commands.AutoCompleteHandler;
 import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
+import com.dynxsty.dih4jda.interactions.commands.*;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import com.dynxsty.dih4jda.util.Checks;
@@ -36,11 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -223,7 +218,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Set<Class<? extends ComponentHandler>> handler = classes.getSubTypesOf(ComponentHandler.class);
 		// remove own implementations
 		List.of(CommandRequirements.class, ExecutableCommand.class, ContextCommand.class,
-				ContextCommand.Message.class, ContextCommand.User.class, SlashCommand.class, SlashCommand.Subcommand.class)
+						ContextCommand.Message.class, ContextCommand.User.class, SlashCommand.class, SlashCommand.Subcommand.class)
 				.forEach(handler::remove);
 		for (Class<? extends ComponentHandler> c : handler) {
 			if (!Checks.checkEmptyConstructor(c)) continue;
@@ -238,7 +233,6 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Gets all Commands that were found in {@link InteractionHandler#findSlashCommands()} and adds
 	 * them to the {@link InteractionHandler#slashCommandIndex}.
 	 *
-
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
 	private Set<UnqueuedSlashCommandData> getSlashCommandData() throws ReflectiveOperationException {
