@@ -90,11 +90,12 @@ public class CommandUtils {
 		if (data.getType() != option.getType()) return false;
 		if (!data.getName().equals(option.getName())) return false;
 		if (!data.getDescription().equals(option.getDescription())) return false;
-		if (data.isRequired() && !option.isRequired()) return false;
 		if (!data.getChoices().equals(option.getChoices())) return false;
 		if (!data.getChannelTypes().equals(option.getChannelTypes())) return false;
 		if (!Objects.equals(data.getMaxValue(), option.getMaxValue())) return false;
-		return Objects.equals(data.getMinValue(), option.getMinValue());
+		if (!Objects.equals(data.getMinValue(), option.getMinValue())) return false;
+		if (data.isAutoComplete() != option.isAutoComplete()) return false;
+		return data.isRequired() && option.isRequired();
 	}
 
 	/**
