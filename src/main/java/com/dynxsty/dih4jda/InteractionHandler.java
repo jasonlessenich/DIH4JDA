@@ -149,8 +149,6 @@ public class InteractionHandler extends ListenerAdapter {
 			// upsert all guild commands
 			if (!guildData.getFirst().isEmpty() || !guildData.getSecond().isEmpty()) {
 				upsert(guild, guildData.getFirst(), guildData.getSecond());
-				DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", guildData.getFirst().size() + guildData.getSecond().size(), guild.getName(),
-						CommandUtils.getNames(guildData.getSecond(), guildData.getFirst())), DIH4JDALogger.Type.COMMANDS_QUEUED);
 			}
 		}
 		Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> globalData = CommandUtils.filterByType(data, ExecutableCommand.Type.GLOBAL);
@@ -186,16 +184,27 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param commandData A set of {@link CommandData},
 	 */
 	private void upsert(Guild guild, Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData) {
+		StringBuilder commandNames = new StringBuilder();
 		slashData.forEach(data -> {
 					if (!data.getGuilds().contains(guild)) {
 						DIH4JDALogger.info("Skipping Registration of /" + data.getData().getName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
-					} else guild.upsertCommand(data.getData()).queue();
+					} else {
+						guild.upsertCommand(data.getData()).queue();
+						commandNames.append(", /" + data.getData().getName());
+					}
 		});
 		commandData.forEach(data -> {
 			if (!data.getGuilds().contains(guild)) {
 				DIH4JDALogger.info("Skipping Registration of " + data.getData().getName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
-			} else guild.upsertCommand(data.getData()).queue();
+			} else {
+				guild.upsertCommand(data.getData()).queue();
+				commandNames.append(", " + data.getData().getName());
+			}
 		});
+		if (!commandNames.isEmpty()) {
+			DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", slashData.size() + commandData.size(), guild.getName(),
+					commandNames.substring(2)), DIH4JDALogger.Type.COMMANDS_QUEUED);
+		}
 	}
 
 	/**
