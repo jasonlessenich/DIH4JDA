@@ -121,7 +121,7 @@ public class CommandUtils {
 					SubcommandData data = new SubcommandData(o.getName(), o.getDescription());
 					if (!o.getOptions().isEmpty()) data.addOptions(toOptionData(o.getOptions()));
 					return data;
-				}).collect(Collectors.toList());
+				}).toList();
 	}
 
 	/**
@@ -136,7 +136,7 @@ public class CommandUtils {
 					SubcommandGroupData data = new SubcommandGroupData(o.getName(), o.getDescription());
 					if (!o.getSubcommands().isEmpty()) data.addSubcommands(toSubcommandData(o.getSubcommands()));
 					return data;
-				}).collect(Collectors.toList());
+				}).toList();
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class CommandUtils {
 					if (!o.getChoices().isEmpty()) data.addChoices(o.getChoices());
 					if (!o.getChannelTypes().isEmpty()) data.setChannelTypes(o.getChannelTypes());
 					return data;
-				}).collect(Collectors.toList());
+				}).toList();
 	}
 
 	/**
