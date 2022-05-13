@@ -219,11 +219,17 @@ public class CommandUtils {
 		return names.substring(2);
 	}
 
+	/**
+	 * Removes all elements of the provided {@link Pair} which don't match the given {@link ExecutableCommand.Type}.
+	 *
+	 * @param pair The {@link Pair}.
+	 * @param type The {@link ExecutableCommand.Type}.
+	 * @return The modified {@link Pair}.
+	 */
 	public static Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> filterByType(Pair<Set<UnqueuedSlashCommandData>,
 			Set<UnqueuedCommandData>> pair, ExecutableCommand.Type type) {
 		return new Pair<>(
 				pair.getFirst().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()),
 				pair.getSecond().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()));
 	}
-
 }

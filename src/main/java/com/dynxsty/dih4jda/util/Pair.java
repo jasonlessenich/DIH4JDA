@@ -1,5 +1,11 @@
 package com.dynxsty.dih4jda.util;
 
+/**
+ * Data class which holds two values.
+ *
+ * @param <F> The first value.
+ * @param <S> The second value.
+ */
 public class Pair<F, S> {
 	F first;
 	S second;
