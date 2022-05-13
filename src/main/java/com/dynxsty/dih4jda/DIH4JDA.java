@@ -1,17 +1,15 @@
 package com.dynxsty.dih4jda;
 
+import com.dynxsty.dih4jda.config.DIH4JDAConfig;
 import com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter;
+import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import org.reflections.Reflections;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 /**
  * The entry-point of this Handler.
@@ -28,38 +26,28 @@ import java.util.stream.Collectors;
  */
 public class DIH4JDA extends ListenerAdapter {
 
-	public static boolean defaultGuildCommands = true;
-	private final JDA jda;
-	private final String commandsPackage;
-	private final Set<DIH4JDALogger.Type> blockedLogTypes;
-	private final boolean registerOnStartup;
-	private final boolean smartQueuing;
-	private final boolean deleteUnknownCommands;
+	public static ExecutableCommand.Type defaultCommandType;
+	private final DIH4JDAConfig config;
 	private final Set<DIH4JDAListenerAdapter> listeners;
-	private final Executor executor;
 	private InteractionHandler handler;
 
 	/**
 	 * Constructs a new DIH4JDA instance
 	 *
-	 * @param jda             The {@link JDA} instance the handler is to be used for.
-	 * @param commandsPackage The package that houses the command classes.
-	 * @param blockedLogTypes All Logs that should be blocked.
+	 * @param config The instance's configuration.
 	 */
-	protected DIH4JDA(JDA jda, String commandsPackage, boolean registerOnStartup, boolean smartQueuing, boolean deleteUnknownCommands, Executor executor, DIH4JDALogger.Type... blockedLogTypes) {
-		this.jda = jda;
-		this.commandsPackage = commandsPackage;
-		this.registerOnStartup = registerOnStartup;
-		this.smartQueuing = smartQueuing;
-		this.deleteUnknownCommands = deleteUnknownCommands;
-		if (blockedLogTypes == null || blockedLogTypes.length < 1) {
-			this.blockedLogTypes = new HashSet<>();
-		} else {
-			this.blockedLogTypes = Arrays.stream(blockedLogTypes).collect(Collectors.toSet());
+	protected DIH4JDA(DIH4JDAConfig config) {
+		if (defaultCommandType == null) defaultCommandType = ExecutableCommand.Type.GUILD;
+		this.config = config;
+		listeners = new HashSet<>();
+		try {
+			DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
+			this.handler = new InteractionHandler(this);
+			config.getJDA().addEventListener(this, handler);
+		} catch (ReflectiveOperationException e) {
+			e.printStackTrace();
+			DIH4JDALogger.warn("Could not initialize Interaction Handler: " + e.getMessage());
 		}
-		this.executor = executor;
-		this.listeners = new HashSet<>();
-		jda.addEventListener(this);
 	}
 
 	/**
@@ -69,14 +57,13 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	@Override
 	public void onReady(@NotNull ReadyEvent event) {
-		if (getCommandsPackage() == null) return;
-		DIH4JDALogger.blockedLogTypes = blockedLogTypes;
-		handler = new InteractionHandler(this);
-		getJDA().addEventListener(handler);
+		if (config.getCommandsPackage() == null) return;
 		try {
-			if (registerOnStartup) handler.registerInteractions();
-		} catch (Exception e) {
-			e.printStackTrace();
+			if (config.isRegisterOnReady() && handler != null) {
+				handler.registerInteractions();
+			}
+		} catch (ReflectiveOperationException e) {
+			DIH4JDALogger.error("Could not register commands: " + e.getMessage());
 		}
 	}
 
@@ -85,56 +72,16 @@ public class DIH4JDA extends ListenerAdapter {
 	 * Please note that global commands may need up to an hour before they're fully registered.
 	 */
 	public void registerInteractions() throws ReflectiveOperationException {
-		handler.registerInteractions();
+		if (handler != null) {
+			handler.registerInteractions();
+		}
 	}
 
 	/**
-	 * @return The {@link JDA} instance.
+	 * @return The instance's configuration.
 	 */
-	public JDA getJDA() {
-		return jda;
-	}
-
-	/**
-	 * @return The provided package that is used with the {@link Reflections} API.
-	 */
-	public String getCommandsPackage() {
-		return commandsPackage;
-	}
-
-	/**
-	 * @return The executor that is used to execute the commands.
-	 */
-	public Executor getExecutor() {
-		return executor;
-	}
-
-	/**
-	 * @return A set with all blocked {@link DIH4JDALogger.Type}s.
-	 */
-	public Set<DIH4JDALogger.Type> getBlockedLogTypes() {
-		return blockedLogTypes;
-	}
-
-	/**
-	 * @return Whether commands should be registered on each {@link ListenerAdapter#onReady(ReadyEvent)} event.
-	 */
-	public boolean isRegisterOnStartup() {
-		return registerOnStartup;
-	}
-
-	/**
-	 * @return Whether the SmartQueue functionality is enabled.
-	 */
-	public boolean isSmartQueuing() {
-		return smartQueuing;
-	}
-
-	/**
-	 * @return Whether the SmartQueueDeleteUnknown functionality is enabled.
-	 */
-	public boolean isDeletingUnknownCommands() {
-		return deleteUnknownCommands;
+	public DIH4JDAConfig getConfig() {
+		return config;
 	}
 
 	/**
@@ -142,7 +89,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @since v1.5
 	 */
-	public void addListeners(Object... classes) {
+	public void addListener(Object... classes) {
 		for (Object o : classes) {
 			try {
 				// check if class extends the ListenerAdapter
@@ -156,7 +103,7 @@ public class DIH4JDA extends ListenerAdapter {
 
 	/**
 	 * @return A set of all Listener classes.
-	 * @see DIH4JDA#addListeners(Object...)
+	 * @see DIH4JDA#addListener(Object...)
 	 */
 	protected Set<DIH4JDAListenerAdapter> getListeners() {
 		return listeners;

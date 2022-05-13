@@ -1,5 +1,8 @@
 package com.dynxsty.dih4jda.util;
 
+import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
+import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
+import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import org.jetbrains.annotations.Contract;
@@ -90,7 +93,9 @@ public class CommandUtils {
 		if (!data.getChoices().equals(option.getChoices())) return false;
 		if (!data.getChannelTypes().equals(option.getChannelTypes())) return false;
 		if (!Objects.equals(data.getMaxValue(), option.getMaxValue())) return false;
-		return Objects.equals(data.getMinValue(), option.getMinValue());
+		if (!Objects.equals(data.getMinValue(), option.getMinValue())) return false;
+		if (data.isAutoComplete() != option.isAutoComplete()) return false;
+		return data.isRequired() && option.isRequired();
 	}
 
 	/**
@@ -204,15 +209,28 @@ public class CommandUtils {
 	/**
 	 * Builds a formatted string out of the given sets of CommandData.
 	 *
-	 * @param command A set of {@link CommandData}.
-	 * @param slash   A set of {@link SlashCommandData}.
+	 * @param command A set of {@link UnqueuedCommandData}.
+	 * @param slash   A set of {@link UnqueuedSlashCommandData}.
 	 * @return The formatted String.
 	 */
-	public static String getNames(Set<CommandData> command, Set<SlashCommandData> slash) {
+	public static String getNames(Set<UnqueuedCommandData> command, Set<UnqueuedSlashCommandData> slash) {
 		StringBuilder names = new StringBuilder();
-		command.forEach(c -> names.append(", ").append(c.getName()));
-		slash.forEach(c -> names.append(", /").append(c.getName()));
+		command.forEach(c -> names.append(", ").append(c.getData().getName()));
+		slash.forEach(c -> names.append(", /").append(c.getData().getName()));
 		return names.substring(2);
 	}
 
+	/**
+	 * Removes all elements of the provided {@link Pair} which don't match the given {@link ExecutableCommand.Type}.
+	 *
+	 * @param pair The {@link Pair}.
+	 * @param type The {@link ExecutableCommand.Type}.
+	 * @return The modified {@link Pair}.
+	 */
+	public static Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> filterByType(Pair<Set<UnqueuedSlashCommandData>,
+			Set<UnqueuedCommandData>> pair, ExecutableCommand.Type type) {
+		return new Pair<>(
+				pair.getFirst().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()),
+				pair.getSecond().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()));
+	}
 }

@@ -2,6 +2,8 @@ package com.dynxsty.dih4jda.util;
 
 import com.dynxsty.dih4jda.DIH4JDALogger;
 
+import java.lang.reflect.Constructor;
+
 /**
  * Utility class for checking certain conditions.
  *
@@ -27,5 +29,20 @@ public class Checks {
 					base.getSimpleName(), implementation.getSimpleName()));
 		}
 		return doesImplement;
+	}
+
+	/**
+	 * Checks if the given class has an empty constructor.
+	 *
+	 * @param base The class to check.
+	 * @return Whether the class has an empty constructor.
+	 * @since v1.5.1
+	 */
+	public static boolean checkEmptyConstructor(Class<?> base) {
+		for (Constructor<?> c : base.getConstructors()) {
+			if (c.getParameterCount() == 0) return true;
+		}
+		DIH4JDALogger.warn(String.format("Class %s contains unknown constructor parameters!", base.getSimpleName()));
+		return false;
 	}
 }

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public abstract class ExecutableCommand extends CommandRequirements {
 	private final Set<Long> whitelistedGuilds = new HashSet<>();
 	private final Set<Long> blacklistedGuilds = new HashSet<>();
-	private boolean isGuildCommand = DIH4JDA.defaultGuildCommands;
+	private Type type = DIH4JDA.defaultCommandType;
 
 	/**
 	 * Allows a set of {@link Guild}s to update their Slash Commands.
@@ -21,7 +21,9 @@ public abstract class ExecutableCommand extends CommandRequirements {
 	 * @param whitelisted An array of {@link Long}s.
 	 */
 	public void whitelistGuilds(Long... whitelisted) {
-		if (!isGuildCommand) throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
+		if (type != Type.GUILD) {
+			throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
+		}
 		whitelistedGuilds.addAll(Arrays.asList(whitelisted));
 	}
 
@@ -31,28 +33,10 @@ public abstract class ExecutableCommand extends CommandRequirements {
 	 * @param blacklisted An array of {@link Long}s.
 	 */
 	public void blacklistGuilds(Long... blacklisted) {
-		if (!isGuildCommand) throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
+		if (type != Type.GUILD) {
+			throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
+		}
 		blacklistedGuilds.addAll(Arrays.asList(blacklisted));
-	}
-
-	/**
-	 * Allows a set of {@link Guild}s to update their Slash Commands.
-	 *
-	 * @param whitelisted An array of {@link Guild}s.
-	 */
-	public void whitelistGuilds(Guild... whitelisted) {
-		if (!isGuildCommand) throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
-		whitelistedGuilds.addAll(Arrays.stream(whitelisted).map(Guild::getIdLong).collect(Collectors.toSet()));
-	}
-
-	/**
-	 * Prevents the given set of {@link Guild}s from updating their Slash Commands.
-	 *
-	 * @param blacklisted An array of {@link Guild}s.
-	 */
-	public void blacklistGuilds(Guild... blacklisted) {
-		if (!isGuildCommand) throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
-		blacklistedGuilds.addAll(Arrays.stream(blacklisted).map(Guild::getIdLong).collect(Collectors.toSet()));
 	}
 
 	/**
@@ -70,14 +54,19 @@ public abstract class ExecutableCommand extends CommandRequirements {
 		return guilds;
 	}
 
-	public boolean isGuildCommand() {
-		return isGuildCommand;
+	public Type getType() {
+		return type;
 	}
 
 	/**
-	 * @param guildCommand Whether this command should be queued as a guild command.
+	 * @param type How the command should be queued.
 	 */
-	public void setGuildCommand(boolean guildCommand) {
-		isGuildCommand = guildCommand;
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public enum Type {
+		GLOBAL,
+		GUILD
 	}
 }

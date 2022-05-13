@@ -1,5 +1,6 @@
 package com.dynxsty.dih4jda.events;
 
+import com.dynxsty.dih4jda.interactions.commands.AutoCompleteHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -51,7 +52,7 @@ public abstract class DIH4JDAListenerAdapter {
 	 *
 	 * @param interaction The {@link CommandAutoCompleteInteraction}.
 	 * @param e           The Exception that was raised.
-	 * @see com.dynxsty.dih4jda.interactions.commands.autocomplete.AutoCompleteHandler#handleAutoComplete(CommandAutoCompleteInteractionEvent, AutoCompleteQuery)
+	 * @see AutoCompleteHandler#handleAutoComplete(CommandAutoCompleteInteractionEvent, AutoCompleteQuery)
 	 */
 	public void onAutoCompleteException(CommandAutoCompleteInteraction interaction, Exception e) {
 	}
