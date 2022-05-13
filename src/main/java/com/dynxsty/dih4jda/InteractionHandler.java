@@ -6,6 +6,8 @@ import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import com.dynxsty.dih4jda.interactions.commands.*;
 import com.dynxsty.dih4jda.interactions.commands.autocomplete.AutoCompleteHandler;
 import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
+import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
+import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import com.dynxsty.dih4jda.util.Checks;
 import com.dynxsty.dih4jda.util.ClassUtils;
 import com.dynxsty.dih4jda.util.CommandUtils;
@@ -142,29 +144,30 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	public void registerInteractions() throws ReflectiveOperationException {
 		// register commands for each guild
+		Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> data = new Pair<>(getSlashCommandData(), getContextCommandData());
 		for (Guild guild : config.getJDA().getGuilds()) {
-			Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(guild), getContextCommandData(guild));
+			Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> guildData = CommandUtils.filterByType(data, ExecutableCommand.Type.GUILD);
 			// check if smart queuing is enabled
 			if (config.isSmartQueuing()) {
-				data = SmartQueue.checkGuild(guild, data.getFirst(), data.getSecond(), config.isDeleteUnknownCommands());
+				guildData = SmartQueue.checkGuild(guild, guildData.getFirst(), guildData.getSecond(), config.isDeleteUnknownCommands());
 			}
 			// upsert all guild commands
-			if (!data.getFirst().isEmpty() || !data.getSecond().isEmpty()) {
-				upsert(guild, data.getFirst(), data.getSecond());
-				DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", data.getFirst().size() + data.getSecond().size(), guild.getName(),
-						CommandUtils.getNames(data.getSecond(), data.getFirst())), DIH4JDALogger.Type.COMMANDS_QUEUED);
+			if (!guildData.getFirst().isEmpty() || !guildData.getSecond().isEmpty()) {
+				upsert(guild, guildData.getFirst(), guildData.getSecond());
+				DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", guildData.getFirst().size() + guildData.getSecond().size(), guild.getName(),
+						CommandUtils.getNames(guildData.getSecond(), guildData.getFirst())), DIH4JDALogger.Type.COMMANDS_QUEUED);
 			}
 		}
-		Pair<Set<SlashCommandData>, Set<CommandData>> data = new Pair<>(getSlashCommandData(null), getContextCommandData(null));
+		Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> globalData = CommandUtils.filterByType(data, ExecutableCommand.Type.GLOBAL);
 		// check if smart queuing is enabled
 		if (config.isSmartQueuing()) {
-			data = SmartQueue.checkGlobal(config.getJDA(), data.getFirst(), data.getSecond(), config.isDeleteUnknownCommands());
+			globalData = SmartQueue.checkGlobal(config.getJDA(), globalData.getFirst(), globalData.getSecond(), config.isDeleteUnknownCommands());
 		}
 		// upsert all global commands
-		if (!data.getFirst().isEmpty() || !data.getSecond().isEmpty()) {
-			upsert(config.getJDA(), data.getFirst(), data.getSecond());
-			DIH4JDALogger.info(String.format("Queued %s global command(s): %s", data.getFirst().size() + data.getSecond().size(),
-					CommandUtils.getNames(data.getSecond(), data.getFirst())), DIH4JDALogger.Type.COMMANDS_QUEUED);
+		if (!globalData.getFirst().isEmpty() || !globalData.getSecond().isEmpty()) {
+			upsert(config.getJDA(), globalData.getFirst(), globalData.getSecond());
+			DIH4JDALogger.info(String.format("Queued %s global command(s): %s", globalData.getFirst().size() + globalData.getSecond().size(),
+					CommandUtils.getNames(globalData.getSecond(), globalData.getFirst())), DIH4JDALogger.Type.COMMANDS_QUEUED);
 		}
 	}
 
@@ -175,9 +178,9 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashData   A set of {@link SlashCommandData}.
 	 * @param commandData A set of {@link CommandData},
 	 */
-	private void upsert(JDA jda, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
-		slashData.forEach(data -> jda.upsertCommand(data).queue());
-		commandData.forEach(data -> jda.upsertCommand(data).queue());
+	private void upsert(JDA jda, Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData) {
+		slashData.forEach(data -> jda.upsertCommand(data.getData()).queue());
+		commandData.forEach(data -> jda.upsertCommand(data.getData()).queue());
 	}
 
 	/**
@@ -187,9 +190,9 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashData   A set of {@link SlashCommandData}.
 	 * @param commandData A set of {@link CommandData},
 	 */
-	private void upsert(Guild guild, Set<SlashCommandData> slashData, Set<CommandData> commandData) {
-		slashData.forEach(data -> guild.upsertCommand(data).queue());
-		commandData.forEach(data -> guild.upsertCommand(data).queue());
+	private void upsert(Guild guild, Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData) {
+		slashData.forEach(data -> guild.upsertCommand(data.getData()).queue());
+		commandData.forEach(data -> guild.upsertCommand(data.getData()).queue());
 	}
 
 	/**
@@ -235,18 +238,15 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Gets all Commands that were found in {@link InteractionHandler#findSlashCommands()} and adds
 	 * them to the {@link InteractionHandler#slashCommandIndex}.
 	 *
-	 * @param guild The command's guild.
+
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private Set<SlashCommandData> getSlashCommandData(@Nullable Guild guild) throws ReflectiveOperationException {
-		Set<SlashCommandData> data = new HashSet<>();
+	private Set<UnqueuedSlashCommandData> getSlashCommandData() throws ReflectiveOperationException {
+		Set<UnqueuedSlashCommandData> data = new HashSet<>();
 		for (Class<? extends SlashCommand> c : commands) {
 			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(c);
-			if (instance == null || (guild != null && instance.getType() != ExecutableCommand.Type.GUILD)) continue;
-			if (guild != null && !instance.getGuilds(guild.getJDA()).contains(guild)) {
-				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
-			} else {
-				data.add(getBaseCommandData(instance, c));
+			if (instance != null) {
+				data.add(new UnqueuedSlashCommandData(getBaseCommandData(instance, c), instance.getType()));
 			}
 		}
 		return data;
@@ -275,7 +275,7 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 		if (command.getSubcommandGroups() == null && command.getSubcommands() == null) {
 			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), command);
-			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s", command.getCommandData().getName()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
+			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", command.getCommandData().getName(), command.getType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 			if (command.shouldHandleAutoComplete() && Checks.checkImplementation(command.getClass(), AutoCompleteHandler.class)) {
 				autoCompleteIndex.put(commandData.getName(), (AutoCompleteHandler) command);
 				DIH4JDALogger.info("\t\t[*] Enabled Auto Complete Handling", DIH4JDALogger.Type.HANDLE_AUTOCOMPLETE);
@@ -336,7 +336,7 @@ public class InteractionHandler extends ListenerAdapter {
 				commandPath = CommandUtils.buildCommandPath(command.getCommandData().getName(), subGroupName, instance.getSubcommandData().getName());
 			}
 			subcommandIndex.put(commandPath, instance);
-			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s", commandPath), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
+			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", commandPath, command.getType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 			if (instance.shouldHandleAutoComplete() && Checks.checkImplementation(instance.getClass(), AutoCompleteHandler.class)) {
 				autoCompleteIndex.put(commandPath, (AutoCompleteHandler) instance);
 				DIH4JDALogger.info("\t\t[*] Enabled Auto Complete Handling", DIH4JDALogger.Type.HANDLE_AUTOCOMPLETE);
@@ -350,18 +350,14 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Gets all Guild Context commands registered in {@link InteractionHandler#findContextCommands()} and
 	 * returns their {@link CommandData} as a List.
 	 *
-	 * @param guild The context command's guild.
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private Set<CommandData> getContextCommandData(@Nullable Guild guild) throws ReflectiveOperationException {
-		Set<CommandData> data = new HashSet<>();
+	private Set<UnqueuedCommandData> getContextCommandData() throws ReflectiveOperationException {
+		Set<UnqueuedCommandData> data = new HashSet<>();
 		for (Class<? extends ContextCommand> c : contexts) {
 			ContextCommand instance = (ContextCommand) ClassUtils.getInstance(c);
-			if (instance == null || (guild != null && instance.getType() != ExecutableCommand.Type.GUILD)) continue;
-			if (guild != null && !instance.getGuilds(guild.getJDA()).contains(guild)) {
-				DIH4JDALogger.info("Skipping Registration of " + c.getSimpleName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.CONTEXT_COMMAND_SKIPPED);
-			} else {
-				data.add(getContextCommandData(instance, c));
+			if (instance != null) {
+				data.add(new UnqueuedCommandData(getContextCommandData(instance, c), instance.getType()));
 			}
 		}
 		return data;
@@ -388,7 +384,7 @@ public class InteractionHandler extends ListenerAdapter {
 			DIH4JDALogger.error(String.format("Invalid Command Type \"%s\" for Context Command! This command will be ignored.", commandData.getType()));
 			return null;
 		}
-		DIH4JDALogger.info(String.format("\t[*] Registered context command: %s", command.getCommandData().getName()), DIH4JDALogger.Type.CONTEXT_COMMAND_REGISTERED);
+		DIH4JDALogger.info(String.format("\t[*] Registered context command: %s (%s)", command.getCommandData().getName(), command.getType().name()), DIH4JDALogger.Type.CONTEXT_COMMAND_REGISTERED);
 		return commandData;
 	}
 

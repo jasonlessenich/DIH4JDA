@@ -1,5 +1,7 @@
 package com.dynxsty.dih4jda;
 
+import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
+import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import com.dynxsty.dih4jda.util.CommandUtils;
 import com.dynxsty.dih4jda.util.Pair;
 import net.dv8tion.jda.api.JDA;
@@ -31,7 +33,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected static Pair<Set<SlashCommandData>, Set<CommandData>> checkGlobal(JDA jda, Set<SlashCommandData> slashData, Set<CommandData> commandData, boolean deleteUnknown) {
+	protected static Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> checkGlobal(JDA jda, Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData, boolean deleteUnknown) {
 		final List<Command> existing = jda.retrieveCommands().complete();
 		if (!existing.isEmpty()) {
 			return removeDuplicates(jda, existing, slashData, commandData, null, deleteUnknown);
@@ -48,7 +50,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected static Pair<Set<SlashCommandData>, Set<CommandData>> checkGuild(Guild guild, Set<SlashCommandData> slashData, Set<CommandData> commandData, boolean deleteUnknown) {
+	protected static Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> checkGuild(Guild guild, Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData, boolean deleteUnknown) {
 		final List<Command> existing = guild.retrieveCommands().complete();
 		if (!existing.isEmpty()) {
 			return removeDuplicates(guild.getJDA(), existing, slashData, commandData, guild, deleteUnknown);
@@ -68,34 +70,35 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */
-	private static Pair<Set<SlashCommandData>, Set<CommandData>> removeDuplicates(JDA jda, final List<Command> existing, Set<SlashCommandData> slashData, Set<CommandData> commandData, @Nullable Guild guild, boolean deleteUnknown) {
+	private static Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> removeDuplicates(JDA jda, final List<Command> existing, Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData, @Nullable Guild guild, boolean deleteUnknown) {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
-		DIH4JDALogger.info(String.format("Found %s existing %s command(s)", existing.size(), global ? "global" : "guild"), DIH4JDALogger.Type.SMART_QUEUE);
+		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());
+		DIH4JDALogger.info(String.format(prefix + "Found %s existing command(s)", existing.size()), DIH4JDALogger.Type.SMART_QUEUE);
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
-			if (commandData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data)) ||
-					slashData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data))) {
-				DIH4JDALogger.info(String.format("Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+			if (commandData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData())) ||
+					slashData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData()))) {
+				DIH4JDALogger.info(String.format(prefix + "Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName()), DIH4JDALogger.Type.SMART_QUEUE);
 				return true;
 			}
 			return false;
 		});
-		commandData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data)));
-		slashData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data)));
+		commandData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getData())));
+		slashData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getData())));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
 			for (Command command : commands) {
 				if (existing.contains(command)) {
 					if (deleteUnknown) {
-						DIH4JDALogger.info(String.format("Deleting unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+						DIH4JDALogger.info(String.format(prefix + "Deleting unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
 						if (guild == null) {
 							jda.deleteCommandById(command.getId()).queue();
 						} else {
 							guild.deleteCommandById(command.getId()).queue();
 						}
 					} else {
-						DIH4JDALogger.info(String.format("Ignored unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+						DIH4JDALogger.info(String.format(prefix + "Ignored unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
 					}
 				}
 			}
