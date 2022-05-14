@@ -35,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -238,7 +239,7 @@ public class InteractionHandler extends ListenerAdapter {
 						ContextCommand.Message.class, ContextCommand.User.class, SlashCommand.class, SlashCommand.Subcommand.class)
 				.forEach(handler::remove);
 		for (Class<? extends ComponentHandler> c : handler) {
-			if (!Checks.checkEmptyConstructor(c)) continue;
+			if (!Checks.checkEmptyConstructor(c) || Modifier.isAbstract(c.getModifiers())) continue;
 			ComponentHandler instance = c.getConstructor().newInstance();
 			instance.getHandledButtonIds().forEach(s -> handlerIndex.put(s, instance));
 			instance.getHandledSelectMenuIds().forEach(s -> handlerIndex.put(s, instance));
