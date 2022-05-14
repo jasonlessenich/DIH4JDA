@@ -29,16 +29,16 @@ public class CommandUtils {
 		if (data.getType() != command.getType()) return false;
 		if (!data.getName().equals(command.getName())) return false;
 		if (!data.getDescription().equals(command.getDescription())) return false;
-		if (!command.getOptions().stream().allMatch(o -> data.getOptions().stream().anyMatch(op -> equals(o, op)))) {
+		if (!data.getOptions().stream().allMatch(o -> command.getOptions().stream().anyMatch(op -> equals(o, op)))) {
 			return false;
 		}
-		if (!command.getSubcommandGroups().stream().allMatch(o -> data.getSubcommandGroups().stream().anyMatch(op -> equals(o, op)))) {
+		if (!data.getSubcommandGroups().stream().allMatch(o -> command.getSubcommandGroups().stream().anyMatch(op -> equals(o, op)))) {
 			return false;
 		}
-		if (!command.getSubcommands().stream().allMatch(o -> data.getSubcommands().stream().anyMatch(op -> equals(o, op)))) {
+		if (!data.getSubcommands().stream().allMatch(o -> command.getSubcommands().stream().anyMatch(op -> equals(o, op)))) {
 			return false;
 		}
-		return command.getSubcommands().stream().allMatch(o -> data.getSubcommands().stream().anyMatch(op -> equals(o, op)));
+		return data.getSubcommands().stream().allMatch(o -> command.getSubcommands().stream().anyMatch(op -> equals(o, op)));
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class CommandUtils {
 		if (!Objects.equals(data.getMaxValue(), option.getMaxValue())) return false;
 		if (!Objects.equals(data.getMinValue(), option.getMinValue())) return false;
 		if (data.isAutoComplete() != option.isAutoComplete()) return false;
-		return data.isRequired() && option.isRequired();
+		return data.isRequired() == option.isRequired();
 	}
 
 	/**
