@@ -1,6 +1,7 @@
 package com.dynxsty.dih4jda.util;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class ClassUtils {
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
 	public static Object getInstance(Class<?> clazz) throws ReflectiveOperationException {
+		if (Modifier.isAbstract(clazz.getModifiers())) return null;
 		for (Constructor<?> constructor : clazz.getConstructors()) {
 			List<Class<?>> params = Arrays.asList(constructor.getParameterTypes());
 			if (params.isEmpty()) {

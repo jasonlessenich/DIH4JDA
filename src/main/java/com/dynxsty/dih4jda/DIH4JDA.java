@@ -63,6 +63,7 @@ public class DIH4JDA extends ListenerAdapter {
 				handler.registerInteractions();
 			}
 		} catch (ReflectiveOperationException e) {
+			e.printStackTrace();
 			DIH4JDALogger.error("Could not register commands: " + e.getMessage());
 		}
 	}

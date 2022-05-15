@@ -6,6 +6,7 @@ import com.dynxsty.dih4jda.util.CommandUtils;
 import com.dynxsty.dih4jda.util.Pair;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -34,7 +35,14 @@ public class SmartQueue {
 	 * @since v1.5
 	 */
 	protected static Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> checkGlobal(JDA jda, Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData, boolean deleteUnknown) {
-		final List<Command> existing = jda.retrieveCommands().complete();
+		List<Command> existing;
+		try {
+			existing = jda.retrieveCommands().complete();
+		} catch (ErrorResponseException e) {
+			DIH4JDALogger.error("Could not retrieve Global Commands! Please make sure that the bot was invited with " +
+					"the application.commands scope!");
+			return new Pair<>(Set.of(), Set.of());
+		}
 		if (!existing.isEmpty()) {
 			return removeDuplicates(jda, existing, slashData, commandData, null, deleteUnknown);
 		}
@@ -51,7 +59,14 @@ public class SmartQueue {
 	 * @since v1.5
 	 */
 	protected static Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> checkGuild(Guild guild, Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData, boolean deleteUnknown) {
-		final List<Command> existing = guild.retrieveCommands().complete();
+		List<Command> existing;
+		try {
+			existing = guild.retrieveCommands().complete();
+		} catch (ErrorResponseException e) {
+			DIH4JDALogger.error("Could not retrieve Commands from Guild " + guild.getName() + "!" +
+					" Please make sure that the bot was invited with the application.commands scope!");
+			return new Pair<>(Set.of(), Set.of());
+		}
 		if (!existing.isEmpty()) {
 			return removeDuplicates(guild.getJDA(), existing, slashData, commandData, guild, deleteUnknown);
 		}
