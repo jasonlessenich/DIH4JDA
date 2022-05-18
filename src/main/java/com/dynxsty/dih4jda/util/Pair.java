@@ -1,7 +1,7 @@
 package com.dynxsty.dih4jda.util;
 
 /**
- * Data class which holds two values.
+ * A Pair of two elements.
  *
  * @param <F> The first value.
  * @param <S> The second value.

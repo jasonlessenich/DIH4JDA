@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
  *
  * @see ContextCommand.User#execute(UserContextInteractionEvent)
  * @see ContextCommand.Message#execute(MessageContextInteractionEvent)
+ * @since v1.5
  */
 public abstract class ContextCommand extends ExecutableCommand {
 	private CommandData commandData;
@@ -42,14 +43,14 @@ public abstract class ContextCommand extends ExecutableCommand {
 		 * Abstract method that must be implemented for all User Context Commands.
 		 *
 		 * <pre>{@code
-		 * public class PingContextMenu extends GuildContextCommand implements UserContextCommand {
+		 * public class PingContextMenu extends ContextCommand.User {
 		 *
 		 *    public PingContextMenu() {
 		 * 		this.setCommandData(Commands.user("Ping"));
 		 *    }
 		 *
 		 *    @Override
-		 *    public void handleUserContextInteraction(UserContextInteractionEvent event) {
+		 *    public void execute(UserContextInteractionEvent event) {
 		 * 		event.reply("Pong!").queue();
 		 *    }
 		 * }}

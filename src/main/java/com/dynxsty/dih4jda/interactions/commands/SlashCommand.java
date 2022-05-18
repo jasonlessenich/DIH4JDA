@@ -6,9 +6,10 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 /**
- * Model class which represents a single Slash Command.
+ * Represents a single Slash Command.
  *
  * @see SlashCommand#execute(SlashCommandInteractionEvent)
+ * @since v1.5
  */
 public abstract class SlashCommand extends ExecutableCommand {
 
@@ -25,7 +26,7 @@ public abstract class SlashCommand extends ExecutableCommand {
 	 * <pre>{@code
 	 * public class PingCommand extends SlashCommand {
 	 *
-	 *     public PingCommand(Guild guild) {
+	 *     public PingCommand() {
 	 *         setCommandData(Commands.slash("ping", "Ping!"));
 	 *     }
 	 *
@@ -112,7 +113,7 @@ public abstract class SlashCommand extends ExecutableCommand {
 		 * <pre>{@code
 		 * public class PingCommand extends SlashCommand.Subcommand {
 		 *
-		 *     public PingCommand(Guild guild) {
+		 *     public PingCommand() {
 		 *         setSubcommandData(Commands.slash("ping", "Ping!"));
 		 *     }
 		 *
