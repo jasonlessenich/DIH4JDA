@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
  * Represents a single Slash Command.
  *
  * @see SlashCommand#execute(SlashCommandInteractionEvent)
- *
  * @since v1.5
  */
 public abstract class SlashCommand extends ExecutableCommand {

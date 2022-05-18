@@ -187,12 +187,12 @@ public class InteractionHandler extends ListenerAdapter {
 	private void upsert(Guild guild, Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData) {
 		StringBuilder commandNames = new StringBuilder();
 		slashData.forEach(data -> {
-					if (!data.getGuilds().contains(guild)) {
-						DIH4JDALogger.info("Skipping Registration of /" + data.getData().getName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
-					} else {
-						guild.upsertCommand(data.getData()).queue();
-						commandNames.append(", /" + data.getData().getName());
-					}
+			if (!data.getGuilds().contains(guild)) {
+				DIH4JDALogger.info("Skipping Registration of /" + data.getData().getName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
+			} else {
+				guild.upsertCommand(data.getData()).queue();
+				commandNames.append(", /" + data.getData().getName());
+			}
 		});
 		commandData.forEach(data -> {
 			if (!data.getGuilds().contains(guild)) {

@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
  *
  * @see ContextCommand
  * @see SlashCommand
- *
  * @since v1.5
  */
 public abstract class ExecutableCommand extends CommandRequirements {

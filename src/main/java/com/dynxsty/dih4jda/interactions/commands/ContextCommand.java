@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
  *
  * @see ContextCommand.User#execute(UserContextInteractionEvent)
  * @see ContextCommand.Message#execute(MessageContextInteractionEvent)
- *
  * @since v1.5
  */
 public abstract class ContextCommand extends ExecutableCommand {
