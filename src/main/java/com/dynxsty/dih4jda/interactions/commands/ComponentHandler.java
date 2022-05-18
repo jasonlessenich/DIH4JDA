@@ -12,7 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Abstract class that represents an executable Slash Command (excluding Subcommand Groups).
+ * Allows to set Component-IDs which get handled within the extending class.
+ * Best used in combination with {@link ComponentIdBuilder}.
  *
  * @since v1.4
  */
@@ -40,15 +41,15 @@ public abstract class ComponentHandler {
 	 * override its method.
 	 *
 	 * <pre>{@code
-	 * public class PingCommand extends GuildSlashCommand implements AutoCompleteHandler {
+	 * public class PingCommand extends SlashCommand implements AutoCompleteHandler {
 	 *
-	 *     public PingCommand(Guild guild) {
+	 *     public PingCommand() {
 	 *         setCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id"));
 	 *         enableAutoCompleteHandling();
 	 *     }
 	 *
 	 *     @Override
-	 *     public void handleSlashCommand(SlashCommandInteractionEvent event) {
+	 *     public void execute(SlashCommandInteractionEvent event) {
 	 *         OptionMapping mapping = event.getOption("user-id");
 	 *         String userId = mapping.getAsString();
 	 *         event.replyFormat("Ping! <@%s>", userId).queue();
@@ -93,7 +94,7 @@ public abstract class ComponentHandler {
 	 * <pre>{@code
 	 * public class TestCommand extends SlashCommand {
 	 *
-	 *     public TestCommand(Guild guild) {
+	 *     public TestCommand() {
 	 *         setCommandData(Commands.slash("test", "test description"));
 	 *         handleButtonIds("test-button");
 	 *     }
@@ -136,7 +137,7 @@ public abstract class ComponentHandler {
 	 * <pre>{@code
 	 * public class TestCommand extends SlashCommand {
 	 *
-	 *     public TestCommand(Guild guild) {
+	 *     public TestCommand() {
 	 *         setCommandData(Commands.slash("test", "test description"));
 	 *         handleButtonIds("test-button");
 	 *     }
@@ -184,13 +185,13 @@ public abstract class ComponentHandler {
 	 * <pre>{@code
 	 * public class TestCommand extends GuildSlashCommand implements SelectMenuHandler {
 	 *
-	 *     public TestCommand(Guild guild) {
+	 *     public TestCommand() {
 	 *         setCommandData(Commands.slash("test", "test description"));
 	 *         handleSelectMenuIds("test-select-menu");
 	 *     }
 	 *
 	 *    @Override
-	 *    public void handleSlashCommand(SlashCommandInteractionEvent event) {
+	 *    public void execute(SlashCommandInteractionEvent event) {
 	 * 		List<Role> roles = [...]
 	 * 		SelectMenu.Builder menu = SelectMenu.create("test-select-menu");
 	 * 		for (Role role : roles) {
@@ -224,7 +225,7 @@ public abstract class ComponentHandler {
 	 * <pre>{@code
 	 * public class TestCommand extends SlashCommand {
 	 *
-	 *     public TestCommand(Guild guild) {
+	 *     public TestCommand() {
 	 *         setCommandData(Commands.slash("test", "test description"));
 	 *         handleSelectMenuIds("test-select-menu");
 	 *     }
@@ -270,7 +271,7 @@ public abstract class ComponentHandler {
 	 * <pre>{@code
 	 * public class TestCommand extends SlashCommand {
 	 *
-	 *     public TestCommand(Guild guild) {
+	 *     public TestCommand() {
 	 *         setCommandData(Commands.slash("test", "test description"));
 	 *         handleModalIds("test-modal");
 	 *     }
@@ -324,7 +325,7 @@ public abstract class ComponentHandler {
 	 * <pre>{@code
 	 * public class TestCommand extends SlashCommand {
 	 *
-	 *     public TestCommand(Guild guild) {
+	 *     public TestCommand() {
 	 *         setCommandData(Commands.slash("test", "test description"));
 	 *         handleModalIds("test-modal");
 	 *     }

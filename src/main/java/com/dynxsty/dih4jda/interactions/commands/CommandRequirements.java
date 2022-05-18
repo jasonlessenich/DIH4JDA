@@ -6,6 +6,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Allows to set requirements that must be met in order to execute the command.
+ * If a requirement isn't met, this will fire the corresponding event in {@link com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter}.
+ *
+ * @since v1.5
+ */
 public abstract class CommandRequirements extends ComponentHandler {
 	private final Set<Permission> requiredPermissions = new HashSet<>();
 	private final Set<Long> requiredUsers = new HashSet<>();

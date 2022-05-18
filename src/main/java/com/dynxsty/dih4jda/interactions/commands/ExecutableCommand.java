@@ -10,6 +10,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a single, executable command.
+ *
+ * @see ContextCommand
+ * @see SlashCommand
+ *
+ * @since v1.5
+ */
 public abstract class ExecutableCommand extends CommandRequirements {
 	private final Set<Long> whitelistedGuilds = new HashSet<>();
 	private final Set<Long> blacklistedGuilds = new HashSet<>();

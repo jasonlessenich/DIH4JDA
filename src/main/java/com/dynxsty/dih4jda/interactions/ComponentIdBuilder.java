@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * Utility class that allows for easy and consistent component-id building.
+ * Utility class that allows for easy and consistent Component-ID building.
  *
  * @since v1.4
  */
