@@ -94,6 +94,24 @@ public class SmartQueue {
 		commands.removeIf(cmd -> {
 			if (commandData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData())) ||
 					slashData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData()))) {
+				// check for command in blacklisted guilds
+				// this may be refactored soonTM, as its kinda clunky
+				if (guild != null) {
+					for (UnqueuedSlashCommandData d : slashData) {
+						if (CommandUtils.isEqual(cmd, d.getData()) && !d.getGuilds().contains(guild)) {
+							DIH4JDALogger.info("Deleting /" + cmd.getName() + " in Guild: " + guild.getName());
+							cmd.delete().queue();
+							return true;
+						}
+					}
+					for (UnqueuedCommandData d : commandData) {
+						if (CommandUtils.isEqual(cmd, d.getData()) && !d.getGuilds().contains(guild)) {
+							DIH4JDALogger.info("Deleting " + cmd.getName() + " in Guild: " + guild.getName());
+							cmd.delete().queue();
+							return true;
+						}
+					}
+				}
 				DIH4JDALogger.info(String.format(prefix + "Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName()), DIH4JDALogger.Type.SMART_QUEUE);
 				return true;
 			}
