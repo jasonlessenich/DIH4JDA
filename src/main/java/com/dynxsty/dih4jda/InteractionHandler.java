@@ -239,11 +239,9 @@ public class InteractionHandler extends ListenerAdapter {
 						ContextCommand.Message.class, ContextCommand.User.class, SlashCommand.class, SlashCommand.Subcommand.class)
 				.forEach(handler::remove);
 		for (Class<? extends ComponentHandler> c : handler) {
-			if (!Checks.checkEmptyConstructor(c) || Modifier.isAbstract(c.getModifiers())) continue;
-			ComponentHandler instance = c.getConstructor().newInstance();
-			instance.getHandledButtonIds().forEach(s -> handlerIndex.put(s, instance));
-			instance.getHandledSelectMenuIds().forEach(s -> handlerIndex.put(s, instance));
-			instance.getHandledModalIds().forEach(s -> handlerIndex.put(s, instance));
+			if (ClassUtils.doesImplement(c, SlashCommand.class) || ClassUtils.doesImplement(c, SlashCommand.Subcommand.class) ||
+					ClassUtils.doesImplement(c, ContextCommand.class) || !Checks.checkEmptyConstructor(c) || Modifier.isAbstract(c.getModifiers())) continue;
+			putComponentHandlers((ComponentHandler) ClassUtils.getInstance(c));
 		}
 	}
 
@@ -263,6 +261,9 @@ public class InteractionHandler extends ListenerAdapter {
 					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
 				}
 				data.add(unqueuedData);
+			}
+			if (ClassUtils.doesImplement(c, ComponentHandler.class)) {
+				putComponentHandlers(instance);
 			}
 		}
 		return data;
@@ -355,6 +356,9 @@ public class InteractionHandler extends ListenerAdapter {
 					autoCompleteIndex.put(commandPath, (AutoCompleteHandler) subcommand);
 				}
 				subDataList.add(subcommand.getSubcommandData());
+				if (ClassUtils.doesImplement(subcommand.getClass(), ComponentHandler.class)) {
+					putComponentHandlers(subcommand);
+				}
 			}
 		}
 		return subDataList;
@@ -376,9 +380,19 @@ public class InteractionHandler extends ListenerAdapter {
 					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
 				}
 				data.add(unqueuedData);
+				if (ClassUtils.doesImplement(c, ComponentHandler.class)) {
+					putComponentHandlers(instance);
+				}
 			}
 		}
 		return data;
+	}
+
+	private void putComponentHandlers(@Nullable ComponentHandler handler) {
+		if (handler == null) return;
+		handler.getHandledButtonIds().forEach(s -> handlerIndex.put(s, handler));
+		handler.getHandledSelectMenuIds().forEach(s -> handlerIndex.put(s, handler));
+		handler.getHandledModalIds().forEach(s -> handlerIndex.put(s, handler));
 	}
 
 	/**
