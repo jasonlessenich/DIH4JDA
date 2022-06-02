@@ -4,6 +4,7 @@ import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -153,10 +154,10 @@ public class CommandUtils {
 		return options.stream()
 				.map(o -> {
 					OptionData data = new OptionData(o.getType(), o.getName(), o.getDescription(), o.isRequired(), o.isAutoComplete());
-					if (o.getMaxValue() != null) {
+					if (o.getMaxValue() != null && o.getType() == OptionType.NUMBER) {
 						data.setMaxValue(o.getMaxValue().getClass().isInstance(Long.class) ? o.getMaxValue().longValue() : o.getMaxValue().doubleValue());
 					}
-					if (o.getMinValue() != null) {
+					if (o.getMinValue() != null && o.getType() == OptionType.NUMBER) {
 						data.setMinValue(o.getMinValue().getClass().isInstance(Long.class) ? o.getMinValue().longValue() : o.getMinValue().doubleValue());
 					}
 					if (!o.getChoices().isEmpty()) data.addChoices(o.getChoices());
