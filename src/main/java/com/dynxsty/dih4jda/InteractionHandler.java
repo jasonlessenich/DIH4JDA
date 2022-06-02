@@ -86,11 +86,11 @@ public class InteractionHandler extends ListenerAdapter {
 	private final Map<String, ContextCommand.User> userContextIndex;
 
 	/**
-	 * An Index of all {@link AutoCompleteHandler}s.
+	 * An Index of all {@link AutoCompletable}s.
 	 *
 	 * @see InteractionHandler#findSlashCommands()
 	 */
-	private final Map<String, AutoCompleteHandler> autoCompleteIndex;
+	private final Map<String, AutoCompletable> autoCompleteIndex;
 
 	/**
 	 * An Index of all {@link ComponentHandler}s.
@@ -293,8 +293,8 @@ public class InteractionHandler extends ListenerAdapter {
 		if (command.getSubcommandGroups() == null && command.getSubcommands() == null) {
 			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), command);
 			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", command.getCommandData().getName(), command.getType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
-			if (command.shouldHandleAutoComplete() && Checks.checkImplementation(command.getClass(), AutoCompleteHandler.class)) {
-				autoCompleteIndex.put(commandData.getName(), (AutoCompleteHandler) command);
+			if (command.shouldHandleAutoComplete() && Checks.checkImplementation(command.getClass(), AutoCompletable.class)) {
+				autoCompleteIndex.put(commandData.getName(), (AutoCompletable) command);
 			}
 		}
 		return commandData;
@@ -352,8 +352,8 @@ public class InteractionHandler extends ListenerAdapter {
 				}
 				subcommandIndex.put(commandPath, subcommand);
 				DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", commandPath, command.getType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
-				if (subcommand.shouldHandleAutoComplete() && Checks.checkImplementation(subcommand.getClass(), AutoCompleteHandler.class)) {
-					autoCompleteIndex.put(commandPath, (AutoCompleteHandler) subcommand);
+				if (subcommand.shouldHandleAutoComplete() && Checks.checkImplementation(subcommand.getClass(), AutoCompletable.class)) {
+					autoCompleteIndex.put(commandPath, (AutoCompletable) subcommand);
 				}
 				subDataList.add(subcommand.getSubcommandData());
 				if (ClassUtils.doesImplement(subcommand.getClass(), ComponentHandler.class)) {
@@ -486,7 +486,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link CommandAutoCompleteInteractionEvent} that was fired.
 	 */
 	private void handleAutoComplete(CommandAutoCompleteInteractionEvent event) {
-		AutoCompleteHandler component = autoCompleteIndex.get(event.getCommandPath());
+		AutoCompletable component = autoCompleteIndex.get(event.getCommandPath());
 		if (component != null) {
 			component.handleAutoComplete(event, event.getFocusedOption());
 		}

@@ -37,7 +37,7 @@ public abstract class ComponentHandler {
 
 	/**
 	 * Enables AutoComplete handling for all options of this Slash Command.
-	 * If enabled, this class must implement {@link AutoCompleteHandler} and
+	 * If enabled, this class must implement {@link AutoCompletable} and
 	 * override its method.
 	 *
 	 * <pre>{@code
@@ -69,7 +69,7 @@ public abstract class ComponentHandler {
 	 *
 	 * }}</pre>
 	 *
-	 * @see AutoCompleteHandler
+	 * @see AutoCompletable
 	 * @see com.dynxsty.dih4jda.util.AutoCompleteUtils
 	 * @since v1.4
 	 */
