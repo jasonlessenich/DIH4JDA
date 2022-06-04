@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public abstract class ExecutableCommand extends CommandRequirements {
 	private final Set<Long> whitelistedGuilds = new HashSet<>();
 	private final Set<Long> blacklistedGuilds = new HashSet<>();
-	private Type type = DIH4JDA.defaultCommandType;
+	private RegistrationType type = DIH4JDA.defaultCommandType;
 
 	/**
 	 * Allows a set of {@link Guild}s to update their Slash Commands.
@@ -28,7 +28,7 @@ public abstract class ExecutableCommand extends CommandRequirements {
 	 * @param whitelisted An array of {@link Long}s.
 	 */
 	public void whitelistGuilds(Long... whitelisted) {
-		if (type != Type.GUILD) {
+		if (type != RegistrationType.GUILD) {
 			throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
 		}
 		whitelistedGuilds.addAll(Arrays.asList(whitelisted));
@@ -40,7 +40,7 @@ public abstract class ExecutableCommand extends CommandRequirements {
 	 * @param blacklisted An array of {@link Long}s.
 	 */
 	public void blacklistGuilds(Long... blacklisted) {
-		if (type != Type.GUILD) {
+		if (type != RegistrationType.GUILD) {
 			throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
 		}
 		blacklistedGuilds.addAll(Arrays.asList(blacklisted));
@@ -61,19 +61,15 @@ public abstract class ExecutableCommand extends CommandRequirements {
 		return guilds;
 	}
 
-	public Type getType() {
+	public RegistrationType getRegistrationType() {
 		return type;
 	}
 
 	/**
 	 * @param type How the command should be queued.
 	 */
-	public void setType(Type type) {
+	public void setRegistrationType(RegistrationType type) {
 		this.type = type;
 	}
 
-	public enum Type {
-		GLOBAL,
-		GUILD
-	}
 }

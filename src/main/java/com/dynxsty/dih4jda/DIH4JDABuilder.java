@@ -3,7 +3,7 @@ package com.dynxsty.dih4jda;
 import com.dynxsty.dih4jda.config.DIH4JDAConfig;
 import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import com.dynxsty.dih4jda.exceptions.InvalidPackageException;
-import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
+import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import net.dv8tion.jda.api.JDA;
 import org.reflections.util.ClasspathHelper;
 
@@ -97,11 +97,11 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Sets the default {@link ExecutableCommand.Type} for all Commands.
+	 * Sets the default {@link RegistrationType} for all Commands.
 	 *
-	 * @param type The {@link ExecutableCommand.Type}.
+	 * @param type The {@link RegistrationType}.
 	 */
-	public DIH4JDABuilder setDefaultCommandType(ExecutableCommand.Type type) {
+	public DIH4JDABuilder setDefaultCommandType(RegistrationType type) {
 		DIH4JDA.defaultCommandType = type;
 		return this;
 	}

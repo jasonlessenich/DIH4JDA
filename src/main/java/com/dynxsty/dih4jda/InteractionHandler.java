@@ -142,7 +142,7 @@ public class InteractionHandler extends ListenerAdapter {
 		// register commands for each guild
 		Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> data = new Pair<>(getSlashCommandData(), getContextCommandData());
 		for (Guild guild : config.getJDA().getGuilds()) {
-			Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> guildData = CommandUtils.filterByType(data, ExecutableCommand.Type.GUILD);
+			Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> guildData = CommandUtils.filterByType(data, RegistrationType.GUILD);
 			// check if smart queuing is enabled
 			if (config.isSmartQueuing()) {
 				guildData = SmartQueue.checkGuild(guild, guildData.getFirst(), guildData.getSecond(), config.isDeleteUnknownCommands());
@@ -152,7 +152,7 @@ public class InteractionHandler extends ListenerAdapter {
 				upsert(guild, guildData.getFirst(), guildData.getSecond());
 			}
 		}
-		Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> globalData = CommandUtils.filterByType(data, ExecutableCommand.Type.GLOBAL);
+		Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> globalData = CommandUtils.filterByType(data, RegistrationType.GLOBAL);
 		// check if smart queuing is enabled
 		if (config.isSmartQueuing()) {
 			globalData = SmartQueue.checkGlobal(config.getJDA(), globalData.getFirst(), globalData.getSecond(), config.isDeleteUnknownCommands());
@@ -256,8 +256,8 @@ public class InteractionHandler extends ListenerAdapter {
 		for (Class<? extends SlashCommand> c : commands) {
 			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(c);
 			if (instance != null) {
-				UnqueuedSlashCommandData unqueuedData = new UnqueuedSlashCommandData(getBaseCommandData(instance, c), instance.getType());
-				if (instance.getType() == ExecutableCommand.Type.GUILD) {
+				UnqueuedSlashCommandData unqueuedData = new UnqueuedSlashCommandData(getBaseCommandData(instance, c), instance.getRegistrationType());
+				if (instance.getRegistrationType() == RegistrationType.GUILD) {
 					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
 				}
 				data.add(unqueuedData);
@@ -292,7 +292,7 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 		if (command.getSubcommandGroups() == null && command.getSubcommands() == null) {
 			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), command);
-			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", command.getCommandData().getName(), command.getType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
+			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", command.getCommandData().getName(), command.getRegistrationType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 			if (command.shouldHandleAutoComplete() && Checks.checkImplementation(command.getClass(), AutoCompletable.class)) {
 				autoCompleteIndex.put(commandData.getName(), (AutoCompletable) command);
 			}
@@ -351,7 +351,7 @@ public class InteractionHandler extends ListenerAdapter {
 					commandPath = CommandUtils.buildCommandPath(command.getCommandData().getName(), subGroupName, subcommand.getSubcommandData().getName());
 				}
 				subcommandIndex.put(commandPath, subcommand);
-				DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", commandPath, command.getType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
+				DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", commandPath, command.getRegistrationType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 				if (subcommand.shouldHandleAutoComplete() && Checks.checkImplementation(subcommand.getClass(), AutoCompletable.class)) {
 					autoCompleteIndex.put(commandPath, (AutoCompletable) subcommand);
 				}
@@ -375,8 +375,8 @@ public class InteractionHandler extends ListenerAdapter {
 		for (Class<? extends ContextCommand> c : contexts) {
 			ContextCommand instance = (ContextCommand) ClassUtils.getInstance(c);
 			if (instance != null) {
-				UnqueuedCommandData unqueuedData = new UnqueuedCommandData(getContextCommandData(instance, c), instance.getType());
-				if (instance.getType() == ExecutableCommand.Type.GUILD) {
+				UnqueuedCommandData unqueuedData = new UnqueuedCommandData(getContextCommandData(instance, c), instance.getRegistrationType());
+				if (instance.getRegistrationType() == RegistrationType.GUILD) {
 					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
 				}
 				data.add(unqueuedData);
@@ -416,7 +416,7 @@ public class InteractionHandler extends ListenerAdapter {
 			DIH4JDALogger.error(String.format("Invalid Command Type \"%s\" for Context Command! This command will be ignored.", commandData.getType()));
 			return null;
 		}
-		DIH4JDALogger.info(String.format("\t[*] Registered context command: %s (%s)", command.getCommandData().getName(), command.getType().name()), DIH4JDALogger.Type.CONTEXT_COMMAND_REGISTERED);
+		DIH4JDALogger.info(String.format("\t[*] Registered context command: %s (%s)", command.getCommandData().getName(), command.getRegistrationType().name()), DIH4JDALogger.Type.CONTEXT_COMMAND_REGISTERED);
 		return commandData;
 	}
 

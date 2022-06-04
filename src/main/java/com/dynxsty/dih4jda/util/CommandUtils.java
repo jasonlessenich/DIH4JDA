@@ -1,6 +1,6 @@
 package com.dynxsty.dih4jda.util;
 
-import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
+import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
@@ -138,14 +138,14 @@ public class CommandUtils {
 	}
 
 	/**
-	 * Removes all elements of the provided {@link Pair} which don't match the given {@link ExecutableCommand.Type}.
+	 * Removes all elements of the provided {@link Pair} which don't match the given {@link RegistrationType}.
 	 *
 	 * @param pair The {@link Pair}.
-	 * @param type The {@link ExecutableCommand.Type}.
+	 * @param type The {@link RegistrationType}.
 	 * @return The modified {@link Pair}.
 	 */
 	public static Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> filterByType(Pair<Set<UnqueuedSlashCommandData>,
-			Set<UnqueuedCommandData>> pair, ExecutableCommand.Type type) {
+			Set<UnqueuedCommandData>> pair, RegistrationType type) {
 		return new Pair<>(
 				pair.getFirst().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()),
 				pair.getSecond().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()));

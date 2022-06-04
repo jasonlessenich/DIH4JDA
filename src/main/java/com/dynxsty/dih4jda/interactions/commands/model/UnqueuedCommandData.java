@@ -1,6 +1,6 @@
 package com.dynxsty.dih4jda.interactions.commands.model;
 
-import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
+import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
@@ -8,14 +8,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Model class which holds the {@link CommandData} and it's {@link ExecutableCommand.Type}.
+ * Model class which holds the {@link CommandData} and it's {@link RegistrationType}.
  */
 public class UnqueuedCommandData {
 	private final CommandData data;
-	private final ExecutableCommand.Type type;
+	private final RegistrationType type;
 	private Set<Guild> guilds;
 
-	public UnqueuedCommandData(CommandData data, ExecutableCommand.Type type) {
+	public UnqueuedCommandData(CommandData data, RegistrationType type) {
 		this.data = data;
 		this.type = type;
 		this.guilds = new HashSet<>();
@@ -25,7 +25,7 @@ public class UnqueuedCommandData {
 		return data;
 	}
 
-	public ExecutableCommand.Type getType() {
+	public RegistrationType getType() {
 		return type;
 	}
 
