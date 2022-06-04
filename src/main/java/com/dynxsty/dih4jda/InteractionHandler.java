@@ -291,7 +291,8 @@ public class InteractionHandler extends ListenerAdapter {
 		if (command.getSubcommands() != null) {
 			commandData.addSubcommands(getSubcommandData(command, command.getSubcommands(), null));
 		}
-		if (command.getSubcommandGroups() == null && command.getSubcommands() == null) {
+		if (command.getSubcommandGroups() != null && command.getSubcommandGroups().isEmpty()
+				&& command.getSubcommands() != null && command.getSubcommands().isEmpty()) {
 			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), command);
 			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", command.getSlashCommandData().getName(), command.getRegistrationType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
 			if (command.isAutoCompleteHandling() && Checks.checkImplementation(command.getClass(), AutoCompletable.class)) {

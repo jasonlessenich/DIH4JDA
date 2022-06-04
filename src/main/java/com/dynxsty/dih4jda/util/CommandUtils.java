@@ -3,6 +3,7 @@ package com.dynxsty.dih4jda.util;
 import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import org.jetbrains.annotations.Contract;
@@ -112,6 +113,22 @@ public class CommandUtils {
 		return data.isRequired() == option.isRequired();
 	}
 
+	/**
+	 * Checks if the {@link Command} is equal to the given {@link CommandData}.
+	 *
+	 * @param command The {@link Command}.
+	 * @param data    The {@link CommandData}.
+	 * @return Whether the given Command originates from the given CommandData.
+	 */
+	public static boolean isEqual(Command command, Object data) {
+		boolean equals;
+		if (command.getType() == Command.Type.SLASH) {
+			equals = CommandUtils.equals((SlashCommandData) data, SlashCommandData.fromCommand(command));
+		} else {
+			equals = CommandUtils.equals((CommandData) data, CommandData.fromCommand(command));
+		}
+		return equals;
+	}
 
 	/**
 	 * Used to create one command name out of the SlashCommand, SlashSubCommandGroup and SlashSubCommand
