@@ -127,7 +127,7 @@ public abstract class ComponentHandler {
 	 * @since v1.4
 	 */
 	public final void handleButtonIds(String... handledButtonIds) {
-		this.handledButtonIds = Arrays.stream(handledButtonIds).toList();
+		this.handledButtonIds = Arrays.stream(handledButtonIds).collect(Collectors.toList());
 	}
 
 	/**
@@ -211,11 +211,10 @@ public abstract class ComponentHandler {
 	 *
 	 * @param handledSelectMenuIds An array of Strings (the id's) that should be handled.
 	 * @see ComponentIdBuilder#build
-	 * @see com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenuHandler
 	 * @since v1.4
 	 */
 	public final void handleSelectMenuIds(String... handledSelectMenuIds) {
-		this.handledSelectMenuIds = Arrays.stream(handledSelectMenuIds).toList();
+		this.handledSelectMenuIds = Arrays.stream(handledSelectMenuIds).collect(Collectors.toList());
 	}
 
 	/**
@@ -313,7 +312,7 @@ public abstract class ComponentHandler {
 	 * @since v1.4
 	 */
 	public final void handleModalIds(String... handledModalIds) {
-		this.handledModalIds = Arrays.stream(handledModalIds).toList();
+		this.handledModalIds = Arrays.stream(handledModalIds).collect(Collectors.toList());
 	}
 
 	/**
