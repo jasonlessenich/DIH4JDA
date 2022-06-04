@@ -92,20 +92,20 @@ public class SmartQueue {
 		DIH4JDALogger.info(String.format(prefix + "Found %s existing command(s)", existing.size()), DIH4JDALogger.Type.SMART_QUEUE);
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
-			if (commandData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData())) ||
-					slashData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData()))) {
+			if (commandData.stream().anyMatch(data -> CommandUtils.equals(CommandData.fromCommand(cmd), data.getData())) ||
+					slashData.stream().anyMatch(data -> CommandUtils.equals(SlashCommandData.fromCommand(cmd), data.getData()))) {
 				// check for command in blacklisted guilds
 				// this may be refactored soonTM, as its kinda clunky
 				if (guild != null) {
 					for (UnqueuedSlashCommandData d : slashData) {
-						if (CommandUtils.isEqual(cmd, d.getData()) && !d.getGuilds().contains(guild)) {
+						if (CommandUtils.equals(SlashCommandData.fromCommand(cmd), d.getData()) && !d.getGuilds().contains(guild)) {
 							DIH4JDALogger.info("Deleting /" + cmd.getName() + " in Guild: " + guild.getName());
 							cmd.delete().queue();
 							return true;
 						}
 					}
 					for (UnqueuedCommandData d : commandData) {
-						if (CommandUtils.isEqual(cmd, d.getData()) && !d.getGuilds().contains(guild)) {
+						if (CommandUtils.equals(CommandData.fromCommand(cmd), d.getData()) && !d.getGuilds().contains(guild)) {
 							DIH4JDALogger.info("Deleting " + cmd.getName() + " in Guild: " + guild.getName());
 							cmd.delete().queue();
 							return true;
@@ -117,8 +117,8 @@ public class SmartQueue {
 			}
 			return false;
 		});
-		commandData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getData())));
-		slashData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getData())));
+		commandData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(CommandData.fromCommand(p), data.getData())));
+		slashData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(SlashCommandData.fromCommand(p), data.getData())));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
 			for (Command command : commands) {
