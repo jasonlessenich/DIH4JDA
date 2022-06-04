@@ -14,6 +14,7 @@ import com.dynxsty.dih4jda.util.Pair;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -433,7 +434,8 @@ public class InteractionHandler extends ListenerAdapter {
 			throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", path));
 		} else {
 			if (!checkPermissions(event.getInteraction(), req.getRequiredPermissions())
-					&& !checkUser(event.getInteraction(), req.getRequiredUsers())) {
+					&& !checkUser(event.getInteraction(), req.getRequiredUsers())
+					&& !checkRole(event, req.getRequiredRoles())) {
 				if (slashCommandIndex.containsKey(event.getCommandPath())) {
 					slashCommandIndex.get(path).execute(event);
 				} else {
@@ -455,7 +457,8 @@ public class InteractionHandler extends ListenerAdapter {
 			throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 		} else {
 			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())
-					&& !checkUser(event.getInteraction(), context.getRequiredUsers())) {
+					&& !checkUser(event.getInteraction(), context.getRequiredUsers())
+					&& !checkRole(event.getInteraction(), context.getRequiredRoles())) {
 				context.execute(event);
 			}
 		}
@@ -473,7 +476,8 @@ public class InteractionHandler extends ListenerAdapter {
 			throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 		} else {
 			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())
-					&& !checkUser(event.getInteraction(), context.getRequiredUsers())) {
+					&& !checkUser(event.getInteraction(), context.getRequiredUsers())
+					&& !checkRole(event.getInteraction(), context.getRequiredRoles())) {
 				context.execute(event);
 			}
 		}
@@ -579,7 +583,7 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Checks the user to fire the {@link DIH4JDAListenerAdapter#onUserNotAllowed} event, if needed.
+	 * Checks the user to fire the {@link DIH4JDAListenerAdapter#onInvalidUser} event, if needed.
 	 *
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param userIds     A set of {@link Long}s, representing the user ids.
@@ -588,7 +592,17 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private boolean checkUser(CommandInteraction interaction, Set<Long> userIds) {
 		if (!userIds.isEmpty() && !userIds.contains(interaction.getUser().getIdLong())) {
-			fireEvent(dih4jda.getListeners(), "onUserNotAllowed", interaction, userIds);
+			fireEvent(dih4jda.getListeners(), "onInvalidUser", interaction, userIds);
+			return true;
+		}
+		return false;
+	}
+
+	private boolean checkRole(CommandInteraction interaction, Set<Long> roleIds) {
+		if (!interaction.isFromGuild() || interaction.getGuild() == null || interaction.getMember() == null) return false;
+		Member member = interaction.getMember();
+		if (!roleIds.isEmpty() && !member.getRoles().isEmpty() && member.getRoles().stream().noneMatch(r -> roleIds.contains(r.getIdLong()))) {
+			fireEvent(dih4jda.getListeners(), "onInvalidRole", interaction, roleIds);
 			return true;
 		}
 		return false;

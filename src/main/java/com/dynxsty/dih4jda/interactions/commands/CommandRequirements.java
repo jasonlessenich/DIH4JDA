@@ -53,4 +53,8 @@ public abstract class CommandRequirements extends ComponentHandler {
 	public final Set<Long> getRequiredUsers() {
 		return requiredUsers;
 	}
+
+	public final Set<Long> getRequiredRoles() {
+		return requiredRoles;
+	}
 }
