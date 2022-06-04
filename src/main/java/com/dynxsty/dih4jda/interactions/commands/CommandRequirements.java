@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.Permission;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Allows to set requirements that must be met in order to execute the command.
@@ -13,16 +14,18 @@ import java.util.Set;
  * @since v1.5
  */
 public abstract class CommandRequirements extends ComponentHandler {
-	private final Set<Permission> requiredPermissions = new HashSet<>();
-	private final Set<Long> requiredUsers = new HashSet<>();
+	private Set<Permission> requiredPermissions = Set.of();
+	private Set<Long> requiredUsers = Set.of();
+
+	private Set<Long> requiredRoles = Set.of();
 
 	/**
 	 * Allows to require a set of {@link Permission}s which are needed to execute the corresponding command.
 	 *
 	 * @param permissions The set of {@link Permission}s.
 	 */
-	public void requirePermissions(Permission... permissions) {
-		requiredPermissions.addAll(Arrays.asList(permissions));
+	public final void requirePermissions(Permission... permissions) {
+		requiredPermissions = Arrays.stream(permissions).collect(Collectors.toSet());
 	}
 
 	/**
@@ -30,15 +33,24 @@ public abstract class CommandRequirements extends ComponentHandler {
 	 *
 	 * @param users The set of {@link Long}s (user Ids).
 	 */
-	public void requireUsers(Long... users) {
-		requiredUsers.addAll(Arrays.asList(users));
+	public final void requireUsers(Long... users) {
+		requiredUsers = Arrays.stream(users).collect(Collectors.toSet());
 	}
 
-	public Set<Permission> getRequiredPermissions() {
+	/**
+	 * Allows to require a set of {@link Long}s (role Ids) which are able to execute the corresponding command.
+	 *
+	 * @param roles The set of {@link Long}s (role Ids).
+	 */
+	public final void requireRoles(Long... roles) {
+		requiredRoles = Arrays.stream(roles).collect(Collectors.toSet());
+	}
+
+	public final Set<Permission> getRequiredPermissions() {
 		return requiredPermissions;
 	}
 
-	public Set<Long> getRequiredUsers() {
+	public final Set<Long> getRequiredUsers() {
 		return requiredUsers;
 	}
 }

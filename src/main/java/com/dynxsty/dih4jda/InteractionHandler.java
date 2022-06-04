@@ -279,11 +279,11 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private SlashCommandData getBaseCommandData(@NotNull SlashCommand command, Class<? extends SlashCommand> commandClass) throws ReflectiveOperationException {
 		// find component (and modal) handlers
-		if (command.getCommandData() == null) {
+		if (command.getSlashCommandData() == null) {
 			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
 			return null;
 		}
-		SlashCommandData commandData = command.getCommandData();
+		SlashCommandData commandData = command.getSlashCommandData();
 		if (command.getSubcommandGroups() != null) {
 			commandData.addSubcommandGroups(getSubcommandGroupData(command));
 		}
@@ -292,8 +292,8 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 		if (command.getSubcommandGroups() == null && command.getSubcommands() == null) {
 			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), command);
-			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", command.getCommandData().getName(), command.getRegistrationType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
-			if (command.shouldHandleAutoComplete() && Checks.checkImplementation(command.getClass(), AutoCompletable.class)) {
+			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", command.getSlashCommandData().getName(), command.getRegistrationType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
+			if (command.isAutoCompleteHandling() && Checks.checkImplementation(command.getClass(), AutoCompletable.class)) {
 				autoCompleteIndex.put(commandData.getName(), (AutoCompletable) command);
 			}
 		}
@@ -346,13 +346,13 @@ public class InteractionHandler extends ListenerAdapter {
 				}
 				String commandPath;
 				if (subGroupName == null) {
-					commandPath = CommandUtils.buildCommandPath(command.getCommandData().getName(), subcommand.getSubcommandData().getName());
+					commandPath = CommandUtils.buildCommandPath(command.getSlashCommandData().getName(), subcommand.getSubcommandData().getName());
 				} else {
-					commandPath = CommandUtils.buildCommandPath(command.getCommandData().getName(), subGroupName, subcommand.getSubcommandData().getName());
+					commandPath = CommandUtils.buildCommandPath(command.getSlashCommandData().getName(), subGroupName, subcommand.getSubcommandData().getName());
 				}
 				subcommandIndex.put(commandPath, subcommand);
 				DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", commandPath, command.getRegistrationType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
-				if (subcommand.shouldHandleAutoComplete() && Checks.checkImplementation(subcommand.getClass(), AutoCompletable.class)) {
+				if (subcommand.isAutoCompleteHandling() && Checks.checkImplementation(subcommand.getClass(), AutoCompletable.class)) {
 					autoCompleteIndex.put(commandPath, (AutoCompletable) subcommand);
 				}
 				subDataList.add(subcommand.getSubcommandData());

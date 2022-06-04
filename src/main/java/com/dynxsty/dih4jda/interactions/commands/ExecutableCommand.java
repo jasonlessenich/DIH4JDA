@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
  * @since v1.5
  */
 public abstract class ExecutableCommand extends CommandRequirements {
-	private final Set<Long> whitelistedGuilds = new HashSet<>();
-	private final Set<Long> blacklistedGuilds = new HashSet<>();
+	private Set<Long> whitelistedGuilds = Set.of();
+	private Set<Long> blacklistedGuilds = Set.of();
 	private RegistrationType type = DIH4JDA.defaultCommandType;
 
 	/**
@@ -27,11 +27,11 @@ public abstract class ExecutableCommand extends CommandRequirements {
 	 *
 	 * @param whitelisted An array of {@link Long}s.
 	 */
-	public void whitelistGuilds(Long... whitelisted) {
+	public final void whitelistGuilds(Long... whitelisted) {
 		if (type != RegistrationType.GUILD) {
 			throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
 		}
-		whitelistedGuilds.addAll(Arrays.asList(whitelisted));
+		whitelistedGuilds = Arrays.stream(whitelisted).collect(Collectors.toSet());
 	}
 
 	/**
@@ -39,11 +39,11 @@ public abstract class ExecutableCommand extends CommandRequirements {
 	 *
 	 * @param blacklisted An array of {@link Long}s.
 	 */
-	public void blacklistGuilds(Long... blacklisted) {
+	public final void blacklistGuilds(Long... blacklisted) {
 		if (type != RegistrationType.GUILD) {
 			throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
 		}
-		blacklistedGuilds.addAll(Arrays.asList(blacklisted));
+		blacklistedGuilds = Arrays.stream(blacklisted).collect(Collectors.toSet());
 	}
 
 	/**
@@ -52,7 +52,7 @@ public abstract class ExecutableCommand extends CommandRequirements {
 	 * @param jda The {@link JDA} instance.
 	 * @return A {@link List} with all Guilds.
 	 */
-	public Set<Guild> getGuilds(JDA jda) {
+	public final Set<Guild> getGuilds(JDA jda) {
 		Set<Guild> guilds = new HashSet<>(jda.getGuilds());
 		guilds.removeIf(g -> blacklistedGuilds.contains(g.getIdLong()));
 		if (!whitelistedGuilds.isEmpty()) {
@@ -61,15 +61,14 @@ public abstract class ExecutableCommand extends CommandRequirements {
 		return guilds;
 	}
 
-	public RegistrationType getRegistrationType() {
+	public final RegistrationType getRegistrationType() {
 		return type;
 	}
 
 	/**
 	 * @param type How the command should be queued.
 	 */
-	public void setRegistrationType(RegistrationType type) {
+	public final void setRegistrationType(RegistrationType type) {
 		this.type = type;
 	}
-
 }

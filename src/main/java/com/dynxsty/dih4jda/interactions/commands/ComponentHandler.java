@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Allows to set Component-IDs which get handled within the extending class.
@@ -19,19 +20,19 @@ import java.util.List;
  */
 public abstract class ComponentHandler {
 
-	private final List<String> handledButtonIds = new ArrayList<>();
-	private final List<String> handledSelectMenuIds = new ArrayList<>();
-	private final List<String> handledModalIds = new ArrayList<>();
+	private List<String> handledButtonIds = List.of();
+	private List<String> handledSelectMenuIds = List.of();
+	private List<String> handledModalIds = List.of();
 	private boolean handleAutoComplete = false;
 
 	protected ComponentHandler() {
 	}
 
 	/**
-	 * @return Whether the class should handle all options that have the AutoComplete functionality activated.
+	 * @return Whether the class handles all options that have the AutoComplete functionality activated.
 	 * @since v1.4
 	 */
-	public boolean shouldHandleAutoComplete() {
+	public final boolean isAutoCompleteHandling() {
 		return handleAutoComplete;
 	}
 
@@ -73,8 +74,8 @@ public abstract class ComponentHandler {
 	 * @see com.dynxsty.dih4jda.util.AutoCompleteUtils
 	 * @since v1.4
 	 */
-	public void enableAutoCompleteHandling() {
-		handleAutoComplete = true;
+	public final void setAutoCompleteHandling(boolean handleAutoComplete) {
+		this.handleAutoComplete = handleAutoComplete;
 	}
 
 	/**
@@ -83,7 +84,7 @@ public abstract class ComponentHandler {
 	 * @return All identifiers as a {@link List}.
 	 * @since v1.4
 	 */
-	public List<String> getHandledButtonIds() {
+	public final List<String> getHandledButtonIds() {
 		return handledButtonIds;
 	}
 
@@ -125,8 +126,8 @@ public abstract class ComponentHandler {
 	 * @see ComponentIdBuilder#build
 	 * @since v1.4
 	 */
-	public void handleButtonIds(String... handledButtonIds) {
-		this.handledButtonIds.addAll(Arrays.asList(handledButtonIds));
+	public final void handleButtonIds(String... handledButtonIds) {
+		this.handledButtonIds = Arrays.stream(handledButtonIds).toList();
 	}
 
 	/**
@@ -165,8 +166,7 @@ public abstract class ComponentHandler {
 	 *
 	 * @since v1.4
 	 */
-	public void handleButton(ButtonInteractionEvent event, Button button) {
-	}
+	public void handleButton(ButtonInteractionEvent event, Button button) {}
 
 	/**
 	 * Gets all SelectMenu identifiers that should be handled.
@@ -174,7 +174,7 @@ public abstract class ComponentHandler {
 	 * @return All identifiers as a {@link List}.
 	 * @since v1.4
 	 */
-	public List<String> getHandledSelectMenuIds() {
+	public final List<String> getHandledSelectMenuIds() {
 		return handledSelectMenuIds;
 	}
 
@@ -214,8 +214,8 @@ public abstract class ComponentHandler {
 	 * @see com.dynxsty.dih4jda.interactions.components.select_menu.SelectMenuHandler
 	 * @since v1.4
 	 */
-	public void handleSelectMenuIds(String... handledSelectMenuIds) {
-		this.handledSelectMenuIds.addAll(Arrays.asList(handledSelectMenuIds));
+	public final void handleSelectMenuIds(String... handledSelectMenuIds) {
+		this.handledSelectMenuIds = Arrays.stream(handledSelectMenuIds).toList();
 	}
 
 	/**
@@ -251,8 +251,7 @@ public abstract class ComponentHandler {
 	 *
 	 * @since v1.4
 	 */
-	public void handleSelectMenu(SelectMenuInteractionEvent event, List<String> values) {
-	}
+	public void handleSelectMenu(SelectMenuInteractionEvent event, List<String> values) {}
 
 	/**
 	 * Gets all Modal identifiers that should be handled.
@@ -260,7 +259,7 @@ public abstract class ComponentHandler {
 	 * @return All identifiers as a {@link List}.
 	 * @since v1.4
 	 */
-	public List<String> getHandledModalIds() {
+	public final List<String> getHandledModalIds() {
 		return handledModalIds;
 	}
 
@@ -313,8 +312,8 @@ public abstract class ComponentHandler {
 	 * @see ComponentIdBuilder#build
 	 * @since v1.4
 	 */
-	public void handleModalIds(String... handledModalIds) {
-		this.handledModalIds.addAll(Arrays.asList(handledModalIds));
+	public final void handleModalIds(String... handledModalIds) {
+		this.handledModalIds = Arrays.stream(handledModalIds).toList();
 	}
 
 	/**
@@ -365,6 +364,5 @@ public abstract class ComponentHandler {
 	 *
 	 * @since v1.4
 	 */
-	public void handleModal(ModalInteractionEvent event, List<ModalMapping> values) {
-	}
+	public void handleModal(ModalInteractionEvent event, List<ModalMapping> values) {}
 }

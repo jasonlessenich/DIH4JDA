@@ -17,12 +17,11 @@ import java.util.stream.Collectors;
  */
 public abstract class SlashCommand extends ExecutableCommand {
 
-	private SlashCommandData data;
-	private Set<Subcommand> subcommands;
-	private Set<SubcommandGroup> subcommandGroups;
+	private SlashCommandData commandData = null;
+	private Set<Subcommand> subcommands = Set.of();
+	private Set<SubcommandGroup> subcommandGroups = Set.of();
 
-	protected SlashCommand() {
-	}
+	protected SlashCommand() {}
 
 	/**
 	 * Method that should be overridden for all Slash Commands that should be executed.
@@ -44,11 +43,10 @@ public abstract class SlashCommand extends ExecutableCommand {
 	 *
 	 * @since v1.5
 	 */
-	public void execute(SlashCommandInteractionEvent event) {
-	}
+	public void execute(SlashCommandInteractionEvent event) {}
 
-	public SlashCommandData getCommandData() {
-		return data;
+	public final SlashCommandData getSlashCommandData() {
+		return commandData;
 	}
 
 	/**
@@ -57,11 +55,11 @@ public abstract class SlashCommand extends ExecutableCommand {
 	 * @param commandData The {@link SlashCommandData} which should be used for this command.
 	 * @see {@link net.dv8tion.jda.api.interactions.commands.build.Commands#slash(String, String)}
 	 */
-	public void setCommandData(SlashCommandData commandData) {
-		this.data = commandData;
+	public final void setSlashCommandData(SlashCommandData commandData) {
+		this.commandData = commandData;
 	}
 
-	public Set<Subcommand> getSubcommands() {
+	public final Set<Subcommand> getSubcommands() {
 		return subcommands;
 	}
 
@@ -70,11 +68,11 @@ public abstract class SlashCommand extends ExecutableCommand {
 	 *
 	 * @param classes The classes (must extend {@link Subcommand}) which should be registered as subcommands.
 	 */
-	public final void setSubcommands(Subcommand... classes) {
+	public final void addSubcommands(Subcommand... classes) {
 		this.subcommands = Arrays.stream(classes).collect(Collectors.toSet());
 	}
 
-	public Set<SubcommandGroup> getSubcommandGroups() {
+	public final Set<SubcommandGroup> getSubcommandGroups() {
 		return subcommandGroups;
 	}
 
@@ -83,7 +81,7 @@ public abstract class SlashCommand extends ExecutableCommand {
 	 *
 	 * @param classes The classes (must extend {@link SubcommandGroup}) which should be registered as subcommand groups.
 	 */
-	public final void setSubcommandGroups(SubcommandGroup... classes) {
+	public final void addSubcommandGroups(SubcommandGroup... classes) {
 		this.subcommandGroups = Arrays.stream(classes).collect(Collectors.toSet());
 	}
 
@@ -93,9 +91,9 @@ public abstract class SlashCommand extends ExecutableCommand {
 	 * @see SlashCommand.Subcommand#execute(SlashCommandInteractionEvent)
 	 */
 	public abstract static class Subcommand extends CommandRequirements {
-		private SubcommandData data;
+		private SubcommandData data = null;
 
-		public SubcommandData getSubcommandData() {
+		public final SubcommandData getSubcommandData() {
 			return data;
 		}
 
@@ -105,7 +103,7 @@ public abstract class SlashCommand extends ExecutableCommand {
 		 * @param subCommandData The {@link SubcommandData} which should be used for this subcommand.
 		 * @see SubcommandData
 		 */
-		public void setSubcommandData(SubcommandData subCommandData) {
+		public final void setSubcommandData(SubcommandData subCommandData) {
 			this.data = subCommandData;
 		}
 
@@ -136,10 +134,10 @@ public abstract class SlashCommand extends ExecutableCommand {
 	 * Model class which represents a single Subcommand Group
 	 */
 	public abstract static class SubcommandGroup {
-		private SubcommandGroupData data;
-		private Set<Subcommand> subcommands;
+		private SubcommandGroupData data = null;
+		private Set<Subcommand> subcommands = Set.of();
 
-		public SubcommandGroupData getSubcommandGroupData() {
+		public final SubcommandGroupData getSubcommandGroupData() {
 			return data;
 		}
 
@@ -149,11 +147,11 @@ public abstract class SlashCommand extends ExecutableCommand {
 		 * @param subcommandGroupData The {@link SubcommandGroupData} which should be used for this subcommand group.
 		 * @see SubcommandGroupData
 		 */
-		public void setSubcommandGroupData(SubcommandGroupData subcommandGroupData) {
+		public final void setSubcommandGroupData(SubcommandGroupData subcommandGroupData) {
 			this.data = subcommandGroupData;
 		}
 
-		public Set<Subcommand> getSubcommands() {
+		public final Set<Subcommand> getSubcommands() {
 			return subcommands;
 		}
 
@@ -163,7 +161,7 @@ public abstract class SlashCommand extends ExecutableCommand {
 		 * @param classes The classes (must extend {@link Subcommand}) which should be registered as subcommands
 		 *                of this subcommand group.
 		 */
-		public final void setSubcommands(Subcommand... classes) {
+		public final void addSubcommands(Subcommand... classes) {
 			this.subcommands = Arrays.stream(classes).collect(Collectors.toSet());
 		}
 	}
