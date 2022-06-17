@@ -285,10 +285,10 @@ public class InteractionHandler extends ListenerAdapter {
 			return null;
 		}
 		SlashCommandData commandData = command.getSlashCommandData();
-		if (command.getSubcommandGroups() != null) {
+		if (command.getSubcommandGroups() != null && !command.getSubcommandGroups().isEmpty()) {
 			commandData.addSubcommandGroups(getSubcommandGroupData(command));
 		}
-		if (command.getSubcommands() != null) {
+		if (command.getSubcommands() != null && !command.getSubcommands().isEmpty()) {
 			commandData.addSubcommands(getSubcommandData(command, command.getSubcommands(), null));
 		}
 		if (command.getSubcommandGroups() != null && command.getSubcommandGroups().isEmpty()
@@ -311,18 +311,18 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private Set<SubcommandGroupData> getSubcommandGroupData(@NotNull SlashCommand command) throws ReflectiveOperationException {
 		Set<SubcommandGroupData> groupDataList = new HashSet<>();
-		for (SlashCommand.SubcommandGroup group : command.getSubcommandGroups()) {
+		for (Map.Entry<SubcommandGroupData, Set<SlashCommand.Subcommand>> group : command.getSubcommandGroups().entrySet()) {
 			if (group != null) {
-				if (group.getSubcommandGroupData() == null) {
+				if (group.getKey() == null) {
 					DIH4JDALogger.warn(String.format("Class %s is missing SubcommandGroupData. It will be ignored.", group.getClass().getSimpleName()));
 					continue;
 				}
-				if (group.getSubcommands() == null) {
-					DIH4JDALogger.warn(String.format("SubcommandGroup %s is missing Subcommands. It will be ignored.", group.getSubcommandGroupData().getName()));
+				if (group.getValue() == null || group.getValue().isEmpty()) {
+					DIH4JDALogger.warn(String.format("SubcommandGroup %s is missing Subcommands. It will be ignored.", group.getKey().getName()));
 					continue;
 				}
-				SubcommandGroupData groupData = group.getSubcommandGroupData();
-				groupData.addSubcommands(getSubcommandData(command, group.getSubcommands(), groupData.getName()));
+				SubcommandGroupData groupData = group.getKey();
+				groupData.addSubcommands(getSubcommandData(command, group.getValue(), groupData.getName()));
 				groupDataList.add(groupData);
 			}
 		}

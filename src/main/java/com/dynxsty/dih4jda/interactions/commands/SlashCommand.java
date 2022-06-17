@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,9 +21,10 @@ public abstract class SlashCommand extends ExecutableCommand {
 
 	private SlashCommandData commandData = null;
 	private Set<Subcommand> subcommands = Set.of();
-	private Set<SubcommandGroup> subcommandGroups = Set.of();
+	private Map<SubcommandGroupData, Set<Subcommand>> subcommandGroups = Map.of();
 
-	protected SlashCommand() {}
+	protected SlashCommand() {
+	}
 
 	/**
 	 * Method that should be overridden for all Slash Commands that should be executed.
@@ -53,7 +56,6 @@ public abstract class SlashCommand extends ExecutableCommand {
 	 * Sets this commands' {@link SlashCommandData}.
 	 *
 	 * @param commandData The {@link SlashCommandData} which should be used for this command.
-	 * @see {@link net.dv8tion.jda.api.interactions.commands.build.Commands#slash(String, String)}
 	 */
 	public final void setSlashCommandData(SlashCommandData commandData) {
 		this.commandData = commandData;
@@ -72,17 +74,17 @@ public abstract class SlashCommand extends ExecutableCommand {
 		this.subcommands = Arrays.stream(classes).collect(Collectors.toSet());
 	}
 
-	public final Set<SubcommandGroup> getSubcommandGroups() {
+	public final Map<SubcommandGroupData, Set<Subcommand>> getSubcommandGroups() {
 		return subcommandGroups;
 	}
 
 	/**
 	 * Sets all Subcommand Groups that belong to this "base" command.
 	 *
-	 * @param classes The classes (must extend {@link SubcommandGroup}) which should be registered as subcommand groups.
+	 * @param groups A map of the {@link SubcommandGroupData} and their corresponding {@link Subcommand}s.
 	 */
-	public final void addSubcommandGroups(SubcommandGroup... classes) {
-		this.subcommandGroups = Arrays.stream(classes).collect(Collectors.toSet());
+	public final void addSubcommandGroups(Map<SubcommandGroupData, Set<Subcommand>> groups) {
+		this.subcommandGroups = groups;
 	}
 
 	/**
@@ -128,41 +130,5 @@ public abstract class SlashCommand extends ExecutableCommand {
 		 * @since v1.5
 		 */
 		public abstract void execute(SlashCommandInteractionEvent event);
-	}
-
-	/**
-	 * Model class which represents a single Subcommand Group
-	 */
-	public abstract static class SubcommandGroup {
-		private SubcommandGroupData data = null;
-		private Set<Subcommand> subcommands = Set.of();
-
-		public final SubcommandGroupData getSubcommandGroupData() {
-			return data;
-		}
-
-		/**
-		 * Sets this group' {@link SubcommandGroupData}.
-		 *
-		 * @param subcommandGroupData The {@link SubcommandGroupData} which should be used for this subcommand group.
-		 * @see SubcommandGroupData
-		 */
-		public final void setSubcommandGroupData(SubcommandGroupData subcommandGroupData) {
-			this.data = subcommandGroupData;
-		}
-
-		public final Set<Subcommand> getSubcommands() {
-			return subcommands;
-		}
-
-		/**
-		 * Sets all Subcommands that belong to this subcommand group.
-		 *
-		 * @param classes The classes (must extend {@link Subcommand}) which should be registered as subcommands
-		 *                of this subcommand group.
-		 */
-		public final void addSubcommands(Subcommand... classes) {
-			this.subcommands = Arrays.stream(classes).collect(Collectors.toSet());
-		}
 	}
 }
