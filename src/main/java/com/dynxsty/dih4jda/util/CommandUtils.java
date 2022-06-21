@@ -25,11 +25,11 @@ public class CommandUtils {
 	 * @param command The other {@link SlashCommandData} object.
 	 * @return Whether both {@link SlashCommandData} objects share the same properties.
 	 */
-	public static boolean equals(@NotNull SlashCommandData data, @NotNull SlashCommandData command) {
+	public static boolean equals(@NotNull SlashCommandData data, @NotNull SlashCommandData command, boolean isGlobalCommand) {
 		if (data.getType() != command.getType()) return false;
 		if (!data.getName().equals(command.getName())) return false;
 		if (!data.getDescription().equals(command.getDescription())) return false;
-		if (data.isGuildOnly() != command.isGuildOnly()) return false;
+		if (isGlobalCommand && (data.isGuildOnly() != command.isGuildOnly())) return false;
 		if (!equals(data.getDefaultPermissions(), command.getDefaultPermissions())) return false;
 		if (!data.getOptions().stream().allMatch(o -> command.getOptions().stream().anyMatch(op -> equals(o, op)))) {
 			return false;
@@ -50,9 +50,9 @@ public class CommandUtils {
 	 * @param command The other {@link CommandData} object.
 	 * @return Whether both {@link CommandData} objects share the same properties.
 	 */
-	public static boolean equals(@NotNull CommandData data, @NotNull CommandData command) {
+	public static boolean equals(@NotNull CommandData data, @NotNull CommandData command, boolean isGlobalCommand) {
 		if (data.getType() != command.getType()) return false;
-		if (data.isGuildOnly() != command.isGuildOnly()) return false;
+		if (isGlobalCommand && (data.isGuildOnly() != command.isGuildOnly())) return false;
 		if (!equals(data.getDefaultPermissions(), command.getDefaultPermissions())) return false;
 		return data.getName().equals(command.getName());
 	}
@@ -120,12 +120,12 @@ public class CommandUtils {
 	 * @param data    The {@link CommandData}.
 	 * @return Whether the given Command originates from the given CommandData.
 	 */
-	public static boolean isEqual(Command command, Object data) {
+	public static boolean isEqual(Command command, Object data, boolean isGlobalCommand) {
 		boolean equals;
 		if (command.getType() == Command.Type.SLASH) {
-			equals = CommandUtils.equals((SlashCommandData) data, SlashCommandData.fromCommand(command));
+			equals = CommandUtils.equals((SlashCommandData) data, SlashCommandData.fromCommand(command), isGlobalCommand);
 		} else {
-			equals = CommandUtils.equals((CommandData) data, CommandData.fromCommand(command));
+			equals = CommandUtils.equals((CommandData) data, CommandData.fromCommand(command), isGlobalCommand);
 		}
 		return equals;
 	}
