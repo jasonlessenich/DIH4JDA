@@ -145,7 +145,7 @@ public class InteractionHandler extends ListenerAdapter {
 		for (Guild guild : config.getJDA().getGuilds()) {
 			Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> guildData = CommandUtils.filterByType(data, RegistrationType.GUILD);
 			// check if smart queuing is enabled
-			if (config.isSmartQueuing()) {
+			if (config.isGuildSmartQueue()) {
 				guildData = SmartQueue.checkGuild(guild, guildData.getFirst(), guildData.getSecond(), config.isDeleteUnknownCommands());
 			}
 			// upsert all guild commands
@@ -155,7 +155,7 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 		Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> globalData = CommandUtils.filterByType(data, RegistrationType.GLOBAL);
 		// check if smart queuing is enabled
-		if (config.isSmartQueuing()) {
+		if (config.isGlobalSmartQueue()) {
 			globalData = SmartQueue.checkGlobal(config.getJDA(), globalData.getFirst(), globalData.getSecond(), config.isDeleteUnknownCommands());
 		}
 		// upsert all global commands

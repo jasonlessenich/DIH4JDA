@@ -85,14 +85,26 @@ public class DIH4JDABuilder {
 
 	/**
 	 * <b>NOT RECOMMENDED</b> (unless there are some bugs) <br>
-	 * This will disable the Smart Queueing functionality.
-	 * If SmartQueue is disabled Global Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call,
+	 * This will disable the <b>GLOBAL</b> Smart Queueing functionality.
+	 * If the Global SmartQueue is disabled Global Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call,
 	 * thus, making Global Commands unusable for about an hour, until they're registered again. <br>
 	 * By default, this also deletes unknown/unused commands. This behaviour can be disabled with {@link DIH4JDABuilder#disableUnknownCommandDeletion()}.
 	 */
 	@Nonnull
-	public DIH4JDABuilder disableSmartQueue() {
-		config.setSmartQueuing(false);
+	public DIH4JDABuilder setGlobalSmartQueue(boolean enable) {
+		config.setGlobalSmartQueue(enable);
+		return this;
+	}
+
+	/**
+	 * This will disable the <b>GUILD</b> Smart Queueing functionality.
+	 * If the Guild SmartQueue is disabled Guild Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call.
+	 * It is <b>RECOMMENDED</b> to disable this functionality for 300+ servers to shorten the start-up time.
+	 * By default, this also deletes unknown/unused commands. This behaviour can be disabled with {@link DIH4JDABuilder#disableUnknownCommandDeletion()}.
+	 */
+	@Nonnull
+	public DIH4JDABuilder setGuildSmartQueue(boolean enable) {
+		config.setGuildSmartQueue(enable);
 		return this;
 	}
 
