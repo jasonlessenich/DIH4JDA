@@ -4,7 +4,7 @@ import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandPermissions;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -58,13 +58,13 @@ public class CommandUtils {
 	}
 
 	/**
-	 * Compares two {@link CommandPermissions} objects.
+	 * Compares two {@link DefaultMemberPermissions} objects.
 	 *
-	 * @param data The {@link CommandPermissions}.
-	 * @param command The other {@link CommandPermissions} object.
-	 * @return Whether both {@link CommandPermissions} objects are equal.
+	 * @param data The {@link DefaultMemberPermissions}.
+	 * @param command The other {@link DefaultMemberPermissions} object.
+	 * @return Whether both {@link DefaultMemberPermissions} objects are equal.
 	 */
-	public static boolean equals(@NotNull CommandPermissions data, @NotNull CommandPermissions command) {
+	public static boolean equals(@NotNull DefaultMemberPermissions data, @NotNull DefaultMemberPermissions command) {
 		return Objects.equals(data.getPermissionsRaw(), command.getPermissionsRaw());
 	}
 
