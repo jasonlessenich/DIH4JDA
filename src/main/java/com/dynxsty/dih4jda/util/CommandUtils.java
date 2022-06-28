@@ -1,14 +1,14 @@
 package com.dynxsty.dih4jda.util;
 
-import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
+import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,10 +25,12 @@ public class CommandUtils {
 	 * @param command The other {@link SlashCommandData} object.
 	 * @return Whether both {@link SlashCommandData} objects share the same properties.
 	 */
-	public static boolean equals(SlashCommandData data, SlashCommandData command) {
+	public static boolean equals(@NotNull SlashCommandData data, @NotNull SlashCommandData command, boolean isGlobalCommand) {
 		if (data.getType() != command.getType()) return false;
 		if (!data.getName().equals(command.getName())) return false;
 		if (!data.getDescription().equals(command.getDescription())) return false;
+		if (isGlobalCommand && (data.isGuildOnly() != command.isGuildOnly())) return false;
+		if (!equals(data.getDefaultPermissions(), command.getDefaultPermissions())) return false;
 		if (!data.getOptions().stream().allMatch(o -> command.getOptions().stream().anyMatch(op -> equals(o, op)))) {
 			return false;
 		}
@@ -48,9 +50,22 @@ public class CommandUtils {
 	 * @param command The other {@link CommandData} object.
 	 * @return Whether both {@link CommandData} objects share the same properties.
 	 */
-	public static boolean equals(CommandData data, CommandData command) {
+	public static boolean equals(@NotNull CommandData data, @NotNull CommandData command, boolean isGlobalCommand) {
 		if (data.getType() != command.getType()) return false;
+		if (isGlobalCommand && (data.isGuildOnly() != command.isGuildOnly())) return false;
+		if (!equals(data.getDefaultPermissions(), command.getDefaultPermissions())) return false;
 		return data.getName().equals(command.getName());
+	}
+
+	/**
+	 * Compares two {@link DefaultMemberPermissions} objects.
+	 *
+	 * @param data The {@link DefaultMemberPermissions}.
+	 * @param command The other {@link DefaultMemberPermissions} object.
+	 * @return Whether both {@link DefaultMemberPermissions} objects are equal.
+	 */
+	public static boolean equals(@NotNull DefaultMemberPermissions data, @NotNull DefaultMemberPermissions command) {
+		return Objects.equals(data.getPermissionsRaw(), command.getPermissionsRaw());
 	}
 
 	/**
@@ -60,7 +75,7 @@ public class CommandUtils {
 	 * @param subcommand The other {@link SubcommandData} object.
 	 * @return Whether both {@link SubcommandData} objects share the same properties.
 	 */
-	public static boolean equals(SubcommandData data, SubcommandData subcommand) {
+	public static boolean equals(@NotNull SubcommandData data, @NotNull SubcommandData subcommand) {
 		if (!data.getName().equals(subcommand.getName())) return false;
 		if (!data.getDescription().equals(subcommand.getDescription())) return false;
 		return data.getOptions().stream().allMatch(o -> subcommand.getOptions().stream().anyMatch(op -> equals(o, op)));
@@ -73,7 +88,7 @@ public class CommandUtils {
 	 * @param group The other {@link SubcommandGroupData} object.
 	 * @return Whether both {@link SubcommandGroupData} objects share the same properties.
 	 */
-	public static boolean equals(SubcommandGroupData data, SubcommandGroupData group) {
+	public static boolean equals(@NotNull SubcommandGroupData data, @NotNull SubcommandGroupData group) {
 		if (!data.getName().equals(group.getName())) return false;
 		if (!data.getDescription().equals(group.getDescription())) return false;
 		return data.getSubcommands().stream().allMatch(o -> group.getSubcommands().stream().anyMatch(op -> equals(o, op)));
@@ -86,7 +101,7 @@ public class CommandUtils {
 	 * @param option The other {@link OptionData} object.
 	 * @return Whether both {@link OptionData} objects share the same properties.
 	 */
-	public static boolean equals(OptionData data, OptionData option) {
+	public static boolean equals(@NotNull OptionData data, @NotNull OptionData option) {
 		if (data.getType() != option.getType()) return false;
 		if (!data.getName().equals(option.getName())) return false;
 		if (!data.getDescription().equals(option.getDescription())) return false;
@@ -99,84 +114,20 @@ public class CommandUtils {
 	}
 
 	/**
-	 * Converts a {@link Command} object into a similar {@link SlashCommandData}.
+	 * Checks if the {@link Command} is equal to the given {@link CommandData}.
 	 *
-	 * @param command The {@link Command} object.
-	 * @return The recreated {@link SlashCommandData}.
+	 * @param command The {@link Command}.
+	 * @param data    The {@link CommandData}.
+	 * @return Whether the given Command originates from the given CommandData.
 	 */
-	public static SlashCommandData toSlashCommandData(Command command) {
-		if (command.getType() != Command.Type.SLASH) throw new IllegalArgumentException("Command is not of Type SLASH");
-		return Commands.slash(command.getName(), command.getDescription())
-				.addOptions(CommandUtils.toOptionData(command.getOptions()))
-				.setDefaultEnabled(command.isDefaultEnabled())
-				.addSubcommands(toSubcommandData(command.getSubcommands()))
-				.addSubcommandGroups(toSubcommandGroupData(command.getSubcommandGroups()));
-	}
-
-	/**
-	 * Converts the given List of {@link Command.Subcommand}s to a List of {@link SubcommandData}.
-	 *
-	 * @param subcommands The List of {@link Command.Subcommand}s.
-	 * @return The List of {@link SubcommandData}.
-	 */
-	public static List<SubcommandData> toSubcommandData(List<Command.Subcommand> subcommands) {
-		return subcommands.stream()
-				.map(o -> {
-					SubcommandData data = new SubcommandData(o.getName(), o.getDescription());
-					if (!o.getOptions().isEmpty()) data.addOptions(toOptionData(o.getOptions()));
-					return data;
-				}).collect(Collectors.toList());
-	}
-
-	/**
-	 * Converts the given List of {@link Command.SubcommandGroup}s to a List of {@link SubcommandGroupData}.
-	 *
-	 * @param groups The List of {@link Command.SubcommandGroup}s.
-	 * @return The List of {@link SubcommandGroupData}.
-	 */
-	public static List<SubcommandGroupData> toSubcommandGroupData(List<Command.SubcommandGroup> groups) {
-		return groups.stream()
-				.map(o -> {
-					SubcommandGroupData data = new SubcommandGroupData(o.getName(), o.getDescription());
-					if (!o.getSubcommands().isEmpty()) data.addSubcommands(toSubcommandData(o.getSubcommands()));
-					return data;
-				}).collect(Collectors.toList());
-	}
-
-	/**
-	 * Converts a List of {@link Command.Option}s to a List of {@link OptionData}.
-	 *
-	 * @param options The list of {@link Command.Option}s.
-	 * @return The List with all {@link OptionData}.
-	 */
-	public static List<OptionData> toOptionData(List<Command.Option> options) {
-		return options.stream()
-				.map(o -> {
-					OptionData data = new OptionData(o.getType(), o.getName(), o.getDescription(), o.isRequired(), o.isAutoComplete());
-					if (o.getMaxValue() != null) {
-						data.setMaxValue(o.getMaxValue().getClass().isInstance(Long.class) ? o.getMaxValue().longValue() : o.getMaxValue().doubleValue());
-					}
-					if (o.getMinValue() != null) {
-						data.setMinValue(o.getMinValue().getClass().isInstance(Long.class) ? o.getMinValue().longValue() : o.getMinValue().doubleValue());
-					}
-					if (!o.getChoices().isEmpty()) data.addChoices(o.getChoices());
-					if (!o.getChannelTypes().isEmpty()) data.setChannelTypes(o.getChannelTypes());
-					return data;
-				}).collect(Collectors.toList());
-	}
-
-	/**
-	 * Converts a {@link Command} object into a similar {@link CommandData}.
-	 *
-	 * @param command The {@link Command} object.
-	 * @return The recreated {@link CommandData}.
-	 */
-	public static CommandData toCommandData(Command command) {
-		if (command.getType() != Command.Type.MESSAGE && command.getType() != Command.Type.USER) {
-			throw new IllegalArgumentException("Command is not of Type CONTEXT");
+	public static boolean isEqual(Command command, Object data, boolean isGlobalCommand) {
+		boolean equals;
+		if (command.getType() == Command.Type.SLASH) {
+			equals = CommandUtils.equals((SlashCommandData) data, SlashCommandData.fromCommand(command), isGlobalCommand);
+		} else {
+			equals = CommandUtils.equals((CommandData) data, CommandData.fromCommand(command), isGlobalCommand);
 		}
-		return Commands.context(command.getType(), command.getName())
-				.setDefaultEnabled(command.isDefaultEnabled());
+		return equals;
 	}
 
 	/**
@@ -187,23 +138,6 @@ public class CommandUtils {
 	@Contract(pure = true)
 	public static @NotNull String buildCommandPath(String... args) {
 		return String.join("/", args);
-	}
-
-	/**
-	 * Checks if the {@link Command} is equal to the given {@link CommandData}.
-	 *
-	 * @param command The {@link Command}.
-	 * @param data    The {@link CommandData}.
-	 * @return Whether the given Command originates from the given CommandData.
-	 */
-	public static boolean isEqual(Command command, Object data) {
-		boolean equals;
-		if (command.getType() == Command.Type.SLASH) {
-			equals = CommandUtils.equals((SlashCommandData) data, CommandUtils.toSlashCommandData(command));
-		} else {
-			equals = CommandUtils.equals((CommandData) data, CommandUtils.toCommandData(command));
-		}
-		return equals;
 	}
 
 	/**
@@ -221,14 +155,14 @@ public class CommandUtils {
 	}
 
 	/**
-	 * Removes all elements of the provided {@link Pair} which don't match the given {@link ExecutableCommand.Type}.
+	 * Removes all elements of the provided {@link Pair} which don't match the given {@link RegistrationType}.
 	 *
 	 * @param pair The {@link Pair}.
-	 * @param type The {@link ExecutableCommand.Type}.
+	 * @param type The {@link RegistrationType}.
 	 * @return The modified {@link Pair}.
 	 */
 	public static Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> filterByType(Pair<Set<UnqueuedSlashCommandData>,
-			Set<UnqueuedCommandData>> pair, ExecutableCommand.Type type) {
+			Set<UnqueuedCommandData>> pair, RegistrationType type) {
 		return new Pair<>(
 				pair.getFirst().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()),
 				pair.getSecond().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()));

@@ -17,7 +17,8 @@ public class DIH4JDAConfig {
 	private String commandsPackage;
 	private Set<DIH4JDALogger.Type> blockedLogTypes = new HashSet<>();
 	private boolean registerOnReady = true;
-	private boolean smartQueuing = true;
+	private boolean globalSmartQueue = true;
+	private boolean guildSmartQueue = true;
 	private boolean deleteUnknownCommands = true;
 	private Executor executor = ForkJoinPool.commonPool();
 
@@ -53,12 +54,20 @@ public class DIH4JDAConfig {
 		this.registerOnReady = registerOnReady;
 	}
 
-	public boolean isSmartQueuing() {
-		return smartQueuing;
+	public boolean isGlobalSmartQueue() {
+		return globalSmartQueue;
 	}
 
-	public void setSmartQueuing(boolean smartQueuing) {
-		this.smartQueuing = smartQueuing;
+	public boolean isGuildSmartQueue() {
+		return guildSmartQueue;
+	}
+
+	public void setGlobalSmartQueue(boolean globalSmartQueue) {
+		this.globalSmartQueue = globalSmartQueue;
+	}
+
+	public void setGuildSmartQueue(boolean guildSmartQueue) {
+		this.guildSmartQueue = guildSmartQueue;
 	}
 
 	public boolean isDeleteUnknownCommands() {

@@ -2,7 +2,7 @@ package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.config.DIH4JDAConfig;
 import com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter;
-import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
+import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class DIH4JDA extends ListenerAdapter {
 
-	public static ExecutableCommand.Type defaultCommandType;
+	public static RegistrationType defaultCommandType;
 	private final DIH4JDAConfig config;
 	private final Set<DIH4JDAListenerAdapter> listeners;
 	private InteractionHandler handler;
@@ -37,7 +37,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @param config The instance's configuration.
 	 */
 	protected DIH4JDA(DIH4JDAConfig config) {
-		if (defaultCommandType == null) defaultCommandType = ExecutableCommand.Type.GUILD;
+		if (defaultCommandType == null) defaultCommandType = RegistrationType.GUILD;
 		this.config = config;
 		listeners = new HashSet<>();
 		try {

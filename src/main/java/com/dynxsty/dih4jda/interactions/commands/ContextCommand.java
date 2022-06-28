@@ -14,12 +14,11 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
  * @since v1.5
  */
 public abstract class ContextCommand extends ExecutableCommand {
-	private CommandData commandData;
+	private CommandData commandData = null;
 
-	protected ContextCommand() {
-	}
+	protected ContextCommand() {}
 
-	public CommandData getCommandData() {
+	public final CommandData getCommandData() {
 		return commandData;
 	}
 
@@ -30,7 +29,7 @@ public abstract class ContextCommand extends ExecutableCommand {
 	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#user(String)
 	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#message(String)
 	 */
-	public void setCommandData(CommandData commandData) {
+	public final void setCommandData(CommandData commandData) {
 		if (commandData.getType() == Command.Type.MESSAGE || commandData.getType() == Command.Type.USER) {
 			this.commandData = commandData;
 		} else {

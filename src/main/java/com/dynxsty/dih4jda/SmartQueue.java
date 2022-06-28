@@ -92,15 +92,33 @@ public class SmartQueue {
 		DIH4JDALogger.info(String.format(prefix + "Found %s existing command(s)", existing.size()), DIH4JDALogger.Type.SMART_QUEUE);
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
-			if (commandData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData())) ||
-					slashData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData()))) {
+			if (commandData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData(), global)) ||
+					slashData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData(), global))) {
+				// check for command in blacklisted guilds
+				// this may be refactored soonTM, as its kinda clunky
+				if (guild != null) {
+					for (UnqueuedSlashCommandData d : slashData) {
+						if (CommandUtils.isEqual(cmd, d.getData(), false) && !d.getGuilds().contains(guild)) {
+							DIH4JDALogger.info("Deleting /" + cmd.getName() + " in Guild: " + guild.getName());
+							cmd.delete().queue();
+							return true;
+						}
+					}
+					for (UnqueuedCommandData d : commandData) {
+						if (CommandUtils.isEqual(cmd, d.getData(), false) && !d.getGuilds().contains(guild)) {
+							DIH4JDALogger.info("Deleting " + cmd.getName() + " in Guild: " + guild.getName());
+							cmd.delete().queue();
+							return true;
+						}
+					}
+				}
 				DIH4JDALogger.info(String.format(prefix + "Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName()), DIH4JDALogger.Type.SMART_QUEUE);
 				return true;
 			}
 			return false;
 		});
-		commandData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getData())));
-		slashData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getData())));
+		commandData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getData(), global)));
+		slashData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getData(), global)));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
 			for (Command command : commands) {
