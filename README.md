@@ -1,4 +1,4 @@
-# DIH4JDA (Work in Progress)
+# DIH4JDA – Dynxsty's Interaction Handler for JDA
 ![image](https://user-images.githubusercontent.com/48297101/154980678-ae9db212-f38b-4a4e-a628-0f94d13086b7.png)
 
 [![](https://jitpack.io/v/DynxstyGIT/DIH4JDA.svg)](https://jitpack.io/#DynxstyGIT/DIH4JDA)
@@ -7,6 +7,7 @@
 A very easy-to-use Interaction Handler for the [Java Discord API!](https://github.com/DV8FromTheWorld/JDA)
 
 ## Installation
+This version of DIH4JDA **must** be used with the following Version of JDA: [`net.dv8tion:JDA:5.0.0-alpha.13`](https://github.com/DV8FromTheWorld/JDA/releases/tag/v5.0.0-alpha.13)
 
 ### Maven
 
@@ -20,12 +21,12 @@ Add the [JitPack](https://jitpack.io/) repository to your `pom.xml`
 </repositories>
 ```
 
-Add the dependency (Make sure to replace `${DIH4JDA_VERSION}` with the latest version)
+Add the dependency
 ```xml
 <dependency> 
     <groupId>com.github.DynxstyGIT</groupId> 
     <artifactId>DIH4JDA</artifactId> 
-    <version>${DIH4JDA_VERSION}</version> 
+    <version>1.5.5</version> 
 </dependency>
 ```
 
@@ -35,15 +36,15 @@ Add the [JitPack](https://jitpack.io/) repository to your `build.gradle`
 ```gradle
 repositories { 
     [...]
-    maven { url 'https://jitpack.io' } 
+    maven { url "https://jitpack.io" } 
 }
 ```
 
-Add the dependency (Make sure to replace `${DIH4JDA_VERSION}` with the latest version)
+Add the dependency
 ```gradle
 dependencies {
     [...]
-    implementation 'com.github.DynxstyGIT:DIH4JDA:${DIH4JDA_VERSION}'
+    implementation("com.github.DynxstyGIT:DIH4JDA:1.5.5")
 }
 ```
 
