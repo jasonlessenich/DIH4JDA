@@ -43,7 +43,7 @@ repositories {
 
 
 dependencies {
-    implementation("com.github.Xirado:JDA:ea09bc8")
+    implementation("com.github.DV8FromTheWorld:JDA:70bbed5201")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
