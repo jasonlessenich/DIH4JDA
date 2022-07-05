@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  *
  * @since v1.5
  */
-public abstract class CommandRequirements extends ComponentHandler {
+public abstract class CommandRequirements {
 	private Set<Permission> requiredPermissions = Set.of();
 	private Set<Long> requiredUsers = Set.of();
 

@@ -7,6 +7,9 @@ import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
 import com.dynxsty.dih4jda.interactions.commands.*;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
+import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
+import com.dynxsty.dih4jda.interactions.components.ModalHandler;
+import com.dynxsty.dih4jda.interactions.components.SelectMenuHandler;
 import com.dynxsty.dih4jda.util.Checks;
 import com.dynxsty.dih4jda.util.ClassUtils;
 import com.dynxsty.dih4jda.util.CommandUtils;
@@ -35,8 +38,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -93,13 +94,6 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private final Map<String, AutoCompletable> autoCompleteIndex;
 
-	/**
-	 * An Index of all {@link ComponentHandler}s.
-	 *
-	 * @see InteractionHandler#findInteractionsHandlers()
-	 */
-	private final Map<String, ComponentHandler> handlerIndex;
-
 	private final Set<Class<? extends SlashCommand>> commands;
 	private final Set<Class<? extends ContextCommand>> contexts;
 
@@ -108,7 +102,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param dih4jda The {@link DIH4JDA} instance.
 	 */
-	protected InteractionHandler(@NotNull DIH4JDA dih4jda) throws ReflectiveOperationException {
+	protected InteractionHandler(@NotNull DIH4JDA dih4jda) {
 		this.dih4jda = dih4jda;
 		config = dih4jda.getConfig();
 
@@ -125,10 +119,6 @@ public class InteractionHandler extends ListenerAdapter {
 		messageContextIndex = new HashMap<>();
 		userContextIndex = new HashMap<>();
 		autoCompleteIndex = new HashMap<>();
-		handlerIndex = new HashMap<>();
-
-		// register all interaction handlers
-		findInteractionsHandlers();
 	}
 
 	/**
@@ -230,23 +220,6 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Finds all Interaction Handlers and adds them to their corresponding index.
-	 */
-	private void findInteractionsHandlers() throws ReflectiveOperationException {
-		Reflections classes = new Reflections(config.getCommandsPackage());
-		Set<Class<? extends ComponentHandler>> handler = classes.getSubTypesOf(ComponentHandler.class);
-		// remove own implementations
-		List.of(CommandRequirements.class, ExecutableCommand.class, ContextCommand.class,
-						ContextCommand.Message.class, ContextCommand.User.class, SlashCommand.class, SlashCommand.Subcommand.class)
-				.forEach(handler::remove);
-		for (Class<? extends ComponentHandler> c : handler) {
-			if (ClassUtils.doesImplement(c, SlashCommand.class) || ClassUtils.doesImplement(c, SlashCommand.Subcommand.class) ||
-					ClassUtils.doesImplement(c, ContextCommand.class) || !Checks.checkEmptyConstructor(c) || Modifier.isAbstract(c.getModifiers())) continue;
-			putComponentHandlers((ComponentHandler) ClassUtils.getInstance(c));
-		}
-	}
-
-	/**
 	 * Gets all Commands that were found in {@link InteractionHandler#findSlashCommands()} and adds
 	 * them to the {@link InteractionHandler#slashCommandIndex}.
 	 *
@@ -262,9 +235,6 @@ public class InteractionHandler extends ListenerAdapter {
 					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
 				}
 				data.add(unqueuedData);
-			}
-			if (ClassUtils.doesImplement(c, ComponentHandler.class)) {
-				putComponentHandlers(instance);
 			}
 		}
 		return data;
@@ -358,9 +328,6 @@ public class InteractionHandler extends ListenerAdapter {
 					autoCompleteIndex.put(commandPath, (AutoCompletable) subcommand);
 				}
 				subDataList.add(subcommand.getSubcommandData());
-				if (ClassUtils.doesImplement(subcommand.getClass(), ComponentHandler.class)) {
-					putComponentHandlers(subcommand);
-				}
 			}
 		}
 		return subDataList;
@@ -382,19 +349,9 @@ public class InteractionHandler extends ListenerAdapter {
 					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
 				}
 				data.add(unqueuedData);
-				if (ClassUtils.doesImplement(c, ComponentHandler.class)) {
-					putComponentHandlers(instance);
-				}
 			}
 		}
 		return data;
-	}
-
-	private void putComponentHandlers(@Nullable ComponentHandler handler) {
-		if (handler == null) return;
-		handler.getHandledButtonIds().forEach(s -> handlerIndex.put(s, handler));
-		handler.getHandledSelectMenuIds().forEach(s -> handlerIndex.put(s, handler));
-		handler.getHandledModalIds().forEach(s -> handlerIndex.put(s, handler));
 	}
 
 	/**
@@ -481,64 +438,6 @@ public class InteractionHandler extends ListenerAdapter {
 					&& !checkRole(event.getInteraction(), context.getRequiredRoles())) {
 				context.execute(event);
 			}
-		}
-	}
-
-	/**
-	 * Handles a single {@link CommandAutoCompleteInteractionEvent}.
-	 * If a {@link CommandAutoCompleteInteractionEvent} is fired the corresponding class is found and the command is executed.
-	 *
-	 * @param event The {@link CommandAutoCompleteInteractionEvent} that was fired.
-	 */
-	private void handleAutoComplete(@NotNull CommandAutoCompleteInteractionEvent event) {
-		AutoCompletable component = autoCompleteIndex.get(event.getCommandPath());
-		if (component != null) {
-			component.handleAutoComplete(event, event.getFocusedOption());
-		}
-	}
-
-	/**
-	 * Handles a single {@link ButtonInteractionEvent}.
-	 * If a {@link ButtonInteractionEvent} is fired the corresponding class is found and the command is executed.
-	 *
-	 * @param event The {@link ButtonInteractionEvent} that was fired.
-	 */
-	private void handleButton(@NotNull ButtonInteractionEvent event) {
-		ComponentHandler component = handlerIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
-		if (component == null) {
-			DIH4JDALogger.warn(String.format("Button with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.BUTTON_NOT_FOUND);
-		} else {
-			component.handleButton(event, event.getButton());
-		}
-	}
-
-	/**
-	 * Handles a single {@link SelectMenuInteractionEvent}.
-	 * If a {@link SelectMenuInteractionEvent} is fired the corresponding class is found and the command is executed.
-	 *
-	 * @param event The {@link SelectMenuInteractionEvent} that was fired.
-	 */
-	private void handleSelectMenu(@NotNull SelectMenuInteractionEvent event) {
-		ComponentHandler component = handlerIndex.get(ComponentIdBuilder.split(event.getComponentId())[0]);
-		if (component == null) {
-			DIH4JDALogger.warn(String.format("Select Menu with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND);
-		} else {
-			component.handleSelectMenu(event, event.getValues());
-		}
-	}
-
-	/**
-	 * Handles a single {@link ModalInteractionEvent}.
-	 * If a {@link ModalInteractionEvent} is fired the corresponding class is found and the command is executed.
-	 *
-	 * @param event The {@link ModalInteractionEvent} that was fired.
-	 */
-	private void handleModal(@NotNull ModalInteractionEvent event) {
-		ComponentHandler modal = handlerIndex.get(ComponentIdBuilder.split(event.getModalId())[0]);
-		if (modal == null) {
-			DIH4JDALogger.warn(String.format("Modal with id \"%s\" could not be found.", event.getModalId()), DIH4JDALogger.Type.MODAL_NOT_FOUND);
-		} else {
-			modal.handleModal(event, event.getValues());
 		}
 	}
 
@@ -641,7 +540,10 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				handleAutoComplete(event);
+				AutoCompletable autoComplete = autoCompleteIndex.get(event.getCommandPath());
+				if (autoComplete != null) {
+					autoComplete.handleAutoComplete(event, event.getFocusedOption());
+				}
 			} catch (Exception e) {
 				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onAutoCompleteException", event.getInteraction(), e);
 			}
@@ -657,7 +559,12 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				handleButton(event);
+				ButtonHandler button = dih4jda.getButtonHandlers().get(ComponentIdBuilder.split(event.getComponentId())[0]);
+				if (button == null) {
+					DIH4JDALogger.warn(String.format("Button with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.BUTTON_NOT_FOUND);
+				} else {
+					button.handleButton(event, event.getButton());
+				}
 			} catch (Exception e) {
 				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
 			}
@@ -673,7 +580,12 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				handleSelectMenu(event);
+				SelectMenuHandler selectMenu = dih4jda.getSelectMenuHandlers().get(ComponentIdBuilder.split(event.getComponentId())[0]);
+				if (selectMenu == null) {
+					DIH4JDALogger.warn(String.format("Select Menu with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND);
+				} else {
+					selectMenu.handleSelectMenu(event, event.getValues());
+				}
 			} catch (Exception e) {
 				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
 			}
@@ -689,7 +601,12 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onModalInteraction(@NotNull ModalInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				handleModal(event);
+				ModalHandler modal = dih4jda.getModalHandlers().get(ComponentIdBuilder.split(event.getModalId())[0]);
+				if (modal == null) {
+					DIH4JDALogger.warn(String.format("Modal with id \"%s\" could not be found.", event.getModalId()), DIH4JDALogger.Type.MODAL_NOT_FOUND);
+				} else {
+					modal.handleModal(event, event.getValues());
+				}
 			} catch (Exception e) {
 				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onModalException", event.getInteraction(), e);
 			}

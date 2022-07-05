@@ -16,11 +16,13 @@ import java.util.stream.Collectors;
  * @see SlashCommand#execute(SlashCommandInteractionEvent)
  * @since v1.5
  */
-public abstract class SlashCommand extends ExecutableCommand {
+public abstract class SlashCommand extends BaseCommandRequirements {
 
 	private SlashCommandData commandData = null;
 	private Set<Subcommand> subcommands = Set.of();
 	private Map<SubcommandGroupData, Set<Subcommand>> subcommandGroups = Map.of();
+
+	private boolean handleAutoComplete = false;
 
 	protected SlashCommand() {
 	}
@@ -45,7 +47,8 @@ public abstract class SlashCommand extends ExecutableCommand {
 	 *
 	 * @since v1.5
 	 */
-	public void execute(SlashCommandInteractionEvent event) {}
+	public void execute(SlashCommandInteractionEvent event) {
+	}
 
 	public final SlashCommandData getSlashCommandData() {
 		return commandData;
@@ -87,12 +90,63 @@ public abstract class SlashCommand extends ExecutableCommand {
 	}
 
 	/**
+	 * @return Whether the class handles all options that have the AutoComplete functionality activated.
+	 * @since v1.4
+	 */
+	public final boolean isAutoCompleteHandling() {
+		return handleAutoComplete;
+	}
+
+	/**
+	 * Enables AutoComplete handling for all options of this Slash Command.
+	 * If enabled, this class must implement {@link AutoCompletable} and
+	 * override its method.
+	 *
+	 * <pre>{@code
+	 * public class PingCommand extends SlashCommand implements AutoCompleteHandler {
+	 *
+	 *     public PingCommand() {
+	 *         setCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id"));
+	 *         enableAutoCompleteHandling();
+	 *     }
+	 *
+	 *     @Override
+	 *     public void execute(SlashCommandInteractionEvent event) {
+	 *         OptionMapping mapping = event.getOption("user-id");
+	 *         String userId = mapping.getAsString();
+	 *         event.replyFormat("Ping! <@%s>", userId).queue();
+	 *     }
+	 *
+	 *     @Override
+	 *     public void handleAutoComplete(CommandAutoCompleteInteractionEvent event, AutoCompleteQuery target) {
+	 *         if (target.getName().equals("user-id")) {
+	 *             List<Member> members = event.getGuild().getMembers().stream().limit(25).collect(Collectors.toList());
+	 *             List<Command.Choice> choices = new ArrayList<>(25);
+	 *             for (Member member : members) {
+	 *                 choices.add(new Command.Choice(member.getUser().getAsTag(), member.getId()));
+	 *             }
+	 *             event.replyChoices(AutoCompleteUtils.filterChoices(event, choices)).queue();
+	 *         }
+	 *     }
+	 *
+	 * }}</pre>
+	 *
+	 * @see AutoCompletable
+	 * @see com.dynxsty.dih4jda.util.AutoCompleteUtils
+	 * @since v1.4
+	 */
+	public final void setAutoCompleteHandling(boolean handleAutoComplete) {
+		this.handleAutoComplete = handleAutoComplete;
+	}
+
+	/**
 	 * Model class which represents a single Subcommand.
 	 *
 	 * @see SlashCommand.Subcommand#execute(SlashCommandInteractionEvent)
 	 */
 	public abstract static class Subcommand extends CommandRequirements {
 		private SubcommandData data = null;
+		private boolean handleAutoComplete = false;
 
 		public final SubcommandData getSubcommandData() {
 			return data;
@@ -106,6 +160,56 @@ public abstract class SlashCommand extends ExecutableCommand {
 		 */
 		public final void setSubcommandData(SubcommandData subCommandData) {
 			this.data = subCommandData;
+		}
+
+		/**
+		 * @return Whether the class handles all options that have the AutoComplete functionality activated.
+		 * @since v1.4
+		 */
+		public final boolean isAutoCompleteHandling() {
+			return handleAutoComplete;
+		}
+
+		/**
+		 * Enables AutoComplete handling for all options of this Slash Command.
+		 * If enabled, this class must implement {@link AutoCompletable} and
+		 * override its method.
+		 *
+		 * <pre>{@code
+		 * public class PingCommand extends SlashCommand implements AutoCompleteHandler {
+		 *
+		 *     public PingCommand() {
+		 *         setCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id"));
+		 *         enableAutoCompleteHandling();
+		 *     }
+		 *
+		 *     @Override
+		 *     public void execute(SlashCommandInteractionEvent event) {
+		 *         OptionMapping mapping = event.getOption("user-id");
+		 *         String userId = mapping.getAsString();
+		 *         event.replyFormat("Ping! <@%s>", userId).queue();
+		 *     }
+		 *
+		 *     @Override
+		 *     public void handleAutoComplete(CommandAutoCompleteInteractionEvent event, AutoCompleteQuery target) {
+		 *         if (target.getName().equals("user-id")) {
+		 *             List<Member> members = event.getGuild().getMembers().stream().limit(25).collect(Collectors.toList());
+		 *             List<Command.Choice> choices = new ArrayList<>(25);
+		 *             for (Member member : members) {
+		 *                 choices.add(new Command.Choice(member.getUser().getAsTag(), member.getId()));
+		 *             }
+		 *             event.replyChoices(AutoCompleteUtils.filterChoices(event, choices)).queue();
+		 *         }
+		 *     }
+		 *
+		 * }}</pre>
+		 *
+		 * @see AutoCompletable
+		 * @see com.dynxsty.dih4jda.util.AutoCompleteUtils
+		 * @since v1.4
+		 */
+		public final void setAutoCompleteHandling(boolean handleAutoComplete) {
+			this.handleAutoComplete = handleAutoComplete;
 		}
 
 		/**
