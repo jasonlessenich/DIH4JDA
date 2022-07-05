@@ -1,5 +1,6 @@
 package com.dynxsty.dih4jda.events;
 
+import com.dynxsty.dih4jda.DIH4JDALogger;
 import com.dynxsty.dih4jda.interactions.commands.AutoCompletable;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -11,7 +12,9 @@ import net.dv8tion.jda.api.interactions.ModalInteraction;
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
+import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Method;
 import java.util.Set;
 
 public abstract class DIH4JDAListenerAdapter {
@@ -79,5 +82,30 @@ public abstract class DIH4JDAListenerAdapter {
 	 * @see com.dynxsty.dih4jda.interactions.commands.CommandRequirements#requireUsers(Long...)
 	 */
 	public void onInvalidRole(CommandInteraction interaction, Set<Long> roleIds) {}
+
+	/**
+	 * Fires an event from the {@link DIH4JDAListenerAdapter}.
+	 *
+	 * @param listeners A set of all classes that extend the {@link DIH4JDAListenerAdapter}.
+	 * @param name      The event's name.
+	 * @param args      The event's arguments.
+	 * @since v1.5
+	 */
+	public static void fireEvent(@NotNull Set<DIH4JDAListenerAdapter> listeners, String name, Object... args) {
+		if (listeners.isEmpty()) {
+			DIH4JDALogger.warn(String.format("%s was fired, but not handled (No listener registered)", name), DIH4JDALogger.Type.EVENT_FIRED);
+		}
+		for (DIH4JDAListenerAdapter listener : listeners) {
+			try {
+				for (Method method : listener.getClass().getMethods()) {
+					if (method.getName().equals(name)) {
+						method.invoke(listener.getClass().getConstructor().newInstance(), args);
+					}
+				}
+			} catch (ReflectiveOperationException e) {
+				DIH4JDALogger.error(e.getMessage());
+			}
+		}
+	}
 }
 

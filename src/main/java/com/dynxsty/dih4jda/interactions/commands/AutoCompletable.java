@@ -4,14 +4,14 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 
 /**
- * Interface that must be implemented for all classes that have {@link ComponentHandler#enableAutoCompleteHandling()} set.
+ * Interface that must be implemented for all classes that have {@link SlashCommand#setAutoCompleteHandling(boolean)} set.
  *
  * <pre>{@code
  * public class PingCommand extends SlashCommand implements AutoCompletable {
  *
- *     public PingCommand(Guild guild) {
- *         setCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id", true, true));
- *         enableAutoCompleteHandling();
+ *     public PingCommand() {
+ *         setSlashCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id", true, true));
+ *         setAutoCompleteHandling(true);
  *     }
  *
  *     @Override
