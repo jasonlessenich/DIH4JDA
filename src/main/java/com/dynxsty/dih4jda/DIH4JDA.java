@@ -52,14 +52,9 @@ public class DIH4JDA extends ListenerAdapter {
 		if (defaultCommandType == null) defaultCommandType = RegistrationType.GUILD;
 		this.config = config;
 		listeners = new HashSet<>();
-		try {
-			DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
-			this.handler = new InteractionHandler(this);
-			config.getJDA().addEventListener(this, handler);
-		} catch (ReflectiveOperationException e) {
-			e.printStackTrace();
-			DIH4JDALogger.warn("Could not initialize Interaction Handler: " + e.getMessage());
-		}
+		DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
+		this.handler = new InteractionHandler(this);
+		config.getJDA().addEventListener(this, handler);
 	}
 
 	/**
