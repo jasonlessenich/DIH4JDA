@@ -17,7 +17,7 @@ java {
 
 group = "com.dynxsty"
 val archivesBaseName = "dih4jda"
-version = "1.5.5"
+version = "1.6"
 
 publishing {
     publications {
