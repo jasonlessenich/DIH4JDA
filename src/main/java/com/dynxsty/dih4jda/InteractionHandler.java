@@ -388,7 +388,7 @@ public class InteractionHandler extends ListenerAdapter {
 	private void handleSlashCommand(@NotNull SlashCommandInteractionEvent event) throws Exception {
 		String path = event.getCommandPath();
 		CommandRequirements req = slashCommandIndex.containsKey(path) ? slashCommandIndex.get(path) : subcommandIndex.get(path);
-		if (req == null) {
+		if (req == null && config.isThrowUnregisteredException()) {
 			throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", path));
 		} else {
 			if (!checkPermissions(event.getInteraction(), req.getRequiredPermissions())
@@ -411,7 +411,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleUserContextCommand(@NotNull UserContextInteractionEvent event) throws Exception {
 		ContextCommand.User context = userContextIndex.get(event.getCommandPath());
-		if (context == null) {
+		if (context == null && config.isThrowUnregisteredException()) {
 			throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 		} else {
 			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())
@@ -430,7 +430,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleMessageContextCommand(@NotNull MessageContextInteractionEvent event) throws Exception {
 		ContextCommand.Message context = messageContextIndex.get(event.getCommandPath());
-		if (context == null) {
+		if (context == null && config.isThrowUnregisteredException()) {
 			throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 		} else {
 			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())

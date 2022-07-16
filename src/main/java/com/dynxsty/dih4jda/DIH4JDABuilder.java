@@ -121,9 +121,17 @@ public class DIH4JDABuilder {
 	/**
 	 * Disables deletion of unknown/unused commands when using SmartQueue.
 	 */
-	@Nonnull
 	public DIH4JDABuilder disableUnknownCommandDeletion() {
 		config.setDeleteUnknownCommands(false);
+		return this;
+	}
+
+	/**
+	 * Disables the {@link com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException} getting thrown
+	 * for unregistered commands.
+	 */
+	public DIH4JDABuilder disableUnregisteredCommandException() {
+		config.setThrowUnregisteredException(false);
 		return this;
 	}
 

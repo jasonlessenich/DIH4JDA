@@ -11,9 +11,7 @@ import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <h1>DIH4JDA</h1>
@@ -34,14 +32,21 @@ public class DIH4JDA extends ListenerAdapter {
 	 * This can be overridden using {@link com.dynxsty.dih4jda.interactions.commands.BaseCommandRequirements#setRegistrationType(RegistrationType)}
 	 */
 	public static RegistrationType defaultCommandType;
+
+	// Component Handler
+	private static Map<List<String>, ButtonHandler> buttonHandlers;
+	private static Map<List<String>, SelectMenuHandler> selectMenuHandlers;
+	private static Map<List<String>, ModalHandler> modalHandlers;
+
+	static {
+		buttonHandlers = new HashMap<>();
+		selectMenuHandlers = new HashMap<>();
+		modalHandlers = new HashMap<>();
+	}
+
 	private final DIH4JDAConfig config;
 	private final Set<DIH4JDAListenerAdapter> listeners;
 	private InteractionHandler handler;
-
-	// Component Handler
-	private Map<String, ButtonHandler> buttonHandlers;
-	private Map<String, SelectMenuHandler> selectMenuHandlers;
-	private Map<String, ModalHandler> modalHandlers;
 
 	/**
 	 * Constructs a new DIH4JDA instance
@@ -118,6 +123,15 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
+	 * Convenience method which replaces {@link DIH4JDA#getConfig()#getJDA()}
+	 *
+	 * @return The {@link JDA} instance.
+	 */
+	public JDA getJDA() {
+		return config.getJDA();
+	}
+
+	/**
 	 * Binds all {@link ButtonHandler}s to their id.
 	 * <br>
 	 * <pre>{@code
@@ -131,8 +145,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param handlers All {@link ButtonHandler}, as a immutable {@link Map}.
 	 */
-	public void addButtonHandlers(Map<String, ButtonHandler> handlers) {
-		buttonHandlers = handlers;
+	public void addButtonHandlers(Map<List<String>, ButtonHandler> handlers) {
+		buttonHandlers.putAll(handlers);
 	}
 
 	/**
@@ -141,7 +155,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @return An immutable {@link Map} which stores the id as the <strong>Key</strong> and
 	 * the {@link ButtonHandler} as the <strong>Value</strong>.
 	 */
-	public Map<String, ButtonHandler> getButtonHandlers() {
+	public Map<List<String>, ButtonHandler> getButtonHandlers() {
 		return buttonHandlers;
 	}
 
@@ -159,8 +173,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param handlers All {@link SelectMenuHandler}, as a immutable {@link Map}.
 	 */
-	public void addSelectMenuHandlers(Map<String, SelectMenuHandler> handlers) {
-		selectMenuHandlers = handlers;
+	public void addSelectMenuHandlers(Map<List<String>, SelectMenuHandler> handlers) {
+		selectMenuHandlers.putAll(handlers);
 	}
 
 	/**
@@ -169,7 +183,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @return An immutable {@link Map} which stores the id as the <strong>Key</strong> and
 	 * the {@link SelectMenuHandler} as the <strong>Value</strong>.
 	 */
-	public Map<String, SelectMenuHandler> getSelectMenuHandlers() {
+	public Map<List<String>, SelectMenuHandler> getSelectMenuHandlers() {
 		return selectMenuHandlers;
 	}
 
@@ -187,8 +201,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param handlers All {@link ModalHandler}, as a immutable {@link Map}.
 	 */
-	public void addModalHandlers(Map<String, ModalHandler> handlers) {
-		modalHandlers = handlers;
+	public void addModalHandlers(Map<List<String>, ModalHandler> handlers) {
+		modalHandlers.putAll(handlers);
 	}
 
 	/**
@@ -197,7 +211,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @return An immutable {@link Map} which stores the id as the <strong>Key</strong> and
 	 * the {@link ModalHandler} as the <strong>Value</strong>.
 	 */
-	public Map<String, ModalHandler> getModalHandlers() {
+	public Map<List<String>, ModalHandler> getModalHandlers() {
 		return modalHandlers;
 	}
 }
