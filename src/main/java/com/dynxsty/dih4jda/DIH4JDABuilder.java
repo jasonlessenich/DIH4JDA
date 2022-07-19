@@ -4,8 +4,8 @@ import com.dynxsty.dih4jda.config.DIH4JDAConfig;
 import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import com.dynxsty.dih4jda.exceptions.InvalidPackageException;
 import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
+import com.dynxsty.dih4jda.reflections.util.ClasspathHelper;
 import net.dv8tion.jda.api.JDA;
-import org.reflections.util.ClasspathHelper;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -34,7 +34,7 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Sets the package that houses all Command classes. DIH4JDA then uses the {@link org.reflections.Reflections} API to "scan" the package for all
+	 * Sets the package that houses all Command classes. DIH4JDA then uses the {@link com.dynxsty.dih4jda.reflections.Reflections} API to "scan" the package for all
 	 * command classes.
 	 *
 	 * @param pack The package's name.
