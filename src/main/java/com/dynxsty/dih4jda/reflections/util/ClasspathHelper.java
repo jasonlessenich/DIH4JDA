@@ -8,9 +8,15 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 
-//TODO add javadocs
+/**
+ * A helper class for finding classes on the classpath.
+ */
 public class ClasspathHelper {
 
+    /**
+     * @param packageName the package name to search for.
+     * @return A collection based on the given package name.
+     */
     public static Collection<URL> forPackage(@Nonnull String packageName) {
         List<URL> result = new ArrayList<>();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
