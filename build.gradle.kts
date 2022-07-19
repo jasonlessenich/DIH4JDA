@@ -7,6 +7,7 @@ buildscript {
 plugins {
     java
     `maven-publish`
+    `java-library`
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -43,7 +44,7 @@ repositories {
 
 
 dependencies {
-    implementation("net.dv8tion:JDA:5.0.0-alpha.13")
+    api("net.dv8tion:JDA:5.0.0-alpha.16")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
