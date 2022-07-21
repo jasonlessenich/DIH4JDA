@@ -417,13 +417,10 @@ public class InteractionHandler extends ListenerAdapter {
 				throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", path));
 			}
 		} else {
-			DIH4JDALogger.info("[DEBUG] passes=" + passesRequirements(event, req.getRequiredPermissions(), req.getRequiredUsers(), req.getRequiredRoles()));
 			if (passesRequirements(event, req.getRequiredPermissions(), req.getRequiredUsers(), req.getRequiredRoles())) {
 				if (slashCommandIndex.containsKey(event.getCommandPath())) {
-					DIH4JDALogger.info("[DEBUG] Executed " + path);
 					slashCommandIndex.get(path).execute(event);
 				} else {
-					DIH4JDALogger.info("[DEBUG] Executed " + path);
 					subcommandIndex.get(path).execute(event);
 				}
 			}
