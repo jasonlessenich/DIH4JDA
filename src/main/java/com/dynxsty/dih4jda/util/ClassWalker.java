@@ -19,7 +19,7 @@ public class ClassWalker {
 	}
 
 	/**
-	 * Gets all classes inside the given package.
+	 * Gets all classes inside the given package and sub packages.
 	 *
 	 * @return An unmodifiable {@link Set} of classes inside the given package.
 	 */
@@ -55,7 +55,7 @@ public class ClassWalker {
 	}
 
 	/**
-	 * Gets all classes in the given package which extend the specified class.
+	 * Gets all classes in the given package and sub packages which extend the specified class.
 	 *
 	 * @param type The parent class to search for.
 	 * @return An unmodifiable {@link Set} of classes which are assignable to the given type.
