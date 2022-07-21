@@ -328,6 +328,9 @@ public class InteractionHandler extends ListenerAdapter {
 				}
 				subcommandIndex.put(commandPath, subcommand);
 				DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", commandPath, command.getRegistrationType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
+				// TODO: Remove these
+				DIH4JDALogger.info("class=" + subcommand.getClass().getName());
+				DIH4JDALogger.info("doesImplement=" + Checks.checkImplementation(subcommand.getClass(), AutoCompletable.class));
 				if (Checks.checkImplementation(subcommand.getClass(), AutoCompletable.class)) {
 					autoCompleteIndex.put(commandPath, (AutoCompletable) subcommand);
 				}
