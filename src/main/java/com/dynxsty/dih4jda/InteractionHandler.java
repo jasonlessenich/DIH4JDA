@@ -420,9 +420,7 @@ public class InteractionHandler extends ListenerAdapter {
 				throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", path));
 			}
 		} else {
-			if (!checkPermissions(event.getInteraction(), req.getRequiredPermissions())
-					&& !checkUser(event.getInteraction(), req.getRequiredUsers())
-					&& !checkRole(event, req.getRequiredRoles())) {
+			if (passesRequirements(event, req.getRequiredPermissions(), req.getRequiredUsers(), req.getRequiredRoles())) {
 				if (slashCommandIndex.containsKey(event.getCommandPath())) {
 					slashCommandIndex.get(path).execute(event);
 				} else {
@@ -451,9 +449,7 @@ public class InteractionHandler extends ListenerAdapter {
 				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 			}
 		} else {
-			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())
-					&& !checkUser(event.getInteraction(), context.getRequiredUsers())
-					&& !checkRole(event.getInteraction(), context.getRequiredRoles())) {
+			if (passesRequirements(event, context.getRequiredPermissions(), context.getRequiredUsers(), context.getRequiredRoles())) {
 				context.execute(event);
 			}
 		}
@@ -472,9 +468,7 @@ public class InteractionHandler extends ListenerAdapter {
 				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
 			}
 		} else {
-			if (!checkPermissions(event.getInteraction(), context.getRequiredPermissions())
-					&& !checkUser(event.getInteraction(), context.getRequiredUsers())
-					&& !checkRole(event.getInteraction(), context.getRequiredRoles())) {
+			if (passesRequirements(event, context.getRequiredPermissions(), context.getRequiredUsers(), context.getRequiredRoles())) {
 				context.execute(event);
 			}
 		}
@@ -488,40 +482,23 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return Whether the event was fired.
 	 * @since v1.5
 	 */
-	private boolean checkPermissions(CommandInteraction interaction, @NotNull Set<Permission> permissions) {
+	private boolean passesRequirements(CommandInteraction interaction, @NotNull Set<Permission> permissions, @NotNull Set<Long> userIds, Set<Long> roleIds) {
 		if (!permissions.isEmpty() && interaction.isFromGuild() && interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
 			DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onInsufficientPermissions", interaction, permissions);
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Checks the user to fire the {@link DIH4JDAListenerAdapter#onInvalidUser} event, if needed.
-	 *
-	 * @param interaction The {@link CommandInteraction}.
-	 * @param userIds     A set of {@link Long}s, representing the user ids.
-	 * @return Whether the event was fired.
-	 * @since v1.5
-	 */
-	private boolean checkUser(CommandInteraction interaction, @NotNull Set<Long> userIds) {
-		if (!userIds.isEmpty() && !userIds.contains(interaction.getUser().getIdLong())) {
-			DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onInvalidUser", interaction, userIds);
-			return true;
-		}
-		return false;
-	}
-
-	private boolean checkRole(@NotNull CommandInteraction interaction, Set<Long> roleIds) {
-		if (!interaction.isFromGuild() || interaction.getGuild() == null || interaction.getMember() == null) {
 			return false;
 		}
-		Member member = interaction.getMember();
-		if (!roleIds.isEmpty() && !member.getRoles().isEmpty() && member.getRoles().stream().noneMatch(r -> roleIds.contains(r.getIdLong()))) {
-			DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onInvalidRole", interaction, roleIds);
-			return true;
+		if (!userIds.isEmpty() && !userIds.contains(interaction.getUser().getIdLong())) {
+			DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onInvalidUser", interaction, userIds);
+			return false;
 		}
-		return false;
+		if (interaction.isFromGuild() && interaction.getGuild() != null && interaction.getMember() != null) {
+			Member member = interaction.getMember();
+			if (!roleIds.isEmpty() && !member.getRoles().isEmpty() && member.getRoles().stream().noneMatch(r -> roleIds.contains(r.getIdLong()))) {
+				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onInvalidRole", interaction, roleIds);
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -600,11 +577,14 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				ButtonHandler button = dih4jda.getButtonHandlers().get(ComponentIdBuilder.split(event.getComponentId())[0]);
-				if (button == null) {
+				Optional<ButtonHandler> buttonOptional = dih4jda.getButtonHandlers().entrySet().stream()
+						.filter(f -> f.getKey().contains(ComponentIdBuilder.split(event.getComponentId())[0]))
+						.map(Map.Entry::getValue)
+						.findFirst();
+				if (buttonOptional.isEmpty()) {
 					DIH4JDALogger.warn(String.format("Button with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.BUTTON_NOT_FOUND);
 				} else {
-					button.handleButton(event, event.getButton());
+					buttonOptional.get().handleButton(event, event.getButton());
 				}
 			} catch (Exception e) {
 				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
@@ -621,11 +601,14 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				SelectMenuHandler selectMenu = dih4jda.getSelectMenuHandlers().get(ComponentIdBuilder.split(event.getComponentId())[0]);
-				if (selectMenu == null) {
+				Optional<SelectMenuHandler> selectMenuOptional = dih4jda.getSelectMenuHandlers().entrySet().stream()
+						.filter(f -> f.getKey().contains(ComponentIdBuilder.split(event.getComponentId())[0]))
+						.map(Map.Entry::getValue)
+						.findFirst();
+				if (selectMenuOptional.isEmpty()) {
 					DIH4JDALogger.warn(String.format("Select Menu with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND);
 				} else {
-					selectMenu.handleSelectMenu(event, event.getValues());
+					selectMenuOptional.get().handleSelectMenu(event, event.getValues());
 				}
 			} catch (Exception e) {
 				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
@@ -642,11 +625,14 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onModalInteraction(@NotNull ModalInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				ModalHandler modal = dih4jda.getModalHandlers().get(ComponentIdBuilder.split(event.getModalId())[0]);
-				if (modal == null) {
+				Optional<ModalHandler> modalOptional = dih4jda.getModalHandlers().entrySet().stream()
+						.filter(f -> f.getKey().contains(ComponentIdBuilder.split(event.getModalId())[0]))
+						.map(Map.Entry::getValue)
+						.findFirst();
+				if (modalOptional.isEmpty()) {
 					DIH4JDALogger.warn(String.format("Modal with id \"%s\" could not be found.", event.getModalId()), DIH4JDALogger.Type.MODAL_NOT_FOUND);
 				} else {
-					modal.handleModal(event, event.getValues());
+					modalOptional.get().handleModal(event, event.getValues());
 				}
 			} catch (Exception e) {
 				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onModalException", event.getInteraction(), e);
