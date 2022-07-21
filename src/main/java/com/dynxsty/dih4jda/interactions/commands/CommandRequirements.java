@@ -1,5 +1,6 @@
 package com.dynxsty.dih4jda.interactions.commands;
 
+import com.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import net.dv8tion.jda.api.Permission;
 
 import java.util.Arrays;
@@ -8,7 +9,7 @@ import java.util.stream.Collectors;
 
 /**
  * Allows to set requirements that must be met in order to execute the command.
- * If a requirement isn't met, this will fire the corresponding event in {@link com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter}.
+ * If a requirement isn't met, this will fire the corresponding event in {@link DIH4JDAEventListener}.
  *
  * @since v1.5
  */

@@ -1,7 +1,7 @@
 package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.config.DIH4JDAConfig;
-import com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter;
+import com.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import com.dynxsty.dih4jda.interactions.components.ModalHandler;
@@ -45,7 +45,7 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	private final DIH4JDAConfig config;
-	private final Set<DIH4JDAListenerAdapter> listeners;
+	private final Set<DIH4JDAEventListener> listeners;
 	private InteractionHandler handler;
 
 	/**
@@ -98,7 +98,7 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Allows to add Listener classes (that extend {@link DIH4JDAListenerAdapter}).
+	 * Allows to add Listener classes (that extend {@link DIH4JDAEventListener}).
 	 *
 	 * @since v1.5
 	 */
@@ -106,7 +106,7 @@ public class DIH4JDA extends ListenerAdapter {
 		for (Object o : classes) {
 			try {
 				// check if class extends the ListenerAdapter
-				DIH4JDAListenerAdapter adapter = (DIH4JDAListenerAdapter) o;
+				DIH4JDAEventListener adapter = (DIH4JDAEventListener) o;
 				listeners.add(adapter);
 			} catch (ClassCastException e) {
 				throw new IllegalArgumentException("Listener classes must extend DIH4JDAListenerAdapter!");
@@ -118,7 +118,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @return A set of all Listener classes.
 	 * @see DIH4JDA#addListener(Object...)
 	 */
-	protected Set<DIH4JDAListenerAdapter> getListeners() {
+	protected Set<DIH4JDAEventListener> getListeners() {
 		return listeners;
 	}
 

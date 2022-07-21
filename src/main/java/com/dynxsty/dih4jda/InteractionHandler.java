@@ -1,7 +1,7 @@
 package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.config.DIH4JDAConfig;
-import com.dynxsty.dih4jda.events.DIH4JDAListenerAdapter;
+import com.dynxsty.dih4jda.events.DIH4JDAEvent;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
 import com.dynxsty.dih4jda.interactions.commands.*;
@@ -279,9 +279,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param command      The base command's instance.
 	 * @param commandClass The base command's class.
 	 * @return The new {@link CommandListUpdateAction}.
-	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private @Nullable SlashCommandData getBaseCommandData(@NotNull SlashCommand command, Class<? extends SlashCommand> commandClass) throws ReflectiveOperationException {
+	private @Nullable SlashCommandData getBaseCommandData(@NotNull SlashCommand command, Class<? extends SlashCommand> commandClass) {
 		// find component (and modal) handlers
 		if (command.getSlashCommandData() == null) {
 			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
@@ -307,9 +306,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param command The base command's instance.
 	 * @return All {@link SubcommandGroupData} stored in a List.
-	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private @NotNull Set<SubcommandGroupData> getSubcommandGroupData(@NotNull SlashCommand command) throws ReflectiveOperationException {
+	private @NotNull Set<SubcommandGroupData> getSubcommandGroupData(@NotNull SlashCommand command) {
 		Set<SubcommandGroupData> groupDataList = new HashSet<>();
 		for (Map.Entry<SubcommandGroupData, Set<SlashCommand.Subcommand>> group : command.getSubcommandGroups().entrySet()) {
 			if (group != null) {
@@ -336,9 +334,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param subcommands  All sub command classes.
 	 * @param subGroupName The Subcommand Group's name. (if available)
 	 * @return The new {@link CommandListUpdateAction}.
-	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private @NotNull Set<SubcommandData> getSubcommandData(SlashCommand command, @NotNull Set<SlashCommand.Subcommand> subcommands, @Nullable String subGroupName) throws ReflectiveOperationException {
+	private @NotNull Set<SubcommandData> getSubcommandData(SlashCommand command, @NotNull Set<SlashCommand.Subcommand> subcommands, @Nullable String subGroupName) {
 		Set<SubcommandData> subDataList = new HashSet<>();
 		for (SlashCommand.Subcommand subcommand : subcommands) {
 			if (subcommand != null) {
@@ -412,7 +409,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param event The {@link SlashCommandInteractionEvent} that was fired.
 	 */
-	private void handleSlashCommand(@NotNull SlashCommandInteractionEvent event) throws Exception {
+	private void handleSlashCommand(@NotNull SlashCommandInteractionEvent event) throws CommandNotRegisteredException {
 		String path = event.getCommandPath();
 		CommandRequirements req = slashCommandIndex.containsKey(path) ? slashCommandIndex.get(path) : subcommandIndex.get(path);
 		if (req == null) {
@@ -442,7 +439,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param event The {@link UserContextInteractionEvent} that was fired.
 	 */
-	private void handleUserContextCommand(@NotNull UserContextInteractionEvent event) throws Exception {
+	private void handleUserContextCommand(@NotNull UserContextInteractionEvent event) throws CommandNotRegisteredException {
 		ContextCommand.User context = userContextIndex.get(event.getCommandPath());
 		if (context == null) {
 			if (config.isThrowUnregisteredException()) {
@@ -461,7 +458,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param event The {@link MessageContextInteractionEvent} that was fired.
 	 */
-	private void handleMessageContextCommand(@NotNull MessageContextInteractionEvent event) throws Exception {
+	private void handleMessageContextCommand(@NotNull MessageContextInteractionEvent event) throws CommandNotRegisteredException {
 		ContextCommand.Message context = messageContextIndex.get(event.getCommandPath());
 		if (context == null) {
 			if (config.isThrowUnregisteredException()) {
@@ -475,26 +472,29 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Checks the user's permissions to fire the {@link DIH4JDAListenerAdapter#onInsufficientPermissions} event, if needed.
+	 * Checks if the given {@link CommandInteraction} passes the set {@link CommandRequirements}.
+	 * If not, this will then fire the corresponding event using {@link DIH4JDAEvent#fire(Set, Object...)}
 	 *
 	 * @param interaction The {@link CommandInteraction}.
-	 * @param permissions A set of {@link Permission}s.
+	 * @param permissions A set of required {@link Permission}s.
+	 * @param userIds     A set of required users ids.
+	 * @param roleIds     A set of required role ids.
 	 * @return Whether the event was fired.
 	 * @since v1.5
 	 */
 	private boolean passesRequirements(CommandInteraction interaction, @NotNull Set<Permission> permissions, @NotNull Set<Long> userIds, Set<Long> roleIds) {
 		if (!permissions.isEmpty() && interaction.isFromGuild() && interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
-			DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onInsufficientPermissions", interaction, permissions);
+			DIH4JDAEvent.INSUFFICIENT_PERMISSIONS.fire(dih4jda.getListeners(), interaction, permissions);
 			return false;
 		}
 		if (!userIds.isEmpty() && !userIds.contains(interaction.getUser().getIdLong())) {
-			DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onInvalidUser", interaction, userIds);
+			DIH4JDAEvent.INVALID_USER.fire(dih4jda.getListeners(), interaction, userIds);
 			return false;
 		}
 		if (interaction.isFromGuild() && interaction.getGuild() != null && interaction.getMember() != null) {
 			Member member = interaction.getMember();
 			if (!roleIds.isEmpty() && !member.getRoles().isEmpty() && member.getRoles().stream().noneMatch(r -> roleIds.contains(r.getIdLong()))) {
-				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onInvalidRole", interaction, roleIds);
+				DIH4JDAEvent.INVALID_ROLE.fire(dih4jda.getListeners(), interaction, roleIds);
 				return false;
 			}
 		}
@@ -512,7 +512,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleSlashCommand(event);
 			} catch (Exception e) {
-				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
+				DIH4JDAEvent.COMMAND_EXCEPTION.fire(dih4jda.getListeners(), event, e);
 			}
 		}, config.getExecutor());
 	}
@@ -528,7 +528,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleUserContextCommand(event);
 			} catch (Exception e) {
-				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
+				DIH4JDAEvent.COMMAND_EXCEPTION.fire(dih4jda.getListeners(), event, e);
 			}
 		}, config.getExecutor());
 	}
@@ -544,7 +544,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleMessageContextCommand(event);
 			} catch (Exception e) {
-				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onCommandException", event.getInteraction(), e);
+				DIH4JDAEvent.COMMAND_EXCEPTION.fire(dih4jda.getListeners(), event, e);
 			}
 		}, config.getExecutor());
 	}
@@ -563,7 +563,7 @@ public class InteractionHandler extends ListenerAdapter {
 					autoComplete.handleAutoComplete(event, event.getFocusedOption());
 				}
 			} catch (Exception e) {
-				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onAutoCompleteException", event.getInteraction(), e);
+				DIH4JDAEvent.AUTOCOMPLETE_EXCEPTION.fire(dih4jda.getListeners(), event, e);
 			}
 		}, config.getExecutor());
 	}
@@ -587,7 +587,7 @@ public class InteractionHandler extends ListenerAdapter {
 					buttonOptional.get().handleButton(event, event.getButton());
 				}
 			} catch (Exception e) {
-				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
+				DIH4JDAEvent.COMPONENT_EXCEPTION.fire(dih4jda.getListeners(), event, e);
 			}
 		}, config.getExecutor());
 	}
@@ -611,7 +611,7 @@ public class InteractionHandler extends ListenerAdapter {
 					selectMenuOptional.get().handleSelectMenu(event, event.getValues());
 				}
 			} catch (Exception e) {
-				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onComponentException", event.getInteraction(), e);
+				DIH4JDAEvent.COMPONENT_EXCEPTION.fire(dih4jda.getListeners(), event, e);
 			}
 		}, config.getExecutor());
 	}
@@ -635,7 +635,7 @@ public class InteractionHandler extends ListenerAdapter {
 					modalOptional.get().handleModal(event, event.getValues());
 				}
 			} catch (Exception e) {
-				DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onModalException", event.getInteraction(), e);
+				DIH4JDAEvent.MODAL_EXCEPTION.fire(dih4jda.getListeners(), event, e);
 			}
 		}, config.getExecutor());
 	}
