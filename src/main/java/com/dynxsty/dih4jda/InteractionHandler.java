@@ -36,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
  * The Handler class, that finds, registers and handles all Commands and other Interactions.
@@ -126,7 +127,6 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
 	public void registerInteractions() throws ReflectiveOperationException {
-		DIH4JDALogger.info("[DEBUG] register interactions");
 		// register commands for each guild
 		Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> data = new Pair<>(getSlashCommandData(), getContextCommandData());
 		for (Guild guild : config.getJDA().getGuilds()) {
@@ -150,6 +150,11 @@ public class InteractionHandler extends ListenerAdapter {
 			upsert(config.getJDA(), globalData.getFirst(), globalData.getSecond());
 			DIH4JDALogger.info(String.format("Queued %s global command(s): %s", globalData.getFirst().size() + globalData.getSecond().size(),
 					CommandUtils.getNames(globalData.getSecond(), globalData.getFirst())), DIH4JDALogger.Type.COMMANDS_QUEUED);
+		}
+		if (!autoCompleteIndex.isEmpty()) {
+			// print autocomplete bindings
+			DIH4JDALogger.info(String.format("Created %s AutoComplete Bindings: %s", autoCompleteIndex.size(),
+					autoCompleteIndex.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue().getClass().getSimpleName()).collect(Collectors.joining(", "))));
 		}
 	}
 
@@ -223,21 +228,17 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
 	private @NotNull Set<UnqueuedSlashCommandData> getSlashCommandData() throws ReflectiveOperationException {
-		DIH4JDALogger.info("[DEBUG] Checking SlashData: " + commands);
 		Set<UnqueuedSlashCommandData> data = new HashSet<>();
 		for (Class<? extends SlashCommand> c : commands) {
-			DIH4JDALogger.info("[DEBUG] Class: " + c.getName());
 			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(c);
 			if (instance != null) {
 				UnqueuedSlashCommandData unqueuedData = new UnqueuedSlashCommandData(getBaseCommandData(instance, c), instance.getRegistrationType());
 				if (instance.getRegistrationType() == RegistrationType.GUILD) {
 					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
 				}
-				DIH4JDALogger.info("[DEBUG] Checking " + c.getSimpleName());
 				searchForAutoCompletable(instance, c);
 				data.add(unqueuedData);
 			}
-			DIH4JDALogger.info("[DEBUG] " + autoCompleteIndex.toString());
 		}
 		return data;
 	}
@@ -252,7 +253,7 @@ public class InteractionHandler extends ListenerAdapter {
 		// check base command
 		String baseName = command.getSlashCommandData().getName();
 		if (Checks.checkImplementation(clazz, AutoCompletable.class)) {
-			autoCompleteIndex.put(command.getSlashCommandData().getName(), (AutoCompletable) command);
+			autoCompleteIndex.put(baseName, (AutoCompletable) command);
 		}
 		// check subcommands
 		for (SlashCommand.Subcommand child : command.getSubcommands()) {
@@ -572,7 +573,6 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	@Override
 	public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
-		DIH4JDALogger.info("[DEBUG] " + autoCompleteIndex.toString());
 		CompletableFuture.runAsync(() -> {
 			try {
 				AutoCompletable autoComplete = autoCompleteIndex.get(event.getCommandPath());
