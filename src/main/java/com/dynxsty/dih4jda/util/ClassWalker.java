@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,15 +23,18 @@ public class ClassWalker {
 	 *
 	 * @return An unmodifiable {@link Set} of classes inside the given package.
 	 */
+	@NotNull
 	public Set<Class<?>> getAllClasses() {
-		InputStream is = ClassLoader.getSystemClassLoader()
-				.getResourceAsStream(packageName.replaceAll("[.]", "/"));
+		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+		InputStream is = classLoader.getResourceAsStream(packageName.replaceAll("[.]", "/"));
 		if (is == null) return Set.of();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		return reader.lines()
-				.filter(line -> line.endsWith(".class"))
-				.map(this::getClass)
-				.collect(Collectors.toSet());
+		Set<Class<?>> classes = new HashSet<>();
+		for (String line : reader.lines().collect(Collectors.toSet())) {
+			if (line.endsWith(".class")) classes.add(getClass(line));
+			else classes.addAll(new ClassWalker(packageName + "." + line).getAllClasses());
+		}
+		return classes;
 	}
 
 	/**
@@ -39,7 +43,8 @@ public class ClassWalker {
 	 * @param className The name of the class.
 	 * @return The class with the given name.
 	 */
-	private @Nullable Class<?> getClass(@NotNull String className) {
+	@Nullable
+	private Class<?> getClass(@NotNull String className) {
 		try {
 			return Class.forName(packageName + "."
 					+ className.substring(0, className.lastIndexOf('.')));
@@ -49,13 +54,13 @@ public class ClassWalker {
 		return null;
 	}
 
-
 	/**
 	 * Gets all classes in the given package which extend the specified class.
 	 *
 	 * @param type The parent class to search for.
 	 * @return An unmodifiable {@link Set} of classes which are assignable to the given type.
 	 */
+	@NotNull
 	public <T> Set<Class<? extends T>> getSubTypesOf(@NotNull Class<T> type) {
 		return getAllClasses()
 				.stream()
