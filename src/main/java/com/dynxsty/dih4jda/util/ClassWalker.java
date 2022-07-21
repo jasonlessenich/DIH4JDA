@@ -25,8 +25,8 @@ public class ClassWalker {
 	 */
 	@NotNull
 	public Set<Class<?>> getAllClasses() {
-		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		InputStream is = classLoader.getResourceAsStream(packageName.replaceAll("[.]", "/"));
+		InputStream is = Thread.currentThread().getContextClassLoader()
+				.getResourceAsStream(packageName.replaceAll("[.]", "/"));
 		if (is == null) return Set.of();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		Set<Class<?>> classes = new HashSet<>();
