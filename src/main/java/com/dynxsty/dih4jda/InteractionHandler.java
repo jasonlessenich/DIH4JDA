@@ -230,9 +230,11 @@ public class InteractionHandler extends ListenerAdapter {
 				if (instance.getRegistrationType() == RegistrationType.GUILD) {
 					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
 				}
+				DIH4JDALogger.info("[DEBUG] Checking " + c.getSimpleName());
 				searchForAutoCompletable(instance, c);
 				data.add(unqueuedData);
 			}
+			DIH4JDALogger.info("[DEBUG] " + autoCompleteIndex.toString());
 		}
 		return data;
 	}
