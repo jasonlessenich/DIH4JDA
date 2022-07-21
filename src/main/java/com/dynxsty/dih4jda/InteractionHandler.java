@@ -126,6 +126,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
 	public void registerInteractions() throws ReflectiveOperationException {
+		DIH4JDALogger.info("[DEBUG] register interactions");
 		// register commands for each guild
 		Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> data = new Pair<>(getSlashCommandData(), getContextCommandData());
 		for (Guild guild : config.getJDA().getGuilds()) {
@@ -222,8 +223,10 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
 	private @NotNull Set<UnqueuedSlashCommandData> getSlashCommandData() throws ReflectiveOperationException {
+		DIH4JDALogger.info("[DEBUG] Checking SlashData: " + commands);
 		Set<UnqueuedSlashCommandData> data = new HashSet<>();
 		for (Class<? extends SlashCommand> c : commands) {
+			DIH4JDALogger.info("[DEBUG] Class: " + c.getName());
 			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(c);
 			if (instance != null) {
 				UnqueuedSlashCommandData unqueuedData = new UnqueuedSlashCommandData(getBaseCommandData(instance, c), instance.getRegistrationType());
