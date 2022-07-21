@@ -74,7 +74,7 @@ public class AutoCompleteUtils {
 	 */
 	public static @NotNull List<Command.Choice> handleChoices(@NotNull CommandAutoCompleteInteractionEvent event,
 	                                                          Function<CommandAutoCompleteInteractionEvent, List<Command.Choice>> choicesFunction) {
-		String id = getCacheId(event);
+		String id = buildCacheId(event);
 		List<Command.Choice> choices = getFromCache(id);
 		if (choices == null) {
 			choices = choicesFunction.apply(event);
@@ -90,10 +90,9 @@ public class AutoCompleteUtils {
 	 * @param choices The {@link List} of {@link Command.Choice}s to cache.
 	 */
 	public static void cacheChoices(@NotNull CommandAutoCompleteInteractionEvent event, List<Command.Choice> choices) {
-		String id = getCacheId(event);
+		String id = buildCacheId(event);
 		CHOICE_CACHE.put(id, choices);
-		// TODO: debug
-		DIH4JDALogger.info(String.format("Cached %s choices for %s", choices.size(), id));
+		DIH4JDALogger.debug(String.format("Cached %s choices for %s", choices.size(), id));
 	}
 
 	/**
@@ -110,7 +109,22 @@ public class AutoCompleteUtils {
 		return null;
 	}
 
-	// TODO: example
+	/**
+	 * Removes all cached choices for the given command, user & guild.
+	 * This method gets called every time the specified user executes the specified command in the specified guild.
+	 * This is needed in order to retain the dynamic aspect of autocomplete choices.
+	 *
+	 * @param commandPath The command's path.
+	 * @param userId      The user's id.
+	 * @param guildId     The guild's id.
+	 */
+	public static void removeFromCache(String commandPath, String userId, String guildId) {
+		CHOICE_CACHE.keySet().forEach(key -> {
+			if (key.contains(ComponentIdBuilder.build(commandPath, userId, guildId))) {
+				CHOICE_CACHE.remove(key);
+			}
+		});
+	}
 
 	/**
 	 * Builds an identifier from the specified {@link CommandAutoCompleteInteractionEvent} by combining the
@@ -119,7 +133,7 @@ public class AutoCompleteUtils {
 	 * @param event The {@link CommandAutoCompleteInteractionEvent} which was fired.
 	 * @return The identifier which is used in combination with the {@link AutoCompleteUtils#CHOICE_CACHE}
 	 */
-	public static @NotNull String getCacheId(@NotNull CommandAutoCompleteInteractionEvent event) {
+	public static @NotNull String buildCacheId(@NotNull CommandAutoCompleteInteractionEvent event) {
 		return ComponentIdBuilder.build(
 				event.getCommandPath(),
 				event.getUser().getId(),

@@ -429,6 +429,12 @@ public class InteractionHandler extends ListenerAdapter {
 					subcommandIndex.get(path).execute(event);
 				}
 			}
+			// removes all cached choices, if there are any.
+			AutoCompleteUtils.removeFromCache(
+					event.getCommandPath(),
+					event.getUser().getId(),
+					event.getGuild() == null ? "0" : event.getGuild().getId()
+			);
 		}
 	}
 
