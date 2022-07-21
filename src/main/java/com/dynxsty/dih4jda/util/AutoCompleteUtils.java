@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Utility class that contains some useful methods regarding the AutoComplete system.
@@ -120,12 +121,13 @@ public class AutoCompleteUtils {
 	 */
 	public static void removeFromCache(String commandPath, String userId, String guildId) {
 		if (CHOICE_CACHE != null) {
-			CHOICE_CACHE.keySet().forEach(key -> {
-				if (key.contains(ComponentIdBuilder.build(commandPath, userId, guildId))) {
-					CHOICE_CACHE.remove(key);
-					DIH4JDALogger.info(String.format("Removed cached choices for %s", key));
-				}
-			});
+			List<String> keys = CHOICE_CACHE.keySet().stream()
+					.filter(f -> f.contains(ComponentIdBuilder.build(commandPath, userId, guildId)))
+					.collect(Collectors.toList());
+			for (String key : keys) {
+				CHOICE_CACHE.remove(key);
+				DIH4JDALogger.info(String.format("Removed cached choices for %s", key));
+			}
 		}
 	}
 
