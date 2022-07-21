@@ -10,11 +10,7 @@ import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import com.dynxsty.dih4jda.interactions.components.ModalHandler;
 import com.dynxsty.dih4jda.interactions.components.SelectMenuHandler;
-import com.dynxsty.dih4jda.util.ClassWalker;
-import com.dynxsty.dih4jda.util.Checks;
-import com.dynxsty.dih4jda.util.ClassUtils;
-import com.dynxsty.dih4jda.util.CommandUtils;
-import com.dynxsty.dih4jda.util.Pair;
+import com.dynxsty.dih4jda.util.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -38,11 +34,7 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -238,10 +230,39 @@ public class InteractionHandler extends ListenerAdapter {
 				if (instance.getRegistrationType() == RegistrationType.GUILD) {
 					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
 				}
+				searchForAutoCompletable(instance, c);
 				data.add(unqueuedData);
 			}
 		}
 		return data;
+	}
+
+	/**
+	 * Searches for Base- or Subcommand which implement the {@link AutoCompletable} interface.
+	 *
+	 * @param command The base {@link SlashCommand}.
+	 * @param clazz   The command's class.
+	 */
+	private void searchForAutoCompletable(SlashCommand command, Class<? extends SlashCommand> clazz) {
+		// check base command
+		if (Checks.checkImplementation(clazz, AutoCompletable.class)) {
+			autoCompleteIndex.put(command.getSlashCommandData().getName(), (AutoCompletable) command);
+		}
+		// check subcommands
+		for (SlashCommand.Subcommand child : command.getSubcommands()) {
+			if (Checks.checkImplementation(child.getClass(), AutoCompletable.class)) {
+				autoCompleteIndex.put(child.getSubcommandData().getName(), (AutoCompletable) child);
+			}
+		}
+		// check subcommand groups
+		for (Set<SlashCommand.Subcommand> childGroup : command.getSubcommandGroups().values()) {
+			// check subcommands
+			for (SlashCommand.Subcommand child : childGroup) {
+				if (Checks.checkImplementation(child.getClass(), AutoCompletable.class)) {
+					autoCompleteIndex.put(child.getSubcommandData().getName(), (AutoCompletable) child);
+				}
+			}
+		}
 	}
 
 	/**
@@ -269,9 +290,6 @@ public class InteractionHandler extends ListenerAdapter {
 				&& command.getSubcommands() != null && command.getSubcommands().isEmpty()) {
 			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), command);
 			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", command.getSlashCommandData().getName(), command.getRegistrationType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
-			if (Checks.checkImplementation(command.getClass(), AutoCompletable.class)) {
-				autoCompleteIndex.put(commandData.getName(), (AutoCompletable) command);
-			}
 		}
 		return commandData;
 	}
@@ -307,7 +325,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Gets all {@link SubcommandData} from the given array of {@link SlashCommand.Subcommand} classes.
 	 *
 	 * @param command      The base command's instance.
-	 * @param subcommands   All sub command classes.
+	 * @param subcommands  All sub command classes.
 	 * @param subGroupName The Subcommand Group's name. (if available)
 	 * @return The new {@link CommandListUpdateAction}.
 	 * @throws ReflectiveOperationException If an error occurs.
@@ -328,9 +346,6 @@ public class InteractionHandler extends ListenerAdapter {
 				}
 				subcommandIndex.put(commandPath, subcommand);
 				DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", commandPath, command.getRegistrationType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
-				// TODO: Remove these
-				DIH4JDALogger.info("class=" + subcommand.getClass().getName());
-				DIH4JDALogger.info("doesImplement=" + Checks.checkImplementation(subcommand.getClass(), AutoCompletable.class));
 				if (Checks.checkImplementation(subcommand.getClass(), AutoCompletable.class)) {
 					autoCompleteIndex.put(commandPath, (AutoCompletable) subcommand);
 				}
@@ -487,7 +502,9 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	private boolean checkRole(@NotNull CommandInteraction interaction, Set<Long> roleIds) {
-		if (!interaction.isFromGuild() || interaction.getGuild() == null || interaction.getMember() == null) return false;
+		if (!interaction.isFromGuild() || interaction.getGuild() == null || interaction.getMember() == null) {
+			return false;
+		}
 		Member member = interaction.getMember();
 		if (!roleIds.isEmpty() && !member.getRoles().isEmpty() && member.getRoles().stream().noneMatch(r -> roleIds.contains(r.getIdLong()))) {
 			DIH4JDAListenerAdapter.fireEvent(dih4jda.getListeners(), "onInvalidRole", interaction, roleIds);
