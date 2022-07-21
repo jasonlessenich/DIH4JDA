@@ -153,7 +153,7 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 		if (!autoCompleteIndex.isEmpty()) {
 			// print autocomplete bindings
-			DIH4JDALogger.info(String.format("Created %s AutoComplete Bindings: %s", autoCompleteIndex.size(),
+			DIH4JDALogger.info(String.format("Created %s AutoComplete binding(s): %s", autoCompleteIndex.size(),
 					autoCompleteIndex.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue().getClass().getSimpleName()).collect(Collectors.joining(", "))));
 		}
 	}
