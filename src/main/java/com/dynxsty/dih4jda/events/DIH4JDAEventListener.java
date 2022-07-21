@@ -27,7 +27,7 @@ public interface DIH4JDAEventListener {
 	 * @see com.dynxsty.dih4jda.interactions.commands.ContextCommand.User#execute(UserContextInteractionEvent)
 	 * @see com.dynxsty.dih4jda.interactions.commands.ContextCommand.Message#execute(MessageContextInteractionEvent)
 	 */
-	void onCommandException(CommandInteraction interaction, Exception e);
+	default void onCommandException(CommandInteraction interaction, Exception e) {}
 
 	/**
 	 * An Event that gets fired when an exception gets raised while interacting with a message component.
@@ -35,7 +35,7 @@ public interface DIH4JDAEventListener {
 	 * @param interaction The {@link ComponentInteraction}.
 	 * @param e           The Exception that was raised.
 	 */
-	void onComponentException(ComponentInteraction interaction, Exception e);
+	default void onComponentException(ComponentInteraction interaction, Exception e) {}
 
 	/**
 	 * An Event that gets fired when an exception gets raised while handling an AutoComplete interaction.
@@ -44,7 +44,7 @@ public interface DIH4JDAEventListener {
 	 * @param e           The Exception that was raised.
 	 * @see AutoCompletable#handleAutoComplete(CommandAutoCompleteInteractionEvent, AutoCompleteQuery)
 	 */
-	void onAutoCompleteException(CommandAutoCompleteInteraction interaction, Exception e);
+	default void onAutoCompleteException(CommandAutoCompleteInteraction interaction, Exception e) {}
 
 	/**
 	 * An Event that gets fired when an exception gets raised while handling a Modal interaction.
@@ -52,7 +52,7 @@ public interface DIH4JDAEventListener {
 	 * @param interaction The {@link ModalInteraction}.
 	 * @param e           The Exception that was raised.
 	 */
-	void onModalException(ModalInteraction interaction, Exception e);
+	default void onModalException(ModalInteraction interaction, Exception e) {}
 
 	/**
 	 * An Event that gets fired when the user, which invoked the command, does NOT have one of the required Permissions.
@@ -61,7 +61,7 @@ public interface DIH4JDAEventListener {
 	 * @param permissions The {@link Set} of {@link Permission}s which are required to run this commands.
 	 * @see com.dynxsty.dih4jda.interactions.commands.CommandRequirements#requirePermissions(Permission...)
 	 */
-	void onInsufficientPermissions(CommandInteraction interaction, Set<Permission> permissions);
+	default void onInsufficientPermissions(CommandInteraction interaction, Set<Permission> permissions) {}
 
 	/**
 	 * An Event that gets fired when the user, which invoked the command, is NOT allowed to use this command.
@@ -70,7 +70,7 @@ public interface DIH4JDAEventListener {
 	 * @param userIds     The {@link Set} of {@link Long}s (user Ids) which are able to use this command.
 	 * @see com.dynxsty.dih4jda.interactions.commands.CommandRequirements#requireUsers(Long...)
 	 */
-	void onInvalidUser(CommandInteraction interaction, Set<Long> userIds);
+	default void onInvalidUser(CommandInteraction interaction, Set<Long> userIds) {}
 
 	/**
 	 * An Event that gets fired when the user, which invoked the command, does NOT have the required roles to use this command.
@@ -79,6 +79,6 @@ public interface DIH4JDAEventListener {
 	 * @param roleIds     The {@link Set} of {@link Long}s (role Ids) which are able to use this command.
 	 * @see com.dynxsty.dih4jda.interactions.commands.CommandRequirements#requireUsers(Long...)
 	 */
-	void onInvalidRole(CommandInteraction interaction, Set<Long> roleIds);
+	default void onInvalidRole(CommandInteraction interaction, Set<Long> roleIds) {}
 }
 
