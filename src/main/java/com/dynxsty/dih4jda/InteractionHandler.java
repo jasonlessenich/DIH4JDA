@@ -10,7 +10,7 @@ import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import com.dynxsty.dih4jda.interactions.components.ModalHandler;
 import com.dynxsty.dih4jda.interactions.components.SelectMenuHandler;
-import com.dynxsty.dih4jda.reflections.Reflections;
+import com.dynxsty.dih4jda.util.ClassWalker;
 import com.dynxsty.dih4jda.util.Checks;
 import com.dynxsty.dih4jda.util.ClassUtils;
 import com.dynxsty.dih4jda.util.CommandUtils;
@@ -204,22 +204,22 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Finds all Slash Commands using the {@link Reflections} API.
+	 * Finds all Slash Commands using the {@link ClassWalker}.
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link SlashCommand}.
 	 */
 	private Set<Class<? extends SlashCommand>> findSlashCommands() {
-		Reflections classes = new Reflections(config.getCommandsPackage());
+		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
 		return classes.getSubTypesOf(SlashCommand.class);
 	}
 
 	/**
-	 * Finds all Context Commands using the {@link Reflections} API.
+	 * Finds all Context Commands using the {@link ClassWalker}.
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link ContextCommand}.
 	 */
 	private Set<Class<? extends ContextCommand>> findContextCommands() {
-		Reflections classes = new Reflections(config.getCommandsPackage());
+		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
 		return classes.getSubTypesOf(ContextCommand.class);
 	}
 

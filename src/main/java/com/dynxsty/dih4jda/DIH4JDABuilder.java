@@ -4,8 +4,11 @@ import com.dynxsty.dih4jda.config.DIH4JDAConfig;
 import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import com.dynxsty.dih4jda.exceptions.InvalidPackageException;
 import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
-import com.dynxsty.dih4jda.reflections.util.ClasspathHelper;
+import com.dynxsty.dih4jda.util.ClassWalker;
+import com.dynxsty.dih4jda.util.ClasspathHelper;
 import net.dv8tion.jda.api.JDA;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -29,12 +32,13 @@ public class DIH4JDABuilder {
 	 *
 	 * @param instance The {@link JDA} instance.
 	 */
-	public static DIH4JDABuilder setJDA(JDA instance) {
+	@Contract("_ -> new")
+	public static @NotNull DIH4JDABuilder setJDA(JDA instance) {
 		return new DIH4JDABuilder(instance);
 	}
 
 	/**
-	 * Sets the package that houses all Command classes. DIH4JDA then uses the {@link com.dynxsty.dih4jda.reflections.Reflections} API to "scan" the package for all
+	 * Sets the package that houses all Command classes. DIH4JDA then uses the {@link ClassWalker} API to "scan" the package for all
 	 * command classes.
 	 *
 	 * @param pack The package's name.
