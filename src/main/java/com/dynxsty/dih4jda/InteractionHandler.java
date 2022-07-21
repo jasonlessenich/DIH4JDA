@@ -250,21 +250,23 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void searchForAutoCompletable(SlashCommand command, Class<? extends SlashCommand> clazz) {
 		// check base command
+		String baseName = command.getSlashCommandData().getName();
 		if (Checks.checkImplementation(clazz, AutoCompletable.class)) {
 			autoCompleteIndex.put(command.getSlashCommandData().getName(), (AutoCompletable) command);
 		}
 		// check subcommands
 		for (SlashCommand.Subcommand child : command.getSubcommands()) {
 			if (Checks.checkImplementation(child.getClass(), AutoCompletable.class)) {
-				autoCompleteIndex.put(child.getSubcommandData().getName(), (AutoCompletable) child);
+				autoCompleteIndex.put(CommandUtils.buildCommandPath(baseName, child.getSubcommandData().getName()), (AutoCompletable) child);
 			}
 		}
 		// check subcommand groups
-		for (Set<SlashCommand.Subcommand> childGroup : command.getSubcommandGroups().values()) {
+		for (Map.Entry<SubcommandGroupData, Set<SlashCommand.Subcommand>> childGroup : command.getSubcommandGroups().entrySet()) {
+			String groupName = childGroup.getKey().getName();
 			// check subcommands
-			for (SlashCommand.Subcommand child : childGroup) {
+			for (SlashCommand.Subcommand child : childGroup.getValue()) {
 				if (Checks.checkImplementation(child.getClass(), AutoCompletable.class)) {
-					autoCompleteIndex.put(child.getSubcommandData().getName(), (AutoCompletable) child);
+					autoCompleteIndex.put(CommandUtils.buildCommandPath(baseName, groupName, child.getSubcommandData().getName()), (AutoCompletable) child);
 				}
 			}
 		}
