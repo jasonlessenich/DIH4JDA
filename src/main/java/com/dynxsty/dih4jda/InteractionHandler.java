@@ -567,6 +567,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	@Override
 	public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
+		DIH4JDALogger.info("[DEBUG] " + autoCompleteIndex.toString());
 		CompletableFuture.runAsync(() -> {
 			try {
 				AutoCompletable autoComplete = autoCompleteIndex.get(event.getCommandPath());
