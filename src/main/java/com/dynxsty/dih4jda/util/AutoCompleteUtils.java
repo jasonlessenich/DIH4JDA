@@ -92,7 +92,7 @@ public class AutoCompleteUtils {
 	public static void cacheChoices(@NotNull CommandAutoCompleteInteractionEvent event, List<Command.Choice> choices) {
 		String id = buildCacheId(event);
 		CHOICE_CACHE.put(id, choices);
-		DIH4JDALogger.debug(String.format("Cached %s choices for %s", choices.size(), id));
+		DIH4JDALogger.info(String.format("Cached %s choices for %s", choices.size(), id));
 	}
 
 	/**
@@ -122,6 +122,7 @@ public class AutoCompleteUtils {
 		CHOICE_CACHE.keySet().forEach(key -> {
 			if (key.contains(ComponentIdBuilder.build(commandPath, userId, guildId))) {
 				CHOICE_CACHE.remove(key);
+				DIH4JDALogger.info(String.format("Removed cached choices for %s", key));
 			}
 		});
 	}
