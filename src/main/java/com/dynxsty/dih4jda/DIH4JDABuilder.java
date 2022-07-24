@@ -32,7 +32,8 @@ public class DIH4JDABuilder {
 	 * @param instance The {@link JDA} instance.
 	 */
 	@Contract("_ -> new")
-	public static @Nonnull DIH4JDABuilder setJDA(@Nonnull JDA instance) {
+	@Nonnull
+	public static DIH4JDABuilder setJDA(@Nonnull JDA instance) {
 		return new DIH4JDABuilder(instance);
 	}
 
@@ -49,7 +50,7 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Sets the Executor that will be used to execute all commands.
+	 * Sets the Executor that will be used to execute all commands  and events.
 	 *
 	 * @param executor The Executor.
 	 */
