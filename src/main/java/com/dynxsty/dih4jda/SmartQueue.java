@@ -38,7 +38,7 @@ public class SmartQueue {
 	private final Set<UnqueuedCommandData> commandData;
 	private final boolean deleteUnknown;
 
-	protected SmartQueue(Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData, boolean deleteUnknown) {
+	protected SmartQueue(@Nonnull Set<UnqueuedSlashCommandData> slashData, @Nonnull Set<UnqueuedCommandData> commandData, boolean deleteUnknown) {
 		this.slashData = slashData;
 		this.commandData = commandData;
 		this.deleteUnknown = deleteUnknown;
@@ -95,7 +95,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */
-	private @Nonnull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> removeDuplicates(JDA jda, final List<Command> existing, @Nullable Guild guild) {
+	private @Nonnull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> removeDuplicates(@Nonnull JDA jda, @Nonnull final List<Command> existing, @Nullable Guild guild) {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
 		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());

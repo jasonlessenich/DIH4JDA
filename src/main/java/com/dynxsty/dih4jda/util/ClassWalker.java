@@ -22,8 +22,7 @@ public class ClassWalker {
 	 *
 	 * @return An unmodifiable {@link Set} of classes inside the given package.
 	 */
-	@Nonnull
-	public Set<Class<?>> getAllClasses() {
+	public @Nonnull Set<Class<?>> getAllClasses() {
 		InputStream is = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(packageName.replaceAll("[.]", "/"));
 		if (is == null) return Set.of();
@@ -42,8 +41,7 @@ public class ClassWalker {
 	 * @param className The name of the class.
 	 * @return The class with the given name.
 	 */
-	@Nullable
-	private Class<?> getClass(@Nonnull String className) {
+	private @Nullable Class<?> getClass(@Nonnull String className) {
 		try {
 			return Class.forName(packageName + "."
 					+ className.substring(0, className.lastIndexOf('.')));
@@ -59,8 +57,7 @@ public class ClassWalker {
 	 * @param type The parent class to search for.
 	 * @return An unmodifiable {@link Set} of classes which are assignable to the given type.
 	 */
-	@Nonnull
-	public <T> Set<Class<? extends T>> getSubTypesOf(@Nonnull Class<T> type) {
+	public @Nonnull <T> Set<Class<? extends T>> getSubTypesOf(@Nonnull Class<T> type) {
 		return getAllClasses()
 				.stream()
 				.filter(type::isAssignableFrom)

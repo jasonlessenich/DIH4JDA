@@ -21,8 +21,7 @@ public class ClasspathHelper {
 	 * @param packageName The package name to search for.
 	 * @return A {@link Collection} of {@link URL}s, based on the given package name.
 	 */
-	@Nonnull
-	public static Collection<URL> forPackage(@Nonnull String packageName) {
+	public static @Nonnull Collection<URL> forPackage(@Nonnull String packageName) {
 		List<URL> results = new ArrayList<>();
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		try {
@@ -36,8 +35,7 @@ public class ClasspathHelper {
 		return results;
 	}
 
-	@Nonnull
-	private static String getResourceName(@Nonnull String name) {
+	private static @Nonnull String getResourceName(@Nonnull String name) {
 		String resource = name.replace(".", "/")
 				.replace("\\", "/");
 		if (resource.startsWith("/")) {

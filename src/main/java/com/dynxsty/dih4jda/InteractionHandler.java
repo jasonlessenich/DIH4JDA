@@ -165,7 +165,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashData   A set of {@link SlashCommandData}.
 	 * @param commandData A set of {@link CommandData},
 	 */
-	private void upsert(JDA jda, @Nonnull Set<UnqueuedSlashCommandData> slashData, @Nonnull Set<UnqueuedCommandData> commandData) {
+	private void upsert(@Nonnull JDA jda, @Nonnull Set<UnqueuedSlashCommandData> slashData, @Nonnull Set<UnqueuedCommandData> commandData) {
 		slashData.forEach(data -> jda.upsertCommand(data.getData()).queue());
 		commandData.forEach(data -> jda.upsertCommand(data.getData()).queue());
 	}
@@ -177,7 +177,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashData   A set of {@link SlashCommandData}.
 	 * @param commandData A set of {@link CommandData},
 	 */
-	private void upsert(Guild guild, @Nonnull Set<UnqueuedSlashCommandData> slashData, @Nonnull Set<UnqueuedCommandData> commandData) {
+	private void upsert(@Nonnull Guild guild, @Nonnull Set<UnqueuedSlashCommandData> slashData, @Nonnull Set<UnqueuedCommandData> commandData) {
 		StringBuilder commandNames = new StringBuilder();
 		slashData.forEach(data -> {
 			if (data.getGuilds().contains(guild)) {
@@ -206,7 +206,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link SlashCommand}.
 	 */
-	private Set<Class<? extends SlashCommand>> findSlashCommands() {
+	private @Nonnull Set<Class<? extends SlashCommand>> findSlashCommands() {
 		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
 		return classes.getSubTypesOf(SlashCommand.class);
 	}
@@ -216,7 +216,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link ContextCommand}.
 	 */
-	private Set<Class<? extends ContextCommand>> findContextCommands() {
+	private @Nonnull Set<Class<? extends ContextCommand>> findContextCommands() {
 		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
 		return classes.getSubTypesOf(ContextCommand.class);
 	}
@@ -249,7 +249,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param command The base {@link SlashCommand}.
 	 * @param clazz   The command's class.
 	 */
-	private void searchForAutoCompletable(SlashCommand command, Class<? extends SlashCommand> clazz) {
+	private void searchForAutoCompletable(@Nonnull SlashCommand command, @Nonnull Class<? extends SlashCommand> clazz) {
 		// check base command
 		String baseName = command.getSlashCommandData().getName();
 		if (Checks.checkImplementation(clazz, AutoCompletable.class)) {
@@ -280,7 +280,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param commandClass The base command's class.
 	 * @return The new {@link CommandListUpdateAction}.
 	 */
-	private @Nullable SlashCommandData getBaseCommandData(@Nonnull SlashCommand command, Class<? extends SlashCommand> commandClass) {
+	private @Nullable SlashCommandData getBaseCommandData(@Nonnull SlashCommand command, @Nonnull Class<? extends SlashCommand> commandClass) {
 		// find component (and modal) handlers
 		if (command.getSlashCommandData() == null) {
 			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
@@ -335,7 +335,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param subGroupName The Subcommand Group's name. (if available)
 	 * @return The new {@link CommandListUpdateAction}.
 	 */
-	private @Nonnull Set<SubcommandData> getSubcommandData(SlashCommand command, @Nonnull Set<SlashCommand.Subcommand> subcommands, @Nullable String subGroupName) {
+	private @Nonnull Set<SubcommandData> getSubcommandData(@Nonnull SlashCommand command, @Nonnull Set<SlashCommand.Subcommand> subcommands, @Nullable String subGroupName) {
 		Set<SubcommandData> subDataList = new HashSet<>();
 		for (SlashCommand.Subcommand subcommand : subcommands) {
 			if (subcommand != null) {
@@ -385,7 +385,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param commandClass The base context command's class.
 	 * @return The new {@link CommandListUpdateAction}.
 	 */
-	private @Nullable CommandData getContextCommandData(@Nonnull ContextCommand command, Class<? extends ContextCommand> commandClass) {
+	private @Nullable CommandData getContextCommandData(@Nonnull ContextCommand command, @Nonnull Class<? extends ContextCommand> commandClass) {
 		if (command.getCommandData() == null) {
 			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
 			return null;
@@ -482,7 +482,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return Whether the event was fired.
 	 * @since v1.5
 	 */
-	private boolean passesRequirements(CommandInteraction interaction, @Nonnull Set<Permission> permissions, @Nonnull Set<Long> userIds, Set<Long> roleIds) {
+	private boolean passesRequirements(@Nonnull CommandInteraction interaction, @Nonnull Set<Permission> permissions, @Nonnull Set<Long> userIds, @Nonnull Set<Long> roleIds) {
 		if (!permissions.isEmpty() && interaction.isFromGuild() && interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
 			DIH4JDAEvent.INSUFFICIENT_PERMISSIONS.fire(dih4jda.getListeners(), interaction, permissions);
 			return false;

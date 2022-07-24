@@ -136,8 +136,7 @@ public class CommandUtils {
 	 * @return One combined string.
 	 */
 	@Contract(pure = true)
-	@Nonnull
-	public static String buildCommandPath(String... args) {
+	public static @Nonnull String buildCommandPath(String... args) {
 		return String.join("/", args);
 	}
 
@@ -148,7 +147,7 @@ public class CommandUtils {
 	 * @param slash   A set of {@link UnqueuedSlashCommandData}.
 	 * @return The formatted String.
 	 */
-	public static String getNames(Set<UnqueuedCommandData> command, Set<UnqueuedSlashCommandData> slash) {
+	public static @Nonnull String getNames(Set<UnqueuedCommandData> command, Set<UnqueuedSlashCommandData> slash) {
 		StringBuilder names = new StringBuilder();
 		command.forEach(c -> names.append(", ").append(c.getData().getName()));
 		slash.forEach(c -> names.append(", /").append(c.getData().getName()));
@@ -162,7 +161,7 @@ public class CommandUtils {
 	 * @param type The {@link RegistrationType}.
 	 * @return The modified {@link Pair}.
 	 */
-	public static Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> filterByType(Pair<Set<UnqueuedSlashCommandData>,
+	public static @Nonnull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> filterByType(Pair<Set<UnqueuedSlashCommandData>,
 			Set<UnqueuedCommandData>> pair, RegistrationType type) {
 		return new Pair<>(
 				pair.getFirst().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()),

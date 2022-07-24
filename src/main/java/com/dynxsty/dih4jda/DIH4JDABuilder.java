@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
@@ -32,8 +33,7 @@ public class DIH4JDABuilder {
 	 * @param instance The {@link JDA} instance.
 	 */
 	@Contract("_ -> new")
-	@Nonnull
-	public static DIH4JDABuilder setJDA(@Nonnull JDA instance) {
+	public static @Nonnull DIH4JDABuilder setJDA(@Nonnull JDA instance) {
 		return new DIH4JDABuilder(instance);
 	}
 
@@ -43,8 +43,7 @@ public class DIH4JDABuilder {
 	 *
 	 * @param pack The package's name.
 	 */
-	@Nonnull
-	public DIH4JDABuilder setCommandsPackage(@Nonnull String pack) {
+	public @Nonnull DIH4JDABuilder setCommandsPackage(@Nonnull String pack) {
 		config.setCommandsPackage(pack);
 		return this;
 	}
@@ -54,8 +53,7 @@ public class DIH4JDABuilder {
 	 *
 	 * @param executor The Executor.
 	 */
-	@Nonnull
-	public DIH4JDABuilder setExecutor(@Nonnull Executor executor) {
+	public @Nonnull DIH4JDABuilder setExecutor(@Nonnull Executor executor) {
 		config.setExecutor(executor);
 		return this;
 	}
@@ -65,8 +63,7 @@ public class DIH4JDABuilder {
 	 *
 	 * @param types All {@link DIH4JDALogger.Type}'s that should be disabled.
 	 */
-	@Nonnull
-	public DIH4JDABuilder disableLogging(DIH4JDALogger.Type... types) {
+	public @Nonnull DIH4JDABuilder disableLogging(@Nullable DIH4JDALogger.Type... types) {
 		DIH4JDALogger.Type[] blocked;
 		if (types == null || types.length < 1) {
 			blocked = DIH4JDALogger.Type.values();
@@ -81,8 +78,7 @@ public class DIH4JDABuilder {
 	 * Whether DIH4JDA should automatically register all interactions on each onReady event.
 	 * A manual registration of all interactions can be executed using {@link DIH4JDA#registerInteractions()}.
 	 */
-	@Nonnull
-	public DIH4JDABuilder disableAutomaticCommandRegistration() {
+	public @Nonnull DIH4JDABuilder disableAutomaticCommandRegistration() {
 		config.setRegisterOnReady(false);
 		return this;
 	}
@@ -94,8 +90,7 @@ public class DIH4JDABuilder {
 	 * thus, making Global Commands unusable for about an hour, until they're registered again. <br>
 	 * By default, this also deletes unknown/unused commands. This behaviour can be disabled with {@link DIH4JDABuilder#disableUnknownCommandDeletion()}.
 	 */
-	@Nonnull
-	public DIH4JDABuilder setGlobalSmartQueue(boolean enable) {
+	public @Nonnull DIH4JDABuilder setGlobalSmartQueue(boolean enable) {
 		config.setGlobalSmartQueue(enable);
 		return this;
 	}
@@ -106,8 +101,7 @@ public class DIH4JDABuilder {
 	 * It is <b>RECOMMENDED</b> to disable this functionality for 300+ servers to shorten the start-up time.
 	 * By default, this also deletes unknown/unused commands. This behaviour can be disabled with {@link DIH4JDABuilder#disableUnknownCommandDeletion()}.
 	 */
-	@Nonnull
-	public DIH4JDABuilder setGuildSmartQueue(boolean enable) {
+	public @Nonnull DIH4JDABuilder setGuildSmartQueue(boolean enable) {
 		config.setGuildSmartQueue(enable);
 		return this;
 	}
@@ -117,8 +111,7 @@ public class DIH4JDABuilder {
 	 *
 	 * @param type The {@link RegistrationType}.
 	 */
-	@Nonnull
-	public DIH4JDABuilder setDefaultCommandType(RegistrationType type) {
+	public @Nonnull DIH4JDABuilder setDefaultCommandType(@Nonnull RegistrationType type) {
 		DIH4JDA.defaultCommandType = type;
 		return this;
 	}
@@ -126,8 +119,7 @@ public class DIH4JDABuilder {
 	/**
 	 * Disables deletion of unknown/unused commands when using SmartQueue.
 	 */
-	@Nonnull
-	public DIH4JDABuilder disableUnknownCommandDeletion() {
+	public @Nonnull DIH4JDABuilder disableUnknownCommandDeletion() {
 		config.setDeleteUnknownCommands(false);
 		return this;
 	}
@@ -136,8 +128,7 @@ public class DIH4JDABuilder {
 	 * Disables the {@link com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException} getting thrown
 	 * for unregistered commands.
 	 */
-	@Nonnull
-	public DIH4JDABuilder disableUnregisteredCommandException() {
+	public @Nonnull DIH4JDABuilder disableUnregisteredCommandException() {
 		config.setThrowUnregisteredException(false);
 		return this;
 	}
@@ -147,8 +138,7 @@ public class DIH4JDABuilder {
 	 *
 	 * @return the built, usable {@link DIH4JDA}
 	 */
-	@Nonnull
-	public DIH4JDA build() throws DIH4JDAException {
+	public @Nonnull DIH4JDA build() throws DIH4JDAException {
 		if (Runtime.getRuntime().availableProcessors() == 1) {
 			DIH4JDALogger.warn("You are running DIH4JDA on a single core CPU. A special system property was set to disable asynchronous command execution.");
 			System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "1");
