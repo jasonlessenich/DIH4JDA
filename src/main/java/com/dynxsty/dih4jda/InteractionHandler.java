@@ -31,9 +31,9 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -99,7 +99,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param dih4jda The {@link DIH4JDA} instance.
 	 */
-	protected InteractionHandler(@NotNull DIH4JDA dih4jda) {
+	protected InteractionHandler(@Nonnull DIH4JDA dih4jda) {
 		this.dih4jda = dih4jda;
 		config = dih4jda.getConfig();
 
@@ -165,7 +165,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashData   A set of {@link SlashCommandData}.
 	 * @param commandData A set of {@link CommandData},
 	 */
-	private void upsert(JDA jda, @NotNull Set<UnqueuedSlashCommandData> slashData, @NotNull Set<UnqueuedCommandData> commandData) {
+	private void upsert(@Nonnull JDA jda, @Nonnull Set<UnqueuedSlashCommandData> slashData, @Nonnull Set<UnqueuedCommandData> commandData) {
 		slashData.forEach(data -> jda.upsertCommand(data.getData()).queue());
 		commandData.forEach(data -> jda.upsertCommand(data.getData()).queue());
 	}
@@ -177,7 +177,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashData   A set of {@link SlashCommandData}.
 	 * @param commandData A set of {@link CommandData},
 	 */
-	private void upsert(Guild guild, @NotNull Set<UnqueuedSlashCommandData> slashData, @NotNull Set<UnqueuedCommandData> commandData) {
+	private void upsert(@Nonnull Guild guild, @Nonnull Set<UnqueuedSlashCommandData> slashData, @Nonnull Set<UnqueuedCommandData> commandData) {
 		StringBuilder commandNames = new StringBuilder();
 		slashData.forEach(data -> {
 			if (data.getGuilds().contains(guild)) {
@@ -206,7 +206,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link SlashCommand}.
 	 */
-	private Set<Class<? extends SlashCommand>> findSlashCommands() {
+	private @Nonnull Set<Class<? extends SlashCommand>> findSlashCommands() {
 		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
 		return classes.getSubTypesOf(SlashCommand.class);
 	}
@@ -216,7 +216,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link ContextCommand}.
 	 */
-	private Set<Class<? extends ContextCommand>> findContextCommands() {
+	private @Nonnull Set<Class<? extends ContextCommand>> findContextCommands() {
 		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
 		return classes.getSubTypesOf(ContextCommand.class);
 	}
@@ -227,7 +227,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private @NotNull Set<UnqueuedSlashCommandData> getSlashCommandData() throws ReflectiveOperationException {
+	private @Nonnull Set<UnqueuedSlashCommandData> getSlashCommandData() throws ReflectiveOperationException {
 		Set<UnqueuedSlashCommandData> data = new HashSet<>();
 		for (Class<? extends SlashCommand> c : commands) {
 			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(c);
@@ -249,7 +249,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param command The base {@link SlashCommand}.
 	 * @param clazz   The command's class.
 	 */
-	private void searchForAutoCompletable(SlashCommand command, Class<? extends SlashCommand> clazz) {
+	private void searchForAutoCompletable(@Nonnull SlashCommand command, @Nonnull Class<? extends SlashCommand> clazz) {
 		// check base command
 		String baseName = command.getSlashCommandData().getName();
 		if (Checks.checkImplementation(clazz, AutoCompletable.class)) {
@@ -280,7 +280,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param commandClass The base command's class.
 	 * @return The new {@link CommandListUpdateAction}.
 	 */
-	private @Nullable SlashCommandData getBaseCommandData(@NotNull SlashCommand command, Class<? extends SlashCommand> commandClass) {
+	private @Nullable SlashCommandData getBaseCommandData(@Nonnull SlashCommand command, @Nonnull Class<? extends SlashCommand> commandClass) {
 		// find component (and modal) handlers
 		if (command.getSlashCommandData() == null) {
 			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
@@ -307,7 +307,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param command The base command's instance.
 	 * @return All {@link SubcommandGroupData} stored in a List.
 	 */
-	private @NotNull Set<SubcommandGroupData> getSubcommandGroupData(@NotNull SlashCommand command) {
+	private @Nonnull Set<SubcommandGroupData> getSubcommandGroupData(@Nonnull SlashCommand command) {
 		Set<SubcommandGroupData> groupDataList = new HashSet<>();
 		for (Map.Entry<SubcommandGroupData, Set<SlashCommand.Subcommand>> group : command.getSubcommandGroups().entrySet()) {
 			if (group != null) {
@@ -335,7 +335,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param subGroupName The Subcommand Group's name. (if available)
 	 * @return The new {@link CommandListUpdateAction}.
 	 */
-	private @NotNull Set<SubcommandData> getSubcommandData(SlashCommand command, @NotNull Set<SlashCommand.Subcommand> subcommands, @Nullable String subGroupName) {
+	private @Nonnull Set<SubcommandData> getSubcommandData(@Nonnull SlashCommand command, @Nonnull Set<SlashCommand.Subcommand> subcommands, @Nullable String subGroupName) {
 		Set<SubcommandData> subDataList = new HashSet<>();
 		for (SlashCommand.Subcommand subcommand : subcommands) {
 			if (subcommand != null) {
@@ -363,7 +363,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private @NotNull Set<UnqueuedCommandData> getContextCommandData() throws ReflectiveOperationException {
+	private @Nonnull Set<UnqueuedCommandData> getContextCommandData() throws ReflectiveOperationException {
 		Set<UnqueuedCommandData> data = new HashSet<>();
 		for (Class<? extends ContextCommand> c : contexts) {
 			ContextCommand instance = (ContextCommand) ClassUtils.getInstance(c);
@@ -385,7 +385,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param commandClass The base context command's class.
 	 * @return The new {@link CommandListUpdateAction}.
 	 */
-	private @Nullable CommandData getContextCommandData(@NotNull ContextCommand command, Class<? extends ContextCommand> commandClass) {
+	private @Nullable CommandData getContextCommandData(@Nonnull ContextCommand command, @Nonnull Class<? extends ContextCommand> commandClass) {
 		if (command.getCommandData() == null) {
 			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
 			return null;
@@ -409,7 +409,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param event The {@link SlashCommandInteractionEvent} that was fired.
 	 */
-	private void handleSlashCommand(@NotNull SlashCommandInteractionEvent event) throws CommandNotRegisteredException {
+	private void handleSlashCommand(@Nonnull SlashCommandInteractionEvent event) throws CommandNotRegisteredException {
 		String path = event.getCommandPath();
 		CommandRequirements req = slashCommandIndex.containsKey(path) ? slashCommandIndex.get(path) : subcommandIndex.get(path);
 		if (req == null) {
@@ -439,7 +439,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param event The {@link UserContextInteractionEvent} that was fired.
 	 */
-	private void handleUserContextCommand(@NotNull UserContextInteractionEvent event) throws CommandNotRegisteredException {
+	private void handleUserContextCommand(@Nonnull UserContextInteractionEvent event) throws CommandNotRegisteredException {
 		ContextCommand.User context = userContextIndex.get(event.getCommandPath());
 		if (context == null) {
 			if (config.isThrowUnregisteredException()) {
@@ -458,7 +458,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param event The {@link MessageContextInteractionEvent} that was fired.
 	 */
-	private void handleMessageContextCommand(@NotNull MessageContextInteractionEvent event) throws CommandNotRegisteredException {
+	private void handleMessageContextCommand(@Nonnull MessageContextInteractionEvent event) throws CommandNotRegisteredException {
 		ContextCommand.Message context = messageContextIndex.get(event.getCommandPath());
 		if (context == null) {
 			if (config.isThrowUnregisteredException()) {
@@ -482,7 +482,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return Whether the event was fired.
 	 * @since v1.5
 	 */
-	private boolean passesRequirements(CommandInteraction interaction, @NotNull Set<Permission> permissions, @NotNull Set<Long> userIds, Set<Long> roleIds) {
+	private boolean passesRequirements(@Nonnull CommandInteraction interaction, @Nonnull Set<Permission> permissions, @Nonnull Set<Long> userIds, @Nonnull Set<Long> roleIds) {
 		if (!permissions.isEmpty() && interaction.isFromGuild() && interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
 			DIH4JDAEvent.INSUFFICIENT_PERMISSIONS.fire(dih4jda.getListeners(), interaction, permissions);
 			return false;
@@ -507,7 +507,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link SlashCommandInteractionEvent} that was fired.
 	 */
 	@Override
-	public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
+	public void onSlashCommandInteraction(@Nonnull SlashCommandInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
 				handleSlashCommand(event);
@@ -523,7 +523,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link UserContextInteractionEvent} that was fired.
 	 */
 	@Override
-	public void onUserContextInteraction(@NotNull UserContextInteractionEvent event) {
+	public void onUserContextInteraction(@Nonnull UserContextInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
 				handleUserContextCommand(event);
@@ -539,7 +539,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link MessageContextInteractionEvent} that was fired.
 	 */
 	@Override
-	public void onMessageContextInteraction(@NotNull MessageContextInteractionEvent event) {
+	public void onMessageContextInteraction(@Nonnull MessageContextInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
 				handleMessageContextCommand(event);
@@ -555,7 +555,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link CommandAutoCompleteInteractionEvent} that was fired.
 	 */
 	@Override
-	public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
+	public void onCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
 				AutoCompletable autoComplete = autoCompleteIndex.get(event.getCommandPath());
@@ -574,7 +574,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link ButtonInteractionEvent} that was fired.
 	 */
 	@Override
-	public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
+	public void onButtonInteraction(@Nonnull ButtonInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
 				Optional<ButtonHandler> buttonOptional = dih4jda.getButtonHandlers().entrySet().stream()
@@ -598,7 +598,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link SelectMenuInteractionEvent} that was fired.
 	 */
 	@Override
-	public void onSelectMenuInteraction(@NotNull SelectMenuInteractionEvent event) {
+	public void onSelectMenuInteraction(@Nonnull SelectMenuInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
 				Optional<SelectMenuHandler> selectMenuOptional = dih4jda.getSelectMenuHandlers().entrySet().stream()
@@ -622,7 +622,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link ModalInteractionEvent} that was fired.
 	 */
 	@Override
-	public void onModalInteraction(@NotNull ModalInteractionEvent event) {
+	public void onModalInteraction(@Nonnull ModalInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
 				Optional<ModalHandler> modalOptional = dih4jda.getModalHandlers().entrySet().stream()

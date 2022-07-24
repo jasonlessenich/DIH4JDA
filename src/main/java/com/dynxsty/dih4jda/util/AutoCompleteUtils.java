@@ -5,9 +5,9 @@ import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +42,7 @@ public class AutoCompleteUtils {
 	 * @since v1.4
 	 */
 	@Contract("_, _ -> param2")
-	public static @NotNull List<Command.Choice> filterChoices(@NotNull CommandAutoCompleteInteractionEvent event, List<Command.Choice> choices) {
+	public static @Nonnull List<Command.Choice> filterChoices(@Nonnull CommandAutoCompleteInteractionEvent event, List<Command.Choice> choices) {
 		return AutoCompleteUtils.filterChoices(event.getFocusedOption().getValue().toLowerCase(), choices);
 	}
 
@@ -59,7 +59,7 @@ public class AutoCompleteUtils {
 	 * @since v1.4
 	 */
 	@Contract("_, _ -> param2")
-	public static @NotNull List<Command.Choice> filterChoices(String filter, @NotNull List<Command.Choice> choices) {
+	public static @Nonnull List<Command.Choice> filterChoices(String filter, @Nonnull List<Command.Choice> choices) {
 		choices.removeIf(choice -> !choice.getName().toLowerCase().contains(filter.toLowerCase()));
 		return choices;
 	}
@@ -73,7 +73,7 @@ public class AutoCompleteUtils {
 	 * @param choicesFunction The function to use if no mapping is found and the choices need to be cached.
 	 * @return An unmodifiable {@link List} of {@link Command.Choice}s.
 	 */
-	public static @NotNull List<Command.Choice> handleChoices(@NotNull CommandAutoCompleteInteractionEvent event,
+	public static @Nonnull List<Command.Choice> handleChoices(@Nonnull CommandAutoCompleteInteractionEvent event,
 	                                                          Function<CommandAutoCompleteInteractionEvent, List<Command.Choice>> choicesFunction) {
 		String id = buildCacheId(event);
 		List<Command.Choice> choices = getFromCache(id);
@@ -90,7 +90,7 @@ public class AutoCompleteUtils {
 	 * @param event   The {@link CommandAutoCompleteInteractionEvent} which was fired.
 	 * @param choices The {@link List} of {@link Command.Choice}s to cache.
 	 */
-	public static void cacheChoices(@NotNull CommandAutoCompleteInteractionEvent event, List<Command.Choice> choices) {
+	public static void cacheChoices(@Nonnull CommandAutoCompleteInteractionEvent event, List<Command.Choice> choices) {
 		String id = buildCacheId(event);
 		CHOICE_CACHE.put(id, choices);
 		DIH4JDALogger.debug(String.format("Cached %s choices for %s", choices.size(), id));
@@ -138,7 +138,7 @@ public class AutoCompleteUtils {
 	 * @param event The {@link CommandAutoCompleteInteractionEvent} which was fired.
 	 * @return The identifier which is used in combination with the {@link AutoCompleteUtils#CHOICE_CACHE}
 	 */
-	public static @NotNull String buildCacheId(@NotNull CommandAutoCompleteInteractionEvent event) {
+	public static @Nonnull String buildCacheId(@Nonnull CommandAutoCompleteInteractionEvent event) {
 		return ComponentIdBuilder.build(
 				event.getCommandPath(),
 				event.getUser().getId(),

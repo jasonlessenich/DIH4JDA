@@ -3,8 +3,8 @@ package com.dynxsty.dih4jda.interactions.components;
 import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 public interface ButtonHandler {
@@ -44,5 +44,5 @@ public interface ButtonHandler {
 	 * @see com.dynxsty.dih4jda.DIH4JDA#addButtonHandlers(Map)
 	 * @since v1.4
 	 */
-	void handleButton(@NotNull ButtonInteractionEvent event, @NotNull Button button);
+	void handleButton(@Nonnull ButtonInteractionEvent event, @Nonnull Button button);
 }

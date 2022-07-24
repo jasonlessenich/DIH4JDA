@@ -10,9 +10,9 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +38,7 @@ public class SmartQueue {
 	private final Set<UnqueuedCommandData> commandData;
 	private final boolean deleteUnknown;
 
-	protected SmartQueue(Set<UnqueuedSlashCommandData> slashData, Set<UnqueuedCommandData> commandData, boolean deleteUnknown) {
+	protected SmartQueue(@Nonnull Set<UnqueuedSlashCommandData> slashData, @Nonnull Set<UnqueuedCommandData> commandData, boolean deleteUnknown) {
 		this.slashData = slashData;
 		this.commandData = commandData;
 		this.deleteUnknown = deleteUnknown;
@@ -51,7 +51,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @NotNull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> checkGlobal(@NotNull JDA jda) {
+	protected @Nonnull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> checkGlobal(@Nonnull JDA jda) {
 		List<Command> existing;
 		try {
 			existing = jda.retrieveCommands().complete();
@@ -71,7 +71,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @NotNull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> checkGuild(@NotNull Guild guild) {
+	protected @Nonnull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> checkGuild(@Nonnull Guild guild) {
 		List<Command> existing;
 		try {
 			existing = guild.retrieveCommands().complete();
@@ -95,7 +95,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */
-	private @NotNull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> removeDuplicates(JDA jda, final List<Command> existing, @Nullable Guild guild) {
+	private @Nonnull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> removeDuplicates(@Nonnull JDA jda, @Nonnull final List<Command> existing, @Nullable Guild guild) {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
 		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());
