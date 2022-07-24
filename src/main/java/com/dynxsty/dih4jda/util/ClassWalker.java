@@ -1,8 +1,7 @@
 package com.dynxsty.dih4jda.util;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,7 +22,7 @@ public class ClassWalker {
 	 *
 	 * @return An unmodifiable {@link Set} of classes inside the given package.
 	 */
-	@NotNull
+	@Nonnull
 	public Set<Class<?>> getAllClasses() {
 		InputStream is = Thread.currentThread().getContextClassLoader()
 				.getResourceAsStream(packageName.replaceAll("[.]", "/"));
@@ -44,7 +43,7 @@ public class ClassWalker {
 	 * @return The class with the given name.
 	 */
 	@Nullable
-	private Class<?> getClass(@NotNull String className) {
+	private Class<?> getClass(@Nonnull String className) {
 		try {
 			return Class.forName(packageName + "."
 					+ className.substring(0, className.lastIndexOf('.')));
@@ -60,8 +59,8 @@ public class ClassWalker {
 	 * @param type The parent class to search for.
 	 * @return An unmodifiable {@link Set} of classes which are assignable to the given type.
 	 */
-	@NotNull
-	public <T> Set<Class<? extends T>> getSubTypesOf(@NotNull Class<T> type) {
+	@Nonnull
+	public <T> Set<Class<? extends T>> getSubTypesOf(@Nonnull Class<T> type) {
 		return getAllClasses()
 				.stream()
 				.filter(type::isAssignableFrom)

@@ -8,7 +8,6 @@ import com.dynxsty.dih4jda.util.ClassWalker;
 import com.dynxsty.dih4jda.util.ClasspathHelper;
 import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -33,7 +32,7 @@ public class DIH4JDABuilder {
 	 * @param instance The {@link JDA} instance.
 	 */
 	@Contract("_ -> new")
-	public static @NotNull DIH4JDABuilder setJDA(JDA instance) {
+	public static @Nonnull DIH4JDABuilder setJDA(@Nonnull JDA instance) {
 		return new DIH4JDABuilder(instance);
 	}
 
@@ -117,6 +116,7 @@ public class DIH4JDABuilder {
 	 *
 	 * @param type The {@link RegistrationType}.
 	 */
+	@Nonnull
 	public DIH4JDABuilder setDefaultCommandType(RegistrationType type) {
 		DIH4JDA.defaultCommandType = type;
 		return this;
@@ -125,6 +125,7 @@ public class DIH4JDABuilder {
 	/**
 	 * Disables deletion of unknown/unused commands when using SmartQueue.
 	 */
+	@Nonnull
 	public DIH4JDABuilder disableUnknownCommandDeletion() {
 		config.setDeleteUnknownCommands(false);
 		return this;
@@ -134,6 +135,7 @@ public class DIH4JDABuilder {
 	 * Disables the {@link com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException} getting thrown
 	 * for unregistered commands.
 	 */
+	@Nonnull
 	public DIH4JDABuilder disableUnregisteredCommandException() {
 		config.setThrowUnregisteredException(false);
 		return this;
@@ -144,6 +146,7 @@ public class DIH4JDABuilder {
 	 *
 	 * @return the built, usable {@link DIH4JDA}
 	 */
+	@Nonnull
 	public DIH4JDA build() throws DIH4JDAException {
 		if (Runtime.getRuntime().availableProcessors() == 1) {
 			DIH4JDALogger.warn("You are running DIH4JDA on a single core CPU. A special system property was set to disable asynchronous command execution.");

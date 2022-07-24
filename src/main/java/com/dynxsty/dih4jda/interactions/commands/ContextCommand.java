@@ -5,7 +5,8 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nonnull;
 
 /**
  * Model class which represents a single Context Command.
@@ -30,7 +31,7 @@ public abstract class ContextCommand extends BaseCommandRequirements {
 	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#user(String)
 	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#message(String)
 	 */
-	public final void setCommandData(@NotNull CommandData commandData) {
+	public final void setCommandData(@Nonnull CommandData commandData) {
 		if (commandData.getType() == Command.Type.MESSAGE || commandData.getType() == Command.Type.USER) {
 			this.commandData = commandData;
 		} else {

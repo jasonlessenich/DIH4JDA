@@ -9,8 +9,8 @@ import com.dynxsty.dih4jda.interactions.components.SelectMenuHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -68,7 +68,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @param event The {@link ReadyEvent} that was fired.
 	 */
 	@Override
-	public void onReady(@NotNull ReadyEvent event) {
+	public void onReady(@Nonnull ReadyEvent event) {
 		if (config.getCommandsPackage() == null) return;
 		try {
 			if (config.isRegisterOnReady() && handler != null) {

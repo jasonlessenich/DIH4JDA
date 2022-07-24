@@ -3,8 +3,8 @@ package com.dynxsty.dih4jda.interactions.components;
 import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 
@@ -57,5 +57,5 @@ public interface ModalHandler {
 	 * @see com.dynxsty.dih4jda.DIH4JDA#addModalHandlers(Map)
 	 * @since v1.4
 	 */
-	void handleModal(@NotNull ModalInteractionEvent event, @NotNull List<ModalMapping> values);
+	void handleModal(@Nonnull ModalInteractionEvent event, @Nonnull List<ModalMapping> values);
 }

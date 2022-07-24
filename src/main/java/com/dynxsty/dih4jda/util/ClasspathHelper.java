@@ -1,7 +1,5 @@
 package com.dynxsty.dih4jda.util;
 
-import org.jetbrains.annotations.NotNull;
-
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URL;
@@ -23,7 +21,7 @@ public class ClasspathHelper {
 	 * @param packageName The package name to search for.
 	 * @return A {@link Collection} of {@link URL}s, based on the given package name.
 	 */
-	@NotNull
+	@Nonnull
 	public static Collection<URL> forPackage(@Nonnull String packageName) {
 		List<URL> results = new ArrayList<>();
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -38,7 +36,7 @@ public class ClasspathHelper {
 		return results;
 	}
 
-	@NotNull
+	@Nonnull
 	private static String getResourceName(@Nonnull String name) {
 		String resource = name.replace(".", "/")
 				.replace("\\", "/");

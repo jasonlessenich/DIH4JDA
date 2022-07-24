@@ -1,8 +1,8 @@
 package com.dynxsty.dih4jda.events;
 
 import com.dynxsty.dih4jda.DIH4JDALogger;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -33,7 +33,7 @@ public enum DIH4JDAEvent {
 	 * @param args      The event's arguments.
 	 * @since v1.5
 	 */
-	public void fire(@NotNull Set<DIH4JDAEventListener> listeners, Object... args) {
+	public void fire(@Nonnull Set<DIH4JDAEventListener> listeners, Object... args) {
 		if (listeners.isEmpty()) {
 			DIH4JDALogger.warn(String.format("%s was fired, but not handled (No listener registered)", this), DIH4JDALogger.Type.EVENT_FIRED);
 		}
