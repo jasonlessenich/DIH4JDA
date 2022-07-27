@@ -3,6 +3,7 @@ package com.dynxsty.dih4jda;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.event.Level;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Set;
 public class DIH4JDALogger {
 
 	private static final org.slf4j.Logger log = JDALogger.getLog(DIH4JDALogger.class);
-	protected static Set<Type> blockedLogTypes;
+	protected static Set<Type> blockedLogTypes = new HashSet<>();
 
 	private static void log(String msg, Type type, Level level) {
 		if (blockedLogTypes.contains(type)) return;
