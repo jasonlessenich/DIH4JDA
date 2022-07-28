@@ -64,10 +64,9 @@ public class ClassWalker {
 			}
 
 			try (Stream<Path> allPaths = Files.walk(root)) {
-				Path finalRoot = root;
 				return allPaths.filter(Files::isRegularFile)
 						.filter(file -> file.toString().endsWith(".class"))
-						.map(file -> mapFileToName(file, finalRoot))
+						.map(this::mapFileToName)
 						.map(clazz -> {
 							try {
 								return classLoader.loadClass(clazz);
@@ -86,7 +85,7 @@ public class ClassWalker {
 		}
 	}
 
-	private @Nonnull String mapFileToName(@Nonnull Path file, @Nonnull Path root) {
+	private @Nonnull String mapFileToName(@Nonnull Path file) {
 		String path = file.toString().replace(file.getFileSystem().getSeparator(), ".");
 		return path.substring(path.indexOf(packageName), path.length() - ".class".length());
 	}
