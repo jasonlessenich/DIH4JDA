@@ -1,8 +1,8 @@
 package com.dynxsty.dih4jda.util;
 
 import com.dynxsty.dih4jda.DIH4JDALogger;
-import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.Constructor;
 
 /**
@@ -34,7 +34,7 @@ public class Checks {
 	 * @return Whether the class has an empty constructor.
 	 * @since v1.5.1
 	 */
-	public static boolean checkEmptyConstructor(@NotNull Class<?> base) {
+	public static boolean checkEmptyConstructor(@Nonnull Class<?> base) {
 		for (Constructor<?> c : base.getConstructors()) {
 			if (c.getParameterCount() == 0) return true;
 		}
