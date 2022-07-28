@@ -35,7 +35,6 @@ public class ClassWalker {
 			Set<Class<?>> allClasses = new HashSet<>();
 
 			Path root;
-			boolean ide = false;
 			if (pkg.toString().startsWith("jar:")) {
 				try {
 					root = FileSystems.getFileSystem(pkg).getPath(packagePath);
@@ -44,20 +43,23 @@ public class ClassWalker {
 				}
 			} else {
 				root = Paths.get(pkg);
-				ide = true;
 			}
 
 			try (Stream<Path> allPaths = Files.walk(root)) {
-				boolean finalIde = ide;
 				allPaths.filter(Files::isRegularFile).forEach(file -> {
 					try {
-						String path;
-						if (System.getProperty("os.name").toLowerCase().startsWith("windows") && finalIde) path = file.toString().replace('\\', '.');
-						else path = file.toString().replace('/', '.');
+						String path = file.toString().replace('/', '.');
 
-						String name = path.substring(path.indexOf(packageName), path.length() - ".class".length());
+						String name;
+						try {
+							name = path.substring(path.indexOf(packageName), path.length() - ".class".length());
+						} catch (StringIndexOutOfBoundsException exception) {
+							path = file.toString().replace('\\', '.');
+							name = path.substring(path.indexOf(packageName), path.length() - ".class".length());
+						}
+
 						allClasses.add(Class.forName(name));
-					} catch (ClassNotFoundException | StringIndexOutOfBoundsException exception) {
+					} catch (ClassNotFoundException | IndexOutOfBoundsException exception) {
 						exception.printStackTrace();
 					}
 				});
