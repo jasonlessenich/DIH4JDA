@@ -27,9 +27,6 @@ public class ClasspathHelper {
 		if (Thread.currentThread().getContextClassLoader() != null) loader = Thread.currentThread().getContextClassLoader();
 		else loader = ClasspathHelper.class.getClassLoader();
 
-		if (packageName.isEmpty() || packageName.isBlank()) {
-			return results;
-		}
 		try {
 			Enumeration<URL> urls = loader.getResources(getResourceName(packageName));
 			while (urls.hasMoreElements()) {
