@@ -1,5 +1,9 @@
 package com.dynxsty.dih4jda.util;
 
+import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
+import com.dynxsty.dih4jda.exceptions.InvalidPackageException;
+import com.dynxsty.dih4jda.exceptions.UncheckedClassLoadException;
+
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URI;
@@ -29,7 +33,7 @@ public class ClassWalker {
 	 *
 	 * @return An unmodifiable {@link Set} of classes inside the given package.
 	 */
-	public @Nonnull Set<Class<?>> getAllClasses() {
+	public @Nonnull Set<Class<?>> getAllClasses() throws DIH4JDAException {
 		try {
 			String packagePath = packageName.replace('.', '/');
 			ClassLoader classLoader;
@@ -39,7 +43,7 @@ public class ClassWalker {
 
 			URL resourceURL = classLoader.getResource(packagePath);
 			if (resourceURL == null) {
-				return Collections.emptySet();
+				throw new InvalidPackageException(String.format("%s package not found in ClassLoader", packagePath));
 			}
 			URI pkg = resourceURL.toURI();
 
@@ -64,17 +68,19 @@ public class ClassWalker {
 						.map(clazz -> {
 							try {
 								return classLoader.loadClass(clazz);
-							} catch (ClassNotFoundException e) {
-								return null;
+							} catch (ClassNotFoundException exception) {
+								throw new UncheckedClassLoadException(exception);
 							}
 						})
 						.collect(Collectors.toSet());
+			} catch(UncheckedClassLoadException exception) {
+				throw new DIH4JDAException(exception);
+			} finally {
+				if (fileSystem != null) fileSystem.close();
 			}
-			if (fileSystem != null) fileSystem.close();
 			return classes;
 		} catch (URISyntaxException | IOException exception) {
-			exception.printStackTrace();
-			return Collections.emptySet();
+			throw new DIH4JDAException(exception);
 		}
 	}
 
@@ -92,7 +98,7 @@ public class ClassWalker {
 	 * @param type The parent class to search for.
 	 * @return An unmodifiable {@link Set} of classes which are assignable to the given type.
 	 */
-	public @Nonnull <T> Set<Class<? extends T>> getSubTypesOf(@Nonnull Class<T> type) {
+	public @Nonnull <T> Set<Class<? extends T>> getSubTypesOf(@Nonnull Class<T> type) throws DIH4JDAException {
 		return getAllClasses()
 				.stream()
 				.filter(type::isAssignableFrom)

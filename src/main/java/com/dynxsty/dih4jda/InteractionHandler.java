@@ -3,6 +3,7 @@ package com.dynxsty.dih4jda;
 import com.dynxsty.dih4jda.config.DIH4JDAConfig;
 import com.dynxsty.dih4jda.events.DIH4JDAEvent;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
+import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
 import com.dynxsty.dih4jda.interactions.commands.*;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
@@ -99,7 +100,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param dih4jda The {@link DIH4JDA} instance.
 	 */
-	protected InteractionHandler(@Nonnull DIH4JDA dih4jda) {
+	protected InteractionHandler(@Nonnull DIH4JDA dih4jda) throws DIH4JDAException {
 		this.dih4jda = dih4jda;
 		config = dih4jda.getConfig();
 
@@ -206,7 +207,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link SlashCommand}.
 	 */
-	private @Nonnull Set<Class<? extends SlashCommand>> findSlashCommands() {
+	private @Nonnull Set<Class<? extends SlashCommand>> findSlashCommands() throws DIH4JDAException {
 		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
 		return classes.getSubTypesOf(SlashCommand.class);
 	}
@@ -216,7 +217,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link ContextCommand}.
 	 */
-	private @Nonnull Set<Class<? extends ContextCommand>> findContextCommands() {
+	private @Nonnull Set<Class<? extends ContextCommand>> findContextCommands() throws DIH4JDAException {
 		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
 		return classes.getSubTypesOf(ContextCommand.class);
 	}
