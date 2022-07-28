@@ -32,7 +32,12 @@ public class ClassWalker {
 	public @Nonnull Set<Class<?>> getAllClasses() {
 		try {
 			String packagePath = packageName.replace('.', '/');
-			URL resourceURL = ClassLoader.getSystemClassLoader().getResource(packagePath);
+			ClassLoader classLoader;
+			if (Thread.currentThread().getContextClassLoader() != null) classLoader = Thread.currentThread().getContextClassLoader();
+			 else classLoader = ClassWalker.class.getClassLoader();
+
+
+			URL resourceURL = classLoader.getResource(packagePath);
 			if (resourceURL == null) {
 				return Collections.emptySet();
 			}
@@ -58,7 +63,7 @@ public class ClassWalker {
 						.map(this::mapFileToName)
 						.map(clazz -> {
 							try {
-								return ClassLoader.getSystemClassLoader().loadClass(clazz);
+								return classLoader.loadClass(clazz);
 							} catch (ClassNotFoundException e) {
 								return null;
 							}
