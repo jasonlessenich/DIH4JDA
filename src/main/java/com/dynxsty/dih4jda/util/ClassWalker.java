@@ -87,8 +87,13 @@ public class ClassWalker {
 	}
 
 	private @Nonnull String mapFileToName(@Nonnull Path file, @Nonnull Path root) {
-		String path = root.relativize(file).toString().replace(file.getFileSystem().getSeparator(), ".");
-		return path.substring(0, path.length() - ".class".length());
+		String path;
+		if (packageName.isEmpty() || packageName.isBlank()){
+			path = root.relativize(file).toString().replace(file.getFileSystem().getSeparator(), ".");
+		} else {
+			path = file.toString().replace(file.getFileSystem().getSeparator(), ".");
+		}
+		return path.substring(path.indexOf(packageName), path.length() - ".class".length());
 	}
 
 	/**
