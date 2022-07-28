@@ -1,13 +1,19 @@
 package com.dynxsty.dih4jda.util;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystemNotFoundException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ClassWalker {
 
@@ -23,32 +29,44 @@ public class ClassWalker {
 	 * @return An unmodifiable {@link Set} of classes inside the given package.
 	 */
 	public @Nonnull Set<Class<?>> getAllClasses() {
-		InputStream is = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(packageName.replaceAll("[.]", "/"));
-		if (is == null) return Set.of();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		Set<Class<?>> classes = new HashSet<>();
-		for (String line : reader.lines().collect(Collectors.toSet())) {
-			if (line.endsWith(".class")) classes.add(getClass(line));
-			else classes.addAll(new ClassWalker(packageName + "." + line).getAllClasses());
-		}
-		return classes;
-	}
-
-	/**
-	 * Attempts to get a single class, based on the given name.
-	 *
-	 * @param className The name of the class.
-	 * @return The class with the given name.
-	 */
-	private @Nullable Class<?> getClass(@Nonnull String className) {
 		try {
-			return Class.forName(packageName + "."
-					+ className.substring(0, className.lastIndexOf('.')));
-		} catch (ClassNotFoundException exception) {
+			String packagePath = packageName.replace('.', '/');
+			URI pkg = ClassLoader.getSystemClassLoader().getResource(packagePath).toURI();
+			Set<Class<?>> allClasses = new HashSet<>();
+
+			Path root;
+			boolean ide = false;
+			if (pkg.toString().startsWith("jar:")) {
+				try {
+					root = FileSystems.getFileSystem(pkg).getPath(packagePath);
+				} catch (FileSystemNotFoundException exception) {
+					root = FileSystems.newFileSystem(pkg, Collections.emptyMap()).getPath(packagePath);
+				}
+			} else {
+				root = Paths.get(pkg);
+				ide = true;
+			}
+
+			try (Stream<Path> allPaths = Files.walk(root)) {
+				boolean finalIde = ide;
+				allPaths.filter(Files::isRegularFile).forEach(file -> {
+					try {
+						String path;
+						if (System.getProperty("os.name").toLowerCase().startsWith("windows") && finalIde) path = file.toString().replace('\\', '.');
+						else path = file.toString().replace('/', '.');
+
+						String name = path.substring(path.indexOf(packageName), path.length() - ".class".length());
+						allClasses.add(Class.forName(name));
+					} catch (ClassNotFoundException | StringIndexOutOfBoundsException exception) {
+						exception.printStackTrace();
+					}
+				});
+			}
+			return allClasses;
+		} catch (NullPointerException | URISyntaxException | IOException exception) {
 			exception.printStackTrace();
+			return Collections.emptySet();
 		}
-		return null;
 	}
 
 	/**

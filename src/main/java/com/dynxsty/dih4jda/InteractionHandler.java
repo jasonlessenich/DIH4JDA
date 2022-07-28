@@ -31,7 +31,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
-import org.reflections.Reflections;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -208,7 +207,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * {@link SlashCommand}.
 	 */
 	private @Nonnull Set<Class<? extends SlashCommand>> findSlashCommands() {
-		Reflections classes = new Reflections(config.getCommandsPackage());
+		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
 		return classes.getSubTypesOf(SlashCommand.class);
 	}
 
@@ -218,7 +217,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * {@link ContextCommand}.
 	 */
 	private @Nonnull Set<Class<? extends ContextCommand>> findContextCommands() {
-		Reflections classes = new Reflections(config.getCommandsPackage());
+		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
 		return classes.getSubTypesOf(ContextCommand.class);
 	}
 
