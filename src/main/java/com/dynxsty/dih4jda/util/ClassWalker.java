@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,20 +39,21 @@ public class ClassWalker {
 			URI pkg = resourceURL.toURI();
 
 			Path root;
+			FileSystem fileSystem = null;
 			if (pkg.toString().startsWith("jar:")) {
 				try {
 					root = FileSystems.getFileSystem(pkg).getPath(packagePath);
 				} catch (FileSystemNotFoundException exception) {
-					FileSystem fileSystem = FileSystems.newFileSystem(pkg, Collections.emptyMap());
+					fileSystem = FileSystems.newFileSystem(pkg, Collections.emptyMap());
 					root = fileSystem.getPath(packagePath);
-					fileSystem.close();
 				}
 			} else {
 				root = Paths.get(pkg);
 			}
 
+			Set<Class<?>> classes;
 			try (Stream<Path> allPaths = Files.walk(root)) {
-				return allPaths.filter(Files::isRegularFile)
+				classes = allPaths.filter(Files::isRegularFile)
 						.filter(file -> file.toString().endsWith(".class"))
 						.map(this::mapFileToName)
 						.map(clazz -> {
@@ -65,6 +65,8 @@ public class ClassWalker {
 						})
 						.collect(Collectors.toSet());
 			}
+			if (fileSystem != null) fileSystem.close();
+			return classes;
 		} catch (URISyntaxException | IOException exception) {
 			exception.printStackTrace();
 			return Collections.emptySet();
@@ -73,15 +75,10 @@ public class ClassWalker {
 
 	private String mapFileToName(Path file) {
 		String path = file.toString().replace('/', '.');
-
-		String name;
-		try {
-			name = path.substring(path.indexOf(packageName), path.length() - ".class".length());
-		} catch (StringIndexOutOfBoundsException exception) {
+		if (!path.contains(packageName)) {
 			path = file.toString().replace('\\', '.');
-			name = path.substring(path.indexOf(packageName), path.length() - ".class".length());
 		}
-		return name;
+		return path.substring(path.indexOf(packageName), path.length() - ".class".length());
 	}
 
 	/**
