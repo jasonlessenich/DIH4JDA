@@ -1,6 +1,7 @@
 package com.dynxsty.dih4jda.util;
 
 import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
+import com.dynxsty.dih4jda.exceptions.DIH4JDAReflectionException;
 import com.dynxsty.dih4jda.exceptions.InvalidPackageException;
 
 import javax.annotation.Nonnull;
@@ -72,12 +73,12 @@ public class ClassWalker {
 						})
 						.collect(Collectors.toSet());
 			} catch(UncheckedClassLoadException exception) {
-				throw new DIH4JDAException(exception);
+				throw new DIH4JDAReflectionException(exception);
 			} finally {
 				if (fileSystem != null) fileSystem.close();
 			}
 		} catch (URISyntaxException | IOException exception) {
-			throw new DIH4JDAException(exception);
+			throw new DIH4JDAReflectionException(exception);
 		}
 	}
 
