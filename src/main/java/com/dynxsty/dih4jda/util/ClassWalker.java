@@ -37,9 +37,12 @@ public class ClassWalker {
 		try {
 			String packagePath = packageName.replace('.', '/');
 			ClassLoader classLoader;
-			if (Thread.currentThread().getContextClassLoader() != null) classLoader = Thread.currentThread().getContextClassLoader();
-			 else classLoader = ClassWalker.class.getClassLoader();
 
+			if (Thread.currentThread().getContextClassLoader() != null) {
+				classLoader = Thread.currentThread().getContextClassLoader();
+			} else {
+				classLoader = ClassWalker.class.getClassLoader();
+			}
 
 			URL resourceURL = classLoader.getResource(packagePath);
 			if (resourceURL == null) {
