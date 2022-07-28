@@ -2,7 +2,6 @@ package com.dynxsty.dih4jda.util;
 
 import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import com.dynxsty.dih4jda.exceptions.InvalidPackageException;
-import com.dynxsty.dih4jda.exceptions.UncheckedClassLoadException;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -104,5 +103,11 @@ public class ClassWalker {
 				.filter(type::isAssignableFrom)
 				.map(clazz -> (Class<? extends T>) clazz)
 				.collect(Collectors.toSet());
+	}
+
+	private static class UncheckedClassLoadException extends RuntimeException {
+		public UncheckedClassLoadException(Throwable cause) {
+			super(cause);
+		}
 	}
 }
