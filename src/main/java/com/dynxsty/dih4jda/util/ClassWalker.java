@@ -4,6 +4,8 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -31,44 +33,55 @@ public class ClassWalker {
 	public @Nonnull Set<Class<?>> getAllClasses() {
 		try {
 			String packagePath = packageName.replace('.', '/');
-			URI pkg = ClassLoader.getSystemClassLoader().getResource(packagePath).toURI();
-			Set<Class<?>> allClasses = new HashSet<>();
+			URL resourceURL = ClassLoader.getSystemClassLoader().getResource(packagePath);
+			if (resourceURL == null) {
+				return Collections.emptySet();
+			}
+			URI pkg = resourceURL.toURI();
 
 			Path root;
 			if (pkg.toString().startsWith("jar:")) {
 				try {
 					root = FileSystems.getFileSystem(pkg).getPath(packagePath);
 				} catch (FileSystemNotFoundException exception) {
-					root = FileSystems.newFileSystem(pkg, Collections.emptyMap()).getPath(packagePath);
+					FileSystem fileSystem = FileSystems.newFileSystem(pkg, Collections.emptyMap());
+					root = fileSystem.getPath(packagePath);
+					fileSystem.close();
 				}
 			} else {
 				root = Paths.get(pkg);
 			}
 
 			try (Stream<Path> allPaths = Files.walk(root)) {
-				allPaths.filter(Files::isRegularFile).forEach(file -> {
-					try {
-						String path = file.toString().replace('/', '.');
-
-						String name;
-						try {
-							name = path.substring(path.indexOf(packageName), path.length() - ".class".length());
-						} catch (StringIndexOutOfBoundsException exception) {
-							path = file.toString().replace('\\', '.');
-							name = path.substring(path.indexOf(packageName), path.length() - ".class".length());
-						}
-
-						allClasses.add(Class.forName(name));
-					} catch (ClassNotFoundException | IndexOutOfBoundsException exception) {
-						exception.printStackTrace();
-					}
-				});
+				return allPaths.filter(Files::isRegularFile)
+						.filter(file -> file.toString().endsWith(".class"))
+						.map(this::mapFileToName)
+						.map(clazz -> {
+							try {
+								return ClassLoader.getSystemClassLoader().loadClass(clazz);
+							} catch (ClassNotFoundException e) {
+								return null;
+							}
+						})
+						.collect(Collectors.toSet());
 			}
-			return allClasses;
-		} catch (NullPointerException | URISyntaxException | IOException exception) {
+		} catch (URISyntaxException | IOException exception) {
 			exception.printStackTrace();
 			return Collections.emptySet();
 		}
+	}
+
+	private String mapFileToName(Path file) {
+		String path = file.toString().replace('/', '.');
+
+		String name;
+		try {
+			name = path.substring(path.indexOf(packageName), path.length() - ".class".length());
+		} catch (StringIndexOutOfBoundsException exception) {
+			path = file.toString().replace('\\', '.');
+			name = path.substring(path.indexOf(packageName), path.length() - ".class".length());
+		}
+		return name;
 	}
 
 	/**
