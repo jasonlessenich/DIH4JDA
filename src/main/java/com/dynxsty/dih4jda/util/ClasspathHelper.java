@@ -23,7 +23,13 @@ public class ClasspathHelper {
 	 */
 	public static @Nonnull Collection<URL> forPackage(@Nonnull String packageName) {
 		List<URL> results = new ArrayList<>();
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		ClassLoader loader;
+		if (Thread.currentThread().getContextClassLoader() != null) loader = Thread.currentThread().getContextClassLoader();
+		else loader = ClasspathHelper.class.getClassLoader();
+
+		if (packageName.isEmpty() || packageName.isBlank()) {
+			return results;
+		}
 		try {
 			Enumeration<URL> urls = loader.getResources(getResourceName(packageName));
 			while (urls.hasMoreElements()) {
