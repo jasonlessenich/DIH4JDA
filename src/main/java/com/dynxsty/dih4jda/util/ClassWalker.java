@@ -73,7 +73,7 @@ public class ClassWalker {
 						})
 						.collect(Collectors.toSet());
 			} catch(UncheckedClassLoadException exception) {
-				throw new DIH4JDAReflectionException(exception);
+				throw new DIH4JDAReflectionException(exception.getCause());
 			} finally {
 				if (fileSystem != null) fileSystem.close();
 			}
