@@ -23,7 +23,7 @@ public class ClassWalker {
 
 	private final String packageName;
 
-	public ClassWalker(String packageName) {
+	public ClassWalker(@Nonnull String packageName) {
 		this.packageName = packageName;
 	}
 
@@ -59,9 +59,8 @@ public class ClassWalker {
 				root = Paths.get(pkg);
 			}
 
-			Set<Class<?>> classes;
 			try (Stream<Path> allPaths = Files.walk(root)) {
-				classes = allPaths.filter(Files::isRegularFile)
+				return allPaths.filter(Files::isRegularFile)
 						.filter(file -> file.toString().endsWith(".class"))
 						.map(this::mapFileToName)
 						.map(clazz -> {
@@ -77,17 +76,13 @@ public class ClassWalker {
 			} finally {
 				if (fileSystem != null) fileSystem.close();
 			}
-			return classes;
 		} catch (URISyntaxException | IOException exception) {
 			throw new DIH4JDAException(exception);
 		}
 	}
 
 	private String mapFileToName(Path file) {
-		String path = file.toString().replace('/', '.');
-		if (!path.contains(packageName)) {
-			path = file.toString().replace('\\', '.');
-		}
+		String path = file.toString().replace(file.getFileSystem().getSeparator(), ".");
 		return path.substring(path.indexOf(packageName), path.length() - ".class".length());
 	}
 
