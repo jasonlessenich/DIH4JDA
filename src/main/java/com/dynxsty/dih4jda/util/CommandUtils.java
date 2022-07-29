@@ -5,7 +5,11 @@ import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
-import net.dv8tion.jda.api.interactions.commands.build.*;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
