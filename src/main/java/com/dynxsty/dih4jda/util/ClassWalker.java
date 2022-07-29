@@ -44,11 +44,11 @@ public class ClassWalker {
 				classLoader = ClassWalker.class.getClassLoader();
 			}
 
-			URL resourceURL = classLoader.getResource(packagePath);
-			if (resourceURL == null) {
+			URL resourceUrl = classLoader.getResource(packagePath);
+			if (resourceUrl == null) {
 				throw new InvalidPackageException(String.format("%s package not found in ClassLoader", packagePath));
 			}
-			URI pkg = resourceURL.toURI();
+			URI pkg = resourceUrl.toURI();
 
 			Path root;
 			FileSystem fileSystem = null;
@@ -75,10 +75,12 @@ public class ClassWalker {
 							}
 						})
 						.collect(Collectors.toSet());
-			} catch(UncheckedClassLoadException exception) {
+			} catch (UncheckedClassLoadException exception) {
 				throw new DIH4JDAReflectionException(exception.getCause());
 			} finally {
-				if (fileSystem != null) fileSystem.close();
+				if (fileSystem != null) {
+					fileSystem.close();
+				}
 			}
 		} catch (URISyntaxException | IOException exception) {
 			throw new DIH4JDAReflectionException(exception);
