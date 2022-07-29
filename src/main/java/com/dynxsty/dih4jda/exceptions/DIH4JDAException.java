@@ -9,6 +9,10 @@ public class DIH4JDAException extends Exception {
 		super(message);
 	}
 
+	public DIH4JDAException(Throwable cause) {
+		super(cause);
+	}
+
 	public DIH4JDAException(String message, Throwable t) {
 		super(message, t);
 	}

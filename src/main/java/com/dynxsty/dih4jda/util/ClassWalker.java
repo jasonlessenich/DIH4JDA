@@ -1,19 +1,30 @@
 package com.dynxsty.dih4jda.util;
 
+import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
+import com.dynxsty.dih4jda.exceptions.DIH4JDAReflectionException;
+import com.dynxsty.dih4jda.exceptions.InvalidPackageException;
+
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashSet;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ClassWalker {
 
 	private final String packageName;
 
-	public ClassWalker(String packageName) {
+	public ClassWalker(@Nonnull String packageName) {
 		this.packageName = packageName;
 	}
 
@@ -22,33 +33,62 @@ public class ClassWalker {
 	 *
 	 * @return An unmodifiable {@link Set} of classes inside the given package.
 	 */
-	public @Nonnull Set<Class<?>> getAllClasses() {
-		InputStream is = Thread.currentThread().getContextClassLoader()
-				.getResourceAsStream(packageName.replaceAll("[.]", "/"));
-		if (is == null) return Set.of();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		Set<Class<?>> classes = new HashSet<>();
-		for (String line : reader.lines().collect(Collectors.toSet())) {
-			if (line.endsWith(".class")) classes.add(getClass(line));
-			else classes.addAll(new ClassWalker(packageName + "." + line).getAllClasses());
+	public @Nonnull Set<Class<?>> getAllClasses() throws DIH4JDAException {
+		try {
+			String packagePath = packageName.replace('.', '/');
+			ClassLoader classLoader;
+
+			if (Thread.currentThread().getContextClassLoader() != null) {
+				classLoader = Thread.currentThread().getContextClassLoader();
+			} else {
+				classLoader = ClassWalker.class.getClassLoader();
+			}
+
+			URL resourceUrl = classLoader.getResource(packagePath);
+			if (resourceUrl == null) {
+				throw new InvalidPackageException(String.format("%s package not found in ClassLoader", packagePath));
+			}
+			URI pkg = resourceUrl.toURI();
+
+			Path root;
+			FileSystem fileSystem = null;
+			if (pkg.toString().startsWith("jar:")) {
+				try {
+					root = FileSystems.getFileSystem(pkg).getPath(packagePath);
+				} catch (FileSystemNotFoundException exception) {
+					fileSystem = FileSystems.newFileSystem(pkg, Collections.emptyMap());
+					root = fileSystem.getPath(packagePath);
+				}
+			} else {
+				root = Paths.get(pkg);
+			}
+			try (Stream<Path> allPaths = Files.walk(root)) {
+				return allPaths.filter(Files::isRegularFile)
+						.filter(file -> file.toString().endsWith(".class"))
+						.map(this::mapFileToName)
+						.map(clazz -> {
+							try {
+								return classLoader.loadClass(clazz);
+							} catch (ClassNotFoundException exception) {
+								throw new UncheckedClassLoadException(exception);
+							}
+						})
+						.collect(Collectors.toSet());
+			} catch (UncheckedClassLoadException exception) {
+				throw new DIH4JDAReflectionException(exception.getCause());
+			} finally {
+				if (fileSystem != null) {
+					fileSystem.close();
+				}
+			}
+		} catch (URISyntaxException | IOException exception) {
+			throw new DIH4JDAReflectionException(exception);
 		}
-		return classes;
 	}
 
-	/**
-	 * Attempts to get a single class, based on the given name.
-	 *
-	 * @param className The name of the class.
-	 * @return The class with the given name.
-	 */
-	private @Nullable Class<?> getClass(@Nonnull String className) {
-		try {
-			return Class.forName(packageName + "."
-					+ className.substring(0, className.lastIndexOf('.')));
-		} catch (ClassNotFoundException exception) {
-			exception.printStackTrace();
-		}
-		return null;
+	private @Nonnull String mapFileToName(@Nonnull Path file) {
+		String path = file.toString().replace(file.getFileSystem().getSeparator(), ".");
+		return path.substring(path.indexOf(packageName), path.length() - ".class".length());
 	}
 
 	/**
@@ -57,11 +97,17 @@ public class ClassWalker {
 	 * @param type The parent class to search for.
 	 * @return An unmodifiable {@link Set} of classes which are assignable to the given type.
 	 */
-	public @Nonnull <T> Set<Class<? extends T>> getSubTypesOf(@Nonnull Class<T> type) {
+	public @Nonnull <T> Set<Class<? extends T>> getSubTypesOf(@Nonnull Class<T> type) throws DIH4JDAException {
 		return getAllClasses()
 				.stream()
 				.filter(type::isAssignableFrom)
 				.map(clazz -> (Class<? extends T>) clazz)
 				.collect(Collectors.toSet());
+	}
+
+	private static class UncheckedClassLoadException extends RuntimeException {
+		public UncheckedClassLoadException(Throwable cause) {
+			super(cause);
+		}
 	}
 }

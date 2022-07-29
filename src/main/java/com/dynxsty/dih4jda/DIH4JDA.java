@@ -2,6 +2,7 @@ package com.dynxsty.dih4jda;
 
 import com.dynxsty.dih4jda.config.DIH4JDAConfig;
 import com.dynxsty.dih4jda.events.DIH4JDAEventListener;
+import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import com.dynxsty.dih4jda.interactions.components.ModalHandler;
@@ -53,7 +54,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param config The instance's configuration.
 	 */
-	protected DIH4JDA(DIH4JDAConfig config) {
+	protected DIH4JDA(DIH4JDAConfig config) throws DIH4JDAException {
 		if (defaultCommandType == null) defaultCommandType = RegistrationType.GUILD;
 		this.config = config;
 		listeners = new HashSet<>();
