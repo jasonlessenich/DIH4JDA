@@ -62,7 +62,6 @@ public class ClassWalker {
 			} else {
 				root = Paths.get(pkg);
 			}
-
 			try (Stream<Path> allPaths = Files.walk(root)) {
 				return allPaths.filter(Files::isRegularFile)
 						.filter(file -> file.toString().endsWith(".class"))
