@@ -143,6 +143,9 @@ public class DIH4JDABuilder {
 			DIH4JDALogger.warn("You are running DIH4JDA on a single core CPU. A special system property was set to disable asynchronous command execution.");
 			System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "1");
 		}
+		if (config.getCommandsPackage().isBlank() || config.getCommandsPackage().isEmpty()) {
+			throw new InvalidPackageException("Commands package cannot be empty or blank.");
+		}
 		if (ClasspathHelper.forPackage(config.getCommandsPackage()).isEmpty()) {
 			throw new InvalidPackageException("Package " + config.getCommandsPackage() + " does not exist.");
 		}
