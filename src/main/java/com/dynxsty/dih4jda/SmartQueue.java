@@ -122,7 +122,7 @@ public class SmartQueue {
 						}
 					}
 				}
-				DIH4JDALogger.info(String.format(prefix + "Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+				DIH4JDALogger.info(String.format(prefix + "Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName()), DIH4JDALogger.Type.SMART_QUEUE_IGNORED);
 				return true;
 			}
 			return false;
