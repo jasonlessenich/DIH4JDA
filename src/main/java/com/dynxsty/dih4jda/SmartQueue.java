@@ -76,8 +76,8 @@ public class SmartQueue {
 		try {
 			existing = guild.retrieveCommands().complete();
 		} catch (ErrorResponseException e) {
-			DIH4JDALogger.error("Could not retrieve Commands from Guild " + guild.getName() + "!" +
-					" Please make sure that the bot was invited with the application.commands scope!");
+			DIH4JDALogger.error("Could not retrieve Commands from Guild %s!" +
+					" Please make sure that the bot was invited with the application.commands scope!", guild.getName());
 			return new Pair<>(Set.of(), Set.of());
 		}
 		if (!existing.isEmpty()) {
@@ -99,7 +99,7 @@ public class SmartQueue {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
 		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());
-		DIH4JDALogger.info(String.format(prefix + "Found %s existing command(s)", existing.size()), DIH4JDALogger.Type.SMART_QUEUE);
+		DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE, prefix + "Found %s existing command(s)", existing.size());
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
 			if (commandData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData(), global)) ||
@@ -109,20 +109,20 @@ public class SmartQueue {
 				if (!global) {
 					for (UnqueuedSlashCommandData d : slashData) {
 						if (CommandUtils.isEqual(cmd, d.getData(), false) && !d.getGuilds().contains(guild)) {
-							DIH4JDALogger.info("Deleting /" + cmd.getName() + " in Guild: " + guild.getName());
+							DIH4JDALogger.info("Deleting /%s in Guild: %s", cmd.getName(), guild.getName());
 							cmd.delete().queue();
 							return true;
 						}
 					}
 					for (UnqueuedCommandData d : commandData) {
 						if (CommandUtils.isEqual(cmd, d.getData(), false) && !d.getGuilds().contains(guild)) {
-							DIH4JDALogger.info("Deleting " + cmd.getName() + " in Guild: " + guild.getName());
+							DIH4JDALogger.info("Deleting %s in Guild: %s", cmd.getName(), guild.getName());
 							cmd.delete().queue();
 							return true;
 						}
 					}
 				}
-				DIH4JDALogger.info(String.format(prefix + "Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName()), DIH4JDALogger.Type.SMART_QUEUE_IGNORED);
+				DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_IGNORED, prefix + "Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName());
 				return true;
 			}
 			return false;
@@ -134,14 +134,14 @@ public class SmartQueue {
 			for (Command command : commands) {
 				if (existing.contains(command)) {
 					if (deleteUnknown) {
-						DIH4JDALogger.info(String.format(prefix + "Deleting unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+						DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_DELETED_UNKNOWN, prefix + "Deleting unknown %s command: %s", command.getType(), command.getName());
 						if (global) {
 							jda.deleteCommandById(command.getId()).queue();
 						} else {
 							guild.deleteCommandById(command.getId()).queue();
 						}
 					} else {
-						DIH4JDALogger.info(String.format(prefix + "Ignored unknown %s command: %s", command.getType(), command.getName()), DIH4JDALogger.Type.SMART_QUEUE);
+						DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_IGNORED_UNKNOWN, prefix + "Ignored unknown %s command: %s", command.getType(), command.getName());
 					}
 				}
 			}

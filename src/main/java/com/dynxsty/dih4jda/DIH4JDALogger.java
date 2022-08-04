@@ -36,40 +36,40 @@ public class DIH4JDALogger {
 		}
 	}
 
-	public static void info(String msg, Type type) {
-		log(msg, type, Level.INFO);
+	public static void info(Type type, String msg, Object... args) {
+		log(String.format(msg, args), type, Level.INFO);
 	}
 
 	public static void info(String msg, Object... args) {
 		log(String.format(msg, args), Type.INFO, Level.INFO);
 	}
 
-	public static void warn(String msg, Type type) {
-		log(msg, type, Level.WARN);
+	public static void warn(Type type, String msg, Object... args) {
+		log(String.format(msg, args), type, Level.WARN);
 	}
 
 	public static void warn(String msg, Object... args) {
 		log(String.format(msg, args), Type.WARN, Level.WARN);
 	}
 
-	public static void error(String msg, Type type) {
-		log(msg, type, Level.ERROR);
+	public static void error(Type type, String msg, Object... args) {
+		log(String.format(msg, args), type, Level.ERROR);
 	}
 
 	public static void error(String msg, Object... args) {
 		log(String.format(msg, args), Type.ERROR, Level.ERROR);
 	}
 
-	public static void debug(String msg, Type type) {
-		log(msg, type, Level.DEBUG);
+	public static void debug(Type type, String msg, Object... args) {
+		log(String.format(msg, args), type, Level.DEBUG);
 	}
 
 	public static void debug(String msg, Object... args) {
 		log(String.format(msg, args), Type.DEBUG, Level.DEBUG);
 	}
 
-	public static void trace(String msg, Type type) {
-		log(msg, type, Level.TRACE);
+	public static void trace(Type type, String msg, Object... args) {
+		log(String.format(msg, args), type, Level.TRACE);
 	}
 
 	public static void trace(String msg, Object... args) {
@@ -89,6 +89,8 @@ public class DIH4JDALogger {
 		CONTEXT_COMMAND_SKIPPED,
 		SMART_QUEUE,
 		SMART_QUEUE_IGNORED,
+		SMART_QUEUE_DELETED_UNKNOWN,
+		SMART_QUEUE_IGNORED_UNKNOWN,
 		BUTTON_NOT_FOUND,
 		SELECT_MENU_NOT_FOUND,
 		MODAL_NOT_FOUND,

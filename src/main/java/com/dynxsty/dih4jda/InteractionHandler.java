@@ -152,13 +152,13 @@ public class InteractionHandler extends ListenerAdapter {
 		// upsert all global commands
 		if (!globalData.getFirst().isEmpty() || !globalData.getSecond().isEmpty()) {
 			upsert(config.getJDA(), globalData.getFirst(), globalData.getSecond());
-			DIH4JDALogger.info(String.format("Queued %s global command(s): %s", globalData.getFirst().size() + globalData.getSecond().size(),
-					CommandUtils.getNames(globalData.getSecond(), globalData.getFirst())), DIH4JDALogger.Type.COMMANDS_QUEUED);
+			DIH4JDALogger.info(DIH4JDALogger.Type.COMMANDS_QUEUED, "Queued %s global command(s): %s",
+					globalData.getFirst().size() + globalData.getSecond().size(), CommandUtils.getNames(globalData.getSecond(), globalData.getFirst()));
 		}
 		if (!autoCompleteIndex.isEmpty()) {
 			// print autocomplete bindings
-			DIH4JDALogger.info(String.format("Created %s AutoComplete binding(s): %s", autoCompleteIndex.size(),
-					autoCompleteIndex.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue().getClass().getSimpleName()).collect(Collectors.joining(", "))));
+			DIH4JDALogger.info("Created %s AutoComplete binding(s): %s", autoCompleteIndex.size(),
+					autoCompleteIndex.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue().getClass().getSimpleName()).collect(Collectors.joining(", ")));
 		}
 	}
 
@@ -188,7 +188,7 @@ public class InteractionHandler extends ListenerAdapter {
 				guild.upsertCommand(data.getData()).queue();
 				commandNames.append(", /").append(data.getData().getName());
 			} else {
-				DIH4JDALogger.info("Skipping Registration of /" + data.getData().getName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
+				DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping Registration of /%s for Guild: %s", data.getData().getName(), guild.getName());
 			}
 		});
 		commandData.forEach(data -> {
@@ -196,12 +196,12 @@ public class InteractionHandler extends ListenerAdapter {
 				guild.upsertCommand(data.getData()).queue();
 				commandNames.append(", ").append(data.getData().getName());
 			} else {
-				DIH4JDALogger.info("Skipping Registration of " + data.getData().getName() + " for Guild: " + guild.getName(), DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED);
+				DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping Registration of %s for Guild: %s", data.getData().getName(), guild.getName());
 			}
 		});
 		if (!commandNames.toString().isEmpty()) {
-			DIH4JDALogger.info(String.format("Queued %s command(s) in guild %s: %s", slashData.size() + commandData.size(), guild.getName(),
-					commandNames.substring(2)), DIH4JDALogger.Type.COMMANDS_QUEUED);
+			DIH4JDALogger.info(DIH4JDALogger.Type.COMMANDS_QUEUED, "Queued %s command(s) in guild %s: %s",
+					slashData.size() + commandData.size(), guild.getName(), commandNames.substring(2));
 		}
 	}
 
@@ -298,7 +298,7 @@ public class InteractionHandler extends ListenerAdapter {
 	private @Nullable SlashCommandData getBaseCommandData(@Nonnull SlashCommand command, @Nonnull Class<? extends SlashCommand> commandClass) {
 		// find component (and modal) handlers
 		if (command.getSlashCommandData() == null) {
-			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
+			DIH4JDALogger.warn("Class %s is missing CommandData. It will be ignored.", commandClass.getName());
 			return null;
 		}
 		SlashCommandData commandData = command.getSlashCommandData();
@@ -311,7 +311,7 @@ public class InteractionHandler extends ListenerAdapter {
 		if (command.getSubcommandGroups() != null && command.getSubcommandGroups().isEmpty()
 				&& command.getSubcommands() != null && command.getSubcommands().isEmpty()) {
 			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), command);
-			DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", command.getSlashCommandData().getName(), command.getRegistrationType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
+			DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED, "\t[*] Registered command: /%s (%s)", command.getSlashCommandData().getName(), command.getRegistrationType().name());
 		}
 		return commandData;
 	}
@@ -327,11 +327,11 @@ public class InteractionHandler extends ListenerAdapter {
 		for (Map.Entry<SubcommandGroupData, Set<SlashCommand.Subcommand>> group : command.getSubcommandGroups().entrySet()) {
 			if (group != null) {
 				if (group.getKey() == null) {
-					DIH4JDALogger.warn(String.format("Class %s is missing SubcommandGroupData. It will be ignored.", group.getClass().getSimpleName()));
+					DIH4JDALogger.warn("Class %s is missing SubcommandGroupData. It will be ignored.", group.getClass().getSimpleName());
 					continue;
 				}
 				if (group.getValue() == null || group.getValue().isEmpty()) {
-					DIH4JDALogger.warn(String.format("SubcommandGroup %s is missing Subcommands. It will be ignored.", group.getKey().getName()));
+					DIH4JDALogger.warn("SubcommandGroup %s is missing Subcommands. It will be ignored.", group.getKey().getName());
 					continue;
 				}
 				SubcommandGroupData groupData = group.getKey();
@@ -355,7 +355,7 @@ public class InteractionHandler extends ListenerAdapter {
 		for (SlashCommand.Subcommand subcommand : subcommands) {
 			if (subcommand != null) {
 				if (subcommand.getSubcommandData() == null) {
-					DIH4JDALogger.warn(String.format("Class %s is missing SubcommandData. It will be ignored.", subcommand.getClass().getSimpleName()));
+					DIH4JDALogger.warn("Class %s is missing SubcommandData. It will be ignored.", subcommand.getClass().getSimpleName());
 					continue;
 				}
 				String commandPath;
@@ -365,7 +365,7 @@ public class InteractionHandler extends ListenerAdapter {
 					commandPath = CommandUtils.buildCommandPath(command.getSlashCommandData().getName(), subGroupName, subcommand.getSubcommandData().getName());
 				}
 				subcommandIndex.put(commandPath, subcommand);
-				DIH4JDALogger.info(String.format("\t[*] Registered command: /%s (%s)", commandPath, command.getRegistrationType().name()), DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED);
+				DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED, "\t[*] Registered command: /%s (%s)", commandPath, command.getRegistrationType().name());
 				subDataList.add(subcommand.getSubcommandData());
 			}
 		}
@@ -400,7 +400,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private @Nullable CommandData getContextCommandData(@Nonnull ContextCommand command, @Nonnull Class<? extends ContextCommand> commandClass) {
 		if (command.getCommandData() == null) {
-			DIH4JDALogger.warn(String.format("Class %s is missing CommandData. It will be ignored.", commandClass.getName()));
+			DIH4JDALogger.warn("Class %s is missing CommandData. It will be ignored.", commandClass.getName());
 			return null;
 		}
 		CommandData commandData = command.getCommandData();
@@ -409,10 +409,10 @@ public class InteractionHandler extends ListenerAdapter {
 		} else if (commandData.getType() == Command.Type.USER) {
 			userContextIndex.put(commandData.getName(), (ContextCommand.User) command);
 		} else {
-			DIH4JDALogger.error(String.format("Invalid Command Type \"%s\" for Context Command! This command will be ignored.", commandData.getType()));
+			DIH4JDALogger.error("Invalid Command Type \"%s\" for Context Command! This command will be ignored.", commandData.getType());
 			return null;
 		}
-		DIH4JDALogger.info(String.format("\t[*] Registered context command: %s (%s)", command.getCommandData().getName(), command.getRegistrationType().name()), DIH4JDALogger.Type.CONTEXT_COMMAND_REGISTERED);
+		DIH4JDALogger.info(DIH4JDALogger.Type.CONTEXT_COMMAND_REGISTERED, "\t[*] Registered context command: %s (%s)", command.getCommandData().getName(), command.getRegistrationType().name());
 		return commandData;
 	}
 
@@ -595,7 +595,7 @@ public class InteractionHandler extends ListenerAdapter {
 						.map(Map.Entry::getValue)
 						.findFirst();
 				if (buttonOptional.isEmpty()) {
-					DIH4JDALogger.warn(String.format("Button with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.BUTTON_NOT_FOUND);
+					DIH4JDALogger.warn(DIH4JDALogger.Type.BUTTON_NOT_FOUND, "Button with id \"%s\" could not be found.", event.getComponentId());
 				} else {
 					buttonOptional.get().handleButton(event, event.getButton());
 				}
@@ -619,7 +619,7 @@ public class InteractionHandler extends ListenerAdapter {
 						.map(Map.Entry::getValue)
 						.findFirst();
 				if (selectMenuOptional.isEmpty()) {
-					DIH4JDALogger.warn(String.format("Select Menu with id \"%s\" could not be found.", event.getComponentId()), DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND);
+					DIH4JDALogger.warn(DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND, "Select Menu with id \"%s\" could not be found.", event.getComponentId());
 				} else {
 					selectMenuOptional.get().handleSelectMenu(event, event.getValues());
 				}
@@ -643,7 +643,7 @@ public class InteractionHandler extends ListenerAdapter {
 						.map(Map.Entry::getValue)
 						.findFirst();
 				if (modalOptional.isEmpty()) {
-					DIH4JDALogger.warn(String.format("Modal with id \"%s\" could not be found.", event.getModalId()), DIH4JDALogger.Type.MODAL_NOT_FOUND);
+					DIH4JDALogger.warn(DIH4JDALogger.Type.MODAL_NOT_FOUND, "Modal with id \"%s\" could not be found.", event.getModalId());
 				} else {
 					modalOptional.get().handleModal(event, event.getValues());
 				}
