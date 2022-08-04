@@ -38,13 +38,13 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Sets the package that houses all Command classes. DIH4JDA then uses the {@link ClassWalker} API to "scan" the package for all
+	 * Sets the packages that house all Command classes. DIH4JDA then uses the {@link ClassWalker} to "scan" the packages for all
 	 * command classes.
 	 *
-	 * @param pack The package's name.
+	 * @param pack The packages name.
 	 */
-	public @Nonnull DIH4JDABuilder setCommandsPackage(@Nonnull String pack) {
-		config.setCommandsPackage(pack);
+	public @Nonnull DIH4JDABuilder setCommandPackages(@Nonnull String... pack) {
+		config.setCommandPackages(pack);
 		return this;
 	}
 
@@ -143,11 +143,13 @@ public class DIH4JDABuilder {
 			DIH4JDALogger.warn("You are running DIH4JDA on a single core CPU. A special system property was set to disable asynchronous command execution.");
 			System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "1");
 		}
-		if (config.getCommandsPackage().isBlank() || config.getCommandsPackage().isEmpty()) {
-			throw new InvalidPackageException("Commands package cannot be empty or blank.");
-		}
-		if (ClasspathHelper.forPackage(config.getCommandsPackage()).isEmpty()) {
-			throw new InvalidPackageException("Package " + config.getCommandsPackage() + " does not exist.");
+		for (String pkg : config.getCommandPackages()) {
+			if (pkg.isBlank() || pkg.isEmpty()) {
+				throw new InvalidPackageException("Commands package cannot be empty or blank.");
+			}
+			if (ClasspathHelper.forPackage(pkg).isEmpty()) {
+				throw new InvalidPackageException("Package '" + pkg + "' does not exist.");
+			}
 		}
 		config.setJDA(jda);
 		return new DIH4JDA(config);

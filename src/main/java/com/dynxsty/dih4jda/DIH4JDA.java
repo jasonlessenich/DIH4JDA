@@ -3,13 +3,16 @@ package com.dynxsty.dih4jda;
 import com.dynxsty.dih4jda.config.DIH4JDAConfig;
 import com.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
+import com.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
+import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import com.dynxsty.dih4jda.interactions.components.ModalHandler;
 import com.dynxsty.dih4jda.interactions.components.SelectMenuHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -74,7 +77,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	@Override
 	public void onReady(@Nonnull ReadyEvent event) {
-		if (config.getCommandsPackage() == null) return;
+		if (config.getCommandPackages() == null) return;
 		try {
 			if (config.isRegisterOnReady() && handler != null) {
 				handler.registerInteractions();
@@ -107,7 +110,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @since v1.5
 	 */
-	public void addListener(Object... classes) {
+	public void addEventListener(Object @NotNull ... classes) {
 		for (Object o : classes) {
 			try {
 				// check if class extends the ListenerAdapter
@@ -121,7 +124,7 @@ public class DIH4JDA extends ListenerAdapter {
 
 	/**
 	 * @return A set of all Listener classes.
-	 * @see DIH4JDA#addListener(Object...)
+	 * @see DIH4JDA#addEventListener(Object...)
 	 */
 	protected @Nonnull Set<DIH4JDAEventListener> getListeners() {
 		return listeners;
@@ -134,6 +137,24 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	public @Nonnull JDA getJDA() {
 		return config.getJDA();
+	}
+
+	/**
+	 * Manually registers {@link SlashCommand}s.
+	 *
+	 * @param commands An array of commands to register.
+	 */
+	public void registerSlashCommands(SlashCommand... commands) {
+		handler.commands.addAll(List.of(commands));
+	}
+
+	/**
+	 * Manually registers {@link ContextCommand}s.
+	 *
+	 * @param commands An array of commands to register.
+	 */
+	public void registerContextCommands(ContextCommand... commands) {
+		handler.contexts.addAll(List.of(commands));
 	}
 
 	/**

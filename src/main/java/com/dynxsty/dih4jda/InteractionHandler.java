@@ -5,22 +5,13 @@ import com.dynxsty.dih4jda.events.DIH4JDAEvent;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
-import com.dynxsty.dih4jda.interactions.commands.AutoCompletable;
-import com.dynxsty.dih4jda.interactions.commands.CommandRequirements;
-import com.dynxsty.dih4jda.interactions.commands.ContextCommand;
-import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
-import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
+import com.dynxsty.dih4jda.interactions.commands.*;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import com.dynxsty.dih4jda.interactions.components.ModalHandler;
 import com.dynxsty.dih4jda.interactions.components.SelectMenuHandler;
-import com.dynxsty.dih4jda.util.AutoCompleteUtils;
-import com.dynxsty.dih4jda.util.Checks;
-import com.dynxsty.dih4jda.util.ClassUtils;
-import com.dynxsty.dih4jda.util.ClassWalker;
-import com.dynxsty.dih4jda.util.CommandUtils;
-import com.dynxsty.dih4jda.util.Pair;
+import com.dynxsty.dih4jda.util.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -44,12 +35,7 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -74,57 +60,60 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * An Index of all {@link SlashCommand}s.
 	 *
-	 * @see InteractionHandler#findSlashCommands()
+	 * @see InteractionHandler#findSlashCommands(String)
 	 */
 	private final Map<String, SlashCommand> slashCommandIndex;
 
 	/**
 	 * An Index of all {@link SlashCommand.Subcommand}s.
 	 *
-	 * @see InteractionHandler#findSlashCommands()
+	 * @see InteractionHandler#findSlashCommands(String)
 	 */
 	private final Map<String, SlashCommand.Subcommand> subcommandIndex;
 
 	/**
 	 * An Index of all {@link ContextCommand.Message}s.
 	 *
-	 * @see InteractionHandler#findContextCommands()
+	 * @see InteractionHandler#findContextCommands(String)
 	 */
 	private final Map<String, ContextCommand.Message> messageContextIndex;
 
 	/**
 	 * An Index of all {@link ContextCommand.User}s.
 	 *
-	 * @see InteractionHandler#findContextCommands()
+	 * @see InteractionHandler#findContextCommands(String)
 	 */
 	private final Map<String, ContextCommand.User> userContextIndex;
 
 	/**
 	 * An Index of all {@link AutoCompletable}s.
 	 *
-	 * @see InteractionHandler#findSlashCommands()
+	 * @see InteractionHandler#findSlashCommands(String)
 	 */
 	private final Map<String, AutoCompletable> autoCompleteIndex;
 
-	private final Set<Class<? extends SlashCommand>> commands;
-	private final Set<Class<? extends ContextCommand>> contexts;
+	protected final Set<SlashCommand> commands;
+	protected final Set<ContextCommand> contexts;
 
 	/**
 	 * Constructs a new {@link InteractionHandler} from the supplied commands package.
 	 *
 	 * @param dih4jda The {@link DIH4JDA} instance.
 	 */
-	protected InteractionHandler(@Nonnull DIH4JDA dih4jda) throws DIH4JDAException {
+	protected InteractionHandler(@Nonnull DIH4JDA dih4jda) {
 		this.dih4jda = dih4jda;
 		config = dih4jda.getConfig();
 
-		commands = findSlashCommands();
-		contexts = findContextCommands();
-		// remove own implementations
-		contexts.removeAll(List.of(
-				ContextCommand.User.class,
-				ContextCommand.Message.class));
-
+		commands = new HashSet<>();
+		contexts = new HashSet<>();
+		for (String pkg : config.getCommandPackages()) {
+			try {
+				findSlashCommands(pkg);
+				findContextCommands(pkg);
+			} catch (ReflectiveOperationException | DIH4JDAException e) {
+				DIH4JDALogger.error("An error occurred while initializing commands in package %s: %s", pkg, e.getMessage());
+			}
+		}
 		// initialize indexes
 		slashCommandIndex = new HashMap<>();
 		subcommandIndex = new HashMap<>();
@@ -221,9 +210,16 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link SlashCommand}.
 	 */
-	private @Nonnull Set<Class<? extends SlashCommand>> findSlashCommands() throws DIH4JDAException {
-		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
-		return classes.getSubTypesOf(SlashCommand.class);
+	private void findSlashCommands(String pkg) throws ReflectiveOperationException, DIH4JDAException {
+		ClassWalker classes = new ClassWalker(pkg);
+		Set<Class<? extends SlashCommand>> subTypes = classes.getSubTypesOf(SlashCommand.class);
+		for (Class<? extends SlashCommand> subType : subTypes) {
+			if (Checks.checkEmptyConstructor(subType)) {
+				commands.add((SlashCommand) ClassUtils.getInstance(subType));
+			} else {
+				DIH4JDALogger.error("Could not initialize %s! The class MUST contain a empty public constructor.", subType.getName());
+			}
+		}
 	}
 
 	/**
@@ -231,27 +227,31 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link ContextCommand}.
 	 */
-	private @Nonnull Set<Class<? extends ContextCommand>> findContextCommands() throws DIH4JDAException {
-		ClassWalker classes = new ClassWalker(config.getCommandsPackage());
-		return classes.getSubTypesOf(ContextCommand.class);
+	private void findContextCommands(String pkg) throws ReflectiveOperationException, DIH4JDAException {
+		ClassWalker classes = new ClassWalker(pkg);
+		Set<Class<? extends ContextCommand>> subTypes = classes.getSubTypesOf(ContextCommand.class);
+		for (Class<? extends ContextCommand> subType : subTypes) {
+			if (Checks.checkEmptyConstructor(subType)) {
+				contexts.add((ContextCommand) ClassUtils.getInstance(subType));
+			} else {
+				DIH4JDALogger.error("Could not initialize %s! The class MUST contain a empty public constructor.", subType.getName());
+			}
+		}
 	}
 
 	/**
-	 * Gets all Commands that were found in {@link InteractionHandler#findSlashCommands()} and adds
+	 * Gets all Commands that were found in {@link InteractionHandler#findSlashCommands(String)} and adds
 	 * them to the {@link InteractionHandler#slashCommandIndex}.
-	 *
-	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private @Nonnull Set<UnqueuedSlashCommandData> getSlashCommandData() throws ReflectiveOperationException {
+	private @Nonnull Set<UnqueuedSlashCommandData> getSlashCommandData() {
 		Set<UnqueuedSlashCommandData> data = new HashSet<>();
-		for (Class<? extends SlashCommand> c : commands) {
-			SlashCommand instance = (SlashCommand) ClassUtils.getInstance(c);
+		for (SlashCommand instance : commands) {
 			if (instance != null) {
-				UnqueuedSlashCommandData unqueuedData = new UnqueuedSlashCommandData(getBaseCommandData(instance, c), instance.getRegistrationType());
+				UnqueuedSlashCommandData unqueuedData = new UnqueuedSlashCommandData(getBaseCommandData(instance, instance.getClass()), instance.getRegistrationType());
 				if (instance.getRegistrationType() == RegistrationType.GUILD) {
 					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
 				}
-				searchForAutoCompletable(instance, c);
+				searchForAutoCompletable(instance, instance.getClass());
 				data.add(unqueuedData);
 			}
 		}
@@ -373,17 +373,15 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets all Guild Context commands registered in {@link InteractionHandler#findContextCommands()} and
+	 * Gets all Guild Context commands registered in {@link InteractionHandler#findContextCommands(String)} and
 	 * returns their {@link CommandData} as a List.
 	 *
-	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	private @Nonnull Set<UnqueuedCommandData> getContextCommandData() throws ReflectiveOperationException {
+	private @Nonnull Set<UnqueuedCommandData> getContextCommandData() {
 		Set<UnqueuedCommandData> data = new HashSet<>();
-		for (Class<? extends ContextCommand> c : contexts) {
-			ContextCommand instance = (ContextCommand) ClassUtils.getInstance(c);
+		for (ContextCommand instance : contexts) {
 			if (instance != null) {
-				UnqueuedCommandData unqueuedData = new UnqueuedCommandData(getContextCommandData(instance, c), instance.getRegistrationType());
+				UnqueuedCommandData unqueuedData = new UnqueuedCommandData(getContextCommandData(instance, instance.getClass()), instance.getRegistrationType());
 				if (instance.getRegistrationType() == RegistrationType.GUILD) {
 					unqueuedData.setGuilds(instance.getGuilds(dih4jda.getConfig().getJDA()));
 				}

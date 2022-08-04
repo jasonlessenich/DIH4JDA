@@ -14,7 +14,7 @@ import java.util.concurrent.ForkJoinPool;
  */
 public class DIH4JDAConfig {
 	private JDA jda;
-	private String commandsPackage;
+	private String[] commandsPackages = new String[]{};
 	private Set<DIH4JDALogger.Type> blockedLogTypes = new HashSet<>();
 	private boolean registerOnReady = true;
 	private boolean globalSmartQueue = true;
@@ -31,12 +31,12 @@ public class DIH4JDAConfig {
 		this.jda = jda;
 	}
 
-	public String getCommandsPackage() {
-		return commandsPackage;
+	public String[] getCommandPackages() {
+		return commandsPackages;
 	}
 
-	public void setCommandsPackage(String commandsPackage) {
-		this.commandsPackage = commandsPackage;
+	public void setCommandPackages(String... commandsPackage) {
+		this.commandsPackages = commandsPackage;
 	}
 
 	public Set<DIH4JDALogger.Type> getBlockedLogTypes() {

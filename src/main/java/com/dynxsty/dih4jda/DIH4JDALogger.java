@@ -40,40 +40,40 @@ public class DIH4JDALogger {
 		log(msg, type, Level.INFO);
 	}
 
-	public static void info(String msg) {
-		log(msg, Type.INFO, Level.INFO);
+	public static void info(String msg, Object... args) {
+		log(String.format(msg, args), Type.INFO, Level.INFO);
 	}
 
 	public static void warn(String msg, Type type) {
 		log(msg, type, Level.WARN);
 	}
 
-	public static void warn(String msg) {
-		log(msg, Type.WARN, Level.WARN);
+	public static void warn(String msg, Object... args) {
+		log(String.format(msg, args), Type.WARN, Level.WARN);
 	}
 
 	public static void error(String msg, Type type) {
 		log(msg, type, Level.ERROR);
 	}
 
-	public static void error(String msg) {
-		log(msg, Type.ERROR, Level.ERROR);
+	public static void error(String msg, Object... args) {
+		log(String.format(msg, args), Type.ERROR, Level.ERROR);
 	}
 
 	public static void debug(String msg, Type type) {
 		log(msg, type, Level.DEBUG);
 	}
 
-	public static void debug(String msg) {
-		log(msg, Type.DEBUG, Level.DEBUG);
+	public static void debug(String msg, Object... args) {
+		log(String.format(msg, args), Type.DEBUG, Level.DEBUG);
 	}
 
 	public static void trace(String msg, Type type) {
 		log(msg, type, Level.TRACE);
 	}
 
-	public static void trace(String msg) {
-		log(msg, Type.TRACE, Level.TRACE);
+	public static void trace(String msg, Object... args) {
+		log(String.format(msg, args), Type.TRACE, Level.TRACE);
 	}
 
 	public enum Type {
