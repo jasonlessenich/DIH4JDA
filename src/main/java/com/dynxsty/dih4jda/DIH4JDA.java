@@ -144,7 +144,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param commands An array of commands to register.
 	 */
-	public void registerSlashCommands(SlashCommand... commands) {
+	public void addSlashCommands(SlashCommand... commands) {
 		handler.commands.addAll(List.of(commands));
 	}
 
@@ -153,7 +153,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param commands An array of commands to register.
 	 */
-	public void registerContextCommands(ContextCommand... commands) {
+	public void addContextCommands(ContextCommand... commands) {
 		handler.contexts.addAll(List.of(commands));
 	}
 

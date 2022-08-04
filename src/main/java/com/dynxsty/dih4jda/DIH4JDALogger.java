@@ -15,7 +15,7 @@ public class DIH4JDALogger {
 	private static final org.slf4j.Logger log = JDALogger.getLog(DIH4JDALogger.class);
 	protected static Set<Type> blockedLogTypes = new HashSet<>();
 
-	private static void log(String msg, Type type, Level level) {
+	private static void log0(String msg, Type type, Level level) {
 		if (blockedLogTypes.contains(type)) return;
 		switch (level) {
 			case INFO:
@@ -37,43 +37,43 @@ public class DIH4JDALogger {
 	}
 
 	public static void info(Type type, String msg, Object... args) {
-		log(String.format(msg, args), type, Level.INFO);
+		log0(String.format(msg, args), type, Level.INFO);
 	}
 
 	public static void info(String msg, Object... args) {
-		log(String.format(msg, args), Type.INFO, Level.INFO);
+		log0(String.format(msg, args), Type.INFO, Level.INFO);
 	}
 
 	public static void warn(Type type, String msg, Object... args) {
-		log(String.format(msg, args), type, Level.WARN);
+		log0(String.format(msg, args), type, Level.WARN);
 	}
 
 	public static void warn(String msg, Object... args) {
-		log(String.format(msg, args), Type.WARN, Level.WARN);
+		log0(String.format(msg, args), Type.WARN, Level.WARN);
 	}
 
 	public static void error(Type type, String msg, Object... args) {
-		log(String.format(msg, args), type, Level.ERROR);
+		log0(String.format(msg, args), type, Level.ERROR);
 	}
 
 	public static void error(String msg, Object... args) {
-		log(String.format(msg, args), Type.ERROR, Level.ERROR);
+		log0(String.format(msg, args), Type.ERROR, Level.ERROR);
 	}
 
 	public static void debug(Type type, String msg, Object... args) {
-		log(String.format(msg, args), type, Level.DEBUG);
+		log0(String.format(msg, args), type, Level.DEBUG);
 	}
 
 	public static void debug(String msg, Object... args) {
-		log(String.format(msg, args), Type.DEBUG, Level.DEBUG);
+		log0(String.format(msg, args), Type.DEBUG, Level.DEBUG);
 	}
 
 	public static void trace(Type type, String msg, Object... args) {
-		log(String.format(msg, args), type, Level.TRACE);
+		log0(String.format(msg, args), type, Level.TRACE);
 	}
 
 	public static void trace(String msg, Object... args) {
-		log(String.format(msg, args), Type.TRACE, Level.TRACE);
+		log0(String.format(msg, args), Type.TRACE, Level.TRACE);
 	}
 
 	public enum Type {
