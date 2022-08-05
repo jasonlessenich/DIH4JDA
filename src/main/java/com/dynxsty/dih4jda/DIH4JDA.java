@@ -27,7 +27,7 @@ import java.util.Set;
  * <pre>{@code
  * DIH4JDA dih4JDA = DIH4JDABuilder
  *         .setJDA(jda) // Your JDA instance
- *         .setCommandsPackage("com.dynxsty.superawesomebot.commands") // The main package where all your commands are in.
+ *         .setCommandsPackages("com.dynxsty.superawesomebot.commands") // The main package where all your commands are in.
  *         .build();
  * }</pre>
  * Upon calling .build();, the bot will automatically register all Commands that are in the given commandsPackage.
@@ -106,7 +106,7 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Allows to add Listener classes (that extend {@link DIH4JDAEventListener}).
+	 * Allows to add Listener classes (that implements {@link DIH4JDAEventListener}).
 	 *
 	 * @since v1.5
 	 */
@@ -162,8 +162,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 * <br>
 	 * <pre>{@code
 	 * dih4jda.addButtonHandlers(Map.of(
-	 * 	"apple", new AppleButtonHandler,
-	 * 	"banana", new BananaButtonHandler
+	 * 	List.of("apple"), new AppleButtonHandler(),
+	 * 	List.of("banana"), new BananaButtonHandler()
 	 * ));
 	 * }</pre>
 	 * <br>
@@ -190,8 +190,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 * <br>
 	 * <pre>{@code
 	 * dih4jda.addSelectMenuHandlers(Map.of(
-	 * 	"apple", new AppleSelectMenuHandler,
-	 * 	"banana", new BananaSelectMenuHandler
+	 * 	List.of("apple"), new AppleSelectMenuHandler(),
+	 * 	List.of("banana"), new BananaSelectMenuHandler()
 	 * ));
 	 * }</pre>
 	 * <br>
@@ -218,8 +218,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 * <br>
 	 * <pre>{@code
 	 * dih4jda.addModalHandlers(Map.of(
-	 * 	"apple", new AppleModalHandler,
-	 * 	"banana", new BananaModalHandler
+	 * 	List.of("apple"), new AppleModalHandler(),
+	 * 	List.of("banana"), new BananaModalHandler()
 	 * ));
 	 * }</pre>
 	 * <br>
