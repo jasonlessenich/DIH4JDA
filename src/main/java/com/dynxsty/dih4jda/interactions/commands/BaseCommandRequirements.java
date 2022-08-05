@@ -28,11 +28,11 @@ public abstract class BaseCommandRequirements extends CommandRequirements {
 	 * @param whitelisted An array of {@link Long}s.
 	 */
 	public final void whitelistGuilds(Long... whitelisted) {
-		if (whitelisted == null) {
-			throw new IllegalArgumentException("whitelisted cannot be null");
-		}
 		if (type != RegistrationType.GUILD) {
 			throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
+		}
+		if (whitelisted == null) {
+			throw new IllegalArgumentException("The given whitelisted argument may not be null!");
 		}
 		whitelistedGuilds = Arrays.stream(whitelisted).collect(Collectors.toSet());
 	}
@@ -43,11 +43,11 @@ public abstract class BaseCommandRequirements extends CommandRequirements {
 	 * @param blacklisted An array of {@link Long}s.
 	 */
 	public final void blacklistGuilds(Long... blacklisted) {
-		if (blacklisted == null) {
-			throw new IllegalArgumentException("blacklisted cannot be null");
-		}
 		if (type != RegistrationType.GUILD) {
 			throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
+		}
+		if (blacklisted == null) {
+			throw new IllegalArgumentException("The given blacklisted argument may not be null!");
 		}
 		blacklistedGuilds = Arrays.stream(blacklisted).collect(Collectors.toSet());
 	}
