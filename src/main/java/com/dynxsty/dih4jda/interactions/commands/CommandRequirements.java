@@ -3,7 +3,10 @@ package com.dynxsty.dih4jda.interactions.commands;
 import com.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import net.dv8tion.jda.api.Permission;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,7 +19,6 @@ import java.util.stream.Collectors;
 public abstract class CommandRequirements {
 	private Set<Permission> requiredPermissions = Set.of();
 	private Set<Long> requiredUsers = Set.of();
-
 	private Set<Long> requiredRoles = Set.of();
 
 	/**
@@ -38,12 +40,30 @@ public abstract class CommandRequirements {
 	}
 
 	/**
+	 * Allows to require a set of {@link Long}s (user Ids) which are able to execute the corresponding command.
+	 *
+	 * @param userIds the collection of {@link Long}s (user Ids)
+	 */
+	public final void requireUsers(@Nonnull Collection<Long> userIds) {
+		requiredUsers = new HashSet<>(userIds);
+	}
+
+	/**
 	 * Allows to require a set of {@link Long}s (role Ids) which are able to execute the corresponding command.
 	 *
 	 * @param roles The set of {@link Long}s (role Ids).
 	 */
 	public final void requireRoles(Long... roles) {
 		requiredRoles = Arrays.stream(roles).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Allows to require a set of {@link Long}s (role Ids) which are able to execute the corresponding command.
+	 *
+	 * @param roleIds the collection of {@link Long}s (role Ids)
+	 */
+	public final void requireRoles(@Nonnull Collection<Long> roleIds) {
+		requiredRoles = new HashSet<>(roleIds);
 	}
 
 	public final Set<Permission> getRequiredPermissions() {
