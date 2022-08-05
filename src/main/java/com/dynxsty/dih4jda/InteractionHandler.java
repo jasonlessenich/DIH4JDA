@@ -115,10 +115,7 @@ public class InteractionHandler extends ListenerAdapter {
 					DIH4JDALogger.warn("Failed to load requirements in package %s: %s", pkg, e.getCause().getMessage());
 					continue;
 				}
-				String message = e.getMessage();
-				if (message == null) {
-					message = e.getCause().getMessage();
-				}
+				String message = e.getMessage() == null ? e.getCause().getMessage() : e.getMessage();
 				DIH4JDALogger.error("An error occurred while initializing commands in package %s: %s", pkg, message);
 			}
 		}
