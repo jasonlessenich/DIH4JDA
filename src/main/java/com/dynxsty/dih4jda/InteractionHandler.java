@@ -111,6 +111,10 @@ public class InteractionHandler extends ListenerAdapter {
 				findSlashCommands(pkg);
 				findContextCommands(pkg);
 			} catch (ReflectiveOperationException | DIH4JDAException e) {
+				if (e.getCause() instanceof IllegalArgumentException) {
+					DIH4JDALogger.warn("Failed to load requirements in package %s: %s", pkg, e.getCause().getMessage());
+					continue;
+				}
 				DIH4JDALogger.error("An error occurred while initializing commands in package %s: %s", pkg, e.getMessage());
 			}
 		}

@@ -71,6 +71,9 @@ public abstract class SlashCommand extends BaseCommandRequirements {
 	 * @param classes The classes (must extend {@link Subcommand}) which should be registered as subcommands.
 	 */
 	public final void addSubcommands(Subcommand... classes) {
+		if (classes == null) {
+			throw new IllegalArgumentException("classes must not be null");
+		}
 		this.subcommands = Arrays.stream(classes).collect(Collectors.toSet());
 	}
 
