@@ -50,7 +50,7 @@ public abstract class CommandRequirements {
 	}
 
 	/**
-	 * Allows to require a set of {@link Long}s (user Ids) which are able to execute the corresponding command.
+	 * Defines a set of User-IDs as {@link Long}s which are able to execute the corresponding command.
 	 *
 	 * @param userIds the collection of {@link Long}s (user Ids)
 	 */
