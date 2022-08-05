@@ -42,10 +42,7 @@ public abstract class BaseCommandRequirements extends CommandRequirements {
 	 * @param whitelisted the collection of {@link Long}s.
 	 */
 	public final void whitelistGuild(@Nonnull Collection<Long> whitelisted) {
-		if (type != RegistrationType.GUILD) {
-			throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
-		}
-		whitelistedGuilds = new HashSet<>(whitelisted);
+		whitelistGuilds(whitelisted.toArray(new Long[0]));
 	}
 
 	/**
@@ -66,10 +63,7 @@ public abstract class BaseCommandRequirements extends CommandRequirements {
 	 * @param blacklisted the collection of {@link Long}s.
 	 */
 	public final void blacklistGuilds(@Nonnull Collection<Long> blacklisted) {
-		if (type != RegistrationType.GUILD) {
-			throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
-		}
-		blacklistedGuilds = new HashSet<>(blacklisted);
+		blacklistGuilds(blacklisted.toArray(new Long[0]));
 	}
 
 	/**
