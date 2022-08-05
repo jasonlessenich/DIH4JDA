@@ -32,7 +32,7 @@ public abstract class CommandRequirements {
 	}
 
 	/**
-	 * Allows to require a set of {@link Permission}s which are needed to execute the corresponding command.
+	 * Defines a set of {@link Permission}s that are required to execute the corresponding command.
 	 *
 	 * @param permissions the collection of {@link Permission}s.
 	 */
