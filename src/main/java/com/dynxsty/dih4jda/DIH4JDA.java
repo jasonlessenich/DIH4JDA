@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -123,6 +124,14 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
+	 * Defines a set of objects that implements {@link DIH4JDAEventListener} to be registered as an event listener.
+	 * @param classes the {@link Collection} of objects to register.
+	 */
+	public void addEventListener(@Nonnull Collection<Object> classes) {
+		addEventListener(classes.toArray());
+	}
+
+	/**
 	 * @return A set of all Listener classes.
 	 * @see DIH4JDA#addEventListener(Object...)
 	 */
@@ -149,12 +158,30 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
+	 * Defines a collection of {@link SlashCommand}s to be registered manually.
+	 *
+	 * @param commands the {@link Collection} of commands to register.
+	 */
+	public void addSlashCommands(@Nonnull Collection<SlashCommand> commands) {
+		addSlashCommands(commands.toArray(new SlashCommand[0]));
+	}
+
+	/**
 	 * Manually registers {@link ContextCommand}s.
 	 *
 	 * @param commands An array of commands to register.
 	 */
 	public void addContextCommands(ContextCommand... commands) {
 		handler.contexts.addAll(List.of(commands));
+	}
+
+	/**
+	 * Defines a collection of {@link ContextCommand}s to be registered manually.
+	 *
+	 * @param commands the {@link Collection} of commands to register.
+	 */
+	public void addContextCommands(@Nonnull Collection<ContextCommand> commands) {
+		addContextCommands(commands.toArray(new ContextCommand[0]));
 	}
 
 	/**
