@@ -116,7 +116,7 @@ public class DIH4JDA extends ListenerAdapter {
 				DIH4JDAEventListener adapter = (DIH4JDAEventListener) o;
 				listeners.add(adapter);
 			} catch (ClassCastException e) {
-				throw new IllegalArgumentException("Listener classes must extend DIH4JDAListenerAdapter!");
+				throw new IllegalArgumentException("Listener classes must implement DIH4JDAEventListener!");
 			}
 		}
 	}
