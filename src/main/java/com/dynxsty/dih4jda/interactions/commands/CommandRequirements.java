@@ -68,7 +68,7 @@ public abstract class CommandRequirements {
 	}
 
 	/**
-	 * Allows to require a set of {@link Long}s (role Ids) which are able to execute the corresponding command.
+	 * Defines a set of Role-IDs as {@link Long}s which are able to execute the corresponding command.
 	 *
 	 * @param roleIds the collection of {@link Long}s (role Ids)
 	 */
