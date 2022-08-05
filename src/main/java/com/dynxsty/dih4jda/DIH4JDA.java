@@ -124,7 +124,7 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Defines a set of objects that implements {@link DIH4JDAEventListener} to be registered as an event listener.
+	 * Defines a set of objects that implement {@link DIH4JDAEventListener} to be registered as an event listener.
 	 * @param classes the {@link Collection} of objects to register.
 	 */
 	public void addEventListener(@Nonnull Collection<Object> classes) {
