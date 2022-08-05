@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -81,7 +82,7 @@ public abstract class SlashCommand extends BaseCommandRequirements {
 	 *
 	 * @param classes the collection of classes (must extend {@link Subcommand}) which should be registered as subcommands.
 	 */
-	public final void addSubcommands(Collection<Subcommand> classes) {
+	public final void addSubcommands(@Nonnull Collection<Subcommand> classes) {
 		this.subcommands = new HashSet<>(classes);
 	}
 

@@ -12,6 +12,8 @@ import org.jetbrains.annotations.Contract;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
@@ -41,10 +43,21 @@ public class DIH4JDABuilder {
 	 * Sets the packages that house all Command classes. DIH4JDA then uses the {@link ClassWalker} to "scan" the packages for all
 	 * command classes.
 	 *
-	 * @param pack The packages name.
+	 * @param packages The packages name.
 	 */
-	public @Nonnull DIH4JDABuilder setCommandPackages(@Nonnull String... pack) {
-		config.setCommandPackages(pack);
+	public @Nonnull DIH4JDABuilder setCommandPackages(@Nonnull String... packages) {
+		config.setCommandPackages(packages);
+		return this;
+	}
+
+	/**
+	 * Sets the packages that house all Command classes. DIH4JDA then uses the {@link ClassWalker} to "scan" the packages for all
+	 * command classes.
+	 *
+	 * @param packages a {@link Collection} of package names.
+	 */
+	public @Nonnull DIH4JDABuilder setCommandPackages(@Nonnull Collection<String> packages) {
+		config.setCommandPackages(packages.toArray(new String[0]));
 		return this;
 	}
 
@@ -71,6 +84,16 @@ public class DIH4JDABuilder {
 			blocked = types;
 		}
 		config.setBlockedLogTypes(Arrays.stream(blocked).collect(Collectors.toSet()));
+		return this;
+	}
+
+	/**
+	 * Sets the types of logging that should be disabled.
+	 *
+	 * @param types a {@link Collection} with all {@link DIH4JDALogger.Type}'s that should be disabled.
+	 */
+	public @Nonnull DIH4JDABuilder disableLogging(@Nonnull Collection<DIH4JDALogger.Type> types) {
+		config.setBlockedLogTypes(new HashSet<>(types));
 		return this;
 	}
 
