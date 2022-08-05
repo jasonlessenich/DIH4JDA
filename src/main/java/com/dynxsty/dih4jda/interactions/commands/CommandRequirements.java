@@ -25,6 +25,9 @@ public abstract class CommandRequirements {
 	 * @param permissions The set of {@link Permission}s.
 	 */
 	public final void requirePermissions(Permission... permissions) {
+		if (permissions == null) {
+			throw new IllegalArgumentException("Permissions must not be null.");
+		}
 		requiredPermissions = Arrays.stream(permissions).collect(Collectors.toSet());
 	}
 
@@ -34,6 +37,9 @@ public abstract class CommandRequirements {
 	 * @param users The set of {@link Long}s (user Ids).
 	 */
 	public final void requireUsers(Long... users) {
+		if (users == null) {
+			throw new IllegalArgumentException("Users must not be null.");
+		}
 		requiredUsers = Arrays.stream(users).collect(Collectors.toSet());
 	}
 
@@ -43,6 +49,9 @@ public abstract class CommandRequirements {
 	 * @param roles The set of {@link Long}s (role Ids).
 	 */
 	public final void requireRoles(Long... roles) {
+		if (roles == null) {
+			throw new IllegalArgumentException("Roles must not be null.");
+		}
 		requiredRoles = Arrays.stream(roles).collect(Collectors.toSet());
 	}
 
