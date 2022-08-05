@@ -4,7 +4,9 @@ import com.dynxsty.dih4jda.DIH4JDA;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +37,18 @@ public abstract class BaseCommandRequirements extends CommandRequirements {
 	}
 
 	/**
+	 * Allows a set of {@link Guild}s to update their Slash Commands.
+	 *
+	 * @param whitelisted the collection of {@link Long}s.
+	 */
+	public final void whitelistGuild(@Nonnull Collection<Long> whitelisted) {
+		if (type != RegistrationType.GUILD) {
+			throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
+		}
+		whitelistedGuilds = new HashSet<>(whitelisted);
+	}
+
+	/**
 	 * Prevents the given set of {@link Guild}s from updating their Slash Commands.
 	 *
 	 * @param blacklisted An array of {@link Long}s.
@@ -44,6 +58,18 @@ public abstract class BaseCommandRequirements extends CommandRequirements {
 			throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
 		}
 		blacklistedGuilds = Arrays.stream(blacklisted).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Prevents the given set of {@link Guild}s from updating their Slash Commands.
+	 *
+	 * @param blacklisted the collection of {@link Long}s.
+	 */
+	public final void blacklistGuilds(@Nonnull Collection<Long> blacklisted) {
+		if (type != RegistrationType.GUILD) {
+			throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
+		}
+		blacklistedGuilds = new HashSet<>(blacklisted);
 	}
 
 	/**

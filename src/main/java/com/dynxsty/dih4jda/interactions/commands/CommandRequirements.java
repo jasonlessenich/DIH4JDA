@@ -2,6 +2,7 @@ package com.dynxsty.dih4jda.interactions.commands;
 
 import com.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import net.dv8tion.jda.api.Permission;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -28,6 +29,15 @@ public abstract class CommandRequirements {
 	 */
 	public final void requirePermissions(Permission... permissions) {
 		requiredPermissions = Arrays.stream(permissions).collect(Collectors.toSet());
+	}
+
+	/**
+	 * Allows to require a set of {@link Permission}s which are needed to execute the corresponding command.
+	 *
+	 * @param permissions the collection of {@link Permission}s.
+	 */
+	public final void requirePermissions(@Nonnull Collection<Permission> permissions) {
+		requiredPermissions = new HashSet<>(permissions);
 	}
 
 	/**
