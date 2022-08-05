@@ -28,9 +28,6 @@ public abstract class BaseCommandRequirements extends CommandRequirements {
 	 * @param whitelisted An array of {@link Long}s.
 	 */
 	public final void whitelistGuilds(Long... whitelisted) {
-		if (whitelisted == null) {
-			throw new IllegalArgumentException("whitelisted cannot be null!");
-		}
 		if (type != RegistrationType.GUILD) {
 			throw new UnsupportedOperationException("Cannot whitelist Guilds for Global Commands!");
 		}
@@ -43,9 +40,6 @@ public abstract class BaseCommandRequirements extends CommandRequirements {
 	 * @param blacklisted An array of {@link Long}s.
 	 */
 	public final void blacklistGuilds(Long... blacklisted) {
-		if (blacklisted == null) {
-			throw new IllegalArgumentException("whitelisted cannot be null!");
-		}
 		if (type != RegistrationType.GUILD) {
 			throw new UnsupportedOperationException("Cannot blacklist Guilds for Global Commands!");
 		}
