@@ -10,6 +10,7 @@ import java.util.Set;
 /**
  * Model class which holds the {@link SlashCommandData} and it's {@link RegistrationType}.
  */
+@Deprecated(forRemoval = true)
 public class UnqueuedSlashCommandData {
 	private final SlashCommandData data;
 	private final RegistrationType type;

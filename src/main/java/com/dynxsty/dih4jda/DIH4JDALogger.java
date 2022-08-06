@@ -13,6 +13,7 @@ import java.util.Set;
 public class DIH4JDALogger {
 
 	private static final org.slf4j.Logger log = JDALogger.getLog(DIH4JDALogger.class);
+	// TODO: Replace with array
 	protected static Set<Type> blockedLogTypes = new HashSet<>();
 
 	private static void log0(String msg, Type type, Level level) {

@@ -10,6 +10,7 @@ import java.util.Set;
 /**
  * Model class which holds the {@link CommandData} and it's {@link RegistrationType}.
  */
+@Deprecated(forRemoval = true)
 public class UnqueuedCommandData {
 	private final CommandData data;
 	private final RegistrationType type;

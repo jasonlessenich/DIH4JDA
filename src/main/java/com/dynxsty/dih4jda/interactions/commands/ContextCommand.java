@@ -15,7 +15,9 @@ import javax.annotation.Nonnull;
  * @see ContextCommand.Message#execute(MessageContextInteractionEvent)
  * @since v1.5
  */
-public abstract class ContextCommand extends BaseCommandRequirements {
+@Deprecated(forRemoval = true)
+// TODO: Split into two separate classes
+public abstract class ContextCommand {
 	private CommandData commandData = null;
 
 	protected ContextCommand() {}

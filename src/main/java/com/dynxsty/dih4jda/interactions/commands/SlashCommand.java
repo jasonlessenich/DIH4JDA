@@ -5,51 +5,24 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Represents a single Slash Command.
  *
- * @see SlashCommand#execute(SlashCommandInteractionEvent)
  * @since v1.5
  */
-public abstract class SlashCommand extends BaseCommandRequirements {
+public abstract class SlashCommand extends Command implements OptionalRunnableCommand<SlashCommandInteractionEvent> {
 
-	private SlashCommandData commandData = null;
-	private Set<Subcommand> subcommands = Set.of();
-	private Map<SubcommandGroupData, Set<Subcommand>> subcommandGroups = Map.of();
+	private SlashCommandData data = null;
+	private Subcommand[] subcommands = new Subcommand[]{};
+	private Map<SubcommandGroupData, Subcommand[]> subcommandGroups = Map.of();
 
 	protected SlashCommand() {
 	}
 
-	/**
-	 * Method that should be overridden for all Slash Commands that should be executed.
-	 *
-	 * <pre>{@code
-	 * public class PingCommand extends SlashCommand {
-	 *
-	 *     public PingCommand() {
-	 *         setCommandData(Commands.slash("ping", "Ping!"));
-	 *     }
-	 *
-	 *    @Override
-	 *    public void execute(SlashCommandInteractionEvent event) {
-	 * 		event.reply("Pong!").queue();
-	 *    }
-	 *
-	 * }
-	 * }</pre>
-	 *
-	 * @since v1.5
-	 */
-	public void execute(SlashCommandInteractionEvent event) {
-	}
-
 	public final SlashCommandData getSlashCommandData() {
-		return commandData;
+		return data;
 	}
 
 	/**
@@ -58,10 +31,10 @@ public abstract class SlashCommand extends BaseCommandRequirements {
 	 * @param commandData The {@link SlashCommandData} which should be used for this command.
 	 */
 	public final void setSlashCommandData(SlashCommandData commandData) {
-		this.commandData = commandData;
+		this.data = commandData;
 	}
 
-	public final Set<Subcommand> getSubcommands() {
+	public final Subcommand[] getSubcommands() {
 		return subcommands;
 	}
 
@@ -71,10 +44,10 @@ public abstract class SlashCommand extends BaseCommandRequirements {
 	 * @param classes The classes (must extend {@link Subcommand}) which should be registered as subcommands.
 	 */
 	public final void addSubcommands(Subcommand... classes) {
-		this.subcommands = Arrays.stream(classes).collect(Collectors.toSet());
+		this.subcommands = classes;
 	}
 
-	public final Map<SubcommandGroupData, Set<Subcommand>> getSubcommandGroups() {
+	public final Map<SubcommandGroupData, Subcommand[]> getSubcommandGroups() {
 		return subcommandGroups;
 	}
 
@@ -83,16 +56,14 @@ public abstract class SlashCommand extends BaseCommandRequirements {
 	 *
 	 * @param groups A map of the {@link SubcommandGroupData} and their corresponding {@link Subcommand}s.
 	 */
-	public final void addSubcommandGroups(Map<SubcommandGroupData, Set<Subcommand>> groups) {
+	public final void addSubcommandGroups(Map<SubcommandGroupData, Subcommand[]> groups) {
 		this.subcommandGroups = groups;
 	}
 
 	/**
 	 * Model class which represents a single Subcommand.
-	 *
-	 * @see SlashCommand.Subcommand#execute(SlashCommandInteractionEvent)
 	 */
-	public abstract static class Subcommand extends CommandRequirements {
+	public abstract static class Subcommand extends Command implements RunnableCommand<SlashCommandInteractionEvent> {
 		private SubcommandData data = null;
 
 		public final SubcommandData getSubcommandData() {
@@ -102,33 +73,11 @@ public abstract class SlashCommand extends BaseCommandRequirements {
 		/**
 		 * Sets this subcommands' {@link SubcommandData}.
 		 *
-		 * @param subCommandData The {@link SubcommandData} which should be used for this subcommand.
+		 * @param data The {@link SubcommandData} which should be used for this subcommand.
 		 * @see SubcommandData
 		 */
-		public final void setSubcommandData(SubcommandData subCommandData) {
-			this.data = subCommandData;
+		public final void setSubcommandData(SubcommandData data) {
+			this.data = data;
 		}
-
-		/**
-		 * Method that should be overridden for all Slash Commands that should be executed.
-		 *
-		 * <pre>{@code
-		 * public class PingCommand extends SlashCommand.Subcommand {
-		 *
-		 *     public PingCommand() {
-		 *         setSubcommandData(Commands.slash("ping", "Ping!"));
-		 *     }
-		 *
-		 *    @Override
-		 *    public void execute(SlashCommandInteractionEvent event) {
-		 * 		event.reply("Pong!").queue();
-		 *    }
-		 *
-		 * }
-		 * }</pre>
-		 *
-		 * @since v1.5
-		 */
-		public abstract void execute(SlashCommandInteractionEvent event);
 	}
 }
