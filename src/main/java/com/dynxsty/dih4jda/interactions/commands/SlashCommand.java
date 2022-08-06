@@ -12,7 +12,7 @@ import java.util.Map;
  *
  * @since v1.5
  */
-public abstract class SlashCommand extends Command implements OptionalRunnableCommand<SlashCommandInteractionEvent> {
+public abstract class SlashCommand extends Command implements RunnableCommand<SlashCommandInteractionEvent> {
 
 	private SlashCommandData data = null;
 	private Subcommand[] subcommands = new Subcommand[]{};
@@ -59,6 +59,10 @@ public abstract class SlashCommand extends Command implements OptionalRunnableCo
 	public final void addSubcommandGroups(Map<SubcommandGroupData, Subcommand[]> groups) {
 		this.subcommandGroups = groups;
 	}
+
+	// TODO: Docs
+	@Override
+	public void run(SlashCommandInteractionEvent event) {}
 
 	/**
 	 * Model class which represents a single Subcommand.
