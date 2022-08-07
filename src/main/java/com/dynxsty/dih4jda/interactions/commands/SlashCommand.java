@@ -12,7 +12,7 @@ import java.util.Map;
  *
  * @since v1.5
  */
-public abstract class SlashCommand extends Command implements RunnableCommand<SlashCommandInteractionEvent> {
+public abstract class SlashCommand extends Command implements ExecutableCommand<SlashCommandInteractionEvent> {
 
 	private SlashCommandData data = null;
 	private Subcommand[] subcommands = new Subcommand[]{};
@@ -62,12 +62,12 @@ public abstract class SlashCommand extends Command implements RunnableCommand<Sl
 
 	// TODO: Docs
 	@Override
-	public void run(SlashCommandInteractionEvent event) {}
+	public void execute(SlashCommandInteractionEvent event) {}
 
 	/**
 	 * Model class which represents a single Subcommand.
 	 */
-	public abstract static class Subcommand extends Command implements RunnableCommand<SlashCommandInteractionEvent> {
+	public abstract static class Subcommand extends Command implements ExecutableCommand<SlashCommandInteractionEvent> {
 		private SubcommandData data = null;
 
 		public final SubcommandData getSubcommandData() {

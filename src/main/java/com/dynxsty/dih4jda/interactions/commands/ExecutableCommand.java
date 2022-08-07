@@ -1,7 +1,7 @@
 package com.dynxsty.dih4jda.interactions.commands;
 
 // TODO: Docs
-public interface RunnableCommand <E> {
+public interface ExecutableCommand<E> {
 	// TODO: Docs
-	void run(E event);
+	void execute(E event);
 }
