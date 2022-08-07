@@ -2,16 +2,8 @@ package com.dynxsty.dih4jda.interactions.commands;
 
 import com.dynxsty.dih4jda.DIH4JDA;
 import com.dynxsty.dih4jda.util.Pair;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 // TODO: Docs
 public abstract class Command {
@@ -27,7 +19,7 @@ public abstract class Command {
 	}
 
 	/**
-	 * @param type How the command should be queued.
+	 * @param type How the command should be queued. This DOES NOT work with {@link SlashCommand.Subcommand}!
 	 */
 	public final void setRegistrationType(RegistrationType type) {
 		this.type = type;
@@ -35,6 +27,7 @@ public abstract class Command {
 
 	// TODO: Better Docs
 	// TODO: Check Subcommand
+
 	/**
 	 * Allows a set of {@link Guild}s to update their Slash Commands.
 	 *
@@ -42,7 +35,7 @@ public abstract class Command {
 	 *                      to work, the command MUST be of {@link RegistrationType#GUILD}. If
 	 *                      {@link com.dynxsty.dih4jda.DIH4JDABuilder#setGuildSmartQueue(boolean)} is enabled, this
 	 *                      will also delete the command in all the other guilds. This DOES NOT work with {@link SlashCommand.Subcommand}!
-	 * @param guilds An array of {@link Long}s.
+	 * @param guilds        An array of {@link Long}s.
 	 */
 	public final void setRequiredGuilds(boolean restrictQueue, Long... guilds) {
 		if (restrictQueue && type != RegistrationType.GUILD) {
@@ -52,6 +45,11 @@ public abstract class Command {
 	}
 
 	// TODO: Better Docs
+
+	public Pair<Boolean, Long[]> getRequiredGuilds() {
+		return requiredGuilds;
+	}
+
 	/**
 	 * Allows a set of {@link Guild}s to update their Slash Commands.
 	 *
@@ -59,6 +57,10 @@ public abstract class Command {
 	 */
 	public final void setRequiredGuilds(Long... guilds) {
 		setRequiredGuilds(false, guilds);
+	}
+
+	public final Permission[] getRequiredPermissions() {
+		return requiredPermissions;
 	}
 
 	/**
@@ -70,6 +72,10 @@ public abstract class Command {
 		requiredPermissions = permissions;
 	}
 
+	public final Long[] getRequiredUsers() {
+		return requiredUsers;
+	}
+
 	/**
 	 * Allows to require a set of {@link Long}s (user Ids) which are able to execute the corresponding command.
 	 *
@@ -79,6 +85,10 @@ public abstract class Command {
 		requiredUsers = users;
 	}
 
+	public final Long[] getRequiredRoles() {
+		return requiredRoles;
+	}
+
 	/**
 	 * Allows to require a set of {@link Long}s (role Ids) which are able to execute the corresponding command.
 	 *
@@ -86,21 +96,5 @@ public abstract class Command {
 	 */
 	public final void setRequiredRoles(Long... roles) {
 		requiredRoles = roles;
-	}
-
-	public Pair<Boolean, Long[]> getRequiredGuilds() {
-		return requiredGuilds;
-	}
-
-	public final Permission[] getRequiredPermissions() {
-		return requiredPermissions;
-	}
-
-	public final Long[] getRequiredUsers() {
-		return requiredUsers;
-	}
-
-	public final Long[] getRequiredRoles() {
-		return requiredRoles;
 	}
 }

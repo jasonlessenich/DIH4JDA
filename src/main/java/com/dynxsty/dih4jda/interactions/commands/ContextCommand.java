@@ -11,18 +11,16 @@ import javax.annotation.Nonnull;
 /**
  * Model class which represents a single Context Command.
  *
- * @see ContextCommand.User#execute(UserContextInteractionEvent)
- * @see ContextCommand.Message#execute(MessageContextInteractionEvent)
+ * @see ContextCommand.User#execute
+ * @see ContextCommand.Message#execute
  * @since v1.5
  */
-@Deprecated(forRemoval = true)
-// TODO: Split into two separate classes
-public abstract class ContextCommand {
+public final class ContextCommand {
 	private CommandData commandData = null;
 
-	protected ContextCommand() {}
+	private ContextCommand() {}
 
-	public final CommandData getCommandData() {
+	public CommandData getCommandData() {
 		return commandData;
 	}
 
@@ -33,7 +31,7 @@ public abstract class ContextCommand {
 	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#user(String)
 	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#message(String)
 	 */
-	public final void setCommandData(@Nonnull CommandData commandData) {
+	public void setCommandData(@Nonnull CommandData commandData) {
 		if (commandData.getType() == Command.Type.MESSAGE || commandData.getType() == Command.Type.USER) {
 			this.commandData = commandData;
 		} else {
@@ -41,45 +39,7 @@ public abstract class ContextCommand {
 		}
 	}
 
-	public abstract static class User extends ContextCommand {
-		/**
-		 * Abstract method that must be implemented for all User Context Commands.
-		 *
-		 * <pre>{@code
-		 * public class PingContextMenu extends ContextCommand.User {
-		 *
-		 *    public PingContextMenu() {
-		 * 		this.setCommandData(Commands.user("Ping"));
-		 *    }
-		 *
-		 *    @Override
-		 *    public void execute(UserContextInteractionEvent event) {
-		 * 		event.reply("Pong!").queue();
-		 *    }
-		 * }}
-		 * </pre>
-		 */
-		public abstract void execute(UserContextInteractionEvent event);
-	}
+	public abstract static class User extends ContextCommand implements ExecutableCommand<UserContextInteractionEvent> {}
 
-	public abstract static class Message extends ContextCommand {
-		/**
-		 * Abstract method that must be implemented for all Message Context Commands.
-		 *
-		 * <pre>{@code
-		 * public class PingContextMenu extends GuildContextCommand implements MessageContextCommand {
-		 *
-		 *    public PingContextMenu() {
-		 * 		this.setCommandData(Commands.message("Ping"));
-		 *    }
-		 *
-		 *    @Override
-		 *    public void handleMessageContextInteraction(MessageContextInteractionEvent event) {
-		 * 		event.reply("Pong!").queue();
-		 *    }
-		 * }}
-		 * </pre>
-		 */
-		public abstract void execute(MessageContextInteractionEvent event);
-	}
+	public abstract static class Message extends ContextCommand implements ExecutableCommand<MessageContextInteractionEvent> {}
 }

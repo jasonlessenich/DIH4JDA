@@ -67,7 +67,7 @@ public abstract class SlashCommand extends Command implements ExecutableCommand<
 	/**
 	 * Model class which represents a single Subcommand.
 	 */
-	public abstract static class Subcommand extends Command implements ExecutableCommand<SlashCommandInteractionEvent> {
+	public abstract static class Subcommand implements ExecutableCommand<SlashCommandInteractionEvent> {
 		private SubcommandData data = null;
 
 		public final SubcommandData getSubcommandData() {
