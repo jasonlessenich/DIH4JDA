@@ -3,7 +3,6 @@ package com.dynxsty.dih4jda.interactions.commands;
 import com.dynxsty.dih4jda.DIH4JDALogger;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 import javax.annotation.Nonnull;
@@ -15,7 +14,7 @@ import javax.annotation.Nonnull;
  * @see ContextCommand.Message#execute
  * @since v1.5
  */
-public final class ContextCommand {
+public class ContextCommand extends Command {
 	private CommandData commandData = null;
 
 	private ContextCommand() {}
@@ -32,7 +31,8 @@ public final class ContextCommand {
 	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#message(String)
 	 */
 	public void setCommandData(@Nonnull CommandData commandData) {
-		if (commandData.getType() == Command.Type.MESSAGE || commandData.getType() == Command.Type.USER) {
+		if (commandData.getType() == net.dv8tion.jda.api.interactions.commands.Command.Type.MESSAGE ||
+				commandData.getType() == net.dv8tion.jda.api.interactions.commands.Command.Type.USER) {
 			this.commandData = commandData;
 		} else {
 			DIH4JDALogger.error(String.format("Invalid Command Type \"%s\" for Context Command! This command will be ignored.", commandData.getType()));

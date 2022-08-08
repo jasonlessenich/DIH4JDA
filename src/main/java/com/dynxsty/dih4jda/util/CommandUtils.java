@@ -1,8 +1,8 @@
 package com.dynxsty.dih4jda.util;
 
+import com.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
-import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
-import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
+import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -147,14 +148,14 @@ public class CommandUtils {
 	/**
 	 * Builds a formatted string out of the given sets of CommandData.
 	 *
-	 * @param command A set of {@link UnqueuedCommandData}.
-	 * @param slash   A set of {@link UnqueuedSlashCommandData}.
+	 * @param command A set of {@link ContextCommand}s.
+	 * @param slash   A set of {@link SlashCommand}s.
 	 * @return The formatted String.
 	 */
-	public static @Nonnull String getNames(Set<UnqueuedCommandData> command, Set<UnqueuedSlashCommandData> slash) {
+	public static @Nonnull String getNames(@NotNull Set<ContextCommand> command, @NotNull Set<SlashCommand> slash) {
 		StringBuilder names = new StringBuilder();
-		command.forEach(c -> names.append(", ").append(c.getData().getName()));
-		slash.forEach(c -> names.append(", /").append(c.getData().getName()));
+		command.forEach(c -> names.append(", ").append(c.getCommandData().getName()));
+		slash.forEach(c -> names.append(", /").append(c.getSlashCommandData().getName()));
 		return names.substring(2);
 	}
 
@@ -165,10 +166,11 @@ public class CommandUtils {
 	 * @param type The {@link RegistrationType}.
 	 * @return The modified {@link Pair}.
 	 */
-	public static @Nonnull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> filterByType(Pair<Set<UnqueuedSlashCommandData>,
-			Set<UnqueuedCommandData>> pair, RegistrationType type) {
+	@Contract("_, _ -> new")
+	public static @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> filterByType(@NotNull Pair<Set<SlashCommand>,
+			Set<ContextCommand>> pair, RegistrationType type) {
 		return new Pair<>(
-				pair.getFirst().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()),
-				pair.getSecond().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()));
+				pair.getFirst().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()),
+				pair.getSecond().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()));
 	}
 }
