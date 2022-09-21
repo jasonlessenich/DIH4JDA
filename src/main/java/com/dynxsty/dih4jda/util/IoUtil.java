@@ -5,8 +5,8 @@ import javax.annotation.Nonnull;
 /**
  * Utility class that contains some useful methods regarding the IO.
  */
-public class IOUtil {
-    private IOUtil() {}
+public class IoUtil {
+    private IoUtil() {}
 
     /**
      * Tries to get the classloader for the given class.
