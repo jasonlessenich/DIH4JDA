@@ -7,7 +7,7 @@
 A very easy-to-use Interaction Handler for the [Java Discord API!](https://github.com/DV8FromTheWorld/JDA)
 
 ## Installation
-This version of DIH4JDA **must** be used with the following Version of JDA: [`net.dv8tion:JDA:5.0.0-alpha.13`](https://github.com/DV8FromTheWorld/JDA/releases/tag/v5.0.0-alpha.13)
+This version of DIH4JDA **must** be used with the following Version of JDA: [`net.dv8tion:JDA:5.0.0-alpha.20`](https://github.com/DV8FromTheWorld/JDA/releases/tag/v5.0.0-alpha.20)
 
 ### Maven
 
@@ -26,7 +26,7 @@ Add the dependency
 <dependency> 
     <groupId>com.github.DynxstyGIT</groupId> 
     <artifactId>DIH4JDA</artifactId> 
-    <version>1.5.5</version> 
+    <version>1.6</version> 
 </dependency>
 ```
 
@@ -44,7 +44,7 @@ Add the dependency
 ```gradle
 dependencies {
     [...]
-    implementation("com.github.DynxstyGIT:DIH4JDA:1.5.5")
+    implementation("com.github.DynxstyGIT:DIH4JDA:1.6")
 }
 ```
 
