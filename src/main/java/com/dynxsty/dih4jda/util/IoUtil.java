@@ -4,6 +4,8 @@ import javax.annotation.Nonnull;
 
 /**
  * Utility class that contains some useful methods regarding the IO.
+ *
+ * @since v1.6
  */
 public class IoUtil {
     private IoUtil() {}
