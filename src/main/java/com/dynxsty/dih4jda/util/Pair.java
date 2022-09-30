@@ -5,6 +5,7 @@ package com.dynxsty.dih4jda.util;
  *
  * @param <F> The first value.
  * @param <S> The second value.
+ * @since v1.5.2
  */
 public class Pair<F, S> {
 	F first;

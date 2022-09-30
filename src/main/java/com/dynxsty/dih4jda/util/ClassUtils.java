@@ -33,6 +33,7 @@ public class ClassUtils {
 	 * @param clazz The slash command's class.
 	 * @return The Instance as a generic Object.
 	 * @throws ReflectiveOperationException If an error occurs.
+	 * @since v1.5.3
 	 */
 	public static Object getInstance(Class<?> clazz) throws ReflectiveOperationException {
 		if (Modifier.isAbstract(clazz.getModifiers())) return null;
