@@ -10,6 +10,8 @@ import java.util.List;
 
 /**
  * Utility class for finding classes on the classpath.
+ *
+ * @since v1.6
  */
 public class ClasspathHelper {
 	private ClasspathHelper() {
@@ -20,6 +22,7 @@ public class ClasspathHelper {
 	 *
 	 * @param packageName The package name to search for.
 	 * @return A {@link Collection} of {@link URL}s, based on the given package name.
+	 * @since v1.6
 	 */
 	public static @Nonnull Collection<URL> forPackage(@Nonnull String packageName) {
 		List<URL> results = new ArrayList<>();
@@ -35,7 +38,16 @@ public class ClasspathHelper {
 		}
 		return results;
 	}
-
+    
+	/**
+	 * Formats and checks the given path of a resource to a string that you can use inside 
+	 * a jar.
+	 *
+	 * @param name the path of the resource.
+	 * @return the formatted path or the same if the given path is already in the
+	 * right format.
+	 * @since v1.6
+	 */
 	private static @Nonnull String getResourceName(@Nonnull String name) {
 		String resource = name.replace(".", "/")
 				.replace("\\", "/");
