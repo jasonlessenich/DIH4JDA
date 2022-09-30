@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * A utility class that contains some usefull methods regarding command data.
+ * A utility class that contains some useful methods regarding command data.
  *
  * @since v1.3
  */
