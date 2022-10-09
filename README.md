@@ -7,7 +7,7 @@
 A very easy-to-use Interaction Handler for the [Java Discord API!](https://github.com/DV8FromTheWorld/JDA)
 
 ## Installation
-This version of DIH4JDA **must** be used with the following Version of JDA: [`net.dv8tion:JDA:5.0.0-alpha.20`](https://github.com/DV8FromTheWorld/JDA/releases/tag/v5.0.0-alpha.20)
+This version of DIH4JDA **must** be used with the following Version of JDA: [`net.dv8tion:JDA:5.0.0-alpha.21`](https://github.com/DV8FromTheWorld/JDA/releases/tag/v5.0.0-alpha.21)
 
 ### Maven
 

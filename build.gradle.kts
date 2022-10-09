@@ -47,7 +47,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 
-    implementation("net.dv8tion:JDA:5.0.0-alpha.20")
+    implementation("net.dv8tion:JDA:5.0.0-alpha.21")
+    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
 }
 
 tasks.withType<JavaCompile> {

@@ -5,18 +5,26 @@ import com.dynxsty.dih4jda.events.DIH4JDAEvent;
 import com.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import com.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import com.dynxsty.dih4jda.interactions.ComponentIdBuilder;
-import com.dynxsty.dih4jda.interactions.commands.*;
+import com.dynxsty.dih4jda.interactions.commands.AutoCompletable;
+import com.dynxsty.dih4jda.interactions.commands.CommandRequirements;
+import com.dynxsty.dih4jda.interactions.commands.ContextCommand;
+import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
+import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import com.dynxsty.dih4jda.interactions.components.ModalHandler;
 import com.dynxsty.dih4jda.interactions.components.SelectMenuHandler;
-import com.dynxsty.dih4jda.util.*;
+import com.dynxsty.dih4jda.util.AutoCompleteUtils;
+import com.dynxsty.dih4jda.util.Checks;
+import com.dynxsty.dih4jda.util.ClassUtils;
+import com.dynxsty.dih4jda.util.ClassWalker;
+import com.dynxsty.dih4jda.util.CommandUtils;
+import com.dynxsty.dih4jda.util.Pair;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
@@ -35,7 +43,11 @@ import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -125,7 +137,7 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * Registers all interactions.
 	 * This method can be accessed from the {@link DIH4JDA} instance.
-	 * <br>This is automatically executed each time the {@link ListenerAdapter#onReady(ReadyEvent)} event is executed.
+	 * <br>This is automatically executed each time the {@link ListenerAdapter#onReady(net.dv8tion.jda.api.events.session.ReadyEvent)} event is executed.
 	 * (can be disabled using {@link DIH4JDABuilder#disableAutomaticCommandRegistration()})
 	 *
 	 * @throws ReflectiveOperationException If an error occurs.

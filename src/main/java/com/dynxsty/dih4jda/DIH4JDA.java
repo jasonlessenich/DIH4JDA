@@ -10,9 +10,8 @@ import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import com.dynxsty.dih4jda.interactions.components.ModalHandler;
 import com.dynxsty.dih4jda.interactions.components.SelectMenuHandler;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.events.ReadyEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;
@@ -110,7 +109,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @since v1.5
 	 */
-	public void addEventListener(Object @NotNull ... classes) {
+	public void addEventListener(@Nonnull Object... classes) {
 		for (Object o : classes) {
 			try {
 				// check if class extends the ListenerAdapter
