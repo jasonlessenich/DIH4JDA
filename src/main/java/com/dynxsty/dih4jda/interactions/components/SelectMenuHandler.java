@@ -1,6 +1,7 @@
 package com.dynxsty.dih4jda.interactions.components;
 
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -40,5 +41,5 @@ public interface SelectMenuHandler {
 	 * @see com.dynxsty.dih4jda.DIH4JDA#addSelectMenuHandlers(Map)
 	 * @since v1.4
 	 */
-	void handleSelectMenu(@Nonnull SelectMenuInteractionEvent event, @Nonnull List<String> values);
+	void handleSelectMenu(@Nonnull StringSelectInteractionEvent event, @Nonnull List<String> values);
 }

@@ -31,7 +31,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
@@ -618,12 +618,12 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Fired if Discord reports a {@link SelectMenuInteractionEvent}.
+	 * Fired if Discord reports a {@link StringSelectInteractionEvent}.
 	 *
-	 * @param event The {@link SelectMenuInteractionEvent} that was fired.
+	 * @param event The {@link StringSelectInteractionEvent} that was fired.
 	 */
 	@Override
-	public void onSelectMenuInteraction(@Nonnull SelectMenuInteractionEvent event) {
+	public void onStringSelectInteraction(@Nonnull StringSelectInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
 				Optional<SelectMenuHandler> selectMenuOptional = dih4jda.getSelectMenuHandlers().entrySet().stream()
