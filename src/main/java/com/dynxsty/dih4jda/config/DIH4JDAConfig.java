@@ -22,6 +22,8 @@ public class DIH4JDAConfig {
 	private boolean guildSmartQueue = true;
 	private boolean deleteUnknownCommands = true;
 	private boolean throwUnregisteredException = true;
+	//We have to find a better name for this boolean
+	private boolean defaultPrintStacktrace = true;
 	private Executor executor = ForkJoinPool.commonPool();
 
 	public JDA getJDA() {
@@ -79,6 +81,14 @@ public class DIH4JDAConfig {
 
 	public void setDeleteUnknownCommands(boolean deleteUnknownCommands) {
 		this.deleteUnknownCommands = deleteUnknownCommands;
+	}
+
+	public boolean isDefaultPrintStacktrace() {
+		return defaultPrintStacktrace;
+	}
+
+	public void setDefaultPrintStacktrace(boolean defaultPrintStacktrace) {
+		this.defaultPrintStacktrace = defaultPrintStacktrace;
 	}
 
 	public Executor getExecutor() {

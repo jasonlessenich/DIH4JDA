@@ -18,6 +18,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * A utility class that contains some useful methods regarding command data.
+ *
+ * @since v1.3
+ */
 public class CommandUtils {
 
 	private CommandUtils() {
@@ -29,6 +34,7 @@ public class CommandUtils {
 	 * @param data    The {@link SlashCommandData}
 	 * @param command The other {@link SlashCommandData} object.
 	 * @return Whether both {@link SlashCommandData} objects share the same properties.
+	 * @since v1.5
 	 */
 	public static boolean equals(@Nonnull SlashCommandData data, @Nonnull SlashCommandData command, boolean isGlobalCommand) {
 		if (data.getType() != command.getType()) return false;
@@ -54,6 +60,7 @@ public class CommandUtils {
 	 * @param data    The {@link CommandData}
 	 * @param command The other {@link CommandData} object.
 	 * @return Whether both {@link CommandData} objects share the same properties.
+	 * @since v1.5
 	 */
 	public static boolean equals(@Nonnull CommandData data, @Nonnull CommandData command, boolean isGlobalCommand) {
 		if (data.getType() != command.getType()) return false;
@@ -68,6 +75,7 @@ public class CommandUtils {
 	 * @param data The {@link DefaultMemberPermissions}.
 	 * @param command The other {@link DefaultMemberPermissions} object.
 	 * @return Whether both {@link DefaultMemberPermissions} objects are equal.
+	 * @since v1.5.5
 	 */
 	public static boolean equals(@Nonnull DefaultMemberPermissions data, @Nonnull DefaultMemberPermissions command) {
 		return Objects.equals(data.getPermissionsRaw(), command.getPermissionsRaw());
@@ -79,6 +87,7 @@ public class CommandUtils {
 	 * @param data       The {@link SubcommandData}
 	 * @param subcommand The other {@link SubcommandData} object.
 	 * @return Whether both {@link SubcommandData} objects share the same properties.
+	 * @since v1.5
 	 */
 	public static boolean equals(@Nonnull SubcommandData data, @Nonnull SubcommandData subcommand) {
 		if (!data.getName().equals(subcommand.getName())) return false;
@@ -92,6 +101,7 @@ public class CommandUtils {
 	 * @param data  The {@link SubcommandGroupData}
 	 * @param group The other {@link SubcommandGroupData} object.
 	 * @return Whether both {@link SubcommandGroupData} objects share the same properties.
+	 * @since v1.5
 	 */
 	public static boolean equals(@Nonnull SubcommandGroupData data, @Nonnull SubcommandGroupData group) {
 		if (!data.getName().equals(group.getName())) return false;
@@ -105,6 +115,7 @@ public class CommandUtils {
 	 * @param data   The {@link OptionData}
 	 * @param option The other {@link OptionData} object.
 	 * @return Whether both {@link OptionData} objects share the same properties.
+	 * @since v1.5
 	 */
 	public static boolean equals(@Nonnull OptionData data, @Nonnull OptionData option) {
 		if (data.getType() != option.getType()) return false;
@@ -124,6 +135,7 @@ public class CommandUtils {
 	 * @param command The {@link Command}.
 	 * @param data    The {@link CommandData}.
 	 * @return Whether the given Command originates from the given CommandData.
+	 * @since v1.5
 	 */
 	public static boolean isEqual(Command command, Object data, boolean isGlobalCommand) {
 		boolean equals;
@@ -139,6 +151,7 @@ public class CommandUtils {
 	 * Used to create one command name out of the SlashCommand, SlashSubCommandGroup and SlashSubCommand
 	 *
 	 * @return One combined string.
+	 * @since v1.4
 	 */
 	@Contract(pure = true)
 	public static @Nonnull String buildCommandPath(String... args) {
@@ -151,6 +164,7 @@ public class CommandUtils {
 	 * @param command A set of {@link ContextCommand}s.
 	 * @param slash   A set of {@link SlashCommand}s.
 	 * @return The formatted String.
+	 * @since v1.5
 	 */
 	public static @Nonnull String getNames(@NotNull Set<ContextCommand> command, @NotNull Set<SlashCommand> slash) {
 		StringBuilder names = new StringBuilder();
@@ -165,6 +179,7 @@ public class CommandUtils {
 	 * @param pair The {@link Pair}.
 	 * @param type The {@link RegistrationType}.
 	 * @return The modified {@link Pair}.
+	 * @since v1.5.2
 	 */
 	@Contract("_, _ -> new")
 	public static @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> filterByType(@NotNull Pair<Set<SlashCommand>,

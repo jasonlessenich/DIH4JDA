@@ -72,6 +72,7 @@ public class AutoCompleteUtils {
 	 * @param event           The {@link CommandAutoCompleteInteractionEvent} which was fired.
 	 * @param choicesFunction The function to use if no mapping is found and the choices need to be cached.
 	 * @return An unmodifiable {@link List} of {@link Command.Choice}s.
+	 * @since v1.6
 	 */
 	public static @Nonnull List<Command.Choice> handleChoices(@Nonnull CommandAutoCompleteInteractionEvent event,
 	                                                          Function<CommandAutoCompleteInteractionEvent, List<Command.Choice>> choicesFunction) {
@@ -89,6 +90,7 @@ public class AutoCompleteUtils {
 	 *
 	 * @param event   The {@link CommandAutoCompleteInteractionEvent} which was fired.
 	 * @param choices The {@link List} of {@link Command.Choice}s to cache.
+	 * @since v1.6
 	 */
 	public static void cacheChoices(@Nonnull CommandAutoCompleteInteractionEvent event, List<Command.Choice> choices) {
 		String id = buildCacheId(event);
@@ -102,6 +104,7 @@ public class AutoCompleteUtils {
 	 *
 	 * @param id The choices' id.
 	 * @return An unmodifiable {@link List} of {@link Command.Choice}s, or null.
+	 * @since v1.6
 	 */
 	public static @Nullable List<Command.Choice> getFromCache(String id) {
 		if (CHOICE_CACHE.containsKey(id)) {
@@ -118,6 +121,7 @@ public class AutoCompleteUtils {
 	 * @param commandPath The command's path.
 	 * @param userId      The user's id.
 	 * @param guildId     The guild's id.
+	 * @since v1.6
 	 */
 	public static void removeFromCache(String commandPath, String userId, String guildId) {
 		if (CHOICE_CACHE != null) {
@@ -137,6 +141,7 @@ public class AutoCompleteUtils {
 	 *
 	 * @param event The {@link CommandAutoCompleteInteractionEvent} which was fired.
 	 * @return The identifier which is used in combination with the {@link AutoCompleteUtils#CHOICE_CACHE}
+	 * @since v1.6
 	 */
 	public static @Nonnull String buildCacheId(@Nonnull CommandAutoCompleteInteractionEvent event) {
 		return ComponentIdBuilder.build(

@@ -20,10 +20,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * A class that provides you with the ability to get all classes inside a specific package.
+ *
+ * @since v1.6
+ */
 public class ClassWalker {
-
+    
+	/**
+	 * The name of the package.
+	 * Example: com.java.example
+	 */
 	private final String packageName;
-
+    
 	public ClassWalker(@Nonnull String packageName) {
 		this.packageName = packageName;
 	}
@@ -32,17 +41,12 @@ public class ClassWalker {
 	 * Gets all classes inside the given package and sub packages.
 	 *
 	 * @return An unmodifiable {@link Set} of classes inside the given package.
+	 * @since v1.6
 	 */
 	public @Nonnull Set<Class<?>> getAllClasses() throws DIH4JDAException {
 		try {
 			String packagePath = packageName.replace('.', '/');
-			ClassLoader classLoader;
-
-			if (Thread.currentThread().getContextClassLoader() != null) {
-				classLoader = Thread.currentThread().getContextClassLoader();
-			} else {
-				classLoader = ClassWalker.class.getClassLoader();
-			}
+			ClassLoader classLoader = IoUtil.getClassLoaderForClass(ClassWalker.class);
 
 			URL resourceUrl = classLoader.getResource(packagePath);
 			if (resourceUrl == null) {
@@ -85,7 +89,14 @@ public class ClassWalker {
 			throw new DIH4JDAReflectionException(exception);
 		}
 	}
-
+    
+	/**
+	 * Gets you the name of the given .class file.
+	 *
+	 * @param file the path to the .class file.
+	 * @return the name plus the .class file extension.
+	 * @since v1.6
+	 */
 	private @Nonnull String mapFileToName(@Nonnull Path file) {
 		String path = file.toString().replace(file.getFileSystem().getSeparator(), ".");
 		return path.substring(path.indexOf(packageName), path.length() - ".class".length());
@@ -96,6 +107,7 @@ public class ClassWalker {
 	 *
 	 * @param type The parent class to search for.
 	 * @return An unmodifiable {@link Set} of classes which are assignable to the given type.
+	 * @since v1.6
 	 */
 	public @Nonnull <T> Set<Class<? extends T>> getSubTypesOf(@Nonnull Class<T> type) throws DIH4JDAException {
 		return getAllClasses()
@@ -104,7 +116,12 @@ public class ClassWalker {
 				.map(clazz -> (Class<? extends T>) clazz)
 				.collect(Collectors.toSet());
 	}
-
+    
+	/**
+	 * A runtime exception that is thrown for everything related to class loading in this class.
+	 *
+	 * @since v1.6
+	 */
 	private static class UncheckedClassLoadException extends RuntimeException {
 		public UncheckedClassLoadException(Throwable cause) {
 			super(cause);

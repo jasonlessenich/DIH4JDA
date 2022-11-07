@@ -11,8 +11,9 @@ import com.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
+import com.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import com.dynxsty.dih4jda.interactions.components.ModalHandler;
-import com.dynxsty.dih4jda.interactions.components.SelectMenuHandler;
+import com.dynxsty.dih4jda.interactions.components.StringSelectMenuHandler;
 import com.dynxsty.dih4jda.util.AutoCompleteUtils;
 import com.dynxsty.dih4jda.util.Checks;
 import com.dynxsty.dih4jda.util.ClassUtils;
@@ -23,14 +24,14 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
@@ -137,7 +138,7 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * Registers all interactions.
 	 * This method can be accessed from the {@link DIH4JDA} instance.
-	 * <br>This is automatically executed each time the {@link ListenerAdapter#onReady(ReadyEvent)} event is executed.
+	 * <br>This is automatically executed each time the {@link ListenerAdapter#onReady(net.dv8tion.jda.api.events.session.ReadyEvent)} event is executed.
 	 * (can be disabled using {@link DIH4JDABuilder#disableAutomaticCommandRegistration()})
 	 *
 	 * @throws ReflectiveOperationException If an error occurs.
@@ -516,8 +517,8 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Checks if the given {@link CommandInteraction} passes the set {@link Command}s requirements.
-	 * If not, this will then fire the corresponding event using {@link DIH4JDAEvent#fire(Set, Object...)}
+	 * Checks if the given {@link CommandInteraction} passes the set {@link CommandRequirements}.
+	 * If not, this will then fire the corresponding event using {@link DIH4JDAEvent#fire(Set, DIH4JDA, Object...)}
 	 *
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param permissions A set of required {@link Permission}s.
@@ -528,17 +529,17 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private boolean passesRequirements(@Nonnull CommandInteraction interaction, Permission[] permissions, Long[] userIds, Long[] roleIds) {
 		if (permissions != null && permissions.length != 0 && interaction.isFromGuild() && interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
-			DIH4JDAEvent.INSUFFICIENT_PERMISSIONS.fire(dih4jda.getListeners(), interaction, permissions);
+			DIH4JDAEvent.INSUFFICIENT_PERMISSIONS.fire(dih4jda.getListeners(), dih4jda, interaction, permissions);
 			return false;
 		}
 		if (userIds != null && userIds.length != 0 && !Arrays.asList(userIds).contains(interaction.getUser().getIdLong())) {
-			DIH4JDAEvent.INVALID_USER.fire(dih4jda.getListeners(), interaction, userIds);
+			DIH4JDAEvent.INVALID_USER.fire(dih4jda.getListeners(), dih4jda, interaction, userIds);
 			return false;
 		}
 		if (interaction.isFromGuild() && interaction.getGuild() != null && interaction.getMember() != null) {
 			Member member = interaction.getMember();
 			if (roleIds != null && roleIds.length != 0 && !member.getRoles().isEmpty() && member.getRoles().stream().noneMatch(r -> Arrays.asList(roleIds).contains(r.getIdLong()))) {
-				DIH4JDAEvent.INVALID_ROLE.fire(dih4jda.getListeners(), interaction, roleIds);
+				DIH4JDAEvent.INVALID_ROLE.fire(dih4jda.getListeners(), dih4jda, interaction, roleIds);
 				return false;
 			}
 		}
@@ -556,7 +557,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleSlashCommand(event);
 			} catch (Exception e) {
-				DIH4JDAEvent.COMMAND_EXCEPTION.fire(dih4jda.getListeners(), event, e);
+				DIH4JDAEvent.COMMAND_EXCEPTION.fire(dih4jda.getListeners(), dih4jda, event, e);
 			}
 		}, config.getExecutor());
 	}
@@ -572,7 +573,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleUserContextCommand(event);
 			} catch (Exception e) {
-				DIH4JDAEvent.COMMAND_EXCEPTION.fire(dih4jda.getListeners(), event, e);
+				DIH4JDAEvent.COMMAND_EXCEPTION.fire(dih4jda.getListeners(), dih4jda, event, e);
 			}
 		}, config.getExecutor());
 	}
@@ -588,7 +589,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleMessageContextCommand(event);
 			} catch (Exception e) {
-				DIH4JDAEvent.COMMAND_EXCEPTION.fire(dih4jda.getListeners(), event, e);
+				DIH4JDAEvent.COMMAND_EXCEPTION.fire(dih4jda.getListeners(), dih4jda, event, e);
 			}
 		}, config.getExecutor());
 	}
@@ -607,7 +608,7 @@ public class InteractionHandler extends ListenerAdapter {
 					autoComplete.handleAutoComplete(event, event.getFocusedOption());
 				}
 			} catch (Exception e) {
-				DIH4JDAEvent.AUTOCOMPLETE_EXCEPTION.fire(dih4jda.getListeners(), event, e);
+				DIH4JDAEvent.AUTOCOMPLETE_EXCEPTION.fire(dih4jda.getListeners(), dih4jda, event, e);
 			}
 		}, config.getExecutor());
 	}
@@ -631,31 +632,51 @@ public class InteractionHandler extends ListenerAdapter {
 					buttonOptional.get().handleButton(event, event.getButton());
 				}
 			} catch (Exception e) {
-				DIH4JDAEvent.COMPONENT_EXCEPTION.fire(dih4jda.getListeners(), event, e);
+				DIH4JDAEvent.COMPONENT_EXCEPTION.fire(dih4jda.getListeners(), dih4jda, event, e);
 			}
 		}, config.getExecutor());
 	}
 
 	/**
-	 * Fired if Discord reports a {@link SelectMenuInteractionEvent}.
+	 * Fired if Discord reports a {@link StringSelectInteractionEvent}.
 	 *
-	 * @param event The {@link SelectMenuInteractionEvent} that was fired.
+	 * @param event The {@link StringSelectInteractionEvent} that was fired.
 	 */
 	@Override
-	public void onSelectMenuInteraction(@Nonnull SelectMenuInteractionEvent event) {
+	public void onStringSelectInteraction(@Nonnull StringSelectInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				Optional<SelectMenuHandler> selectMenuOptional = dih4jda.getSelectMenuHandlers().entrySet().stream()
+				Optional<StringSelectMenuHandler> selectMenuOptional = dih4jda.getStringSelectMenuHandlers().entrySet().stream()
 						.filter(f -> f.getKey().contains(ComponentIdBuilder.split(event.getComponentId())[0]))
 						.map(Map.Entry::getValue)
 						.findFirst();
 				if (selectMenuOptional.isEmpty()) {
 					DIH4JDALogger.warn(DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND, "Select Menu with id \"%s\" could not be found.", event.getComponentId());
 				} else {
-					selectMenuOptional.get().handleSelectMenu(event, event.getValues());
+					selectMenuOptional.get().handleStringSelectMenu(event, event.getValues());
 				}
 			} catch (Exception e) {
-				DIH4JDAEvent.COMPONENT_EXCEPTION.fire(dih4jda.getListeners(), event, e);
+				DIH4JDAEvent.COMPONENT_EXCEPTION.fire(dih4jda.getListeners(), dih4jda, event, e);
+			}
+		}, config.getExecutor());
+	}
+
+	@Override
+	public void onEntitySelectInteraction(@Nonnull EntitySelectInteractionEvent event) {
+		CompletableFuture.runAsync(() -> {
+			try {
+				Optional<EntitySelectMenuHandler> selectMenuOptional = dih4jda.getEntitySelectMenuHandlers()
+						.entrySet().stream()
+						.filter(f -> f.getKey().contains(ComponentIdBuilder.split(event.getComponentId())[0]))
+						.map(Map.Entry::getValue)
+						.findFirst();
+				if (selectMenuOptional.isEmpty()) {
+					DIH4JDALogger.warn(DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND, "Select Menu with id \"%s\" could not be found.", event.getComponentId());
+				} else {
+					selectMenuOptional.get().handleEntitySelectMenu(event, event.getValues());
+				}
+			} catch (Exception e) {
+				DIH4JDAEvent.COMPONENT_EXCEPTION.fire(dih4jda.getListeners(), dih4jda, event, e);
 			}
 		}, config.getExecutor());
 	}
@@ -679,7 +700,7 @@ public class InteractionHandler extends ListenerAdapter {
 					modalOptional.get().handleModal(event, event.getValues());
 				}
 			} catch (Exception e) {
-				DIH4JDAEvent.MODAL_EXCEPTION.fire(dih4jda.getListeners(), event, e);
+				DIH4JDAEvent.MODAL_EXCEPTION.fire(dih4jda.getListeners(), dih4jda, event, e);
 			}
 		}, config.getExecutor());
 	}

@@ -1,18 +1,23 @@
 package com.dynxsty.dih4jda.interactions.components;
 
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 
-public interface SelectMenuHandler {
+//TODO docs
+public interface StringSelectMenuHandler {
+
 	/**
-	 * Method that must be overridden for all Classes that handle Select Menu Interactions.
-	 * All select menus that match the identifier will execute this class's implementation of the handleSelectMenu method.
+	 * Method that must be overridden for all classes that handle
+	 * {@link net.dv8tion.jda.api.interactions.components.selections.StringSelectInteraction}.
+	 * All select menus that match the identifier will execute this class's implementation of the
+	 * {@link StringSelectMenuHandler#handleStringSelectMenu(StringSelectInteractionEvent, List)} method.
 	 *
 	 * <pre>{@code
-	 * public class TestCommand extends SlashCommand implements SelectMenuHandler {
+	 * public class TestCommand extends SlashCommand implements StringSelectMenuHandler {
 	 *
 	 *     public TestCommand() {
 	 *         setSlashCommandData(Commands.slash("test", "test description"));
@@ -29,7 +34,7 @@ public interface SelectMenuHandler {
 	 *    }
 	 *
 	 *    @Override
-	 *    public void handleSelectMenu(SelectMenuInteractionEvent event, List<String> values) {
+	 *    public void handleStringSelectMenu(StringSelectInteractionEvent event, List<String> values) {
 	 * 		for (String roleId : values) {
 	 * 			event.getGuild().addRoleToMember(event.getMember(), event.getGuild().getRoleById(roleId)).queue();
 	 *        }
@@ -37,8 +42,8 @@ public interface SelectMenuHandler {
 	 *    }
 	 * }}</pre>
 	 *
-	 * @see com.dynxsty.dih4jda.DIH4JDA#addSelectMenuHandlers(Map)
+	 * @see com.dynxsty.dih4jda.DIH4JDA#addStringSelectMenuHandlers(Map)
 	 * @since v1.4
 	 */
-	void handleSelectMenu(@Nonnull SelectMenuInteractionEvent event, @Nonnull List<String> values);
+	void handleStringSelectMenu(@Nonnull StringSelectInteractionEvent event, @Nonnull List<String> values);
 }
