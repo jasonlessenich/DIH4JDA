@@ -1,12 +1,9 @@
 package com.dynxsty.dih4jda.events;
 
-import com.dynxsty.dih4jda.DIH4JDA;
 import com.dynxsty.dih4jda.interactions.commands.AutoCompletable;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
@@ -24,8 +21,8 @@ public interface DIH4JDAEventListener {
 	 * @param e           The Exception that was raised.
 	 * @see com.dynxsty.dih4jda.interactions.commands.SlashCommand#execute(SlashCommandInteractionEvent)
 	 * @see com.dynxsty.dih4jda.interactions.commands.SlashCommand.Subcommand#execute(SlashCommandInteractionEvent)
-	 * @see com.dynxsty.dih4jda.interactions.commands.ContextCommand.User#execute(UserContextInteractionEvent)
-	 * @see com.dynxsty.dih4jda.interactions.commands.ContextCommand.Message#execute(MessageContextInteractionEvent)
+	 * @see com.dynxsty.dih4jda.interactions.commands.ContextCommand.User#execute(Object)
+	 * @see com.dynxsty.dih4jda.interactions.commands.ContextCommand.Message#execute(Object)
 	 */
 	default void onCommandException(CommandInteraction interaction, Exception e) {}
 
@@ -59,7 +56,7 @@ public interface DIH4JDAEventListener {
 	 *
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param permissions The {@link Set} of {@link Permission}s which are required to run this commands.
-	 * @see com.dynxsty.dih4jda.interactions.commands.CommandRequirements#requirePermissions(Permission...)
+	 * @see com.dynxsty.dih4jda.interactions.commands.Command#setRequiredPermissions(Permission...)
 	 */
 	default void onInsufficientPermissions(CommandInteraction interaction, Set<Permission> permissions) {}
 
@@ -68,7 +65,7 @@ public interface DIH4JDAEventListener {
 	 *
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param userIds     The {@link Set} of {@link Long}s (user Ids) which are able to use this command.
-	 * @see com.dynxsty.dih4jda.interactions.commands.CommandRequirements#requireUsers(Long...)
+	 * @see com.dynxsty.dih4jda.interactions.commands.Command#setRequiredUsers(Long...)
 	 */
 	default void onInvalidUser(CommandInteraction interaction, Set<Long> userIds) {}
 
@@ -77,7 +74,7 @@ public interface DIH4JDAEventListener {
 	 *
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param roleIds     The {@link Set} of {@link Long}s (role Ids) which are able to use this command.
-	 * @see com.dynxsty.dih4jda.interactions.commands.CommandRequirements#requireUsers(Long...)
+	 * @see com.dynxsty.dih4jda.interactions.commands.Command#setRequiredRoles(Long...)
 	 */
 	default void onInvalidRole(CommandInteraction interaction, Set<Long> roleIds) {}
 }

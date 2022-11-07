@@ -37,7 +37,7 @@ public class DIH4JDA extends ListenerAdapter {
 
 	/**
 	 * The default {@link RegistrationType} which is used for queuing new commands.
-	 * This can be overridden using {@link com.dynxsty.dih4jda.interactions.commands.BaseCommandRequirements#setRegistrationType(RegistrationType)}
+	 * This can be overridden using {@link com.dynxsty.dih4jda.interactions.commands.Command#setRegistrationType(RegistrationType)}
 	 */
 	public static RegistrationType defaultCommandType;
 
