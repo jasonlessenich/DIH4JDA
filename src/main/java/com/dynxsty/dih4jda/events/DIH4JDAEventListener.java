@@ -1,5 +1,6 @@
 package com.dynxsty.dih4jda.events;
 
+import com.dynxsty.dih4jda.DIH4JDA;
 import com.dynxsty.dih4jda.interactions.commands.AutoCompletable;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;

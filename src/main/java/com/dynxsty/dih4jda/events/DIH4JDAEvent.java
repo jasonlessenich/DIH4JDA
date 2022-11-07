@@ -1,5 +1,6 @@
 package com.dynxsty.dih4jda.events;
 
+import com.dynxsty.dih4jda.DIH4JDA;
 import com.dynxsty.dih4jda.DIH4JDALogger;
 
 import javax.annotation.Nonnull;
@@ -29,13 +30,19 @@ public enum DIH4JDAEvent {
 	/**
 	 * Fires an event from the {@link DIH4JDAEventListener}.
 	 *
-	 * @param listeners A set of all classes that extend the {@link DIH4JDAEventListener}.
+	 * @param listeners a set of all classes that extend the {@link DIH4JDAEventListener}.
+	 * @param dih4JDA the {@link DIH4JDA} instance,
 	 * @param args      The event's arguments.
 	 * @since v1.5
 	 */
-	public void fire(@Nonnull Set<DIH4JDAEventListener> listeners, Object... args) {
+	public void fire(@Nonnull Set<DIH4JDAEventListener> listeners, @Nonnull DIH4JDA dih4JDA, Object... args) {
 		if (listeners.isEmpty()) {
 			DIH4JDALogger.warn(String.format("%s was fired, but not handled (No listener registered)", this), DIH4JDALogger.Type.EVENT_FIRED);
+			if (args[1] instanceof Throwable) {
+				if (dih4JDA.getConfig().isDefaultPrintStacktrace()) {
+					((Throwable) args[1]).printStackTrace();
+				}
+			}
 		}
 		for (DIH4JDAEventListener listener : listeners) {
 			try {

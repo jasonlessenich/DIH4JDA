@@ -75,6 +75,14 @@ public class DIH4JDABuilder {
 	}
 
 	/**
+	 * Disables the printing of stacktrace if an exception happens and there is no event listener registered.
+	 */
+	public @Nonnull DIH4JDABuilder disableStacktracePrinting() {
+		config.setDefaultPrintStacktrace(false);
+		return this;
+	}
+
+	/**
 	 * Whether DIH4JDA should automatically register all interactions on each onReady event.
 	 * A manual registration of all interactions can be executed using {@link DIH4JDA#registerInteractions()}.
 	 */
