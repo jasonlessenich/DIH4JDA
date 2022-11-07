@@ -33,11 +33,11 @@ Add the dependency
 
 ### Gradle
 
-Add the [JitPack](https://jitpack.io/) repository to your `build.gradle`
+Add the [JitPack](https://jitpack.io/) repository to your `build.gradle.kts`
 ```gradle
 repositories { 
     [...]
-    maven { url "https://jitpack.io" } 
+    maven(url = "https://jitpack.io")
 }
 ```
 
@@ -51,6 +51,7 @@ dependencies {
 
 ## Setup
 To get started, [visit the Wiki](https://github.com/DynxstyGIT/DIH4JDA/wiki)!
+<b>Currently outdated!</b>
 
 
 
