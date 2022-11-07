@@ -15,7 +15,8 @@ public interface EntitySelectMenuHandler {
      * All select menus that match the identifier will execute this class's implementation of the
      * {@link EntitySelectMenuHandler#handleEntitySelectMenu(EntitySelectInteractionEvent, List)} method.
      *
-     * <pre>{@code
+     * <pre>
+     *     {@code
      * public class TestCommand extends SlashCommand implements EntitySelectMenuHandler {
      *
      *     public TestCommand() {
@@ -33,10 +34,11 @@ public interface EntitySelectMenuHandler {
      *            event.getChannel().sendMessage(String.format("Mention: %s", entity.getAsMention())
      *        }
      *  }
-     * }</pre>
+     * }
+     * </pre>
      *
-     * @param event
-     * @param values
+     * @param event the {@link EntitySelectInteractionEvent} instance.
+     * @param values the values that you could select.
      */
     void handleEntitySelectMenu(@Nonnull EntitySelectInteractionEvent event, @Nonnull List<IMentionable> values);
 }

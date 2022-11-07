@@ -44,6 +44,7 @@ tasks.withType<JavaCompile> {
 }
 
 val javadocJar = task<Jar>("javadocJar") {
+    from("src/main/java")
     dependsOn(javadoc)
     archiveClassifier.set("javadoc")
     from(javadoc.destinationDir)
@@ -58,6 +59,15 @@ val sourcesJar = task<Jar>("sourcesJar") {
 javadoc.apply {
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.encoding = "UTF-8"
+
+    (options as? StandardJavadocDocletOptions)?.let { opt ->
+        opt.addStringOption("Xdoclint:none", "-quiet")
+        opt.addStringOption("charSet", "UTF-8")
+    }
+
+    dependsOn(sourcesJar)
+    source = sourcesJar.source.asFileTree
+    exclude("MANIFEST.MF")
 }
 
 build.apply {
