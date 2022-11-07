@@ -5,6 +5,8 @@ import com.dynxsty.dih4jda.util.Pair;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 
+import javax.annotation.Nonnull;
+
 // TODO: Docs
 public abstract class Command {
 	private RegistrationType type = DIH4JDA.defaultCommandType;
@@ -55,7 +57,7 @@ public abstract class Command {
 	 *
 	 * @param guilds An array of {@link Long}s.
 	 */
-	public final void setRequiredGuilds(Long... guilds) {
+	public final void setRequiredGuilds(@Nonnull Long... guilds) {
 		setRequiredGuilds(false, guilds);
 	}
 
@@ -68,7 +70,7 @@ public abstract class Command {
 	 *
 	 * @param permissions The set of {@link Permission}s.
 	 */
-	public final void setRequiredPermissions(Permission... permissions) {
+	public final void setRequiredPermissions(@Nonnull Permission... permissions) {
 		requiredPermissions = permissions;
 	}
 
@@ -81,7 +83,7 @@ public abstract class Command {
 	 *
 	 * @param users The set of {@link Long}s (user Ids).
 	 */
-	public final void setRequiredUsers(Long... users) {
+	public final void setRequiredUsers(@Nonnull Long... users) {
 		requiredUsers = users;
 	}
 
@@ -94,7 +96,7 @@ public abstract class Command {
 	 *
 	 * @param roles The set of {@link Long}s (role Ids).
 	 */
-	public final void setRequiredRoles(Long... roles) {
+	public final void setRequiredRoles(@Nonnull Long... roles) {
 		requiredRoles = roles;
 	}
 }

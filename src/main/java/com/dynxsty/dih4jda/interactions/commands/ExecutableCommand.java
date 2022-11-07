@@ -4,4 +4,7 @@ package com.dynxsty.dih4jda.interactions.commands;
 public interface ExecutableCommand<E> {
 	// TODO: Docs
 	void execute(E event);
+
+	// TODO: Docs
+	SlashCommand getSlashCommand();
 }

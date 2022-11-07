@@ -109,11 +109,16 @@ public class SmartQueue {
 				// this may be refactored soonTM, as its kinda clunky
 				if (!global) {
 					for (SlashCommand d : slashCommands) {
-						if (CommandUtils.isEqual(cmd, d.getSlashCommandData(), false) &&
-								!Arrays.asList(d.getRequiredGuilds().getSecond()).contains(guild.getIdLong())) {
-							DIH4JDALogger.info("Deleting /%s in Guild: %s", cmd.getName(), guild.getName());
-							cmd.delete().queue();
-							return true;
+						if (CommandUtils.isEqual(cmd, d.getSlashCommandData(), false)) {
+							if (d.getRequiredGuilds().getFirst() == null) {
+								return false;
+							} else {
+								if (!Arrays.asList(d.getRequiredGuilds().getSecond()).contains(guild.getIdLong())) {
+									DIH4JDALogger.info("Deleting /%s in Guild: %s", cmd.getName(), guild.getName());
+									cmd.delete().queue();
+									return true;
+								}
+							}
 						}
 					}
 					for (ContextCommand d : contextCommands) {

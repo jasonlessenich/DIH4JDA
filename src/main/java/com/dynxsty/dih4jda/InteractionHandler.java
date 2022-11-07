@@ -183,12 +183,17 @@ public class InteractionHandler extends ListenerAdapter {
 		StringBuilder commandNames = new StringBuilder();
 		slashCommands.forEach(data -> {
 			Pair<Boolean, Long[]> pair = data.getRequiredGuilds();
-			if (pair.getFirst()) {
-				if (Arrays.asList(pair.getSecond()).contains(guild.getIdLong())) {
-					guild.upsertCommand(data.getSlashCommandData()).queue();
-					commandNames.append(", /").append(data.getSlashCommandData().getName());
-				} else {
-					DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping Registration of /%s for Guild: %s", data.getSlashCommandData().getName(), guild.getName());
+			if (pair.getFirst() == null) {
+				guild.upsertCommand(data.getSlashCommandData()).queue();
+				commandNames.append(", /").append(data.getSlashCommandData().getName());
+			} else {
+				if (pair.getFirst()) {
+					if (Arrays.asList(pair.getSecond()).contains(guild.getIdLong())) {
+						guild.upsertCommand(data.getSlashCommandData()).queue();
+						commandNames.append(", /").append(data.getSlashCommandData().getName());
+					} else {
+						DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping Registration of /%s for Guild: %s", data.getSlashCommandData().getName(), guild.getName());
+					}
 				}
 			}
 		});
@@ -441,7 +446,8 @@ public class InteractionHandler extends ListenerAdapter {
 				throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", path));
 			}
 		} else {
-			if (passesRequirements(event, executable.getRequiredPermissions(), executable.getRequiredUsers(), executable.getRequiredRoles())) {
+			if (passesRequirements(event, executable.getSlashCommand().getRequiredPermissions(),
+					executable.getSlashCommand().getRequiredUsers(), executable.getSlashCommand().getRequiredRoles())) {
 				if (slashCommandIndex.containsKey(event.getCommandPath())) {
 					slashCommandIndex.get(path).execute(event);
 				} else {

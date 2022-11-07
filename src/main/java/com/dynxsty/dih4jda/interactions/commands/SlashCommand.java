@@ -18,8 +18,7 @@ public abstract class SlashCommand extends Command implements ExecutableCommand<
 	private Subcommand[] subcommands = new Subcommand[]{};
 	private Map<SubcommandGroupData, Subcommand[]> subcommandGroups = Map.of();
 
-	protected SlashCommand() {
-	}
+	protected SlashCommand() {}
 
 	public final SlashCommandData getSlashCommandData() {
 		return data;
@@ -44,6 +43,9 @@ public abstract class SlashCommand extends Command implements ExecutableCommand<
 	 * @param classes The classes (must extend {@link Subcommand}) which should be registered as subcommands.
 	 */
 	public final void addSubcommands(Subcommand... classes) {
+		for (Subcommand subcommand : classes) {
+			subcommand.mainCommandData = this;
+		}
 		this.subcommands = classes;
 	}
 
@@ -64,14 +66,25 @@ public abstract class SlashCommand extends Command implements ExecutableCommand<
 	@Override
 	public void execute(SlashCommandInteractionEvent event) {}
 
+	@Override
+	public SlashCommand getSlashCommand() {
+		return this;
+	}
+
 	/**
 	 * Model class which represents a single Subcommand.
 	 */
 	public abstract static class Subcommand implements ExecutableCommand<SlashCommandInteractionEvent> {
 		private SubcommandData data = null;
+		private SlashCommand mainCommandData = null;
 
 		public final SubcommandData getSubcommandData() {
 			return data;
+		}
+
+		@Override
+		public SlashCommand getSlashCommand() {
+			return mainCommandData;
 		}
 
 		/**
