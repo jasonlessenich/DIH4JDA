@@ -13,8 +13,9 @@ import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
 import com.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
 import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
+import com.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import com.dynxsty.dih4jda.interactions.components.ModalHandler;
-import com.dynxsty.dih4jda.interactions.components.SelectMenuHandler;
+import com.dynxsty.dih4jda.interactions.components.StringSelectMenuHandler;
 import com.dynxsty.dih4jda.util.AutoCompleteUtils;
 import com.dynxsty.dih4jda.util.Checks;
 import com.dynxsty.dih4jda.util.ClassUtils;
@@ -31,6 +32,7 @@ import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionE
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -39,6 +41,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectInteraction;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import javax.annotation.Nonnull;
@@ -626,14 +629,34 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onStringSelectInteraction(@Nonnull StringSelectInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				Optional<SelectMenuHandler> selectMenuOptional = dih4jda.getSelectMenuHandlers().entrySet().stream()
+				Optional<StringSelectMenuHandler> selectMenuOptional = dih4jda.getStringSelectMenuHandlers().entrySet().stream()
 						.filter(f -> f.getKey().contains(ComponentIdBuilder.split(event.getComponentId())[0]))
 						.map(Map.Entry::getValue)
 						.findFirst();
 				if (selectMenuOptional.isEmpty()) {
 					DIH4JDALogger.warn(DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND, "Select Menu with id \"%s\" could not be found.", event.getComponentId());
 				} else {
-					selectMenuOptional.get().handleSelectMenu(event, event.getValues());
+					selectMenuOptional.get().handleStringSelectMenu(event, event.getValues());
+				}
+			} catch (Exception e) {
+				DIH4JDAEvent.COMPONENT_EXCEPTION.fire(dih4jda.getListeners(), event, e);
+			}
+		}, config.getExecutor());
+	}
+
+	@Override
+	public void onEntitySelectInteraction(@Nonnull EntitySelectInteractionEvent event) {
+		CompletableFuture.runAsync(() -> {
+			try {
+				Optional<EntitySelectMenuHandler> selectMenuOptional = dih4jda.getEntitySelectMenuHandlers()
+						.entrySet().stream()
+						.filter(f -> f.getKey().contains(ComponentIdBuilder.split(event.getComponentId())[0]))
+						.map(Map.Entry::getValue)
+						.findFirst();
+				if (selectMenuOptional.isEmpty()) {
+					DIH4JDALogger.warn(DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND, "Select Menu with id \"%s\" could not be found.", event.getComponentId());
+				} else {
+					selectMenuOptional.get().handleEntitySelectMenu(event, event.getValues());
 				}
 			} catch (Exception e) {
 				DIH4JDAEvent.COMPONENT_EXCEPTION.fire(dih4jda.getListeners(), event, e);

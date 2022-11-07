@@ -7,8 +7,9 @@ import com.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import com.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import com.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import com.dynxsty.dih4jda.interactions.components.ButtonHandler;
+import com.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import com.dynxsty.dih4jda.interactions.components.ModalHandler;
-import com.dynxsty.dih4jda.interactions.components.SelectMenuHandler;
+import com.dynxsty.dih4jda.interactions.components.StringSelectMenuHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -42,12 +43,14 @@ public class DIH4JDA extends ListenerAdapter {
 
 	// Component Handler
 	private static final Map<List<String>, ButtonHandler> buttonHandlers;
-	private static final Map<List<String>, SelectMenuHandler> selectMenuHandlers;
+	private static final Map<List<String>, StringSelectMenuHandler> stringSelectMenuHandlers;
+	private static final Map<List<String>, EntitySelectMenuHandler> entitySelectMenuHandlers;
 	private static final Map<List<String>, ModalHandler> modalHandlers;
 
 	static {
 		buttonHandlers = new HashMap<>();
-		selectMenuHandlers = new HashMap<>();
+		stringSelectMenuHandlers = new HashMap<>();
+		entitySelectMenuHandlers = new HashMap<>();
 		modalHandlers = new HashMap<>();
 	}
 
@@ -185,10 +188,10 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Binds all {@link SelectMenuHandler}s to their id.
+	 * Binds all {@link StringSelectMenuHandler}s to their id.
 	 * <br>
 	 * <pre>{@code
-	 * dih4jda.addSelectMenuHandlers(Map.of(
+	 * dih4jda.addStringSelectMenuHandlers(Map.of(
 	 * 	List.of("apple"), new AppleSelectMenuHandler(),
 	 * 	List.of("banana"), new BananaSelectMenuHandler()
 	 * ));
@@ -196,20 +199,52 @@ public class DIH4JDA extends ListenerAdapter {
 	 * <br>
 	 * This is best used in combination with {@link com.dynxsty.dih4jda.interactions.ComponentIdBuilder#build(String, Object...)}.
 	 *
-	 * @param handlers All {@link SelectMenuHandler}, as a immutable {@link Map}.
+	 * @see DIH4JDA#addEntitySelectMenuHandlers(Map)
+	 * @param handlers All {@link StringSelectMenuHandler}, as a immutable {@link Map}.
 	 */
-	public void addSelectMenuHandlers(Map<List<String>, SelectMenuHandler> handlers) {
-		selectMenuHandlers.putAll(handlers);
+	public void addStringSelectMenuHandlers(Map<List<String>, StringSelectMenuHandler> handlers) {
+		stringSelectMenuHandlers.putAll(handlers);
 	}
 
 	/**
-	 * Gets all {@link SelectMenuHandler}s.
+	 * Binds all {@link EntitySelectMenuHandler}s to their id,
+	 * <br>
+	 * <pre>{@code
+	 * dih4jda.addEntitySelectMenuHandlers(Map.of(
+	 * 	List.of("apple"), new AppleSelectMenuHandler(),
+	 * 	List.of("banana"), new BananaSelectMenuHandler()
+	 * ));
+	 * }</pre>
+	 * <br>
+	 *  * This is best used in combination with {@link com.dynxsty.dih4jda.interactions.ComponentIdBuilder#build(String, Object...)}.
 	 *
-	 * @return An immutable {@link Map} which stores the id as the <strong>Key</strong> and
-	 * the {@link SelectMenuHandler} as the <strong>Value</strong>.
+	 * @see DIH4JDA#addStringSelectMenuHandlers(Map)
+	 * @param handlers All {@link EntitySelectMenuHandler}, as a immutable {@link Map}.
 	 */
-	public @Nonnull Map<List<String>, SelectMenuHandler> getSelectMenuHandlers() {
-		return selectMenuHandlers;
+	public void addEntitySelectMenuHandlers(Map<List<String>, EntitySelectMenuHandler> handlers) {
+		entitySelectMenuHandlers.putAll(handlers);
+	}
+
+	/**
+	 * Gets all registered {@link StringSelectMenuHandler}s.
+	 *
+	 * @see DIH4JDA#addStringSelectMenuHandlers(Map)
+	 * @return An immutable {@link Map} which stores the id as the <strong>Key</strong> and
+	 * the {@link StringSelectMenuHandler} as the <strong>value</strong>.
+	 */
+	public @Nonnull Map<List<String>, StringSelectMenuHandler> getStringSelectMenuHandlers() {
+		return stringSelectMenuHandlers;
+	}
+
+	/**
+	 * Gets all registered {@link EntitySelectMenuHandler}s.
+	 *
+	 * @see DIH4JDA#addEntitySelectMenuHandlers(Map)
+	 * @return An immutable {@link Map} which stores the id as the <strong>Key</strong> and
+	 * the {@link EntitySelectMenuHandler} as the <strong>values</strong>.
+	 */
+	public @Nonnull Map<List<String>, EntitySelectMenuHandler> getEntitySelectMenuHandlers() {
+		return entitySelectMenuHandlers;
 	}
 
 	/**
