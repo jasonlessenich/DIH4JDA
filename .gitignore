@@ -3,3 +3,4 @@
 .idea/
 build/
 src/test/java/com/dynxsty/bot
+gradle.properties

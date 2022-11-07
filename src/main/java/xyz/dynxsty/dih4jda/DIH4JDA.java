@@ -3,6 +3,8 @@ package xyz.dynxsty.dih4jda;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
+import xyz.dynxsty.dih4jda.interactions.ComponentIdBuilder;
+import xyz.dynxsty.dih4jda.interactions.commands.BaseCommandRequirements;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
@@ -39,7 +41,7 @@ public class DIH4JDA extends ListenerAdapter {
 
 	/**
 	 * The default {@link RegistrationType} which is used for queuing new commands.
-	 * This can be overridden using {@link Command#setRegistrationType(RegistrationType)}
+	 * This can be overridden using {@link BaseCommandRequirements#setRegistrationType(RegistrationType)}
 	 */
 	public static RegistrationType defaultCommandType;
 
