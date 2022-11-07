@@ -165,7 +165,7 @@ public class CommandUtils {
 	 * @return The formatted String.
 	 * @since v1.5
 	 */
-	public static @Nonnull String getNames(@NotNull Set<ContextCommand> command, @NotNull Set<SlashCommand> slash) {
+	public static @Nonnull String getNames(@Nonnull Set<ContextCommand> command, @Nonnull Set<SlashCommand> slash) {
 		StringBuilder names = new StringBuilder();
 		command.forEach(c -> names.append(", ").append(c.getCommandData().getName()));
 		slash.forEach(c -> names.append(", /").append(c.getSlashCommandData().getName()));
@@ -181,7 +181,7 @@ public class CommandUtils {
 	 * @since v1.5.2
 	 */
 	@Contract("_, _ -> new")
-	public static @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> filterByType(@NotNull Pair<Set<SlashCommand>,
+	public static @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> filterByType(@Nonnull Pair<Set<SlashCommand>,
 			Set<ContextCommand>> pair, RegistrationType type) {
 		return new Pair<>(
 				pair.getFirst().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()),
