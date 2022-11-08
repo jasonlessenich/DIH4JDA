@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Map;
  *
  * @since v1.5
  */
-public abstract class SlashCommand extends Command implements ExecutableCommand<SlashCommandInteractionEvent> {
+public abstract class SlashCommand extends AbstractCommand implements ExecutableCommand<SlashCommandInteractionEvent> {
 
 	private SlashCommandData data = null;
 	private Subcommand[] subcommands = new Subcommand[]{};
@@ -62,10 +63,10 @@ public abstract class SlashCommand extends Command implements ExecutableCommand<
 		this.subcommandGroups = groups;
 	}
 
-	// TODO: Docs
 	@Override
 	public void execute(SlashCommandInteractionEvent event) {}
 
+	@Nonnull
 	@Override
 	public SlashCommand getSlashCommand() {
 		return this;
@@ -82,6 +83,7 @@ public abstract class SlashCommand extends Command implements ExecutableCommand<
 			return data;
 		}
 
+		@Nonnull
 		@Override
 		public SlashCommand getSlashCommand() {
 			return mainCommandData;

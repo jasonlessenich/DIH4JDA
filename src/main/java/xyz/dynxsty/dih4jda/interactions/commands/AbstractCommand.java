@@ -8,28 +8,37 @@ import net.dv8tion.jda.api.entities.Guild;
 
 import javax.annotation.Nonnull;
 
-// TODO: Docs
-public abstract class Command {
+/**
+ * Represents a basic command.
+ *
+ * @since v1.6
+ */
+public abstract class AbstractCommand {
 	private RegistrationType type = DIH4JDA.defaultCommandType;
 
+	//The command requirements
 	private Pair<Boolean, Long[]> requiredGuilds = new Pair<>(null, null);
 	private Permission[] requiredPermissions = new Permission[]{};
 	private Long[] requiredUsers = new Long[]{};
 	private Long[] requiredRoles = new Long[]{};
 
+	/**
+	 * The {@link RegistrationType} the command got assigned.
+	 *
+	 * @return the {@link RegistrationType}.
+	 */
 	public final RegistrationType getRegistrationType() {
 		return type;
 	}
 
 	/**
-	 * @param type How the command should be queued. This DOES NOT work with {@link SlashCommand.Subcommand}!
+	 * How the command should be queued. This DOES NOT work with {@link SlashCommand.Subcommand}!
+	 *
+	 * @param type the {@link RegistrationType} to set.
 	 */
 	public final void setRegistrationType(RegistrationType type) {
 		this.type = type;
 	}
-
-	// TODO: Better Docs
-	// TODO: Check Subcommand
 
 	/**
 	 * Allows a set of {@link Guild}s to update their Slash Commands.
@@ -47,8 +56,14 @@ public abstract class Command {
 		requiredGuilds = new Pair<>(restrictQueue, guilds);
 	}
 
-	// TODO: Better Docs
-
+	/**
+	 * The guilds that the command should or should not be registered on.
+	 * The {@link Boolean} represents either if the command should (true) or should not (false) be registered on
+	 * these guilds.
+	 * And the {@link Long} array contains the guild ids.
+	 *
+	 * @return a {@link Pair} containing the {@link Boolean} and {@link Long} array for the guild ids.
+	 */
 	public Pair<Boolean, Long[]> getRequiredGuilds() {
 		return requiredGuilds;
 	}
@@ -62,6 +77,11 @@ public abstract class Command {
 		setRequiredGuilds(false, guilds);
 	}
 
+	/**
+	 * The required {@link Permission} the {@link net.dv8tion.jda.api.entities.User} needs to execute the command.
+	 *
+	 * @return the {@link Permission}.
+	 */
 	public final Permission[] getRequiredPermissions() {
 		return requiredPermissions;
 	}
@@ -75,6 +95,11 @@ public abstract class Command {
 		requiredPermissions = permissions;
 	}
 
+	/**
+	 * The user ids from the {@link net.dv8tion.jda.api.entities.User} that are allowed to execute the command.
+	 *
+	 * @return the {@link Long} array containing the user ids.
+	 */
 	public final Long[] getRequiredUsers() {
 		return requiredUsers;
 	}
@@ -82,12 +107,17 @@ public abstract class Command {
 	/**
 	 * Allows to require a set of {@link Long}s (user Ids) which are able to execute the corresponding command.
 	 *
-	 * @param users The set of {@link Long}s (user Ids).
+	 * @param users the {@link net.dv8tion.jda.api.entities.User} ids as an {@link Long} array.
 	 */
 	public final void setRequiredUsers(@Nonnull Long... users) {
 		requiredUsers = users;
 	}
 
+	/**
+	 * The {@link net.dv8tion.jda.api.entities.Role}s that are required to execute the command.
+	 *
+	 * @return the {@link Long} array containing the role ids.
+	 */
 	public final Long[] getRequiredRoles() {
 		return requiredRoles;
 	}
@@ -95,7 +125,7 @@ public abstract class Command {
 	/**
 	 * Allows to require a set of {@link Long}s (role Ids) which are able to execute the corresponding command.
 	 *
-	 * @param roles The set of {@link Long}s (role Ids).
+	 * @param roles the {@link net.dv8tion.jda.api.entities.Role} ids as an {@link Long} array.
 	 */
 	public final void setRequiredRoles(@Nonnull Long... roles) {
 		requiredRoles = roles;

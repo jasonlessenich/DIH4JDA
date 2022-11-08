@@ -4,8 +4,6 @@ import xyz.dynxsty.dih4jda.DIH4JDALogger;
 import net.dv8tion.jda.api.JDA;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 
@@ -16,8 +14,7 @@ import java.util.concurrent.ForkJoinPool;
 public class DIH4JDAConfig {
 	private JDA jda;
 	private String[] commandsPackages = new String[]{};
-	// TODO: Replace with array
-	private Set<DIH4JDALogger.Type> blockedLogTypes = new HashSet<>();
+	private DIH4JDALogger.Type[] blockedLogTypes = new DIH4JDALogger.Type[]{};
 	private boolean registerOnReady = true;
 	private boolean globalSmartQueue = true;
 	private boolean guildSmartQueue = true;
@@ -43,12 +40,11 @@ public class DIH4JDAConfig {
 		this.commandsPackages = commandsPackage;
 	}
 
-	// TODO: Replace with array
-	public Set<DIH4JDALogger.Type> getBlockedLogTypes() {
+	public DIH4JDALogger.Type[] getBlockedLogTypes() {
 		return blockedLogTypes;
 	}
 
-	public void setBlockedLogTypes(Set<DIH4JDALogger.Type> blockedLogTypes) {
+	public void setBlockedLogTypes(DIH4JDALogger.Type[] blockedLogTypes) {
 		this.blockedLogTypes = blockedLogTypes;
 	}
 

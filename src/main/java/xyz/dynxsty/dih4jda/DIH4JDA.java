@@ -15,8 +15,6 @@ import xyz.dynxsty.dih4jda.interactions.components.StringSelectMenuHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import xyz.dynxsty.dih4jda.interactions.ComponentIdBuilder;
-import xyz.dynxsty.dih4jda.interactions.commands.Command;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;

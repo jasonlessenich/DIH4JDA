@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
  * @see ContextCommand.Message#execute
  * @since v1.5
  */
-public class ContextCommand extends Command {
+public class ContextCommand extends AbstractCommand {
 	private CommandData commandData = null;
 
 	private ContextCommand() {}

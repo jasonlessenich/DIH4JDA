@@ -9,12 +9,15 @@ import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.modals.ModalInteraction;
-import xyz.dynxsty.dih4jda.interactions.commands.Command;
+import xyz.dynxsty.dih4jda.interactions.commands.AbstractCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
 
 import java.util.Set;
 
+/**
+ * An interface containing all events and their method that DIH4JDA can fire.
+ */
 public interface DIH4JDAEventListener {
 
 	/**
@@ -59,7 +62,7 @@ public interface DIH4JDAEventListener {
 	 *
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param permissions The {@link Set} of {@link Permission}s which are required to run this commands.
-	 * @see Command#setRequiredPermissions(Permission...)
+	 * @see AbstractCommand#setRequiredPermissions(Permission...)
 	 */
 	default void onInsufficientPermissions(CommandInteraction interaction, Set<Permission> permissions) {}
 
@@ -68,7 +71,7 @@ public interface DIH4JDAEventListener {
 	 *
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param userIds     The {@link Set} of {@link Long}s (user Ids) which are able to use this command.
-	 * @see Command#setRequiredUsers(Long...)
+	 * @see AbstractCommand#setRequiredUsers(Long...)
 	 */
 	default void onInvalidUser(CommandInteraction interaction, Set<Long> userIds) {}
 
@@ -77,7 +80,7 @@ public interface DIH4JDAEventListener {
 	 *
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param roleIds     The {@link Set} of {@link Long}s (role Ids) which are able to use this command.
-	 * @see Command#setRequiredRoles(Long...)
+	 * @see AbstractCommand#setRequiredRoles(Long...)
 	 */
 	default void onInvalidRole(CommandInteraction interaction, Set<Long> roleIds) {}
 }

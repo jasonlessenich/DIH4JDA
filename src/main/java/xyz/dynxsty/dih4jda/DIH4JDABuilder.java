@@ -72,7 +72,7 @@ public class DIH4JDABuilder {
 		} else {
 			blocked = types;
 		}
-		config.setBlockedLogTypes(Arrays.stream(blocked).collect(Collectors.toSet()));
+		config.setBlockedLogTypes(blocked);
 		return this;
 	}
 
