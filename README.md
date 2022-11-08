@@ -14,40 +14,20 @@ This version of DIH4JDA **must** be used with the following Version of JDA: [`ne
 
 ### Maven
 
-Add the [JitPack](https://jitpack.io/) repository to your `pom.xml`
 ```xml
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-```
-
-Add the dependency
-```xml
-<dependency> 
-    <groupId>com.github.DynxstyGIT</groupId> 
-    <artifactId>DIH4JDA</artifactId> 
-    <version>1.6</version> 
+<dependency>
+  <groupId>xyz.dynxsty</groupId>
+  <artifactId>dih4jda</artifactId>
+  <version>1.6-alpha.1</version>
 </dependency>
 ```
 
 ### Gradle
 
-Add the [JitPack](https://jitpack.io/) repository to your `build.gradle.kts`
-```gradle
-repositories { 
-    [...]
-    maven(url = "https://jitpack.io")
-}
-```
-
-Add the dependency
 ```gradle
 dependencies {
     [...]
-    implementation("com.github.DynxstyGIT:DIH4JDA:1.6")
+    implementation("xyz.dynxsty:dih4jda:1.6-alpha.1")
 }
 ```
 
