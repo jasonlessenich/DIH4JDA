@@ -6,7 +6,10 @@ import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionE
 import javax.annotation.Nonnull;
 import java.util.List;
 
-//TODO docs
+/**
+ * An interface that contains the method that should be executed when a user interacts with a
+ * {@link net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu}.
+ */
 public interface EntitySelectMenuHandler {
 
     /**

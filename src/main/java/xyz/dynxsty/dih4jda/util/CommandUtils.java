@@ -1,8 +1,8 @@
 package xyz.dynxsty.dih4jda.util;
 
+import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
-import xyz.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
-import xyz.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
+import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -160,15 +160,15 @@ public class CommandUtils {
 	/**
 	 * Builds a formatted string out of the given sets of CommandData.
 	 *
-	 * @param command A set of {@link UnqueuedCommandData}.
-	 * @param slash   A set of {@link UnqueuedSlashCommandData}.
+	 * @param command A set of {@link ContextCommand}s.
+	 * @param slash   A set of {@link SlashCommand}s.
 	 * @return The formatted String.
 	 * @since v1.5
 	 */
-	public static @Nonnull String getNames(Set<UnqueuedCommandData> command, Set<UnqueuedSlashCommandData> slash) {
+	public static @Nonnull String getNames(@Nonnull Set<ContextCommand> command, @Nonnull Set<SlashCommand> slash) {
 		StringBuilder names = new StringBuilder();
-		command.forEach(c -> names.append(", ").append(c.getData().getName()));
-		slash.forEach(c -> names.append(", /").append(c.getData().getName()));
+		command.forEach(c -> names.append(", ").append(c.getCommandData().getName()));
+		slash.forEach(c -> names.append(", /").append(c.getSlashCommandData().getName()));
 		return names.substring(2);
 	}
 
@@ -180,10 +180,11 @@ public class CommandUtils {
 	 * @return The modified {@link Pair}.
 	 * @since v1.5.2
 	 */
-	public static @Nonnull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> filterByType(Pair<Set<UnqueuedSlashCommandData>,
-			Set<UnqueuedCommandData>> pair, RegistrationType type) {
+	@Contract("_, _ -> new")
+	public static @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> filterByType(@Nonnull Pair<Set<SlashCommand>,
+			Set<ContextCommand>> pair, RegistrationType type) {
 		return new Pair<>(
-				pair.getFirst().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()),
-				pair.getSecond().stream().filter(c -> c.getType() == type).collect(Collectors.toSet()));
+				pair.getFirst().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()),
+				pair.getSecond().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()));
 	}
 }

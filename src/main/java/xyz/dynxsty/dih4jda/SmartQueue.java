@@ -1,7 +1,7 @@
 package xyz.dynxsty.dih4jda;
 
-import xyz.dynxsty.dih4jda.interactions.commands.model.UnqueuedCommandData;
-import xyz.dynxsty.dih4jda.interactions.commands.model.UnqueuedSlashCommandData;
+import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import xyz.dynxsty.dih4jda.util.CommandUtils;
 import xyz.dynxsty.dih4jda.util.Pair;
 import net.dv8tion.jda.api.JDA;
@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -34,13 +35,13 @@ import java.util.Set;
  * @since v1.5
  */
 public class SmartQueue {
-	private final Set<UnqueuedSlashCommandData> slashData;
-	private final Set<UnqueuedCommandData> commandData;
+	private final Set<SlashCommand> slashCommands;
+	private final Set<ContextCommand> contextCommands;
 	private final boolean deleteUnknown;
 
-	protected SmartQueue(@Nonnull Set<UnqueuedSlashCommandData> slashData, @Nonnull Set<UnqueuedCommandData> commandData, boolean deleteUnknown) {
-		this.slashData = slashData;
-		this.commandData = commandData;
+	protected SmartQueue(@Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand> contextCommands, boolean deleteUnknown) {
+		this.slashCommands = slashCommands;
+		this.contextCommands = contextCommands;
 		this.deleteUnknown = deleteUnknown;
 	}
 
@@ -51,7 +52,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> checkGlobal(@Nonnull JDA jda) {
+	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGlobal(@Nonnull JDA jda) {
 		List<Command> existing;
 		try {
 			existing = jda.retrieveCommands().complete();
@@ -61,7 +62,7 @@ public class SmartQueue {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(jda, existing, null);
 		}
-		return new Pair<>(slashData, commandData);
+		return new Pair<>(slashCommands, contextCommands);
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> checkGuild(@Nonnull Guild guild) {
+	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGuild(@Nonnull Guild guild) {
 		List<Command> existing;
 		try {
 			existing = guild.retrieveCommands().complete();
@@ -83,7 +84,7 @@ public class SmartQueue {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(guild.getJDA(), existing, guild);
 		}
-		return new Pair<>(slashData, commandData);
+		return new Pair<>(slashCommands, contextCommands);
 	}
 
 	/**
@@ -95,27 +96,34 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */
-	private @Nonnull Pair<Set<UnqueuedSlashCommandData>, Set<UnqueuedCommandData>> removeDuplicates(@Nonnull JDA jda, @Nonnull final List<Command> existing, @Nullable Guild guild) {
+	private @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> removeDuplicates(@Nonnull JDA jda, @Nonnull final List<Command> existing, @Nullable Guild guild) {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
 		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());
 		DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE, prefix + "Found %s existing command(s)", existing.size());
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
-			if (commandData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData(), global)) ||
-					slashData.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getData(), global))) {
+			if (contextCommands.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getCommandData(), global)) ||
+					slashCommands.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getSlashCommandData(), global))) {
 				// check for command in blacklisted guilds
 				// this may be refactored soonTM, as its kinda clunky
 				if (!global) {
-					for (UnqueuedSlashCommandData d : slashData) {
-						if (CommandUtils.isEqual(cmd, d.getData(), false) && !d.getGuilds().contains(guild)) {
-							DIH4JDALogger.info("Deleting /%s in Guild: %s", cmd.getName(), guild.getName());
-							cmd.delete().queue();
-							return true;
+					for (SlashCommand d : slashCommands) {
+						if (CommandUtils.isEqual(cmd, d.getSlashCommandData(), false)) {
+							if (d.getRequiredGuilds().getFirst() == null) {
+								return false;
+							} else {
+								if (!Arrays.asList(d.getRequiredGuilds().getSecond()).contains(guild.getIdLong())) {
+									DIH4JDALogger.info("Deleting /%s in Guild: %s", cmd.getName(), guild.getName());
+									cmd.delete().queue();
+									return true;
+								}
+							}
 						}
 					}
-					for (UnqueuedCommandData d : commandData) {
-						if (CommandUtils.isEqual(cmd, d.getData(), false) && !d.getGuilds().contains(guild)) {
+					for (ContextCommand d : contextCommands) {
+						if (CommandUtils.isEqual(cmd, d.getCommandData(), false) &&
+								!Arrays.asList(d.getRequiredGuilds().getSecond()).contains(guild.getIdLong())) {
 							DIH4JDALogger.info("Deleting %s in Guild: %s", cmd.getName(), guild.getName());
 							cmd.delete().queue();
 							return true;
@@ -127,8 +135,8 @@ public class SmartQueue {
 			}
 			return false;
 		});
-		commandData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getData(), global)));
-		slashData.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getData(), global)));
+		contextCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getCommandData(), global)));
+		slashCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getSlashCommandData(), global)));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
 			for (Command command : commands) {
@@ -146,6 +154,6 @@ public class SmartQueue {
 				}
 			}
 		}
-		return new Pair<>(slashData, commandData);
+		return new Pair<>(slashCommands, contextCommands);
 	}
 }

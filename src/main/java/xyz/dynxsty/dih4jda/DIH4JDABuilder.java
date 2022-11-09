@@ -9,6 +9,7 @@ import xyz.dynxsty.dih4jda.util.ClassWalker;
 import xyz.dynxsty.dih4jda.util.ClasspathHelper;
 import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.Contract;
+import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -71,7 +72,7 @@ public class DIH4JDABuilder {
 		} else {
 			blocked = types;
 		}
-		config.setBlockedLogTypes(Arrays.stream(blocked).collect(Collectors.toSet()));
+		config.setBlockedLogTypes(blocked);
 		return this;
 	}
 
