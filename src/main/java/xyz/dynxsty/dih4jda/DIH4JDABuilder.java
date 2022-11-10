@@ -31,7 +31,6 @@ public class DIH4JDABuilder {
 	 *
 	 * @param instance The {@link JDA} instance.
 	 */
-	@Contract("_ -> new")
 	public static @Nonnull DIH4JDABuilder setJDA(@Nonnull JDA instance) {
 		return new DIH4JDABuilder(instance);
 	}

@@ -152,7 +152,6 @@ public class CommandUtils {
 	 * @return One combined string.
 	 * @since v1.4
 	 */
-	@Contract(pure = true)
 	public static @Nonnull String buildCommandPath(String... args) {
 		return String.join("/", args);
 	}
@@ -180,7 +179,6 @@ public class CommandUtils {
 	 * @return The modified {@link Pair}.
 	 * @since v1.5.2
 	 */
-	@Contract("_, _ -> new")
 	public static @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> filterByType(@Nonnull Pair<Set<SlashCommand>,
 			Set<ContextCommand>> pair, RegistrationType type) {
 		return new Pair<>(
