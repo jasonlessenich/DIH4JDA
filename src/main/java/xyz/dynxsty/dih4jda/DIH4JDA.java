@@ -130,7 +130,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @see DIH4JDA#addEventListener(Object...)
 	 */
 	@Nonnull
-	public Set<DIH4JDAEventListener> getListeners() {
+	public Set<DIH4JDAEventListener> getEventListeners() {
 		return listeners;
 	}
 

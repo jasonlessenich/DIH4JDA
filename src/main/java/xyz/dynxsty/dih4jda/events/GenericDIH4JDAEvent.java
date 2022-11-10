@@ -50,13 +50,13 @@ public abstract class GenericDIH4JDAEvent<I extends Interaction> {
 	 * @since v1.5
 	 */
 	public static <I extends Interaction> void fire(@NotNull GenericDIH4JDAEvent<I> event) {
-		if (event.getDIH4JDA().getListeners().isEmpty()) {
+		if (event.getDIH4JDA().getEventListeners().isEmpty()) {
 			DIH4JDALogger.warn(DIH4JDALogger.Type.EVENT_FIRED, "%s was fired, but not handled (No listener registered)", event.getEventName());
 			if (event instanceof ThrowableDIH4JDAEvent && event.getDIH4JDA().getConfig().isDefaultPrintStacktrace()) {
 				((ThrowableDIH4JDAEvent<I>) event).getThrowable().printStackTrace();
 			}
 		}
-		for (DIH4JDAEventListener listener : event.getDIH4JDA().getListeners()) {
+		for (DIH4JDAEventListener listener : event.getDIH4JDA().getEventListeners()) {
 			try {
 				for (Method method : listener.getClass().getMethods()) {
 					if (method.getName().equals(event.getEventName())) {
