@@ -16,8 +16,6 @@ public class DIH4JDAConfig {
 	private String[] commandsPackages = new String[]{};
 	private DIH4JDALogger.Type[] blockedLogTypes = new DIH4JDALogger.Type[]{};
 	private boolean registerOnReady = true;
-	private boolean globalSmartQueue = true;
-	private boolean guildSmartQueue = true;
 	private boolean deleteUnknownCommands = true;
 	private boolean throwUnregisteredException = true;
 	//We have to find a better name for this boolean
@@ -54,22 +52,6 @@ public class DIH4JDAConfig {
 
 	public void setRegisterOnReady(boolean registerOnReady) {
 		this.registerOnReady = registerOnReady;
-	}
-
-	public boolean isGlobalSmartQueue() {
-		return globalSmartQueue;
-	}
-
-	public void setGlobalSmartQueue(boolean globalSmartQueue) {
-		this.globalSmartQueue = globalSmartQueue;
-	}
-
-	public boolean isGuildSmartQueue() {
-		return guildSmartQueue;
-	}
-
-	public void setGuildSmartQueue(boolean guildSmartQueue) {
-		this.guildSmartQueue = guildSmartQueue;
 	}
 
 	public boolean isDeleteUnknownCommands() {
