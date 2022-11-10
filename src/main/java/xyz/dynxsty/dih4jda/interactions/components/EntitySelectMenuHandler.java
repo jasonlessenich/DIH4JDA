@@ -2,6 +2,7 @@ package xyz.dynxsty.dih4jda.interactions.components;
 
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
+import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -13,10 +14,11 @@ import java.util.List;
 public interface EntitySelectMenuHandler {
 
     /**
-     * Method that must be overriden for all classes that handle
+     * Method that must be overridden for all classes that handle
      * {@link net.dv8tion.jda.api.interactions.components.selections.EntitySelectInteraction}
      * All select menus that match the identifier will execute this class's implementation of the
-     * {@link EntitySelectMenuHandler#handleEntitySelectMenu(EntitySelectInteractionEvent, List)} method.
+     * handleEntitySelectMenu method.
+     * This is best used with the {@link ComponentIdBuilder}.
      *
      * <pre>
      *     {@code

@@ -3,6 +3,7 @@ package xyz.dynxsty.dih4jda.interactions.components;
 
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import xyz.dynxsty.dih4jda.DIH4JDA;
+import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -18,7 +19,8 @@ public interface StringSelectMenuHandler {
 	 * Method that must be overridden for all classes that handle
 	 * {@link net.dv8tion.jda.api.interactions.components.selections.StringSelectInteraction}.
 	 * All select menus that match the identifier will execute this class's implementation of the
-	 * {@link StringSelectMenuHandler#handleStringSelectMenu(StringSelectInteractionEvent, List)} method.
+	 * handleStringSelectMenu method.
+	 * This is best used with the {@link ComponentIdBuilder}.
 	 *
 	 * <pre>{@code
 	 * public class TestCommand extends SlashCommand implements StringSelectMenuHandler {

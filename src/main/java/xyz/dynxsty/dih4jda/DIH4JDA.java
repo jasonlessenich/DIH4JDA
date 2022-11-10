@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
-import xyz.dynxsty.dih4jda.interactions.ComponentIdBuilder;
+import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;

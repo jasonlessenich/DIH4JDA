@@ -3,7 +3,7 @@ package xyz.dynxsty.dih4jda.interactions.components;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import xyz.dynxsty.dih4jda.DIH4JDA;
-import xyz.dynxsty.dih4jda.interactions.ComponentIdBuilder;
+import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
 import javax.annotation.Nonnull;
 import java.util.Map;

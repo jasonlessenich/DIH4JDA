@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 public interface ExecutableCommand<E> {
 
 	/**
-	 * The method that gets executed when the command gets executed.
+	 * The method that gets called once the command gets executed.
 	 * @param event the command that is getting passed.
 	 */
 	void execute(E event);
