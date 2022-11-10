@@ -23,65 +23,58 @@ public interface DIH4JDAEventListener {
 	/**
 	 * An Event that gets fired when an exception gets raised while executing any Command.
 	 *
-	 * @param interaction The {@link CommandInteraction}.
-	 * @param e           The Exception that was raised.
+	 * @param event The {@link CommandExceptionEvent} that was fired.
 	 * @see SlashCommand#execute(SlashCommandInteractionEvent)
 	 * @see SlashCommand.Subcommand#execute(SlashCommandInteractionEvent)
 	 * @see ContextCommand.User#execute(Object)
 	 * @see ContextCommand.Message#execute(Object)
 	 */
-	default void onCommandException(CommandInteraction interaction, Exception e) {}
+	default void onCommandException(CommandExceptionEvent event) {}
 
 	/**
 	 * An Event that gets fired when an exception gets raised while interacting with a message component.
 	 *
-	 * @param interaction The {@link ComponentInteraction}.
-	 * @param e           The Exception that was raised.
+	 * @param event The {@link ComponentExceptionEvent} that was fired.
 	 */
-	default void onComponentException(ComponentInteraction interaction, Exception e) {}
+	default void onComponentException(ComponentExceptionEvent event) {}
 
 	/**
 	 * An Event that gets fired when an exception gets raised while handling an AutoComplete interaction.
 	 *
-	 * @param interaction The {@link CommandAutoCompleteInteraction}.
-	 * @param e           The Exception that was raised.
+	 * @param event The {@link AutoCompleteExceptionEvent} that was fired.
 	 * @see AutoCompletable#handleAutoComplete(CommandAutoCompleteInteractionEvent, AutoCompleteQuery)
 	 */
-	default void onAutoCompleteException(CommandAutoCompleteInteraction interaction, Exception e) {}
+	default void onAutoCompleteException(AutoCompleteExceptionEvent event) {}
 
 	/**
 	 * An Event that gets fired when an exception gets raised while handling a Modal interaction.
 	 *
-	 * @param interaction The {@link ModalInteraction}.
-	 * @param e           The Exception that was raised.
+	 * @param event The {@link ModalExceptionEvent} that was fired.
 	 */
-	default void onModalException(ModalInteraction interaction, Exception e) {}
+	default void onModalException(ModalExceptionEvent event) {}
 
 	/**
 	 * An Event that gets fired when the user, which invoked the command, does NOT have one of the required Permissions.
 	 *
-	 * @param interaction The {@link CommandInteraction}.
-	 * @param permissions The {@link Set} of {@link Permission}s which are required to run this commands.
+	 * @param event The {@link InsufficientPermissionsEvent} that was fired.
 	 * @see AbstractCommand#setRequiredPermissions(Permission...)
 	 */
-	default void onInsufficientPermissions(CommandInteraction interaction, Set<Permission> permissions) {}
+	default void onInsufficientPermissions(InsufficientPermissionsEvent event) {}
 
 	/**
 	 * An Event that gets fired when the user, which invoked the command, is NOT allowed to use this command.
 	 *
-	 * @param interaction The {@link CommandInteraction}.
-	 * @param userIds     The {@link Set} of {@link Long}s (user Ids) which are able to use this command.
+	 * @param event The {@link InvalidUserEvent} that was fired.
 	 * @see AbstractCommand#setRequiredUsers(Long...)
 	 */
-	default void onInvalidUser(CommandInteraction interaction, Set<Long> userIds) {}
+	default void onInvalidUser(InvalidUserEvent event) {}
 
 	/**
 	 * An Event that gets fired when the user, which invoked the command, does NOT have the required roles to use this command.
 	 *
-	 * @param interaction The {@link CommandInteraction}.
-	 * @param roleIds     The {@link Set} of {@link Long}s (role Ids) which are able to use this command.
+	 * @param event The {@link InvalidRoleEvent} that was fired.
 	 * @see AbstractCommand#setRequiredRoles(Long...)
 	 */
-	default void onInvalidRole(CommandInteraction interaction, Set<Long> roleIds) {}
+	default void onInvalidRole(InvalidRoleEvent event) {}
 }
 
