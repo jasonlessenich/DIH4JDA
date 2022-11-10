@@ -22,6 +22,7 @@ public class InvalidUserEvent extends GenericDIH4JDAEvent<CommandInteraction> {
 
 	/**
 	 * @return An immutable {@link Set} of all "required" users for the executed command.
+	 * @see AbstractCommand#setRequiredUsers(Long...)
 	 */
 	public Set<Long> getUserIds() {
 		return userIds;

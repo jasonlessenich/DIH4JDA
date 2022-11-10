@@ -23,6 +23,7 @@ public class InsufficientPermissionsEvent extends GenericDIH4JDAEvent<CommandInt
 
 	/**
 	 * @return An immutable {@link Set} of all "required" permissions for the executed command.
+	 * @see AbstractCommand#setRequiredPermissions(Permission...)
 	 */
 	public Set<Permission> getPermissions() {
 		return permissions;

@@ -23,6 +23,7 @@ public class InvalidRoleEvent extends GenericDIH4JDAEvent<CommandInteraction> {
 
 	/**
 	 * @return An immutable {@link Set} of all "required" roles for the executed command.
+	 * @see AbstractCommand#setRequiredRoles(Long...)
 	 */
 	public Set<Long> getRoleIds() {
 		return roleIds;
