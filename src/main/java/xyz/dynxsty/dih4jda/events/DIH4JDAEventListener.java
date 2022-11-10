@@ -1,6 +1,5 @@
 package xyz.dynxsty.dih4jda.events;
 
-import xyz.dynxsty.dih4jda.interactions.commands.AutoCompletable;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -10,6 +9,7 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.interactions.modals.ModalInteraction;
 import xyz.dynxsty.dih4jda.interactions.commands.AbstractCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
 

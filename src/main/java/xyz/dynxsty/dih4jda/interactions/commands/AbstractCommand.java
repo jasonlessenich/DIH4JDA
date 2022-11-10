@@ -1,10 +1,10 @@
 package xyz.dynxsty.dih4jda.interactions.commands;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.DIH4JDABuilder;
 import xyz.dynxsty.dih4jda.util.Pair;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 
 import javax.annotation.Nonnull;
 

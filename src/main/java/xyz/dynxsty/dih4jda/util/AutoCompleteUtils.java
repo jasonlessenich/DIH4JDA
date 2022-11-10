@@ -1,10 +1,10 @@
 package xyz.dynxsty.dih4jda.util;
 
-import xyz.dynxsty.dih4jda.DIH4JDALogger;
-import xyz.dynxsty.dih4jda.interactions.ComponentIdBuilder;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import org.jetbrains.annotations.Contract;
+import xyz.dynxsty.dih4jda.DIH4JDALogger;
+import xyz.dynxsty.dih4jda.interactions.ComponentIdBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

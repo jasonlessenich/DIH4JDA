@@ -1,21 +1,18 @@
 package xyz.dynxsty.dih4jda;
 
+import net.dv8tion.jda.api.JDA;
+import org.jetbrains.annotations.Contract;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
+import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.exceptions.InvalidPackageException;
-import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import xyz.dynxsty.dih4jda.util.ClassWalker;
 import xyz.dynxsty.dih4jda.util.ClasspathHelper;
-import net.dv8tion.jda.api.JDA;
-import org.jetbrains.annotations.Contract;
-import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
 
 /**
  * Builder-System used to build {@link DIH4JDA}.

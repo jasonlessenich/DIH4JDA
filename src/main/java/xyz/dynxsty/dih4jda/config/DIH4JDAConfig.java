@@ -1,8 +1,8 @@
 package xyz.dynxsty.dih4jda.config;
 
-import xyz.dynxsty.dih4jda.DIH4JDALogger;
 import net.dv8tion.jda.api.JDA;
 import xyz.dynxsty.dih4jda.DIH4JDA;
+import xyz.dynxsty.dih4jda.DIH4JDALogger;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
