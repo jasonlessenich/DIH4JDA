@@ -7,6 +7,9 @@ import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+/**
+ * An enum class that handles all events fired by {@link DIH4JDA}
+ */
 public enum DIH4JDAEvent {
 	COMMAND_EXCEPTION("onCommandException"),
 	COMPONENT_EXCEPTION("onComponentException"),
