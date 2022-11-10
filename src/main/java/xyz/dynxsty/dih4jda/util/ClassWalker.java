@@ -109,6 +109,7 @@ public class ClassWalker {
 	 * @return An unmodifiable {@link Set} of classes which are assignable to the given type.
 	 * @since v1.6
 	 */
+	@SuppressWarnings("unchecked") //Is actually checked because we filter out the un-assignable classes.
 	public @Nonnull <T> Set<Class<? extends T>> getSubTypesOf(@Nonnull Class<T> type) throws DIH4JDAException {
 		return getAllClasses()
 				.stream()

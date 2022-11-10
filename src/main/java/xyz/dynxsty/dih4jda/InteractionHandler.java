@@ -10,7 +10,6 @@ import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.CommandRequirements;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import xyz.dynxsty.dih4jda.interactions.components.ModalHandler;
@@ -106,8 +105,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private final Map<String, AutoCompletable> autoCompleteIndex;
 
-	protected final Set<SlashCommand> commands;
-	protected final Set<ContextCommand> contexts;
+	protected final Set<SlashCommand> slashCommands;
+	protected final Set<ContextCommand> contextCommands;
 
 	/**
 	 * Constructs a new {@link InteractionHandler} from the supplied commands package.
@@ -118,8 +117,8 @@ public class InteractionHandler extends ListenerAdapter {
 		this.dih4jda = dih4jda;
 		config = dih4jda.getConfig();
 
-		commands = new HashSet<>();
-		contexts = new HashSet<>();
+		slashCommands = new HashSet<>();
+		contextCommands = new HashSet<>();
 		for (String pkg : config.getCommandPackages()) {
 			try {
 				findSlashCommands(pkg);
@@ -240,7 +239,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Set<Class<? extends SlashCommand>> subTypes = classes.getSubTypesOf(SlashCommand.class);
 		for (Class<? extends SlashCommand> subType : subTypes) {
 			if (Checks.checkEmptyConstructor(subType)) {
-				commands.add((SlashCommand) ClassUtils.getInstance(subType));
+				slashCommands.add((SlashCommand) ClassUtils.getInstance(subType));
 			} else {
 				DIH4JDALogger.error("Could not initialize %s! The class MUST contain a empty public constructor.", subType.getName());
 			}
@@ -257,7 +256,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Set<Class<? extends ContextCommand>> subTypes = classes.getSubTypesOf(ContextCommand.class);
 		for (Class<? extends ContextCommand> subType : subTypes) {
 			if (Checks.checkEmptyConstructor(subType)) {
-				contexts.add((ContextCommand) ClassUtils.getInstance(subType));
+				contextCommands.add((ContextCommand) ClassUtils.getInstance(subType));
 			} else {
 				DIH4JDALogger.error("Could not initialize %s! The class MUST contain a empty public constructor.", subType.getName());
 			}
@@ -270,7 +269,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private @Nonnull Set<SlashCommand> getSlashCommands() {
 		Set<SlashCommand> commands = new HashSet<>();
-		for (SlashCommand command : this.commands) {
+		for (SlashCommand command : this.slashCommands) {
 			if (command != null) {
 				SlashCommandData data = getBaseCommandData(command, command.getClass());
 				if (data != null) {
@@ -407,7 +406,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private @Nonnull Set<ContextCommand> getContextCommandData() {
 		Set<ContextCommand> commands = new HashSet<>();
-		for (ContextCommand context : contexts) {
+		for (ContextCommand context : contextCommands) {
 			if (context != null) {
 				CommandData data = getContextCommandData(context, context.getClass());
 				if (data != null) {
@@ -518,7 +517,8 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Checks if the given {@link CommandInteraction} passes the set {@link CommandRequirements}.
+	 * Checks if the given {@link CommandInteraction} passes the
+	 * {@link xyz.dynxsty.dih4jda.interactions.commands.AbstractCommand} requirements.
 	 * If not, this will then fire the corresponding event using {@link DIH4JDAEvent#fire(Set, DIH4JDA, Object...)}
 	 *
 	 * @param interaction The {@link CommandInteraction}.

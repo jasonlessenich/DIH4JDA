@@ -4,7 +4,6 @@ import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.interactions.ComponentIdBuilder;
-import xyz.dynxsty.dih4jda.interactions.commands.BaseCommandRequirements;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
@@ -39,7 +38,7 @@ public class DIH4JDA extends ListenerAdapter {
 
 	/**
 	 * The default {@link RegistrationType} which is used for queuing new commands.
-	 * This can be overridden using {@link BaseCommandRequirements#setRegistrationType(RegistrationType)}
+	 * This can be overridden using {@link xyz.dynxsty.dih4jda.interactions.commands.AbstractCommand#setRegistrationType(RegistrationType)}
 	 */
 	public static RegistrationType defaultCommandType;
 
@@ -149,7 +148,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @param commands An array of commands to register.
 	 */
 	public void addSlashCommands(SlashCommand... commands) {
-		handler.commands.addAll(List.of(commands));
+		handler.slashCommands.addAll(List.of(commands));
 	}
 
 	/**
@@ -158,7 +157,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @param commands An array of commands to register.
 	 */
 	public void addContextCommands(ContextCommand... commands) {
-		handler.contexts.addAll(List.of(commands));
+		handler.contextCommands.addAll(List.of(commands));
 	}
 
 	/**
