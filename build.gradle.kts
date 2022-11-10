@@ -108,7 +108,8 @@ publishing {
             pom {
                 packaging = "jar"
                 name.set(archivesBaseName)
-                description.set("A very easy-to-use Interaction Handler for the Java Discord API!")
+                description.set("A fairly easy-to-use command framework for the Java Discord API, with support for " +
+                        "Slash Commands and Context Commands")
                 url.set("https://github.com/DynxstyGIT/DIH4JDA")
 
                 scm {
