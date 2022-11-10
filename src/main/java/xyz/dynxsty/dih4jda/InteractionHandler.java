@@ -519,7 +519,7 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * Checks if the given {@link CommandInteraction} passes the
 	 * {@link xyz.dynxsty.dih4jda.interactions.commands.AbstractCommand} requirements.
-	 * If not, this will then fire the corresponding event using {@link DIH4JDAEvent#fire(DIH4JDAEvent)}
+	 * If not, this will then fire the corresponding event using {@link GenericDIH4JDAEvent#fire(GenericDIH4JDAEvent)}
 	 *
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param permissions A set of required {@link Permission}s.
@@ -530,17 +530,17 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private boolean passesRequirements(@Nonnull CommandInteraction interaction, Permission[] permissions, Long[] userIds, Long[] roleIds) {
 		if (permissions != null && permissions.length != 0 && interaction.isFromGuild() && interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
-			DIH4JDAEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
+			GenericDIH4JDAEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
 			return false;
 		}
 		if (userIds != null && userIds.length != 0 && !Arrays.asList(userIds).contains(interaction.getUser().getIdLong())) {
-			DIH4JDAEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
+			GenericDIH4JDAEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
 			return false;
 		}
 		if (interaction.isFromGuild() && interaction.getGuild() != null && interaction.getMember() != null) {
 			Member member = interaction.getMember();
 			if (roleIds != null && roleIds.length != 0 && !member.getRoles().isEmpty() && member.getRoles().stream().noneMatch(r -> Arrays.asList(roleIds).contains(r.getIdLong()))) {
-				DIH4JDAEvent.fire(new InvalidRoleEvent(dih4jda, interaction, Set.of(roleIds)));
+				GenericDIH4JDAEvent.fire(new InvalidRoleEvent(dih4jda, interaction, Set.of(roleIds)));
 				return false;
 			}
 		}
@@ -558,7 +558,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleSlashCommand(event);
 			} catch (Exception e) {
-				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
+				GenericDIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -574,7 +574,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleUserContextCommand(event);
 			} catch (Exception e) {
-				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
+				GenericDIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -590,7 +590,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleMessageContextCommand(event);
 			} catch (Exception e) {
-				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
+				GenericDIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -609,7 +609,7 @@ public class InteractionHandler extends ListenerAdapter {
 					autoComplete.handleAutoComplete(event, event.getFocusedOption());
 				}
 			} catch (Exception e) {
-				DIH4JDAEvent.fire(new AutoCompleteExceptionEvent(dih4jda, event, e));
+				GenericDIH4JDAEvent.fire(new AutoCompleteExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -633,7 +633,7 @@ public class InteractionHandler extends ListenerAdapter {
 					buttonOptional.get().handleButton(event, event.getButton());
 				}
 			} catch (Exception e) {
-				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
+				GenericDIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -657,7 +657,7 @@ public class InteractionHandler extends ListenerAdapter {
 					selectMenuOptional.get().handleStringSelectMenu(event, event.getValues());
 				}
 			} catch (Exception e) {
-				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
+				GenericDIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -677,7 +677,7 @@ public class InteractionHandler extends ListenerAdapter {
 					selectMenuOptional.get().handleEntitySelectMenu(event, event.getValues());
 				}
 			} catch (Exception e) {
-				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
+				GenericDIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -701,7 +701,7 @@ public class InteractionHandler extends ListenerAdapter {
 					modalOptional.get().handleModal(event, event.getValues());
 				}
 			} catch (Exception e) {
-				DIH4JDAEvent.fire(new ModalExceptionEvent(dih4jda, event, e));
+				GenericDIH4JDAEvent.fire(new ModalExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}

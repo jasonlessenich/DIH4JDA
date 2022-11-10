@@ -5,7 +5,7 @@ import xyz.dynxsty.dih4jda.DIH4JDA;
 
 import java.util.Set;
 
-public class InvalidUserEvent extends DIH4JDAEvent<CommandInteraction> {
+public class InvalidUserEvent extends GenericDIH4JDAEvent<CommandInteraction> {
 
 	private final Set<Long> userIds;
 

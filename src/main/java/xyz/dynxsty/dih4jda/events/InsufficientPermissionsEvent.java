@@ -6,7 +6,7 @@ import xyz.dynxsty.dih4jda.DIH4JDA;
 
 import java.util.Set;
 
-public class InsufficientPermissionsEvent extends DIH4JDAEvent<CommandInteraction> {
+public class InsufficientPermissionsEvent extends GenericDIH4JDAEvent<CommandInteraction> {
 
 	private final Set<Permission> permissions;
 
