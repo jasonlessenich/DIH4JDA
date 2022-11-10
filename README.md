@@ -12,7 +12,7 @@ A fairly easy-to-use command framework for the [Java Discord API](https://github
 
 This version of DIH4JDA **must** be used with the following version of JDA: [`net.dv8tion:JDA:5.0.0-alpha.22`](https://github.com/DV8FromTheWorld/JDA/releases)
 
-DIH4JDA itself is distributed through [Maven Central](https://central.sonatype.dev/artifact/xyz.dynxsty/dih4jda/1.6-alpha.1/versions):
+DIH4JDA itself is distributed through [Maven Central](https://central.sonatype.dev/search?q=dih4jda&sort=name&namespace=xyz.dynxsty):
 
 ### Maven
 
