@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
 import java.lang.reflect.Method;
 
 /**
- * An enum class that handles all events fired by {@link DIH4JDA}
+ * A generic event, which holds the events' name, the {@link DIH4JDA} instance and the {@link I follow-up interaction}.
  */
 public abstract class GenericDIH4JDAEvent<I extends Interaction> {
 	private final String eventName;
@@ -22,14 +22,23 @@ public abstract class GenericDIH4JDAEvent<I extends Interaction> {
 		this.interaction = interaction;
 	}
 
+	/**
+	 * @return The internal event name.
+	 */
 	public String getEventName() {
 		return eventName;
 	}
 
+	/**
+	 * @return The {@link DIH4JDA} instance.
+	 */
 	public DIH4JDA getDIH4JDA() {
 		return dih4jda;
 	}
 
+	/**
+	 * @return The follow-up interaction of this event.
+	 */
 	public I getInteraction() {
 		return interaction;
 	}

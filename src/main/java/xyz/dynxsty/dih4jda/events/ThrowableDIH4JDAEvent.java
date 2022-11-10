@@ -4,6 +4,11 @@ import net.dv8tion.jda.api.interactions.Interaction;
 import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 
+/**
+ * Further abstraction of the {@link GenericDIH4JDAEvent} class, which features {@link Throwable}s.
+ *
+ * @param <I> The follow-up interaction for this event.
+ */
 public abstract class ThrowableDIH4JDAEvent<I extends Interaction> extends GenericDIH4JDAEvent<I> {
 
 	private final Throwable throwable;
@@ -13,6 +18,9 @@ public abstract class ThrowableDIH4JDAEvent<I extends Interaction> extends Gener
 		this.throwable = throwable;
 	}
 
+	/**
+	 * @return The {@link Throwable} that was thrown.
+	 */
 	public Throwable getThrowable() {
 		return throwable;
 	}

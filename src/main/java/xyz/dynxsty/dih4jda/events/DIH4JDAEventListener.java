@@ -21,7 +21,7 @@ import java.util.Set;
 public interface DIH4JDAEventListener {
 
 	/**
-	 * An Event that gets fired when an exception gets raised while executing any Command.
+	 * An event that gets fired when an exception gets raised while executing any command.
 	 *
 	 * @param event The {@link CommandExceptionEvent} that was fired.
 	 * @see SlashCommand#execute(SlashCommandInteractionEvent)
@@ -32,14 +32,14 @@ public interface DIH4JDAEventListener {
 	default void onCommandException(CommandExceptionEvent event) {}
 
 	/**
-	 * An Event that gets fired when an exception gets raised while interacting with a message component.
+	 * An event that gets fired when an exception gets raised while interacting with a message component.
 	 *
 	 * @param event The {@link ComponentExceptionEvent} that was fired.
 	 */
 	default void onComponentException(ComponentExceptionEvent event) {}
 
 	/**
-	 * An Event that gets fired when an exception gets raised while handling an AutoComplete interaction.
+	 * An event that gets fired when an exception gets raised while handling an autocomplete interaction.
 	 *
 	 * @param event The {@link AutoCompleteExceptionEvent} that was fired.
 	 * @see AutoCompletable#handleAutoComplete(CommandAutoCompleteInteractionEvent, AutoCompleteQuery)
@@ -47,14 +47,14 @@ public interface DIH4JDAEventListener {
 	default void onAutoCompleteException(AutoCompleteExceptionEvent event) {}
 
 	/**
-	 * An Event that gets fired when an exception gets raised while handling a Modal interaction.
+	 * An event that gets fired when an exception gets raised while handling a modal interaction.
 	 *
 	 * @param event The {@link ModalExceptionEvent} that was fired.
 	 */
 	default void onModalException(ModalExceptionEvent event) {}
 
 	/**
-	 * An Event that gets fired when the user, which invoked the command, does NOT have one of the required Permissions.
+	 * An event that gets fired when the user, which invoked the command, does NOT have one of the required permissions.
 	 *
 	 * @param event The {@link InsufficientPermissionsEvent} that was fired.
 	 * @see AbstractCommand#setRequiredPermissions(Permission...)
@@ -62,7 +62,7 @@ public interface DIH4JDAEventListener {
 	default void onInsufficientPermissions(InsufficientPermissionsEvent event) {}
 
 	/**
-	 * An Event that gets fired when the user, which invoked the command, is NOT allowed to use this command.
+	 * An event that gets fired when the user, which invoked the command, is NOT allowed to use this command.
 	 *
 	 * @param event The {@link InvalidUserEvent} that was fired.
 	 * @see AbstractCommand#setRequiredUsers(Long...)
@@ -70,7 +70,7 @@ public interface DIH4JDAEventListener {
 	default void onInvalidUser(InvalidUserEvent event) {}
 
 	/**
-	 * An Event that gets fired when the user, which invoked the command, does NOT have the required roles to use this command.
+	 * An event that gets fired when the user, which invoked the command, does NOT have the required roles to use this command.
 	 *
 	 * @param event The {@link InvalidRoleEvent} that was fired.
 	 * @see AbstractCommand#setRequiredRoles(Long...)
