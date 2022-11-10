@@ -153,7 +153,7 @@ public class CommandUtils {
 	 * @since v1.4
 	 */
 	public static @Nonnull String buildCommandPath(String... args) {
-		return String.join("/", args);
+		return String.join(" ", args);
 	}
 
 	/**

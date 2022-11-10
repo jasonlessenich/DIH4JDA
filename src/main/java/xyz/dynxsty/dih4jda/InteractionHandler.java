@@ -290,7 +290,9 @@ public class InteractionHandler extends ListenerAdapter {
 				if (data != null) {
 					command.setSlashCommandData(data);
 				}
-				if (command.getRegistrationType() != RegistrationType.GUILD && command.getRequiredGuilds().getFirst()) {
+				if (command.getRegistrationType() != RegistrationType.GUILD &&
+						command.getRequiredGuilds().getFirst() != null && command.getRequiredGuilds().getSecond() != null &&
+						command.getRequiredGuilds().getFirst()) {
 					throw new UnsupportedOperationException(command.getClass().getName() + " attempted to require guilds for a non-global command!");
 				}
 				searchForAutoCompletable(command, command.getClass());
@@ -426,7 +428,9 @@ public class InteractionHandler extends ListenerAdapter {
 				if (data != null) {
 					context.setCommandData(data);
 				}
-				if (context.getRegistrationType() != RegistrationType.GUILD && context.getRequiredGuilds().getFirst()) {
+				if (context.getRegistrationType() != RegistrationType.GUILD &&
+						context.getRequiredGuilds().getFirst() != null && context.getRequiredGuilds().getSecond() != null &&
+						context.getRequiredGuilds().getFirst()) {
 					throw new UnsupportedOperationException(context.getClass().getName() + " attempted to require guilds for a non-global command!");
 				}
 				commands.add(context);
@@ -467,7 +471,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link SlashCommandInteractionEvent} that was fired.
 	 */
 	private void handleSlashCommand(@Nonnull SlashCommandInteractionEvent event) throws CommandNotRegisteredException {
-		String path = event.getCommandPath();
+		String path = event.getFullCommandName();
 		ExecutableCommand<SlashCommandInteractionEvent> executable = slashCommandIndex.containsKey(path) ?
 				slashCommandIndex.get(path) : subcommandIndex.get(path);
 		if (executable == null) {
@@ -477,7 +481,7 @@ public class InteractionHandler extends ListenerAdapter {
 		} else {
 			if (passesRequirements(event, executable.getSlashCommand().getRequiredPermissions(),
 					executable.getSlashCommand().getRequiredUsers(), executable.getSlashCommand().getRequiredRoles())) {
-				if (slashCommandIndex.containsKey(event.getCommandPath())) {
+				if (slashCommandIndex.containsKey(event.getFullCommandName())) {
 					slashCommandIndex.get(path).execute(event);
 				} else {
 					subcommandIndex.get(path).execute(event);
@@ -493,10 +497,10 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link UserContextInteractionEvent} that was fired.
 	 */
 	private void handleUserContextCommand(@Nonnull UserContextInteractionEvent event) throws CommandNotRegisteredException {
-		ContextCommand.User context = userContextIndex.get(event.getCommandPath());
+		ContextCommand.User context = userContextIndex.get(event.getFullCommandName());
 		if (context == null) {
 			if (config.isThrowUnregisteredException()) {
-				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
+				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getFullCommandName()));
 			}
 		} else {
 			if (passesRequirements(event, context.getRequiredPermissions(), context.getRequiredUsers(), context.getRequiredRoles())) {
@@ -512,10 +516,10 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link MessageContextInteractionEvent} that was fired.
 	 */
 	private void handleMessageContextCommand(@Nonnull MessageContextInteractionEvent event) throws CommandNotRegisteredException {
-		ContextCommand.Message context = messageContextIndex.get(event.getCommandPath());
+		ContextCommand.Message context = messageContextIndex.get(event.getFullCommandName());
 		if (context == null) {
 			if (config.isThrowUnregisteredException()) {
-				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getCommandPath()));
+				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getFullCommandName()));
 			}
 		} else {
 			if (passesRequirements(event, context.getRequiredPermissions(), context.getRequiredUsers(), context.getRequiredRoles())) {
@@ -612,7 +616,7 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onCommandAutoCompleteInteraction(@Nonnull CommandAutoCompleteInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				AutoCompletable autoComplete = autoCompleteIndex.get(event.getCommandPath());
+				AutoCompletable autoComplete = autoCompleteIndex.get(event.getFullCommandName());
 				if (autoComplete != null) {
 					autoComplete.handleAutoComplete(event, event.getFocusedOption());
 				}
