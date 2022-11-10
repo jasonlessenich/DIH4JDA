@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
@@ -20,34 +21,22 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.*;
 import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
-import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
-import xyz.dynxsty.dih4jda.interactions.commands.AutoCompletable;
-import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
-import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.*;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import xyz.dynxsty.dih4jda.interactions.components.ModalHandler;
 import xyz.dynxsty.dih4jda.interactions.components.StringSelectMenuHandler;
-import xyz.dynxsty.dih4jda.util.Checks;
-import xyz.dynxsty.dih4jda.util.ClassUtils;
-import xyz.dynxsty.dih4jda.util.ClassWalker;
-import xyz.dynxsty.dih4jda.util.CommandUtils;
-import xyz.dynxsty.dih4jda.util.Pair;
+import xyz.dynxsty.dih4jda.util.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -59,53 +48,52 @@ import java.util.stream.Collectors;
  */
 public class InteractionHandler extends ListenerAdapter {
 
+	private static final Map<String, Command> RETRIEVED_COMMANDS;
+
+	static {
+		RETRIEVED_COMMANDS = new HashMap<>();
+	}
+
+	protected final Set<SlashCommand> slashCommands;
+	protected final Set<ContextCommand> contextCommands;
 	/**
 	 * The main {@link DIH4JDA} instance.
 	 */
 	private final DIH4JDA dih4jda;
-
 	/**
 	 * The instance's configuration;
 	 */
 	private final DIH4JDAConfig config;
-
 	/**
 	 * An Index of all {@link SlashCommand}s.
 	 *
 	 * @see InteractionHandler#findSlashCommands(String)
 	 */
 	private final Map<String, SlashCommand> slashCommandIndex;
-
 	/**
 	 * An Index of all {@link SlashCommand.Subcommand}s.
 	 *
 	 * @see InteractionHandler#findSlashCommands(String)
 	 */
 	private final Map<String, SlashCommand.Subcommand> subcommandIndex;
-
 	/**
 	 * An Index of all {@link ContextCommand.Message}s.
 	 *
 	 * @see InteractionHandler#findContextCommands(String)
 	 */
 	private final Map<String, ContextCommand.Message> messageContextIndex;
-
 	/**
 	 * An Index of all {@link ContextCommand.User}s.
 	 *
 	 * @see InteractionHandler#findContextCommands(String)
 	 */
 	private final Map<String, ContextCommand.User> userContextIndex;
-
 	/**
 	 * An Index of all {@link AutoCompletable}s.
 	 *
 	 * @see InteractionHandler#findSlashCommands(String)
 	 */
 	private final Map<String, AutoCompletable> autoCompleteIndex;
-
-	protected final Set<SlashCommand> slashCommands;
-	protected final Set<ContextCommand> contextCommands;
 
 	/**
 	 * Constructs a new {@link InteractionHandler} from the supplied commands package.
@@ -135,6 +123,18 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
+	 * Returns an unmodifiable Map of all retrieved commands, where the key is the commands' name &
+	 * the value the {@link Command} instance itself.
+	 * This map is empty if {@link DIH4JDA#registerInteractions()} wasn't called before.
+	 *
+	 * @return An immutable {@link Map} containing all global & guild commands.
+	 */
+	@NotNull
+	public static Map<String, Command> getRetrievedCommands() {
+		return Collections.unmodifiableMap(RETRIEVED_COMMANDS);
+	}
+
+	/**
 	 * Registers all interactions.
 	 * This method can be accessed from the {@link DIH4JDA} instance.
 	 * <br>This is automatically executed each time the {@link ListenerAdapter#onReady(net.dv8tion.jda.api.events.session.ReadyEvent)} event is executed.
@@ -147,9 +147,18 @@ public class InteractionHandler extends ListenerAdapter {
 		Pair<Set<SlashCommand>, Set<ContextCommand>> data = new Pair<>(getSlashCommands(), getContextCommandData());
 		for (Guild guild : config.getJDA().getGuilds()) {
 			Pair<Set<SlashCommand>, Set<ContextCommand>> guildData = CommandUtils.filterByType(data, RegistrationType.GUILD);
+			List<Command> existing = List.of();
+			try {
+				existing = guild.retrieveCommands().complete();
+				existing.forEach(c -> RETRIEVED_COMMANDS.put(c.getName(), c));
+			} catch (ErrorResponseException e) {
+				DIH4JDALogger.error("Could not retrieve Commands from Guild %s!" +
+						" Please make sure that the bot was invited with the application.commands scope!", guild.getName());
+				guildData = new Pair<>(Set.of(), Set.of());
+			}
 			// check if smart queuing is enabled
 			if (config.isGuildSmartQueue()) {
-				guildData = new SmartQueue(guildData.getFirst(), guildData.getSecond(), config.isDeleteUnknownCommands()).checkGuild(guild);
+				guildData = new SmartQueue(guildData.getFirst(), guildData.getSecond(), config.isDeleteUnknownCommands()).checkGuild(guild, existing);
 			}
 			// upsert all guild commands
 			if (!guildData.getFirst().isEmpty() || !guildData.getSecond().isEmpty()) {
@@ -157,9 +166,16 @@ public class InteractionHandler extends ListenerAdapter {
 			}
 		}
 		Pair<Set<SlashCommand>, Set<ContextCommand>> globalData = CommandUtils.filterByType(data, RegistrationType.GLOBAL);
+		List<Command> existing = List.of();
+		try {
+			existing = config.getJDA().retrieveCommands().complete();
+			existing.forEach(c -> RETRIEVED_COMMANDS.put(c.getName(), c));
+		} catch (ErrorResponseException e) {
+			globalData = new Pair<>(Set.of(), Set.of());
+		}
 		// check if smart queuing is enabled
 		if (config.isGlobalSmartQueue()) {
-			globalData = new SmartQueue(globalData.getFirst(), globalData.getSecond(), config.isDeleteUnknownCommands()).checkGlobal(config.getJDA());
+			globalData = new SmartQueue(globalData.getFirst(), globalData.getSecond(), config.isDeleteUnknownCommands()).checkGlobal(config.getJDA(), existing);
 		}
 		// upsert all global commands
 		if (!globalData.getFirst().isEmpty() || !globalData.getSecond().isEmpty()) {
@@ -177,8 +193,8 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * Creates global commands from the given (Slash-) CommandData
 	 *
-	 * @param jda         The {@link JDA} instance.
-	 * @param slashCommand   A set of {@link SlashCommandData}.
+	 * @param jda             The {@link JDA} instance.
+	 * @param slashCommand    A set of {@link SlashCommandData}.
 	 * @param contextCommands A set of {@link CommandData},
 	 */
 	private void upsert(@Nonnull JDA jda, @Nonnull Set<SlashCommand> slashCommand, @Nonnull Set<ContextCommand> contextCommands) {
@@ -189,7 +205,7 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * Creates guild commands from the given (Slash-) CommandData
 	 *
-	 * @param guild       The {@link Guild}.
+	 * @param guild           The {@link Guild}.
 	 * @param slashCommands   A set of {@link SlashCommandData}.
 	 * @param contextCommands A set of {@link CommandData},
 	 */
@@ -401,7 +417,6 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * Gets all Guild Context commands registered in {@link InteractionHandler#findContextCommands(String)} and
 	 * returns their {@link CommandData} as a List.
-	 *
 	 */
 	private @Nonnull Set<ContextCommand> getContextCommandData() {
 		Set<ContextCommand> commands = new HashSet<>();

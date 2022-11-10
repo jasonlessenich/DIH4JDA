@@ -19,4 +19,6 @@ public interface ExecutableCommand<E> {
 	 */
 	@Nonnull
 	SlashCommand getSlashCommand();
+
+
 }

@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import xyz.dynxsty.dih4jda.util.CommandUtils;
@@ -52,13 +53,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGlobal(@Nonnull JDA jda) {
-		List<Command> existing;
-		try {
-			existing = jda.retrieveCommands().complete();
-		} catch (ErrorResponseException e) {
-			return new Pair<>(Set.of(), Set.of());
-		}
+	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGlobal(@Nonnull JDA jda, @NotNull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(jda, existing, null);
 		}
@@ -72,15 +67,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGuild(@Nonnull Guild guild) {
-		List<Command> existing;
-		try {
-			existing = guild.retrieveCommands().complete();
-		} catch (ErrorResponseException e) {
-			DIH4JDALogger.error("Could not retrieve Commands from Guild %s!" +
-					" Please make sure that the bot was invited with the application.commands scope!", guild.getName());
-			return new Pair<>(Set.of(), Set.of());
-		}
+	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGuild(@Nonnull Guild guild, @NotNull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(guild.getJDA(), existing, guild);
 		}
