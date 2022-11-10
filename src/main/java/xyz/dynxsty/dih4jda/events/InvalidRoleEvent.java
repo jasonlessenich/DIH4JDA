@@ -1,6 +1,5 @@
 package xyz.dynxsty.dih4jda.events;
 
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.commands.AbstractCommand;
