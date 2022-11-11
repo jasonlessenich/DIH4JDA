@@ -1,7 +1,6 @@
 package xyz.dynxsty.dih4jda.events;
 
 import net.dv8tion.jda.api.interactions.Interaction;
-import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.DIH4JDALogger;
 
@@ -49,7 +48,7 @@ public abstract class GenericDIH4JDAEvent<I extends Interaction> {
 	 * @param event The {@link GenericDIH4JDAEvent} to fire.
 	 * @since v1.5
 	 */
-	public static <I extends Interaction> void fire(@NotNull GenericDIH4JDAEvent<I> event) {
+	public static <I extends Interaction> void fire(@Nonnull GenericDIH4JDAEvent<I> event) {
 		if (event.getDIH4JDA().getEventListeners().isEmpty()) {
 			DIH4JDALogger.warn(DIH4JDALogger.Type.EVENT_FIRED, "%s was fired, but not handled (No listener registered)", event.getEventName());
 			if (event instanceof ThrowableDIH4JDAEvent && event.getDIH4JDA().getConfig().isDefaultPrintStacktrace()) {

@@ -1,12 +1,16 @@
 package xyz.dynxsty.dih4jda.interactions.commands;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import xyz.dynxsty.dih4jda.InteractionHandler;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a single Slash Command.
@@ -17,9 +21,10 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 
 	private SlashCommandData data = null;
 	private Subcommand[] subcommands = new Subcommand[]{};
-	private Map<SubcommandGroupData, Subcommand[]> subcommandGroups = Map.of();
+	private SubcommandGroup[] subcommandGroups = new SubcommandGroup[]{};
 
-	protected SlashCommand() {}
+	protected SlashCommand() {
+	}
 
 	public final SlashCommandData getSlashCommandData() {
 		return data;
@@ -45,12 +50,12 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	 */
 	public final void addSubcommands(Subcommand... classes) {
 		for (Subcommand subcommand : classes) {
-			subcommand.mainCommandData = this;
+			subcommand.parent = this;
 		}
 		this.subcommands = classes;
 	}
 
-	public final Map<SubcommandGroupData, Subcommand[]> getSubcommandGroups() {
+	public final SubcommandGroup[] getSubcommandGroups() {
 		return subcommandGroups;
 	}
 
@@ -59,17 +64,27 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	 *
 	 * @param groups A map of the {@link SubcommandGroupData} and their corresponding {@link Subcommand}s.
 	 */
-	public final void addSubcommandGroups(Map<SubcommandGroupData, Subcommand[]> groups) {
+	public final void addSubcommandGroups(@Nonnull SubcommandGroup... groups) {
+		for (SubcommandGroup group : groups) {
+			for (Subcommand subcommand : group.getSubcommands()) {
+				subcommand.parent = this;
+			}
+		}
 		this.subcommandGroups = groups;
 	}
 
 	@Override
 	public void execute(SlashCommandInteractionEvent event) {}
 
-	@Nonnull
-	@Override
-	public SlashCommand getSlashCommand() {
-		return this;
+	/**
+	 * Gets the corresponding {@link Command JDA entity} for this command.
+	 * If the command was not cached or queued before (e.g. when using sharding), this may return null.
+	 *
+	 * @return The {@link Command} corresponding to this class.
+	 */
+	public @Nullable Command asCommand() {
+		if (data == null) return null;
+		return InteractionHandler.getRetrievedCommands().get(data.getName());
 	}
 
 	/**
@@ -77,16 +92,10 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	 */
 	public abstract static class Subcommand implements ExecutableCommand<SlashCommandInteractionEvent> {
 		private SubcommandData data = null;
-		private SlashCommand mainCommandData = null;
+		private SlashCommand parent = null;
 
 		public final SubcommandData getSubcommandData() {
 			return data;
-		}
-
-		@Nonnull
-		@Override
-		public SlashCommand getSlashCommand() {
-			return mainCommandData;
 		}
 
 		/**
@@ -97,6 +106,75 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 		 */
 		public final void setSubcommandData(SubcommandData data) {
 			this.data = data;
+		}
+
+		/**
+		 * Gets the {@link SlashCommand parent} for this subcommand.
+		 *
+		 * @return The corresponding {@link SlashCommand}.
+		 */
+		public SlashCommand getParent() {
+			return parent;
+		}
+
+		/**
+		 * Gets the corresponding {@link Command.Subcommand JDA-entity} for this subcommand.
+		 * If the subcommand was not cached or queued before (e.g. when using sharding), this may return null.
+		 *
+		 * @return The {@link Command.Subcommand} corresponding to this class.
+		 */
+		public @Nullable Command.Subcommand asSubcommand() {
+			if (data == null) return null;
+			Command cmd = parent.asCommand();
+			if (cmd == null) return null;
+			List<Command.Subcommand> subcommands = new ArrayList<>(cmd.getSubcommands());
+			cmd.getSubcommandGroups().forEach(g -> subcommands.addAll(g.getSubcommands()));
+			return subcommands.stream()
+					.filter(c -> c.getName().equals(data.getName()))
+					.findFirst()
+					.orElse(null);
+		}
+	}
+
+	/**
+	 * Model class which represents a single subcommand group.
+	 * This simply holds the {@link SubcommandGroupData} and an array of all {@link Subcommand}s.
+	 */
+	public static class SubcommandGroup {
+		private final SubcommandGroupData data;
+		private final Subcommand[] subcommands;
+
+		private SubcommandGroup(SubcommandGroupData data, Subcommand... subcommands) {
+			this.data = data;
+			this.subcommands = subcommands;
+		}
+
+		/**
+		 * Creates a new instance of the {@link SubcommandGroup} class.
+		 *
+		 * @param data        The {@link SubcommandGroupData} to use.
+		 * @param subcommands An array of {@link Subcommand}s. This should NOT be empty!
+		 * @return The {@link SubcommandGroup}.
+		 */
+		@Nonnull
+		public static SubcommandGroup of(SubcommandGroupData data, Subcommand... subcommands) {
+			if (data == null) throw new IllegalArgumentException("SubcommandGroupData may not be null!");
+			if (subcommands == null || subcommands.length == 0) throw new IllegalArgumentException("Subcommands may not be empty!");
+			return new SubcommandGroup(data, subcommands);
+		}
+
+		/**
+		 * @return The corresponding {@link SubcommandGroupData}.
+		 */
+		public SubcommandGroupData getData() {
+			return data;
+		}
+
+		/**
+		 * @return An array of {@link Subcommand}s.
+		 */
+		public Subcommand[] getSubcommands() {
+			return subcommands;
 		}
 	}
 }

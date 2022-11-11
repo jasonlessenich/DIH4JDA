@@ -7,12 +7,12 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
-import org.jetbrains.annotations.Contract;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,9 +45,6 @@ public class CommandUtils {
 			return false;
 		}
 		if (!data.getSubcommandGroups().stream().allMatch(o -> command.getSubcommandGroups().stream().anyMatch(op -> equals(o, op)))) {
-			return false;
-		}
-		if (!data.getSubcommands().stream().allMatch(o -> command.getSubcommands().stream().anyMatch(op -> equals(o, op)))) {
 			return false;
 		}
 		return data.getSubcommands().stream().allMatch(o -> command.getSubcommands().stream().anyMatch(op -> equals(o, op)));
@@ -136,14 +133,12 @@ public class CommandUtils {
 	 * @return Whether the given Command originates from the given CommandData.
 	 * @since v1.5
 	 */
-	public static boolean isEqual(Command command, Object data, boolean isGlobalCommand) {
-		boolean equals;
+	public static boolean equals(@Nonnull Command command, Object data, boolean isGlobalCommand) {
 		if (command.getType() == Command.Type.SLASH) {
-			equals = CommandUtils.equals((SlashCommandData) data, SlashCommandData.fromCommand(command), isGlobalCommand);
+			return CommandUtils.equals((SlashCommandData) data, SlashCommandData.fromCommand(command), isGlobalCommand);
 		} else {
-			equals = CommandUtils.equals((CommandData) data, CommandData.fromCommand(command), isGlobalCommand);
+			return CommandUtils.equals((CommandData) data, CommandData.fromCommand(command), isGlobalCommand);
 		}
-		return equals;
 	}
 
 	/**
@@ -153,7 +148,7 @@ public class CommandUtils {
 	 * @since v1.4
 	 */
 	public static @Nonnull String buildCommandPath(String... args) {
-		return String.join("/", args);
+		return String.join(" ", args);
 	}
 
 	/**
@@ -184,5 +179,17 @@ public class CommandUtils {
 		return new Pair<>(
 				pair.getFirst().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()),
 				pair.getSecond().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()));
+	}
+
+	public static @Nullable String getAsMention(@Nonnull SlashCommand command) {
+		Command entity = command.asCommand();
+		if (entity == null) return null;
+		return entity.getAsMention();
+	}
+
+	public static @Nullable String getAsMention(@Nonnull SlashCommand.Subcommand command) {
+		Command.Subcommand entity = command.asSubcommand();
+		if (entity == null) return null;
+		return entity.getAsMention();
 	}
 }
