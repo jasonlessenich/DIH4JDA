@@ -64,7 +64,7 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	 *
 	 * @param groups A map of the {@link SubcommandGroupData} and their corresponding {@link Subcommand}s.
 	 */
-	public final void addSubcommandGroups(SubcommandGroup... groups) {
+	public final void addSubcommandGroups(@Nonnull SubcommandGroup... groups) {
 		for (SubcommandGroup group : groups) {
 			for (Subcommand subcommand : group.getSubcommands()) {
 				subcommand.parent = this;
@@ -124,7 +124,7 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 		 * @return The {@link Command.Subcommand} corresponding to this class.
 		 */
 		public @Nullable Command.Subcommand asSubcommand() {
-			if (data == null || parent == null) return null;
+			if (data == null) return null;
 			Command cmd = parent.asCommand();
 			if (cmd == null) return null;
 			List<Command.Subcommand> subcommands = new ArrayList<>(cmd.getSubcommands());
