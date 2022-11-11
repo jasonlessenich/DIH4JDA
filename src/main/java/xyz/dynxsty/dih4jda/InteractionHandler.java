@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
-import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.*;
 import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
@@ -127,7 +126,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @return An immutable {@link Map} containing all global & guild commands.
 	 */
-	@NotNull
+	@Nonnull
 	public static Map<String, Command> getRetrievedCommands() {
 		return Collections.unmodifiableMap(RETRIEVED_COMMANDS);
 	}

@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import xyz.dynxsty.dih4jda.util.CommandUtils;
@@ -52,7 +51,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGlobal(@Nonnull JDA jda, @NotNull List<Command> existing) {
+	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGlobal(@Nonnull JDA jda, @Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(jda, existing, null);
 		}
@@ -66,7 +65,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGuild(@Nonnull Guild guild, @NotNull List<Command> existing) {
+	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(guild.getJDA(), existing, guild);
 		}
@@ -78,7 +77,7 @@ public class SmartQueue {
 	 *
 	 * @param jda      The {@link JDA} instance.
 	 * @param existing A List of all existing {@link Command}s.
-	 * @param guild    An optional guild parameter which is used with {@link SmartQueue#checkGuild(Guild)}.
+	 * @param guild    An optional guild parameter which is used with {@link SmartQueue#checkGuild(Guild, List)}.
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */

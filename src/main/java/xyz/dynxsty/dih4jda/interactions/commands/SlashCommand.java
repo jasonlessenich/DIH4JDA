@@ -7,8 +7,9 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import xyz.dynxsty.dih4jda.InteractionHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a single Slash Command.
@@ -108,22 +109,12 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 			if (data == null || parent == null) return null;
 			Command cmd = parent.asCommand();
 			if (cmd == null) return null;
-			// TODO: fix subcommandgroups
-			return cmd.getSubcommands().stream()
+			List<Command.Subcommand> subcommands = new ArrayList<>(cmd.getSubcommands());
+			cmd.getSubcommandGroups().forEach(g -> subcommands.addAll(g.getSubcommands()));
+			return subcommands.stream()
 					.filter(c -> c.getName().equals(data.getName()))
 					.findFirst()
 					.orElse(null);
-		}
-
-		/**
-		 * Returns either the command {@link net.dv8tion.jda.api.interactions.commands.ICommandReference mention} or
-		 * name, based on whether the command is cached.
-		 *
-		 * @return Either the command mention or the command name.
-		 */
-		public String getMentionOrName() {
-			Command.Subcommand subcommand = asSubcommand();
-			return subcommand == null ? data.getName() : subcommand.getAsMention();
 		}
 	}
 

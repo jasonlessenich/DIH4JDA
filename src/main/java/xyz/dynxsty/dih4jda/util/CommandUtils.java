@@ -7,12 +7,12 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
-import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -136,7 +136,7 @@ public class CommandUtils {
 	 * @return Whether the given Command originates from the given CommandData.
 	 * @since v1.5
 	 */
-	public static boolean equals(@NotNull Command command, Object data, boolean isGlobalCommand) {
+	public static boolean equals(@Nonnull Command command, Object data, boolean isGlobalCommand) {
 		if (command.getType() == Command.Type.SLASH) {
 			return CommandUtils.equals((SlashCommandData) data, SlashCommandData.fromCommand(command), isGlobalCommand);
 		} else {
@@ -182,5 +182,17 @@ public class CommandUtils {
 		return new Pair<>(
 				pair.getFirst().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()),
 				pair.getSecond().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()));
+	}
+
+	public static @Nullable String getAsMention(@Nonnull SlashCommand command) {
+		Command entity = command.asCommand();
+		if (entity == null) return null;
+		return entity.getAsMention();
+	}
+
+	public static @Nullable String getAsMention(@Nonnull SlashCommand.Subcommand command) {
+		Command.Subcommand entity = command.asSubcommand();
+		if (entity == null) return null;
+		return entity.getAsMention();
 	}
 }
