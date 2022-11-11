@@ -2,7 +2,6 @@ package xyz.dynxsty.dih4jda;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -90,13 +89,13 @@ public class SmartQueue {
 		DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE, prefix + "Found %s existing command(s)", existing.size());
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
-			if (contextCommands.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getCommandData(), global)) ||
-					slashCommands.stream().anyMatch(data -> CommandUtils.isEqual(cmd, data.getSlashCommandData(), global))) {
+			if (contextCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData(), global)) ||
+					slashCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getSlashCommandData(), global))) {
 				// check for command in blacklisted guilds
 				// this may be refactored soonTM, as its kinda clunky
 				if (!global) {
 					for (SlashCommand d : slashCommands) {
-						if (CommandUtils.isEqual(cmd, d.getSlashCommandData(), false)) {
+						if (CommandUtils.equals(cmd, d.getSlashCommandData(), false)) {
 							if (d.getRequiredGuilds().getFirst() == null) {
 								return false;
 							} else {
@@ -109,7 +108,7 @@ public class SmartQueue {
 						}
 					}
 					for (ContextCommand d : contextCommands) {
-						if (CommandUtils.isEqual(cmd, d.getCommandData(), false) &&
+						if (CommandUtils.equals(cmd, d.getCommandData(), false) &&
 								!Arrays.asList(d.getRequiredGuilds().getSecond()).contains(guild.getIdLong())) {
 							DIH4JDALogger.info("Deleting %s in Guild: %s", cmd.getName(), guild.getName());
 							cmd.delete().queue();
@@ -122,8 +121,8 @@ public class SmartQueue {
 			}
 			return false;
 		});
-		contextCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getCommandData(), global)));
-		slashCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.isEqual(p, data.getSlashCommandData(), global)));
+		contextCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData(), global)));
+		slashCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getSlashCommandData(), global)));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
 			for (Command command : commands) {

@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.InteractionHandler;
 
 import javax.annotation.Nonnull;
@@ -62,7 +63,13 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	 *
 	 * @param groups A map of the {@link SubcommandGroupData} and their corresponding {@link Subcommand}s.
 	 */
-	public final void addSubcommandGroups(Map<SubcommandGroupData, Subcommand[]> groups) {
+	public final void addSubcommandGroups(@NotNull Map<SubcommandGroupData, Subcommand[]> groups) {
+		// TODO: add null checks
+		for (Subcommand[] arr : groups.values()) {
+			for (Subcommand subcommand : arr) {
+				subcommand.mainCommandData = this;
+			}
+		}
 		this.subcommandGroups = groups;
 	}
 
@@ -112,6 +119,7 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 			if (data == null) return null;
 			Command cmd = getSlashCommand().getCommand();
 			if (cmd == null) return null;
+			// TODO: fix subcommandgroups
 			return cmd.getSubcommands().stream()
 					.filter(c -> c.getName().equals(data.getName()))
 					.findFirst()

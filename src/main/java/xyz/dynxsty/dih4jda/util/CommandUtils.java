@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
-import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
@@ -136,14 +136,12 @@ public class CommandUtils {
 	 * @return Whether the given Command originates from the given CommandData.
 	 * @since v1.5
 	 */
-	public static boolean isEqual(Command command, Object data, boolean isGlobalCommand) {
-		boolean equals;
+	public static boolean equals(@NotNull Command command, Object data, boolean isGlobalCommand) {
 		if (command.getType() == Command.Type.SLASH) {
-			equals = CommandUtils.equals((SlashCommandData) data, SlashCommandData.fromCommand(command), isGlobalCommand);
+			return CommandUtils.equals((SlashCommandData) data, SlashCommandData.fromCommand(command), isGlobalCommand);
 		} else {
-			equals = CommandUtils.equals((CommandData) data, CommandData.fromCommand(command), isGlobalCommand);
+			return CommandUtils.equals((CommandData) data, CommandData.fromCommand(command), isGlobalCommand);
 		}
-		return equals;
 	}
 
 	/**
