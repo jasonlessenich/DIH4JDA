@@ -316,10 +316,10 @@ public class InteractionHandler extends ListenerAdapter {
 			}
 		}
 		// check subcommand groups
-		for (Map.Entry<SubcommandGroupData, SlashCommand.Subcommand[]> childGroup : command.getSubcommandGroups().entrySet()) {
-			String groupName = childGroup.getKey().getName();
+		for (SlashCommand.SubcommandGroup childGroup : command.getSubcommandGroups()) {
+			String groupName = childGroup.getData().getName();
 			// check subcommands
-			for (SlashCommand.Subcommand child : childGroup.getValue()) {
+			for (SlashCommand.Subcommand child : childGroup.getSubcommands()) {
 				if (Checks.checkImplementation(child.getClass(), AutoCompletable.class)) {
 					autoCompleteIndex.put(CommandUtils.buildCommandPath(baseName, groupName, child.getSubcommandData().getName()), (AutoCompletable) child);
 				}
@@ -341,13 +341,13 @@ public class InteractionHandler extends ListenerAdapter {
 			return null;
 		}
 		SlashCommandData commandData = command.getSlashCommandData();
-		if (command.getSubcommandGroups() != null && !command.getSubcommandGroups().isEmpty()) {
+		if (command.getSubcommandGroups() != null && command.getSubcommandGroups().length != 0) {
 			commandData.addSubcommandGroups(getSubcommandGroupData(command));
 		}
 		if (command.getSubcommands() != null && command.getSubcommands().length != 0) {
 			commandData.addSubcommands(getSubcommandData(command, command.getSubcommands(), null));
 		}
-		if (command.getSubcommandGroups() != null && command.getSubcommandGroups().isEmpty()
+		if (command.getSubcommandGroups() != null && command.getSubcommandGroups().length == 0
 				&& command.getSubcommands() != null && command.getSubcommands().length == 0) {
 			slashCommandIndex.put(CommandUtils.buildCommandPath(commandData.getName()), command);
 			DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_REGISTERED, "\t[*] Registered command: /%s (%s)", command.getSlashCommandData().getName(), command.getRegistrationType().name());
@@ -363,18 +363,18 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private @Nonnull Set<SubcommandGroupData> getSubcommandGroupData(@Nonnull SlashCommand command) {
 		Set<SubcommandGroupData> groupDataList = new HashSet<>();
-		for (Map.Entry<SubcommandGroupData, SlashCommand.Subcommand[]> group : command.getSubcommandGroups().entrySet()) {
+		for (SlashCommand.SubcommandGroup group : command.getSubcommandGroups()) {
 			if (group != null) {
-				if (group.getKey() == null) {
+				SubcommandGroupData groupData = group.getData();
+				if (groupData == null) {
 					DIH4JDALogger.warn("Class %s is missing SubcommandGroupData. It will be ignored.", group.getClass().getSimpleName());
 					continue;
 				}
-				if (group.getValue() == null || group.getValue().length == 0) {
-					DIH4JDALogger.warn("SubcommandGroup %s is missing Subcommands. It will be ignored.", group.getKey().getName());
+				if (group.getSubcommands() == null || group.getSubcommands().length == 0) {
+					DIH4JDALogger.warn("SubcommandGroup %s is missing Subcommands. It will be ignored.", groupData.getName());
 					continue;
 				}
-				SubcommandGroupData groupData = group.getKey();
-				groupData.addSubcommands(getSubcommandData(command, group.getValue(), groupData.getName()));
+				groupData.addSubcommands(getSubcommandData(command, group.getSubcommands(), groupData.getName()));
 				groupDataList.add(groupData);
 			}
 		}

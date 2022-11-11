@@ -5,12 +5,10 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
-import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.InteractionHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Map;
 
 /**
  * Represents a single Slash Command.
@@ -21,9 +19,10 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 
 	private SlashCommandData data = null;
 	private Subcommand[] subcommands = new Subcommand[]{};
-	private Map<SubcommandGroupData, Subcommand[]> subcommandGroups = Map.of();
+	private SubcommandGroup[] subcommandGroups = new SubcommandGroup[]{};
 
-	protected SlashCommand() {}
+	protected SlashCommand() {
+	}
 
 	public final SlashCommandData getSlashCommandData() {
 		return data;
@@ -54,7 +53,7 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 		this.subcommands = classes;
 	}
 
-	public final Map<SubcommandGroupData, Subcommand[]> getSubcommandGroups() {
+	public final SubcommandGroup[] getSubcommandGroups() {
 		return subcommandGroups;
 	}
 
@@ -63,10 +62,9 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	 *
 	 * @param groups A map of the {@link SubcommandGroupData} and their corresponding {@link Subcommand}s.
 	 */
-	public final void addSubcommandGroups(@NotNull Map<SubcommandGroupData, Subcommand[]> groups) {
-		// TODO: add null checks
-		for (Subcommand[] arr : groups.values()) {
-			for (Subcommand subcommand : arr) {
+	public final void addSubcommandGroups(SubcommandGroup... groups) {
+		for (SubcommandGroup group : groups) {
+			for (Subcommand subcommand : group.getSubcommands()) {
 				subcommand.mainCommandData = this;
 			}
 		}
@@ -74,7 +72,8 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	}
 
 	@Override
-	public void execute(SlashCommandInteractionEvent event) {}
+	public void execute(SlashCommandInteractionEvent event) {
+	}
 
 	@Nonnull
 	@Override
@@ -109,6 +108,16 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 			return data;
 		}
 
+		/**
+		 * Sets this subcommands' {@link SubcommandData}.
+		 *
+		 * @param data The {@link SubcommandData} which should be used for this subcommand.
+		 * @see SubcommandData
+		 */
+		public final void setSubcommandData(SubcommandData data) {
+			this.data = data;
+		}
+
 		@Nonnull
 		@Override
 		public SlashCommand getSlashCommand() {
@@ -136,15 +145,27 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 			Command.Subcommand subcommand = getSubcommand();
 			return subcommand == null ? data.getName() : subcommand.getAsMention();
 		}
+	}
 
-		/**
-		 * Sets this subcommands' {@link SubcommandData}.
-		 *
-		 * @param data The {@link SubcommandData} which should be used for this subcommand.
-		 * @see SubcommandData
-		 */
-		public final void setSubcommandData(SubcommandData data) {
+	public static class SubcommandGroup {
+		private final SubcommandGroupData data;
+		private final Subcommand[] subcommands;
+
+		private SubcommandGroup(SubcommandGroupData data, Subcommand... subcommands) {
 			this.data = data;
+			this.subcommands = subcommands;
+		}
+
+		public static SubcommandGroup of(SubcommandGroupData data, Subcommand... subcommands) {
+			return new SubcommandGroup(data, subcommands);
+		}
+
+		public SubcommandGroupData getData() {
+			return data;
+		}
+
+		public Subcommand[] getSubcommands() {
+			return subcommands;
 		}
 	}
 }
