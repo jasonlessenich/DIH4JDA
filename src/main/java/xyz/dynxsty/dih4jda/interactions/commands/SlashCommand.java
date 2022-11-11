@@ -76,6 +76,12 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	@Override
 	public void execute(SlashCommandInteractionEvent event) {}
 
+	/**
+	 * Gets the corresponding {@link Command JDA entity} for this command.
+	 * If the command was not cached or queued before (e.g. when using sharding), this may return null.
+	 *
+	 * @return The {@link Command} corresponding to this class.
+	 */
 	public @Nullable Command asCommand() {
 		if (data == null) return null;
 		return InteractionHandler.getRetrievedCommands().get(data.getName());
@@ -102,10 +108,21 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 			this.data = data;
 		}
 
+		/**
+		 * Gets the {@link SlashCommand parent} for this subcommand.
+		 *
+		 * @return The corresponding {@link SlashCommand}.
+		 */
 		public SlashCommand getParent() {
 			return parent;
 		}
 
+		/**
+		 * Gets the corresponding {@link Command.Subcommand JDA-entity} for this subcommand.
+		 * If the subcommand was not cached or queued before (e.g. when using sharding), this may return null.
+		 *
+		 * @return The {@link Command.Subcommand} corresponding to this class.
+		 */
 		public @Nullable Command.Subcommand asSubcommand() {
 			if (data == null || parent == null) return null;
 			Command cmd = parent.asCommand();
@@ -135,12 +152,14 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 		/**
 		 * Creates a new instance of the {@link SubcommandGroup} class.
 		 *
-		 * @param data The {@link SubcommandGroupData} to use.
+		 * @param data        The {@link SubcommandGroupData} to use.
 		 * @param subcommands An array of {@link Subcommand}s. This should NOT be empty!
 		 * @return The {@link SubcommandGroup}.
 		 */
 		@Nonnull
 		public static SubcommandGroup of(SubcommandGroupData data, Subcommand... subcommands) {
+			if (data == null) throw new IllegalArgumentException("SubcommandGroupData may not be null!");
+			if (subcommands == null || subcommands.length == 0) throw new IllegalArgumentException("Subcommands may not be empty!");
 			return new SubcommandGroup(data, subcommands);
 		}
 
