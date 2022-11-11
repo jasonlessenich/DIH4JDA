@@ -14,7 +14,7 @@ public abstract class ThrowableDIH4JDAEvent<I extends Interaction> extends Gener
 
 	private final Throwable throwable;
 
-	protected ThrowableDIH4JDAEvent(@Nonnull String eventName, @Nonnull DIH4JDA dih4jda, I interaction, Throwable throwable) {
+	protected ThrowableDIH4JDAEvent(@Nonnull String eventName, @Nonnull DIH4JDA dih4jda, @Nonnull I interaction, @Nonull Throwable throwable) {
 		super(eventName, dih4jda, interaction);
 		this.throwable = throwable;
 	}
