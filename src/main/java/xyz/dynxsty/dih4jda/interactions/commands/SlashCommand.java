@@ -48,7 +48,7 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	 */
 	public final void addSubcommands(Subcommand... classes) {
 		for (Subcommand subcommand : classes) {
-			subcommand.mainCommandData = this;
+			subcommand.parent = this;
 		}
 		this.subcommands = classes;
 	}
@@ -65,36 +65,18 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	public final void addSubcommandGroups(SubcommandGroup... groups) {
 		for (SubcommandGroup group : groups) {
 			for (Subcommand subcommand : group.getSubcommands()) {
-				subcommand.mainCommandData = this;
+				subcommand.parent = this;
 			}
 		}
 		this.subcommandGroups = groups;
 	}
 
 	@Override
-	public void execute(SlashCommandInteractionEvent event) {
-	}
+	public void execute(SlashCommandInteractionEvent event) {}
 
-	@Nonnull
-	@Override
-	public SlashCommand getSlashCommand() {
-		return this;
-	}
-
-	public @Nullable Command getCommand() {
+	public @Nullable Command asCommand() {
 		if (data == null) return null;
 		return InteractionHandler.getRetrievedCommands().get(data.getName());
-	}
-
-	/**
-	 * Returns either the command {@link net.dv8tion.jda.api.interactions.commands.ICommandReference mention} or
-	 * name, based on whether the command is cached.
-	 *
-	 * @return Either the command mention or the command name.
-	 */
-	public String getMentionOrName() {
-		Command command = getCommand();
-		return command == null ? data.getName() : command.getAsMention();
 	}
 
 	/**
@@ -102,7 +84,7 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	 */
 	public abstract static class Subcommand implements ExecutableCommand<SlashCommandInteractionEvent> {
 		private SubcommandData data = null;
-		private SlashCommand mainCommandData = null;
+		private SlashCommand parent = null;
 
 		public final SubcommandData getSubcommandData() {
 			return data;
@@ -118,15 +100,13 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 			this.data = data;
 		}
 
-		@Nonnull
-		@Override
-		public SlashCommand getSlashCommand() {
-			return mainCommandData;
+		public SlashCommand getParent() {
+			return parent;
 		}
 
-		public @Nullable Command.Subcommand getSubcommand() {
-			if (data == null) return null;
-			Command cmd = getSlashCommand().getCommand();
+		public @Nullable Command.Subcommand asSubcommand() {
+			if (data == null || parent == null) return null;
+			Command cmd = parent.asCommand();
 			if (cmd == null) return null;
 			// TODO: fix subcommandgroups
 			return cmd.getSubcommands().stream()
@@ -142,7 +122,7 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 		 * @return Either the command mention or the command name.
 		 */
 		public String getMentionOrName() {
-			Command.Subcommand subcommand = getSubcommand();
+			Command.Subcommand subcommand = asSubcommand();
 			return subcommand == null ? data.getName() : subcommand.getAsMention();
 		}
 	}

@@ -467,20 +467,16 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private void handleSlashCommand(@Nonnull SlashCommandInteractionEvent event) throws CommandNotRegisteredException {
 		String path = event.getFullCommandName();
-		ExecutableCommand<SlashCommandInteractionEvent> executable = slashCommandIndex.containsKey(path) ?
-				slashCommandIndex.get(path) : subcommandIndex.get(path);
-		if (executable == null) {
+		SlashCommand command = slashCommandIndex.get(path);
+		SlashCommand.Subcommand subcommand = subcommandIndex.get(path);
+		if (command == null && subcommand == null) {
 			if (config.isThrowUnregisteredException()) {
 				throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", path));
 			}
 		} else {
-			if (passesRequirements(event, executable.getSlashCommand().getRequiredPermissions(),
-					executable.getSlashCommand().getRequiredUsers(), executable.getSlashCommand().getRequiredRoles())) {
-				if (slashCommandIndex.containsKey(event.getFullCommandName())) {
-					slashCommandIndex.get(path).execute(event);
-				} else {
-					subcommandIndex.get(path).execute(event);
-				}
+			AbstractCommand req = command != null ? command : subcommand.getParent();
+			if (passesRequirements(event, req.getRequiredPermissions(), req.getRequiredUsers(), req.getRequiredRoles())) {
+				(command != null ? command : subcommand).execute(event);
 			}
 		}
 	}

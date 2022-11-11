@@ -13,11 +13,4 @@ public interface ExecutableCommand<E> {
 	 * @param event the command that is getting passed.
 	 */
 	void execute(E event);
-
-	/**
-	 * Gets the linked {@link SlashCommand}.
-	 * @return the {@link SlashCommand} instance.
-	 */
-	@Nonnull
-	SlashCommand getSlashCommand();
 }
