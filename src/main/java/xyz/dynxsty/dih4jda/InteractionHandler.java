@@ -33,6 +33,7 @@ import xyz.dynxsty.dih4jda.util.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -45,6 +46,9 @@ import java.util.stream.Collectors;
  */
 public class InteractionHandler extends ListenerAdapter {
 
+	/**
+	 * Cache for all retrieved (and/or queued) commands.
+	 */
 	private static final Map<String, Command> RETRIEVED_COMMANDS;
 
 	static {
@@ -120,7 +124,7 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Returns an unmodifiable Map of all retrieved commands, where the key is the commands' name &
+	 * Returns an unmodifiable Map of all retrieved (and/or queued) commands, where the key is the commands' name &
 	 * the value the {@link Command} instance itself.
 	 * This map is empty if {@link DIH4JDA#registerInteractions()} wasn't called before.
 	 *

@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import xyz.dynxsty.dih4jda.InteractionHandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,6 +119,10 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 		}
 	}
 
+	/**
+	 * Model class which represents a single subcommand group.
+	 * This simply holds the {@link SubcommandGroupData} and an array of all {@link Subcommand}s.
+	 */
 	public static class SubcommandGroup {
 		private final SubcommandGroupData data;
 		private final Subcommand[] subcommands;
@@ -127,14 +132,28 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 			this.subcommands = subcommands;
 		}
 
+		/**
+		 * Creates a new instance of the {@link SubcommandGroup} class.
+		 *
+		 * @param data The {@link SubcommandGroupData} to use.
+		 * @param subcommands An array of {@link Subcommand}s. This should NOT be empty!
+		 * @return The {@link SubcommandGroup}.
+		 */
+		@Nonnull
 		public static SubcommandGroup of(SubcommandGroupData data, Subcommand... subcommands) {
 			return new SubcommandGroup(data, subcommands);
 		}
 
+		/**
+		 * @return The corresponding {@link SubcommandGroupData}.
+		 */
 		public SubcommandGroupData getData() {
 			return data;
 		}
 
+		/**
+		 * @return An array of {@link Subcommand}s.
+		 */
 		public Subcommand[] getSubcommands() {
 			return subcommands;
 		}
