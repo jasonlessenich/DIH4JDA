@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
-import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
@@ -14,13 +13,10 @@ import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import xyz.dynxsty.dih4jda.interactions.components.ModalHandler;
 import xyz.dynxsty.dih4jda.interactions.components.StringSelectMenuHandler;
+import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <h1>DIH4JDA</h1>

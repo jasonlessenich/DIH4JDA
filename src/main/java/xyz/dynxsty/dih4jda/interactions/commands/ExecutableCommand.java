@@ -1,7 +1,5 @@
 package xyz.dynxsty.dih4jda.interactions.commands;
 
-import javax.annotation.Nonnull;
-
 /**
  * Represents a command that can be executed.
  * @param <E> the event to pass to the command.

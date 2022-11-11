@@ -2,11 +2,7 @@ package xyz.dynxsty.dih4jda.util;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.build.*;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
