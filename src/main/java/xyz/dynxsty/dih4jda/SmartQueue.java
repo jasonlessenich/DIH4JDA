@@ -96,7 +96,7 @@ public class SmartQueue {
 					for (SlashCommand d : slashCommands) {
 						if (CommandUtils.equals(cmd, d.getSlashCommandData(), false)) {
 							if (d.getRequiredGuilds().getFirst() == null) {
-								return false;
+								return true;
 							} else {
 								if (!Arrays.asList(d.getRequiredGuilds().getSecond()).contains(guild.getIdLong())) {
 									DIH4JDALogger.info("Deleting /%s in Guild: %s", cmd.getName(), guild.getName());
