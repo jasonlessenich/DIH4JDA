@@ -7,6 +7,10 @@ import xyz.dynxsty.dih4jda.DIH4JDABuilder;
 import xyz.dynxsty.dih4jda.util.Pair;
 
 import javax.annotation.Nonnull;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a basic command.
@@ -14,6 +18,13 @@ import javax.annotation.Nonnull;
  * @since v1.6
  */
 public abstract class AbstractCommand {
+
+	private static final Map<Long, Instant> COOLDOWN_CACHE;
+
+	static {
+		COOLDOWN_CACHE = new HashMap<>();
+	}
+
 	private RegistrationType type = DIH4JDA.defaultCommandType;
 
 	//The command requirements
@@ -21,6 +32,8 @@ public abstract class AbstractCommand {
 	private Permission[] requiredPermissions = new Permission[]{};
 	private Long[] requiredUsers = new Long[]{};
 	private Long[] requiredRoles = new Long[]{};
+
+	private Duration commandCooldown = Duration.ZERO;
 
 	/**
 	 * The {@link RegistrationType} the command got assigned.
@@ -129,5 +142,29 @@ public abstract class AbstractCommand {
 	 */
 	public final void setRequiredRoles(@Nonnull Long... roles) {
 		requiredRoles = roles;
+	}
+
+	// TODO: Docs
+	public void setCommandCooldown(Duration commandCooldown) {
+		this.commandCooldown = commandCooldown;
+	}
+
+	// TODO: Docs
+	public Duration getCommandCooldown() {
+		return commandCooldown;
+	}
+
+	public void applyCooldown(long userId, Instant nextUse) {
+		COOLDOWN_CACHE.put(userId, nextUse);
+	}
+
+	public Instant retrieveCooldown(long userId) {
+		Instant nextUse = COOLDOWN_CACHE.get(userId);
+		if (nextUse == null) return Instant.EPOCH;
+		return nextUse;
+	}
+
+	public boolean hasCooldown(long userId) {
+		return retrieveCooldown(userId).isAfter(Instant.now());
 	}
 }

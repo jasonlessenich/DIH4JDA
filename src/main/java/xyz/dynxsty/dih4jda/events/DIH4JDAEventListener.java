@@ -70,5 +70,8 @@ public interface DIH4JDAEventListener {
 	 * @see AbstractCommand#setRequiredRoles(Long...)
 	 */
 	default void onInvalidRole(InvalidRoleEvent event) {}
+
+	// TODO: docs
+	default void onCommandCooldown(CommandCooldownEvent event) {}
 }
 
