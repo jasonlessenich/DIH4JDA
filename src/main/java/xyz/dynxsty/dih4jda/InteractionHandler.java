@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.AutoCompleteExceptionEvent;
+import xyz.dynxsty.dih4jda.events.CommandCooldownEvent;
 import xyz.dynxsty.dih4jda.events.CommandExceptionEvent;
 import xyz.dynxsty.dih4jda.events.ComponentExceptionEvent;
 import xyz.dynxsty.dih4jda.events.GenericDIH4JDAEvent;
@@ -50,6 +51,8 @@ import xyz.dynxsty.dih4jda.util.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -498,7 +501,7 @@ public class InteractionHandler extends ListenerAdapter {
 				throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", event.getFullCommandName()));
 			}
 		} else {
-			if (passesRequirements(event, command.getRequiredPermissions(), command.getRequiredUsers(), command.getRequiredRoles())) {
+			if (passesRequirements(event, command)) {
 				command.execute(event);
 			}
 		}
@@ -517,7 +520,7 @@ public class InteractionHandler extends ListenerAdapter {
 				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getFullCommandName()));
 			}
 		} else {
-			if (passesRequirements(event, context.getRequiredPermissions(), context.getRequiredUsers(), context.getRequiredRoles())) {
+			if (passesRequirements(event, context)) {
 				context.execute(event);
 			}
 		}
@@ -536,7 +539,7 @@ public class InteractionHandler extends ListenerAdapter {
 				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getFullCommandName()));
 			}
 		} else {
-			if (passesRequirements(event, context.getRequiredPermissions(), context.getRequiredUsers(), context.getRequiredRoles())) {
+			if (passesRequirements(event, context)) {
 				context.execute(event);
 			}
 		}
@@ -548,18 +551,20 @@ public class InteractionHandler extends ListenerAdapter {
 	 * If not, this will then fire the corresponding event using {@link GenericDIH4JDAEvent#fire(GenericDIH4JDAEvent)}
 	 *
 	 * @param interaction The {@link CommandInteraction}.
-	 * @param permissions A set of required {@link Permission}s.
-	 * @param userIds     A set of required users ids.
-	 * @param roleIds     A set of required role ids.
+	 * @param command The {@link RestrictedCommand} which contains the (possible) restrictions.
 	 * @return Whether the event was fired.
 	 * @since v1.5
 	 */
-	private boolean passesRequirements(@Nonnull CommandInteraction interaction, Permission[] permissions, Long[] userIds, Long[] roleIds) {
+	private boolean passesRequirements(@Nonnull CommandInteraction interaction, RestrictedCommand command) {
+		long userId = interaction.getUser().getIdLong();
+		Permission[] permissions = command.getRequiredPermissions();
+		Long[] userIds = command.getRequiredUsers();
+		Long[] roleIds = command.getRequiredRoles();
 		if (permissions != null && permissions.length != 0 && interaction.isFromGuild() && interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
 			GenericDIH4JDAEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
 			return false;
 		}
-		if (userIds != null && userIds.length != 0 && !Arrays.asList(userIds).contains(interaction.getUser().getIdLong())) {
+		if (userIds != null && userIds.length != 0 && !Arrays.asList(userIds).contains(userId)) {
 			GenericDIH4JDAEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
 			return false;
 		}
@@ -568,6 +573,15 @@ public class InteractionHandler extends ListenerAdapter {
 			if (roleIds != null && roleIds.length != 0 && !member.getRoles().isEmpty() && member.getRoles().stream().noneMatch(r -> Arrays.asList(roleIds).contains(r.getIdLong()))) {
 				GenericDIH4JDAEvent.fire(new InvalidRoleEvent(dih4jda, interaction, Set.of(roleIds)));
 				return false;
+			}
+		}
+		// check if the command has enabled some sort of cooldown
+		if (command.getCommandCooldown() != Duration.ZERO) {
+			if (command.hasCooldown(userId)) {
+				GenericDIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, command.retrieveCooldown(userId)));
+				return false;
+			} else {
+				command.applyCooldown(userId, Instant.now().plus(command.getCommandCooldown()));
 			}
 		}
 		return true;
