@@ -94,14 +94,11 @@ public class SmartQueue {
 					slashCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData(), global))) {
 				// check for command in blacklisted guilds
 				if (!global) {
-					for (SlashCommand d : slashCommands) {
-						return validate(guild, cmd, d);
-					}
-					for (ContextCommand<?> context : contextCommands) {
-						return validate(guild, cmd, context);
-					}
+					slashCommands.forEach(slash -> checkRequiredGuilds(guild, cmd, slash));
+					contextCommands.forEach(context -> checkRequiredGuilds(guild, cmd, context));
+				} else {
+					DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_IGNORED, prefix + "Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName());
 				}
-				DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_IGNORED, prefix + "Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName());
 				return true;
 			}
 			return false;
@@ -110,28 +107,29 @@ public class SmartQueue {
 		slashCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData(), global)));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
-			for (Command command : commands) {
-				if (existing.contains(command)) {
-					if (deleteUnknown) {
-						DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_DELETED_UNKNOWN, prefix + "Deleting unknown %s command: %s", command.getType(), command.getName());
-						command.delete().queue();
-					} else {
-						DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_IGNORED_UNKNOWN, prefix + "Ignored unknown %s command: %s", command.getType(), command.getName());
-					}
-				}
-			}
+			commands.forEach(c -> checkUnknown(prefix, existing, c));
 		}
 		return new Pair<>(slashCommands, contextCommands);
 	}
 
-	private boolean validate(Guild guild, Command cmd, @Nonnull ApplicationCommand<?, ? extends CommandData> app) {
+	private void checkUnknown(String prefix, @Nonnull final List<Command> existing, Command command) {
+		if (existing.contains(command)) {
+			if (deleteUnknown) {
+				DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_DELETED_UNKNOWN, prefix + "Deleting unknown %s command: %s", command.getType(), command.getName());
+				command.delete().queue();
+			} else {
+				DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_IGNORED_UNKNOWN, prefix + "Ignored unknown %s command: %s", command.getType(), command.getName());
+			}
+		}
+	}
+
+	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull ApplicationCommand<?, ? extends CommandData> app) {
 		if (CommandUtils.equals(cmd, app.getCommandData(), false) && app.getRequiredGuilds().getFirst() != null &&
 				app.getRequiredGuilds().getFirst() &&
 				!Arrays.asList(app.getRequiredGuilds().getSecond()).contains(guild.getIdLong())
 		) {
-			DIH4JDALogger.info("Deleting /%s in Guild: %s", cmd.getName(), guild.getName());
+			DIH4JDALogger.info("Deleting /%s in blacklisted Guild: %s", cmd.getName(), guild.getName());
 			cmd.delete().queue();
 		}
-		return true;
 	}
 }
