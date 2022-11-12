@@ -22,27 +22,6 @@ public abstract class GenericDIH4JDAEvent<I extends Interaction> {
 	}
 
 	/**
-	 * @return The internal event name.
-	 */
-	public String getEventName() {
-		return eventName;
-	}
-
-	/**
-	 * @return The {@link DIH4JDA} instance.
-	 */
-	public DIH4JDA getDIH4JDA() {
-		return dih4jda;
-	}
-
-	/**
-	 * @return The follow-up interaction of this event.
-	 */
-	public I getInteraction() {
-		return interaction;
-	}
-
-	/**
 	 * Fires an event from the {@link DIH4JDAEventListener}.
 	 *
 	 * @param event The {@link GenericDIH4JDAEvent} to fire.
@@ -66,5 +45,26 @@ public abstract class GenericDIH4JDAEvent<I extends Interaction> {
 				DIH4JDALogger.error(e.getMessage());
 			}
 		}
+	}
+
+	/**
+	 * @return The internal event name.
+	 */
+	public String getEventName() {
+		return eventName;
+	}
+
+	/**
+	 * @return The {@link DIH4JDA} instance.
+	 */
+	public DIH4JDA getDIH4JDA() {
+		return dih4jda;
+	}
+
+	/**
+	 * @return The follow-up interaction of this event.
+	 */
+	public I getInteraction() {
+		return interaction;
 	}
 }

@@ -116,26 +116,63 @@ public abstract class RestrictedCommand {
 		requiredRoles = roles;
 	}
 
-	// TODO: Docs
+	/**
+	 * Allows to set a cooldown for this command.
+	 * The user has to wait the provided {@link Duration} until they can execute this command again.
+	 * If the user executes the command while they're on cooldown, the {@link xyz.dynxsty.dih4jda.events.CommandCooldownEvent}
+	 * is fired.
+	 *
+	 * <h2>Command Cooldowns DO NOT persist between sessions!</h2>
+	 *
+	 * @param commandCooldown The {@link Duration} the user has to wait between command executions.
+	 */
 	public void setCommandCooldown(Duration commandCooldown) {
 		this.commandCooldown = commandCooldown;
 	}
 
-	// TODO: Docs
+	/**
+	 * Returns the {@link Duration} the user has to wait between command executions.
+	 *
+	 * @return The {@link Duration}.
+	 * @see RestrictedCommand#setCommandCooldown(Duration)
+	 */
 	public Duration getCommandCooldown() {
 		return commandCooldown;
 	}
 
+	/**
+	 * Manually applies a cooldown for the specified user id.
+	 *
+	 * <h2>Command Cooldowns DO NOT persist between sessions!</h2>
+	 *
+	 * @param userId The targets' user id.
+	 * @param nextUse The {@link Instant} that marks the time the command can be used again.
+	 */
 	public void applyCooldown(long userId, Instant nextUse) {
 		COOLDOWN_CACHE.put(userId, nextUse);
 	}
 
+	/**
+	 * Gets the {@link Instant time} the specified user can execute this command again.
+	 * If the user has not executed the command yet, this will return {@link Instant#EPOCH} instead.
+	 *
+	 * @param userId The targets' user id.
+	 * @return The {@link Instant} that marks the time the command can be used again.
+	 */
 	public Instant retrieveCooldown(long userId) {
 		Instant nextUse = COOLDOWN_CACHE.get(userId);
 		if (nextUse == null) return Instant.EPOCH;
 		return nextUse;
 	}
 
+	/**
+	 * Returns whether the command can be used by the specified user.
+	 *
+	 * <h2>Command Cooldowns DO NOT persist between sessions!</h2>
+	 *
+	 * @param userId The targets' user id.
+	 * @return Whether the command can be executed.
+	 */
 	public boolean hasCooldown(long userId) {
 		return retrieveCooldown(userId).isAfter(Instant.now());
 	}
