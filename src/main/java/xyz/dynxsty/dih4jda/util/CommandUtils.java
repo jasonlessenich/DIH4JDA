@@ -159,10 +159,10 @@ public class CommandUtils {
 	 * @return The formatted String.
 	 * @since v1.5
 	 */
-	public static @Nonnull String getNames(@Nonnull Set<ContextCommand> command, @Nonnull Set<SlashCommand> slash) {
+	public static @Nonnull String getNames(@Nonnull Set<ContextCommand<?>> command, @Nonnull Set<SlashCommand> slash) {
 		StringBuilder names = new StringBuilder();
 		command.forEach(c -> names.append(", ").append(c.getCommandData().getName()));
-		slash.forEach(c -> names.append(", /").append(c.getSlashCommandData().getName()));
+		slash.forEach(c -> names.append(", /").append(c.getCommandData().getName()));
 		return names.substring(2);
 	}
 
@@ -174,8 +174,8 @@ public class CommandUtils {
 	 * @return The modified {@link Pair}.
 	 * @since v1.5.2
 	 */
-	public static @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> filterByType(@Nonnull Pair<Set<SlashCommand>,
-			Set<ContextCommand>> pair, RegistrationType type) {
+	public static @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> filterByType(@Nonnull Pair<Set<SlashCommand>,
+			Set<ContextCommand<?>>> pair, RegistrationType type) {
 		return new Pair<>(
 				pair.getFirst().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()),
 				pair.getSecond().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()));

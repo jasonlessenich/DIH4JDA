@@ -14,32 +14,11 @@ import javax.annotation.Nonnull;
  * @see ContextCommand.Message#execute
  * @since v1.5
  */
-public class ContextCommand extends AbstractCommand {
-	private CommandData commandData = null;
+public abstract class ContextCommand<E> extends ApplicationCommand<E, CommandData> {
 
 	private ContextCommand() {}
 
-	public CommandData getCommandData() {
-		return commandData;
-	}
+	public abstract static class User extends ContextCommand<UserContextInteractionEvent> {}
 
-	/**
-	 * Sets this commands' {@link CommandData}.
-	 *
-	 * @param commandData The corresponding {@link CommandData} which should be used for this context command.
-	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#user(String)
-	 * @see net.dv8tion.jda.api.interactions.commands.build.Commands#message(String)
-	 */
-	public void setCommandData(@Nonnull CommandData commandData) {
-		if (commandData.getType() == net.dv8tion.jda.api.interactions.commands.Command.Type.MESSAGE ||
-				commandData.getType() == net.dv8tion.jda.api.interactions.commands.Command.Type.USER) {
-			this.commandData = commandData;
-		} else {
-			DIH4JDALogger.error(String.format("Invalid Command Type \"%s\" for Context Command! This command will be ignored.", commandData.getType()));
-		}
-	}
-
-	public abstract static class User extends ContextCommand implements ExecutableCommand<UserContextInteractionEvent> {}
-
-	public abstract static class Message extends ContextCommand implements ExecutableCommand<MessageContextInteractionEvent> {}
+	public abstract static class Message extends ContextCommand<MessageContextInteractionEvent> {}
 }
