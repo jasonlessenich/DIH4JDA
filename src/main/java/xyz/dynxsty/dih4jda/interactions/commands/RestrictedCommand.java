@@ -19,7 +19,7 @@ import java.util.Map;
  * @since v1.6
  */
 public abstract class RestrictedCommand {
-	private final Map<Long, Instant> COOLDOWN_CACHE = new HashMap<>();;
+	private final Map<Long, Cooldown> COOLDOWN_CACHE = new HashMap<>();;
 
 	//The command requirements
 	private Pair<Boolean, Long[]> requiredGuilds = new Pair<>(null, null);
@@ -149,20 +149,21 @@ public abstract class RestrictedCommand {
 	 * @param nextUse The {@link Instant} that marks the time the command can be used again.
 	 */
 	public void applyCooldown(long userId, Instant nextUse) {
-		COOLDOWN_CACHE.put(userId, nextUse);
+		COOLDOWN_CACHE.put(userId, new Cooldown(Instant.now(), nextUse));
 	}
 
 	/**
-	 * Gets the {@link Instant time} the specified user can execute this command again.
-	 * If the user has not executed the command yet, this will return {@link Instant#EPOCH} instead.
+	 * Gets the {@link Cooldown time} the specified user can execute this command again.
+	 * If the user has not executed the command yet, this will return a {@link Cooldown} with
+	 * both the nextUse and the lastUse of {@link Instant#EPOCH} instead.
 	 *
 	 * @param userId The targets' user id.
 	 * @return The {@link Instant} that marks the time the command can be used again.
 	 */
-	public Instant retrieveCooldown(long userId) {
-		Instant nextUse = COOLDOWN_CACHE.get(userId);
-		if (nextUse == null) return Instant.EPOCH;
-		return nextUse;
+	public Cooldown retrieveCooldown(long userId) {
+		Cooldown cooldown = COOLDOWN_CACHE.get(userId);
+		if (cooldown == null) return new Cooldown(Instant.EPOCH, Instant.EPOCH);
+		return cooldown;
 	}
 
 	/**
@@ -174,6 +175,24 @@ public abstract class RestrictedCommand {
 	 * @return Whether the command can be executed.
 	 */
 	public boolean hasCooldown(long userId) {
-		return retrieveCooldown(userId).isAfter(Instant.now());
+		return retrieveCooldown(userId).getNextUse().isAfter(Instant.now());
+	}
+
+	public static class Cooldown {
+		private Instant lastUse;
+		private Instant nextUse;
+
+		protected Cooldown(Instant lastUse, Instant nextUse) {
+			this.lastUse = lastUse;
+			this.nextUse = nextUse;
+		}
+
+		public Instant getNextUse() {
+			return nextUse;
+		}
+
+		public Instant getLastUse() {
+			return lastUse;
+		}
 	}
 }

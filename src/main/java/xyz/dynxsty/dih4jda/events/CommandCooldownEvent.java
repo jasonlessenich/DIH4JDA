@@ -17,14 +17,14 @@ import java.time.Instant;
  */
 public class CommandCooldownEvent extends GenericDIH4JDAEvent<CommandInteraction> {
 
-	private final Instant nextUse;
+	private final RestrictedCommand.Cooldown cooldown;
 
-	public CommandCooldownEvent(DIH4JDA dih4jda, CommandInteraction interaction, Instant nextUse) {
+	public CommandCooldownEvent(DIH4JDA dih4jda, CommandInteraction interaction, RestrictedCommand.Cooldown cooldown) {
 		super("onCommandCooldown", dih4jda, interaction);
-		this.nextUse = nextUse;
+		this.cooldown = cooldown;
 	}
 
-	public Instant getNextUse() {
-		return nextUse;
+	public RestrictedCommand.Cooldown getCooldown() {
+		return cooldown;
 	}
 }
