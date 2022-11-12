@@ -1,11 +1,12 @@
 package xyz.dynxsty.dih4jda;
 
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.exceptions.InvalidPackageException;
-import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
+import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.util.ClassWalker;
 import xyz.dynxsty.dih4jda.util.ClasspathHelper;
 
@@ -108,16 +109,6 @@ public class DIH4JDABuilder {
 	 */
 	public @Nonnull DIH4JDABuilder setGuildSmartQueue(boolean enable) {
 		config.setGuildSmartQueue(enable);
-		return this;
-	}
-
-	/**
-	 * Sets the default {@link RegistrationType} for all Commands.
-	 *
-	 * @param type The {@link RegistrationType}.
-	 */
-	public @Nonnull DIH4JDABuilder setDefaultCommandType(@Nonnull RegistrationType type) {
-		DIH4JDA.defaultCommandType = type;
 		return this;
 	}
 

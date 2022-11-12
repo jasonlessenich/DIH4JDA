@@ -4,10 +4,10 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
-import xyz.dynxsty.dih4jda.interactions.commands.AbstractCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.AutoCompletable;
-import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
+import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
+import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
 /**
  * An interface containing all events and their method that DIH4JDA can fire.
@@ -51,7 +51,7 @@ public interface DIH4JDAEventListener {
 	 * An event that gets fired when the user, which invoked the command, does NOT have one of the required permissions.
 	 *
 	 * @param event The {@link InsufficientPermissionsEvent} that was fired.
-	 * @see AbstractCommand#setRequiredPermissions(Permission...)
+	 * @see RestrictedCommand#setRequiredPermissions(Permission...)
 	 */
 	default void onInsufficientPermissions(InsufficientPermissionsEvent event) {}
 
@@ -59,7 +59,7 @@ public interface DIH4JDAEventListener {
 	 * An event that gets fired when the user, which invoked the command, is NOT allowed to use this command.
 	 *
 	 * @param event The {@link InvalidUserEvent} that was fired.
-	 * @see AbstractCommand#setRequiredUsers(Long...)
+	 * @see RestrictedCommand#setRequiredUsers(Long...)
 	 */
 	default void onInvalidUser(InvalidUserEvent event) {}
 
@@ -67,7 +67,7 @@ public interface DIH4JDAEventListener {
 	 * An event that gets fired when the user, which invoked the command, does NOT have the required roles to use this command.
 	 *
 	 * @param event The {@link InvalidRoleEvent} that was fired.
-	 * @see AbstractCommand#setRequiredRoles(Long...)
+	 * @see RestrictedCommand#setRequiredRoles(Long...)
 	 */
 	default void onInvalidRole(InvalidRoleEvent event) {}
 }

@@ -19,7 +19,7 @@ public interface ModalHandler {
 	 * public class TestCommand extends SlashCommand implements ModalHandler {
 	 *
 	 *     public TestCommand() {
-	 *         setSlashCommandData(Commands.slash("test", "test description"));
+	 *         setCommandData(Commands.slash("test", "test description"));
 	 *     }
 	 *
 	 *     @Override

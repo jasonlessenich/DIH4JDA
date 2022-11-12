@@ -2,8 +2,9 @@ package xyz.dynxsty.dih4jda.interactions.commands;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.DIH4JDABuilder;
+import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
+import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.util.Pair;
 
 import javax.annotation.Nonnull;
@@ -13,32 +14,13 @@ import javax.annotation.Nonnull;
  *
  * @since v1.6
  */
-public abstract class AbstractCommand {
-	private RegistrationType type = DIH4JDA.defaultCommandType;
+public abstract class RestrictedCommand {
 
 	//The command requirements
 	private Pair<Boolean, Long[]> requiredGuilds = new Pair<>(null, null);
 	private Permission[] requiredPermissions = new Permission[]{};
 	private Long[] requiredUsers = new Long[]{};
 	private Long[] requiredRoles = new Long[]{};
-
-	/**
-	 * The {@link RegistrationType} the command got assigned.
-	 *
-	 * @return the {@link RegistrationType}.
-	 */
-	public final RegistrationType getRegistrationType() {
-		return type;
-	}
-
-	/**
-	 * How the command should be queued. This DOES NOT work with {@link SlashCommand.Subcommand}!
-	 *
-	 * @param type the {@link RegistrationType} to set.
-	 */
-	public final void setRegistrationType(RegistrationType type) {
-		this.type = type;
-	}
 
 	/**
 	 * Allows a set of {@link Guild}s to update their Slash Commands.
@@ -50,9 +32,6 @@ public abstract class AbstractCommand {
 	 * @param guilds        An array of {@link Long}s.
 	 */
 	public final void setRequiredGuilds(boolean restrictQueue, Long... guilds) {
-		if (restrictQueue && type != RegistrationType.GUILD) {
-			throw new UnsupportedOperationException("Cannot restrict queue for Global Commands!");
-		}
 		requiredGuilds = new Pair<>(restrictQueue, guilds);
 	}
 

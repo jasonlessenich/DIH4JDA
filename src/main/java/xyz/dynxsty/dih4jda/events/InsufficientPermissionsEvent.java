@@ -3,14 +3,14 @@ package xyz.dynxsty.dih4jda.events;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
-import xyz.dynxsty.dih4jda.interactions.commands.AbstractCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 
 import java.util.Set;
 
 /**
  * An event that gets fired when the user, which invoked the command, does NOT have one of the required permissions.
  *
- * @see AbstractCommand#setRequiredPermissions(Permission...)
+ * @see RestrictedCommand#setRequiredPermissions(Permission...)
  */
 public class InsufficientPermissionsEvent extends GenericDIH4JDAEvent<CommandInteraction> {
 
@@ -23,7 +23,7 @@ public class InsufficientPermissionsEvent extends GenericDIH4JDAEvent<CommandInt
 
 	/**
 	 * @return An immutable {@link Set} of all "required" permissions for the executed command.
-	 * @see AbstractCommand#setRequiredPermissions(Permission...)
+	 * @see RestrictedCommand#setRequiredPermissions(Permission...)
 	 */
 	public Set<Permission> getPermissions() {
 		return permissions;

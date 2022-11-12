@@ -1,4 +1,4 @@
-package xyz.dynxsty.dih4jda.interactions.commands;
+package xyz.dynxsty.dih4jda.interactions.commands.application;
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -17,26 +17,11 @@ import java.util.List;
  *
  * @since v1.5
  */
-public abstract class SlashCommand extends AbstractCommand implements ExecutableCommand<SlashCommandInteractionEvent> {
-
-	private SlashCommandData data = null;
+public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandInteractionEvent, SlashCommandData> {
 	private Subcommand[] subcommands = new Subcommand[]{};
 	private SubcommandGroup[] subcommandGroups = new SubcommandGroup[]{};
 
 	protected SlashCommand() {
-	}
-
-	public final SlashCommandData getSlashCommandData() {
-		return data;
-	}
-
-	/**
-	 * Sets this commands' {@link SlashCommandData}.
-	 *
-	 * @param commandData The {@link SlashCommandData} which should be used for this command.
-	 */
-	public final void setSlashCommandData(SlashCommandData commandData) {
-		this.data = commandData;
 	}
 
 	public final Subcommand[] getSubcommands() {
@@ -83,30 +68,15 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 	 * @return The {@link Command} corresponding to this class.
 	 */
 	public @Nullable Command asCommand() {
-		if (data == null) return null;
-		return InteractionHandler.getRetrievedCommands().get(data.getName());
+		if (getCommandData() == null) return null;
+		return InteractionHandler.getRetrievedCommands().get(getCommandData().getName());
 	}
 
 	/**
 	 * Model class which represents a single Subcommand.
 	 */
-	public abstract static class Subcommand implements ExecutableCommand<SlashCommandInteractionEvent> {
-		private SubcommandData data = null;
+	public abstract static class Subcommand extends ApplicationCommand<SlashCommandInteractionEvent, SubcommandData> {
 		private SlashCommand parent = null;
-
-		public final SubcommandData getSubcommandData() {
-			return data;
-		}
-
-		/**
-		 * Sets this subcommands' {@link SubcommandData}.
-		 *
-		 * @param data The {@link SubcommandData} which should be used for this subcommand.
-		 * @see SubcommandData
-		 */
-		public final void setSubcommandData(SubcommandData data) {
-			this.data = data;
-		}
 
 		/**
 		 * Gets the {@link SlashCommand parent} for this subcommand.
@@ -124,13 +94,13 @@ public abstract class SlashCommand extends AbstractCommand implements Executable
 		 * @return The {@link Command.Subcommand} corresponding to this class.
 		 */
 		public @Nullable Command.Subcommand asSubcommand() {
-			if (data == null) return null;
+			if (getCommandData() == null) return null;
 			Command cmd = parent.asCommand();
 			if (cmd == null) return null;
 			List<Command.Subcommand> subcommands = new ArrayList<>(cmd.getSubcommands());
 			cmd.getSubcommandGroups().forEach(g -> subcommands.addAll(g.getSubcommands()));
 			return subcommands.stream()
-					.filter(c -> c.getName().equals(data.getName()))
+					.filter(c -> c.getName().equals(getCommandData().getName()))
 					.findFirst()
 					.orElse(null);
 		}

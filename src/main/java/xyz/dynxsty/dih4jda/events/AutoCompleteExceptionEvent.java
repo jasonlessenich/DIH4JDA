@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
-import xyz.dynxsty.dih4jda.interactions.commands.AutoCompletable;
+import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 
 /**
  * An event that gets fired when an exception gets raised while handling an autocomplete interaction.

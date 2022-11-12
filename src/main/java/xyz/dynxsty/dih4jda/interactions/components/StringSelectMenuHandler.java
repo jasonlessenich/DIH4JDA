@@ -26,7 +26,7 @@ public interface StringSelectMenuHandler {
 	 * public class TestCommand extends SlashCommand implements StringSelectMenuHandler {
 	 *
 	 *     public TestCommand() {
-	 *         setSlashCommandData(Commands.slash("test", "test description"));
+	 *         setCommandData(Commands.slash("test", "test description"));
 	 *     }
 	 *
 	 *    @Override

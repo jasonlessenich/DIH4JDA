@@ -6,9 +6,10 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
-import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
-import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
+import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import xyz.dynxsty.dih4jda.interactions.components.ModalHandler;
@@ -38,9 +39,9 @@ public class DIH4JDA extends ListenerAdapter {
 
 	/**
 	 * The default {@link RegistrationType} which is used for queuing new commands.
-	 * This can be overridden using {@link xyz.dynxsty.dih4jda.interactions.commands.AbstractCommand#setRegistrationType(RegistrationType)}
+	 * This can be overridden using {@link BaseApplicationCommand#setRegistrationType(RegistrationType)}
 	 */
-	public static RegistrationType defaultCommandType;
+	private static RegistrationType defaultRegistrationType = RegistrationType.GLOBAL;
 
 	// Component Handler
 	private static final Map<List<String>, ButtonHandler> buttonHandlers;
@@ -64,8 +65,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param config The instance's configuration.
 	 */
-	protected DIH4JDA(DIH4JDAConfig config) throws DIH4JDAException {
-		if (defaultCommandType == null) defaultCommandType = RegistrationType.GUILD;
+	protected DIH4JDA(@Nonnull DIH4JDAConfig config) throws DIH4JDAException {
 		this.config = config;
 		listeners = new HashSet<>();
 		DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
@@ -89,6 +89,20 @@ public class DIH4JDA extends ListenerAdapter {
 			e.printStackTrace();
 			DIH4JDALogger.error("Could not register commands: " + e.getMessage());
 		}
+	}
+
+	/**
+	 * Sets the default {@link RegistrationType} for all Commands.
+	 * This is set to {@link RegistrationType#GLOBAL} if not set otherwise.
+	 *
+	 * @param type The {@link RegistrationType}.
+	 */
+	public static void setDefaultRegistrationType(RegistrationType type) {
+		DIH4JDA.defaultRegistrationType = type;
+	}
+
+	public static RegistrationType getDefaultRegistrationType() {
+		return defaultRegistrationType;
 	}
 
 	/**
@@ -157,7 +171,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param commands An array of commands to register.
 	 */
-	public void addContextCommands(ContextCommand... commands) {
+	public void addContextCommands(ContextCommand<?>... commands) {
 		handler.contextCommands.addAll(List.of(commands));
 	}
 

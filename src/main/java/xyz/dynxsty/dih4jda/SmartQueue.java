@@ -5,8 +5,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.util.CommandUtils;
 import xyz.dynxsty.dih4jda.util.Pair;
 
@@ -35,10 +35,10 @@ import java.util.Set;
  */
 public class SmartQueue {
 	private final Set<SlashCommand> slashCommands;
-	private final Set<ContextCommand> contextCommands;
+	private final Set<ContextCommand<?>> contextCommands;
 	private final boolean deleteUnknown;
 
-	protected SmartQueue(@Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand> contextCommands, boolean deleteUnknown) {
+	protected SmartQueue(@Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands, boolean deleteUnknown) {
 		this.slashCommands = slashCommands;
 		this.contextCommands = contextCommands;
 		this.deleteUnknown = deleteUnknown;
@@ -51,7 +51,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGlobal(@Nonnull JDA jda, @Nonnull List<Command> existing) {
+	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGlobal(@Nonnull JDA jda, @Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(jda, existing, null);
 		}
@@ -65,7 +65,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
+	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(guild.getJDA(), existing, guild);
 		}
@@ -81,7 +81,7 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */
-	private @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand>> removeDuplicates(@Nonnull JDA jda, @Nonnull final List<Command> existing, @Nullable Guild guild) {
+	private @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> removeDuplicates(@Nonnull JDA jda, @Nonnull final List<Command> existing, @Nullable Guild guild) {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
 		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());
@@ -89,12 +89,12 @@ public class SmartQueue {
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
 			if (contextCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData(), global)) ||
-					slashCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getSlashCommandData(), global))) {
+					slashCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData(), global))) {
 				// check for command in blacklisted guilds
 				// this may be refactored soonTM, as its kinda clunky
 				if (!global) {
 					for (SlashCommand d : slashCommands) {
-						if (CommandUtils.equals(cmd, d.getSlashCommandData(), false)) {
+						if (CommandUtils.equals(cmd, d.getCommandData(), false)) {
 							if (d.getRequiredGuilds().getFirst() == null) {
 								return true;
 							} else {
@@ -121,7 +121,7 @@ public class SmartQueue {
 			return false;
 		});
 		contextCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData(), global)));
-		slashCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getSlashCommandData(), global)));
+		slashCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData(), global)));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
 			for (Command command : commands) {

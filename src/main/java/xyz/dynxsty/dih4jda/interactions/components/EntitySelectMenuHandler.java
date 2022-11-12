@@ -25,7 +25,7 @@ public interface EntitySelectMenuHandler {
      * public class TestCommand extends SlashCommand implements EntitySelectMenuHandler {
      *
      *     public TestCommand() {
-     *         setSlashCommandData(Commands.slash("test", "test description"));
+     *         setCommandData(Commands.slash("test", "test description"));
      *     }
      *
      *    @Override
