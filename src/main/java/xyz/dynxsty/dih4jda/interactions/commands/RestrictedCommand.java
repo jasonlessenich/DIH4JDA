@@ -178,19 +178,30 @@ public abstract class RestrictedCommand {
 		return retrieveCooldown(userId).getNextUse().isAfter(Instant.now());
 	}
 
+	/**
+	 * Model class which represents a single command cooldown.
+	 *
+	 * <h2>Command Cooldowns DO NOT persist between sessions!</h2>
+	 */
 	public static class Cooldown {
-		private Instant lastUse;
-		private Instant nextUse;
+		private final Instant lastUse;
+		private final Instant nextUse;
 
 		protected Cooldown(Instant lastUse, Instant nextUse) {
 			this.lastUse = lastUse;
 			this.nextUse = nextUse;
 		}
 
+		/**
+		 * @return The next {@link Instant time} the command may be used again.
+		 */
 		public Instant getNextUse() {
 			return nextUse;
 		}
 
+		/**
+		 * @return The last {@link Instant time} the command was used.
+		 */
 		public Instant getLastUse() {
 			return lastUse;
 		}
