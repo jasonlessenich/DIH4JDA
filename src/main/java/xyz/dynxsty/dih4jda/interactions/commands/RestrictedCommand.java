@@ -3,7 +3,8 @@ package xyz.dynxsty.dih4jda.interactions.commands;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import xyz.dynxsty.dih4jda.DIH4JDABuilder;
-import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
+import xyz.dynxsty.dih4jda.interactions.commands.application.internal.CooldownType;
+import xyz.dynxsty.dih4jda.interactions.commands.application.internal.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.util.Pair;
 
@@ -136,7 +137,7 @@ public abstract class RestrictedCommand {
 	 * @return The {@link Duration}.
 	 * @see RestrictedCommand#setCommandCooldown(Duration)
 	 */
-	public Duration getCommandCooldown() {
+	public Duration getCommandCooldownDuration() {
 		return commandCooldown;
 	}
 
@@ -148,8 +149,8 @@ public abstract class RestrictedCommand {
 	 * @param userId The targets' user id.
 	 * @param nextUse The {@link Instant} that marks the time the command can be used again.
 	 */
-	public void applyCooldown(long userId, Instant nextUse) {
-		COOLDOWN_CACHE.put(userId, new Cooldown(Instant.now(), nextUse));
+	public void applyCooldown(long userId, Instant nextUse, CooldownType type) {
+		COOLDOWN_CACHE.put(userId, new Cooldown(Instant.now(), nextUse, type));
 	}
 
 	/**
@@ -162,7 +163,7 @@ public abstract class RestrictedCommand {
 	 */
 	public Cooldown retrieveCooldown(long userId) {
 		Cooldown cooldown = COOLDOWN_CACHE.get(userId);
-		if (cooldown == null) return new Cooldown(Instant.EPOCH, Instant.EPOCH);
+		if (cooldown == null) return new Cooldown(Instant.EPOCH, Instant.EPOCH, CooldownType.GLOBAL);
 		return cooldown;
 	}
 
@@ -186,10 +187,12 @@ public abstract class RestrictedCommand {
 	public static class Cooldown {
 		private final Instant lastUse;
 		private final Instant nextUse;
+		private final CooldownType type;
 
-		protected Cooldown(Instant lastUse, Instant nextUse) {
+		protected Cooldown(Instant lastUse, Instant nextUse, CooldownType type) {
 			this.lastUse = lastUse;
 			this.nextUse = nextUse;
+			this.type = type;
 		}
 
 		/**
@@ -204,6 +207,13 @@ public abstract class RestrictedCommand {
 		 */
 		public Instant getLastUse() {
 			return lastUse;
+		}
+
+		/**
+		 * @return the {@link CooldownType}.
+		 */
+		public CooldownType getType() {
+			return type;
 		}
 	}
 }

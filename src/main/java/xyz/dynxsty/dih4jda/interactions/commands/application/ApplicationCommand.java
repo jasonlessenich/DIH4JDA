@@ -3,6 +3,7 @@ package xyz.dynxsty.dih4jda.interactions.commands.application;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import xyz.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.internal.RegistrationType;
 
 /**
  * Model class for all <a href="https://discord.com/developers/docs/interactions/application-commands">Application Commands</a>.

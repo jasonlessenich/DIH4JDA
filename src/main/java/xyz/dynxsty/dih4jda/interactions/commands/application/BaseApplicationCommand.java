@@ -2,6 +2,7 @@ package xyz.dynxsty.dih4jda.interactions.commands.application;
 
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import xyz.dynxsty.dih4jda.DIH4JDA;
+import xyz.dynxsty.dih4jda.interactions.commands.application.internal.RegistrationType;
 
 /**
  * An extension of {@link ApplicationCommand} which contains a {@link RegistrationType}.

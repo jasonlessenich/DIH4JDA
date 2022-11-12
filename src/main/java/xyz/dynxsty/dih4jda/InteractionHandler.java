@@ -36,7 +36,7 @@ import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ApplicationCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
+import xyz.dynxsty.dih4jda.interactions.commands.application.internal.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
@@ -582,12 +582,13 @@ public class InteractionHandler extends ListenerAdapter {
 			}
 		}
 		// check if the command has enabled some sort of cooldown
-		if (command.getCommandCooldown() != Duration.ZERO) {
+		if (command.getCommandCooldownDuration() != Duration.ZERO) {
 			if (command.hasCooldown(userId)) {
 				DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, command.retrieveCooldown(userId)));
 				return false;
 			} else {
-				command.applyCooldown(userId, Instant.now().plus(command.getCommandCooldown()));
+				command.applyCooldown(userId, Instant.now().plus(command.getCommandCooldownDuration()),
+						command.retrieveCooldown(userId).getType());
 			}
 		}
 		return true;
