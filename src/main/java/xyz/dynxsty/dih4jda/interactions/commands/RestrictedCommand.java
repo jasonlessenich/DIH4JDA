@@ -8,6 +8,10 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.util.Pair;
 
 import javax.annotation.Nonnull;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a basic command.
@@ -15,12 +19,14 @@ import javax.annotation.Nonnull;
  * @since v1.6
  */
 public abstract class RestrictedCommand {
+	private final Map<Long, Instant> COOLDOWN_CACHE = new HashMap<>();;
 
 	//The command requirements
 	private Pair<Boolean, Long[]> requiredGuilds = new Pair<>(null, null);
 	private Permission[] requiredPermissions = new Permission[]{};
 	private Long[] requiredUsers = new Long[]{};
 	private Long[] requiredRoles = new Long[]{};
+	private Duration commandCooldown = Duration.ZERO;
 
 	/**
 	 * Allows a set of {@link Guild}s to update their Slash Commands.
@@ -108,5 +114,29 @@ public abstract class RestrictedCommand {
 	 */
 	public final void setRequiredRoles(@Nonnull Long... roles) {
 		requiredRoles = roles;
+	}
+
+	// TODO: Docs
+	public void setCommandCooldown(Duration commandCooldown) {
+		this.commandCooldown = commandCooldown;
+	}
+
+	// TODO: Docs
+	public Duration getCommandCooldown() {
+		return commandCooldown;
+	}
+
+	public void applyCooldown(long userId, Instant nextUse) {
+		COOLDOWN_CACHE.put(userId, nextUse);
+	}
+
+	public Instant retrieveCooldown(long userId) {
+		Instant nextUse = COOLDOWN_CACHE.get(userId);
+		if (nextUse == null) return Instant.EPOCH;
+		return nextUse;
+	}
+
+	public boolean hasCooldown(long userId) {
+		return retrieveCooldown(userId).isAfter(Instant.now());
 	}
 }
