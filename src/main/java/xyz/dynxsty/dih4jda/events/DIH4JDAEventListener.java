@@ -74,6 +74,13 @@ public interface DIH4JDAEventListener {
 	default void onInvalidRole(InvalidRoleEvent event) {}
 
 	/**
+	 * An event that gets fired when the command is NOT executed in one of the required guild.
+	 *
+	 * @see RestrictedCommand#setRequiredGuilds(Long...)
+	 */
+	default void onInvalidGuild(InvalidGuildEvent event) {}
+
+	/**
 	 * An event that gets fired when the user, which invoked the command, is not yet able to use this command due to
 	 * a specified {@link RestrictedCommand#setCommandCooldown(Duration) Command Cooldown}
 	 *

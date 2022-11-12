@@ -29,7 +29,7 @@ public abstract class DIH4JDAEvent<I extends Interaction> {
 	 */
 	public static <I extends Interaction> void fire(@Nonnull DIH4JDAEvent<I> event) {
 		if (event.getDIH4JDA().getEventListeners().isEmpty()) {
-			DIH4JDALogger.warn(DIH4JDALogger.Type.EVENT_FIRED, "%s was fired, but not handled (No listener registered)", event.getEventName());
+			DIH4JDALogger.warn(DIH4JDALogger.Type.EVENT_MISSING_HANDLER, "%s was fired, but not handled (No listener registered)", event.getEventName());
 			if (event instanceof DIH4JDAThrowableEvent && event.getDIH4JDA().getConfig().isDefaultPrintStacktrace()) {
 				((DIH4JDAThrowableEvent<I>) event).getThrowable().printStackTrace();
 			}

@@ -27,6 +27,7 @@ import xyz.dynxsty.dih4jda.events.CommandExceptionEvent;
 import xyz.dynxsty.dih4jda.events.ComponentExceptionEvent;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEvent;
 import xyz.dynxsty.dih4jda.events.InsufficientPermissionsEvent;
+import xyz.dynxsty.dih4jda.events.InvalidGuildEvent;
 import xyz.dynxsty.dih4jda.events.InvalidRoleEvent;
 import xyz.dynxsty.dih4jda.events.InvalidUserEvent;
 import xyz.dynxsty.dih4jda.events.ModalExceptionEvent;
@@ -555,11 +556,16 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return Whether the event was fired.
 	 * @since v1.5
 	 */
-	private boolean passesRequirements(@Nonnull CommandInteraction interaction, RestrictedCommand command) {
+	private boolean passesRequirements(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command) {
 		long userId = interaction.getUser().getIdLong();
+		Long[] guildIds = command.getRequiredGuilds().getSecond();
 		Permission[] permissions = command.getRequiredPermissions();
 		Long[] userIds = command.getRequiredUsers();
 		Long[] roleIds = command.getRequiredRoles();
+		if (guildIds != null && interaction.isFromGuild() && interaction.getGuild() != null && !Arrays.asList(guildIds).contains(interaction.getGuild().getIdLong())) {
+			DIH4JDAEvent.fire(new InvalidGuildEvent(dih4jda, interaction, Set.of(guildIds)));
+			return false;
+		}
 		if (permissions != null && permissions.length != 0 && interaction.isFromGuild() && interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
 			DIH4JDAEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
 			return false;
