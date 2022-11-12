@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
  * @see ContextCommand.Message#execute
  * @since v1.5
  */
-public abstract class ContextCommand<E> extends ApplicationCommand<E, CommandData> {
+public abstract class ContextCommand<E> extends BaseApplicationCommand<E, CommandData> {
 
 	private ContextCommand() {}
 

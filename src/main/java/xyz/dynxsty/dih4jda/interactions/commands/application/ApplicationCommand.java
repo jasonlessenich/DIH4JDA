@@ -1,12 +1,9 @@
 package xyz.dynxsty.dih4jda.interactions.commands.application;
 
-import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 
 public abstract class ApplicationCommand<E, T> extends RestrictedCommand implements ExecutableCommand<E> {
-
-	private RegistrationType registrationType = DIH4JDA.defaultCommandType;
 	private T data;
 
 	/**
@@ -20,23 +17,5 @@ public abstract class ApplicationCommand<E, T> extends RestrictedCommand impleme
 
 	public final T getCommandData() {
 		return data;
-	}
-
-	/**
-	 * The {@link RegistrationType} the command got assigned.
-	 *
-	 * @return the {@link RegistrationType}.
-	 */
-	public RegistrationType getRegistrationType() {
-		return registrationType;
-	}
-
-	/**
-	 * How the command should be queued. This DOES NOT work with {@link SlashCommand.Subcommand}!
-	 *
-	 * @param type the {@link RegistrationType} to set.
-	 */
-	public void setRegistrationType(RegistrationType type) {
-		this.registrationType = type;
 	}
 }

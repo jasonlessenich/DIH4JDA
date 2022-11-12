@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @since v1.5
  */
-public abstract class SlashCommand extends ApplicationCommand<SlashCommandInteractionEvent, SlashCommandData> {
+public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandInteractionEvent, SlashCommandData> {
 	private Subcommand[] subcommands = new Subcommand[]{};
 	private SubcommandGroup[] subcommandGroups = new SubcommandGroup[]{};
 
@@ -103,16 +103,6 @@ public abstract class SlashCommand extends ApplicationCommand<SlashCommandIntera
 					.filter(c -> c.getName().equals(getCommandData().getName()))
 					.findFirst()
 					.orElse(null);
-		}
-
-		@Override
-		public void setRegistrationType(RegistrationType type) {
-			throw new UnsupportedOperationException("Cannot set RegistrationType on Subcommands!");
-		}
-
-		@Override
-		public RegistrationType getRegistrationType() {
-			throw new UnsupportedOperationException("Cannot get RegistrationType from Subcommands!");
 		}
 	}
 
