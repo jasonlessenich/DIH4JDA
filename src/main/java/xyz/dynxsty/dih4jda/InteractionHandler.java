@@ -495,13 +495,18 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link SlashCommandInteractionEvent} that was fired.
 	 */
 	private void handleSlashCommand(@Nonnull SlashCommandInteractionEvent event) throws CommandNotRegisteredException {
-		ApplicationCommand<SlashCommandInteractionEvent, ?> command = slashCommandIndex.containsKey(event.getFullCommandName()) ?
+		boolean base = slashCommandIndex.containsKey(event.getFullCommandName());
+		ApplicationCommand<SlashCommandInteractionEvent, ?> command = base ?
 				slashCommandIndex.get(event.getFullCommandName()) : subcommandIndex.get(event.getFullCommandName());
 		if (command == null) {
 			if (config.isThrowUnregisteredException()) {
 				throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", event.getFullCommandName()));
 			}
 		} else {
+			// check for parent if command is subcommand
+			if (!base && !passesRequirements(event, subcommandIndex.get(event.getFullCommandName()).getParent())) {
+				return;
+			}
 			if (passesRequirements(event, command)) {
 				command.execute(event);
 			}

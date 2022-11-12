@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import xyz.dynxsty.dih4jda.interactions.commands.application.ApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.util.CommandUtils;
@@ -23,14 +24,15 @@ import java.util.Set;
  * {@link DIH4JDABuilder#setGlobalSmartQueue(boolean)} & {@link DIH4JDABuilder#setGuildSmartQueue(boolean)}.
  * <br><br>
  * <p>
- *     This basically retrieves all existing commands and compares them with the local ones, thus, only queuing
- *     "new" (commands, which yet do not exist) or edited commands , which reduces the amount of total command updates.
+ * This basically retrieves all existing commands and compares them with the local ones, thus, only queuing
+ * "new" (commands, which yet do not exist) or edited commands , which reduces the amount of total command updates.
  *
  * </p>
  * <br>
  * <p>
- *     In addition to that, this will also delete ALL unknown commands, which were not found locally. This can be disabled
- *     using {@link DIH4JDABuilder#disableUnknownCommandDeletion()}.</p>
+ * In addition to that, this will also delete ALL unknown commands, which were not found locally. This can be disabled
+ * using {@link DIH4JDABuilder#disableUnknownCommandDeletion()}.</p>
+ *
  * @since v1.5
  */
 public class SmartQueue {
@@ -91,28 +93,12 @@ public class SmartQueue {
 			if (contextCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData(), global)) ||
 					slashCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData(), global))) {
 				// check for command in blacklisted guilds
-				// this may be refactored soonTM, as its kinda clunky
 				if (!global) {
 					for (SlashCommand d : slashCommands) {
-						if (CommandUtils.equals(cmd, d.getCommandData(), false)) {
-							if (d.getRequiredGuilds().getFirst() == null) {
-								return true;
-							} else {
-								if (!Arrays.asList(d.getRequiredGuilds().getSecond()).contains(guild.getIdLong())) {
-									DIH4JDALogger.info("Deleting /%s in Guild: %s", cmd.getName(), guild.getName());
-									cmd.delete().queue();
-									return true;
-								}
-							}
-						}
+						return validate(guild, cmd, d);
 					}
-					for (ContextCommand d : contextCommands) {
-						if (CommandUtils.equals(cmd, d.getCommandData(), false) &&
-								!Arrays.asList(d.getRequiredGuilds().getSecond()).contains(guild.getIdLong())) {
-							DIH4JDALogger.info("Deleting %s in Guild: %s", cmd.getName(), guild.getName());
-							cmd.delete().queue();
-							return true;
-						}
+					for (ContextCommand<?> context : contextCommands) {
+						return validate(guild, cmd, context);
 					}
 				}
 				DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_IGNORED, prefix + "Found duplicate %s command, which will be ignored: %s", cmd.getType(), cmd.getName());
@@ -128,11 +114,7 @@ public class SmartQueue {
 				if (existing.contains(command)) {
 					if (deleteUnknown) {
 						DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_DELETED_UNKNOWN, prefix + "Deleting unknown %s command: %s", command.getType(), command.getName());
-						if (global) {
-							jda.deleteCommandById(command.getId()).queue();
-						} else {
-							guild.deleteCommandById(command.getId()).queue();
-						}
+						command.delete().queue();
 					} else {
 						DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_IGNORED_UNKNOWN, prefix + "Ignored unknown %s command: %s", command.getType(), command.getName());
 					}
@@ -140,5 +122,16 @@ public class SmartQueue {
 			}
 		}
 		return new Pair<>(slashCommands, contextCommands);
+	}
+
+	private boolean validate(Guild guild, Command cmd, @Nonnull ApplicationCommand<?, ? extends CommandData> app) {
+		if (CommandUtils.equals(cmd, app.getCommandData(), false) && app.getRequiredGuilds().getFirst() != null &&
+				app.getRequiredGuilds().getFirst() &&
+				!Arrays.asList(app.getRequiredGuilds().getSecond()).contains(guild.getIdLong())
+		) {
+			DIH4JDALogger.info("Deleting /%s in Guild: %s", cmd.getName(), guild.getName());
+			cmd.delete().queue();
+		}
+		return true;
 	}
 }

@@ -19,7 +19,7 @@ import java.util.Map;
  * @since v1.6
  */
 public abstract class RestrictedCommand {
-	private final Map<Long, Cooldown> COOLDOWN_CACHE = new HashMap<>();;
+	private final Map<Long, Cooldown> COOLDOWN_CACHE = new HashMap<>();
 
 	//The command requirements
 	private Pair<Boolean, Long[]> requiredGuilds = new Pair<>(null, null);
@@ -34,7 +34,8 @@ public abstract class RestrictedCommand {
 	 * @param restrictQueue If enabled, this will only queue this command in the specified guilds. For that
 	 *                      to work, the command MUST be of {@link RegistrationType#GUILD}. If
 	 *                      {@link DIH4JDABuilder#setGuildSmartQueue(boolean)} is enabled, this
-	 *                      will also delete the command in all the other guilds. This DOES NOT work with {@link SlashCommand.Subcommand}!
+	 *                      will also delete the command in all the other guilds.
+	 *                      This does simply nothing when using with {@link SlashCommand.Subcommand}.
 	 * @param guilds        An array of {@link Long}s.
 	 */
 	public final void setRequiredGuilds(boolean restrictQueue, Long... guilds) {
