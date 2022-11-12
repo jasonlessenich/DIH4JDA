@@ -18,12 +18,7 @@ import java.util.Map;
  * @since v1.6
  */
 public abstract class AbstractCommand {
-
-	private static final Map<Long, Instant> COOLDOWN_CACHE;
-
-	static {
-		COOLDOWN_CACHE = new HashMap<>();
-	}
+	private final Map<Long, Instant> COOLDOWN_CACHE = new HashMap<>();;
 
 	private RegistrationType type = DIH4JDA.defaultCommandType;
 
