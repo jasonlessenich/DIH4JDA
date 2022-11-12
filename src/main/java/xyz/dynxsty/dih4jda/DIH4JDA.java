@@ -41,7 +41,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * The default {@link RegistrationType} which is used for queuing new commands.
 	 * This can be overridden using {@link BaseApplicationCommand#setRegistrationType(RegistrationType)}
 	 */
-	public static RegistrationType defaultCommandType;
+	public static RegistrationType defaultRegistrationType = RegistrationType.GLOBAL;
 
 	// Component Handler
 	private static final Map<List<String>, ButtonHandler> buttonHandlers;
@@ -65,8 +65,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param config The instance's configuration.
 	 */
-	protected DIH4JDA(DIH4JDAConfig config) throws DIH4JDAException {
-		if (defaultCommandType == null) defaultCommandType = RegistrationType.GUILD;
+	protected DIH4JDA(@Nonnull DIH4JDAConfig config) throws DIH4JDAException {
 		this.config = config;
 		listeners = new HashSet<>();
 		DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
@@ -90,6 +89,16 @@ public class DIH4JDA extends ListenerAdapter {
 			e.printStackTrace();
 			DIH4JDALogger.error("Could not register commands: " + e.getMessage());
 		}
+	}
+
+	/**
+	 * Sets the default {@link RegistrationType} for all Commands.
+	 * This is set to {@link RegistrationType#GLOBAL} if not set otherwise.
+	 *
+	 * @param type The {@link RegistrationType}.
+	 */
+	public static void setDefaultRegistrationType(RegistrationType type) {
+		DIH4JDA.defaultRegistrationType = type;
 	}
 
 	/**
