@@ -6,7 +6,7 @@ import xyz.dynxsty.dih4jda.DIH4JDA;
 /**
  * An event that gets fired when an exception gets raised while interacting with a message component.
  */
-public class ComponentExceptionEvent extends ThrowableDIH4JDAEvent<ComponentInteraction> {
+public class ComponentExceptionEvent extends DIH4JDAThrowableEvent<ComponentInteraction> {
 	public ComponentExceptionEvent(DIH4JDA dih4jda, ComponentInteraction interaction, Throwable throwable) {
 		super("onComponentException", dih4jda, interaction, throwable);
 	}

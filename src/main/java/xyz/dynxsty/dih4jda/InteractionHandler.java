@@ -25,7 +25,7 @@ import xyz.dynxsty.dih4jda.events.AutoCompleteExceptionEvent;
 import xyz.dynxsty.dih4jda.events.CommandCooldownEvent;
 import xyz.dynxsty.dih4jda.events.CommandExceptionEvent;
 import xyz.dynxsty.dih4jda.events.ComponentExceptionEvent;
-import xyz.dynxsty.dih4jda.events.GenericDIH4JDAEvent;
+import xyz.dynxsty.dih4jda.events.DIH4JDAEvent;
 import xyz.dynxsty.dih4jda.events.InsufficientPermissionsEvent;
 import xyz.dynxsty.dih4jda.events.InvalidRoleEvent;
 import xyz.dynxsty.dih4jda.events.InvalidUserEvent;
@@ -548,7 +548,7 @@ public class InteractionHandler extends ListenerAdapter {
 	/**
 	 * Checks if the given {@link CommandInteraction} passes the
 	 * {@link RestrictedCommand} requirements.
-	 * If not, this will then fire the corresponding event using {@link GenericDIH4JDAEvent#fire(GenericDIH4JDAEvent)}
+	 * If not, this will then fire the corresponding event using {@link DIH4JDAEvent#fire(DIH4JDAEvent)}
 	 *
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param command The {@link RestrictedCommand} which contains the (possible) restrictions.
@@ -561,24 +561,24 @@ public class InteractionHandler extends ListenerAdapter {
 		Long[] userIds = command.getRequiredUsers();
 		Long[] roleIds = command.getRequiredRoles();
 		if (permissions != null && permissions.length != 0 && interaction.isFromGuild() && interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
-			GenericDIH4JDAEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
+			DIH4JDAEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
 			return false;
 		}
 		if (userIds != null && userIds.length != 0 && !Arrays.asList(userIds).contains(userId)) {
-			GenericDIH4JDAEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
+			DIH4JDAEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
 			return false;
 		}
 		if (interaction.isFromGuild() && interaction.getGuild() != null && interaction.getMember() != null) {
 			Member member = interaction.getMember();
 			if (roleIds != null && roleIds.length != 0 && !member.getRoles().isEmpty() && member.getRoles().stream().noneMatch(r -> Arrays.asList(roleIds).contains(r.getIdLong()))) {
-				GenericDIH4JDAEvent.fire(new InvalidRoleEvent(dih4jda, interaction, Set.of(roleIds)));
+				DIH4JDAEvent.fire(new InvalidRoleEvent(dih4jda, interaction, Set.of(roleIds)));
 				return false;
 			}
 		}
 		// check if the command has enabled some sort of cooldown
 		if (command.getCommandCooldown() != Duration.ZERO) {
 			if (command.hasCooldown(userId)) {
-				GenericDIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, command.retrieveCooldown(userId)));
+				DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, command.retrieveCooldown(userId)));
 				return false;
 			} else {
 				command.applyCooldown(userId, Instant.now().plus(command.getCommandCooldown()));
@@ -598,7 +598,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleSlashCommand(event);
 			} catch (Exception e) {
-				GenericDIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
+				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -614,7 +614,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleUserContextCommand(event);
 			} catch (Exception e) {
-				GenericDIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
+				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -630,7 +630,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleMessageContextCommand(event);
 			} catch (Exception e) {
-				GenericDIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
+				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -649,7 +649,7 @@ public class InteractionHandler extends ListenerAdapter {
 					autoComplete.handleAutoComplete(event, event.getFocusedOption());
 				}
 			} catch (Exception e) {
-				GenericDIH4JDAEvent.fire(new AutoCompleteExceptionEvent(dih4jda, event, e));
+				DIH4JDAEvent.fire(new AutoCompleteExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -673,7 +673,7 @@ public class InteractionHandler extends ListenerAdapter {
 					buttonOptional.get().handleButton(event, event.getButton());
 				}
 			} catch (Exception e) {
-				GenericDIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
+				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -697,7 +697,7 @@ public class InteractionHandler extends ListenerAdapter {
 					selectMenuOptional.get().handleStringSelectMenu(event, event.getValues());
 				}
 			} catch (Exception e) {
-				GenericDIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
+				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -717,7 +717,7 @@ public class InteractionHandler extends ListenerAdapter {
 					selectMenuOptional.get().handleEntitySelectMenu(event, event.getValues());
 				}
 			} catch (Exception e) {
-				GenericDIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
+				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -741,7 +741,7 @@ public class InteractionHandler extends ListenerAdapter {
 					modalOptional.get().handleModal(event, event.getValues());
 				}
 			} catch (Exception e) {
-				GenericDIH4JDAEvent.fire(new ModalExceptionEvent(dih4jda, event, e));
+				DIH4JDAEvent.fire(new ModalExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}

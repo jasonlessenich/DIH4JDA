@@ -14,7 +14,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
  * @see ContextCommand.User#execute(Object)
  * @see ContextCommand.Message#execute(Object)
  */
-public class CommandExceptionEvent extends ThrowableDIH4JDAEvent<CommandInteraction> {
+public class CommandExceptionEvent extends DIH4JDAThrowableEvent<CommandInteraction> {
 	public CommandExceptionEvent(DIH4JDA dih4jda, CommandInteraction interaction, Throwable throwable) {
 		super("onCommandException", dih4jda, interaction, throwable);
 	}
