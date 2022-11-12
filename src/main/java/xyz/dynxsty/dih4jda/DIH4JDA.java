@@ -6,9 +6,10 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
-import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
-import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.ApplicationCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
+import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import xyz.dynxsty.dih4jda.interactions.components.ModalHandler;
@@ -38,7 +39,7 @@ public class DIH4JDA extends ListenerAdapter {
 
 	/**
 	 * The default {@link RegistrationType} which is used for queuing new commands.
-	 * This can be overridden using {@link xyz.dynxsty.dih4jda.interactions.commands.ApplicationCommand#setRegistrationType(RegistrationType)}
+	 * This can be overridden using {@link ApplicationCommand#setRegistrationType(RegistrationType)}
 	 */
 	public static RegistrationType defaultCommandType;
 

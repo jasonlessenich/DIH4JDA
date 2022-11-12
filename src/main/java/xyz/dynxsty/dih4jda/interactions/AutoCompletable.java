@@ -1,4 +1,4 @@
-package xyz.dynxsty.dih4jda.interactions.commands;
+package xyz.dynxsty.dih4jda.interactions;
 
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;

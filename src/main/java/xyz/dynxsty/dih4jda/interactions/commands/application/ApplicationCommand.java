@@ -1,6 +1,8 @@
-package xyz.dynxsty.dih4jda.interactions.commands;
+package xyz.dynxsty.dih4jda.interactions.commands.application;
 
 import xyz.dynxsty.dih4jda.DIH4JDA;
+import xyz.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 
 public abstract class ApplicationCommand<E, T> extends RestrictedCommand implements ExecutableCommand<E> {
 

@@ -1,4 +1,4 @@
-package xyz.dynxsty.dih4jda.interactions.commands;
+package xyz.dynxsty.dih4jda.interactions.commands.application;
 
 /**
  * Whether the command should be queued as a global- or as a guild command.
