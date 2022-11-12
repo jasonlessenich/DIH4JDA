@@ -41,7 +41,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * The default {@link RegistrationType} which is used for queuing new commands.
 	 * This can be overridden using {@link BaseApplicationCommand#setRegistrationType(RegistrationType)}
 	 */
-	public static RegistrationType defaultRegistrationType = RegistrationType.GLOBAL;
+	private static RegistrationType defaultRegistrationType = RegistrationType.GLOBAL;
 
 	// Component Handler
 	private static final Map<List<String>, ButtonHandler> buttonHandlers;
@@ -99,6 +99,10 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	public static void setDefaultRegistrationType(RegistrationType type) {
 		DIH4JDA.defaultRegistrationType = type;
+	}
+
+	public static RegistrationType getDefaultRegistrationType() {
+		return defaultRegistrationType;
 	}
 
 	/**

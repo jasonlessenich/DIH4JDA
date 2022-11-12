@@ -4,7 +4,7 @@ import xyz.dynxsty.dih4jda.DIH4JDA;
 
 public abstract class BaseApplicationCommand<E, T> extends ApplicationCommand<E, T> {
 
-	private RegistrationType registrationType = DIH4JDA.defaultRegistrationType;
+	private RegistrationType registrationType = DIH4JDA.getDefaultRegistrationType();
 
 	/**
 	 * The {@link RegistrationType} the command got assigned.
