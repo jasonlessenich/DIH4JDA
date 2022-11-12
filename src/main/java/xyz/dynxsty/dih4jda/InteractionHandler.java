@@ -193,7 +193,7 @@ public class InteractionHandler extends ListenerAdapter {
 			existing.forEach(this::cacheCommand);
 			// check if smart queuing is enabled
 			if (config.isGlobalSmartQueue()) {
-				globalData = new SmartQueue(globalData.getFirst(), globalData.getSecond(), config.isDeleteUnknownCommands()).checkGlobal(config.getJDA(), existing);
+				globalData = new SmartQueue(globalData.getFirst(), globalData.getSecond(), config.isDeleteUnknownCommands()).checkGlobal(existing);
 			}
 			// upsert all (remaining) global commands
 			if (!globalData.getFirst().isEmpty() || !globalData.getSecond().isEmpty()) {
@@ -232,30 +232,21 @@ public class InteractionHandler extends ListenerAdapter {
 	private void upsert(@Nonnull Guild guild, @Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands) {
 		StringBuilder commandNames = new StringBuilder();
 		slashCommands.forEach(data -> {
-			Pair<Boolean, Long[]> pair = data.getRequiredGuilds();
-			if (pair.getFirst() == null) {
+			Long[] guildIds = data.getQueueableGuilds();
+			if (guildIds == null || guildIds.length == 0 || Arrays.asList(guildIds).contains(guild.getIdLong())) {
 				guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
 				commandNames.append(", /").append(data.getCommandData().getName());
 			} else {
-				if (pair.getFirst()) {
-					if (Arrays.asList(pair.getSecond()).contains(guild.getIdLong())) {
-						guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
-						commandNames.append(", /").append(data.getCommandData().getName());
-					} else {
-						DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping Registration of /%s for Guild: %s", data.getCommandData().getName(), guild.getName());
-					}
-				}
+				DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping Registration of /%s for Guild: %s", data.getCommandData().getName(), guild.getName());
 			}
 		});
 		contextCommands.forEach(data -> {
-			Pair<Boolean, Long[]> pair = data.getRequiredGuilds();
-			if (pair.getFirst()) {
-				if (Arrays.asList(pair.getSecond()).contains(guild.getIdLong())) {
-					guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
-					commandNames.append(", ").append(data.getCommandData().getName());
-				} else {
-					DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping Registration of %s for Guild: %s", data.getCommandData().getName(), guild.getName());
-				}
+			Long[] guildIds = data.getQueueableGuilds();
+			if (guildIds == null || guildIds.length == 0 || Arrays.asList(guildIds).contains(guild.getIdLong())) {
+				guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
+				commandNames.append(", ").append(data.getCommandData().getName());
+			} else {
+				DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping Registration of %s for Guild: %s", data.getCommandData().getName(), guild.getName());
 			}
 		});
 		if (!commandNames.toString().isEmpty()) {
@@ -314,9 +305,7 @@ public class InteractionHandler extends ListenerAdapter {
 				if (data != null) {
 					command.setCommandData(data);
 				}
-				if (command.getRegistrationType() != RegistrationType.GUILD &&
-						command.getRequiredGuilds().getFirst() != null && command.getRequiredGuilds().getSecond() != null &&
-						command.getRequiredGuilds().getFirst()) {
+				if (command.getRegistrationType() != RegistrationType.GUILD && (command.getQueueableGuilds() != null || command.getQueueableGuilds().length != 0)) {
 					throw new UnsupportedOperationException(command.getClass().getName() + " attempted to require guilds for a non-global command!");
 				}
 				searchForAutoCompletable(command, command.getClass());
@@ -453,8 +442,7 @@ public class InteractionHandler extends ListenerAdapter {
 					context.setCommandData(data);
 				}
 				if (context.getRegistrationType() != RegistrationType.GUILD &&
-						context.getRequiredGuilds().getFirst() != null && context.getRequiredGuilds().getSecond() != null &&
-						context.getRequiredGuilds().getFirst()) {
+						context.getQueueableGuilds() != null || context.getQueueableGuilds().length != 0) {
 					throw new UnsupportedOperationException(context.getClass().getName() + " attempted to require guilds for a non-global command!");
 				}
 				commands.add(context);
@@ -563,7 +551,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private boolean passesRequirements(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command) {
 		long userId = interaction.getUser().getIdLong();
-		Long[] guildIds = command.getRequiredGuilds().getSecond();
+		Long[] guildIds = command.getRequiredGuilds();
 		Permission[] permissions = command.getRequiredPermissions();
 		Long[] userIds = command.getRequiredUsers();
 		Long[] roleIds = command.getRequiredRoles();

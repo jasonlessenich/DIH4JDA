@@ -1,11 +1,10 @@
 package xyz.dynxsty.dih4jda;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import xyz.dynxsty.dih4jda.interactions.commands.application.ApplicationCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.util.CommandUtils;
@@ -49,13 +48,12 @@ public class SmartQueue {
 	/**
 	 * Compares CommandData with already existing Commands, removed duplicates and, if enabled, deleted unknown commands.
 	 *
-	 * @param jda The {@link JDA} instance which is used to retrieve the already existing commands.
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGlobal(@Nonnull JDA jda, @Nonnull List<Command> existing) {
+	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGlobal(@Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
-			return removeDuplicates(jda, existing, null);
+			return removeDuplicates(existing, null);
 		}
 		return new Pair<>(slashCommands, contextCommands);
 	}
@@ -69,7 +67,7 @@ public class SmartQueue {
 	 */
 	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
-			return removeDuplicates(guild.getJDA(), existing, guild);
+			return removeDuplicates(existing, guild);
 		}
 		return new Pair<>(slashCommands, contextCommands);
 	}
@@ -77,13 +75,12 @@ public class SmartQueue {
 	/**
 	 * Removes all duplicate {@link CommandData} and, if enabled, deletes unknown commands.
 	 *
-	 * @param jda      The {@link JDA} instance.
 	 * @param existing A List of all existing {@link Command}s.
 	 * @param guild    An optional guild parameter which is used with {@link SmartQueue#checkGuild(Guild, List)}.
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */
-	private @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> removeDuplicates(@Nonnull JDA jda, @Nonnull final List<Command> existing, @Nullable Guild guild) {
+	private @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> removeDuplicates(@Nonnull final List<Command> existing, @Nullable Guild guild) {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
 		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());
@@ -123,12 +120,11 @@ public class SmartQueue {
 		}
 	}
 
-	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull ApplicationCommand<?, ? extends CommandData> app) {
-		if (CommandUtils.equals(cmd, app.getCommandData(), false) && app.getRequiredGuilds().getFirst() != null &&
-				app.getRequiredGuilds().getFirst() &&
-				!Arrays.asList(app.getRequiredGuilds().getSecond()).contains(guild.getIdLong())
+	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull BaseApplicationCommand<?, ? extends CommandData> app) {
+		if (CommandUtils.equals(cmd, app.getCommandData(), false) && app.getQueueableGuilds() != null &&
+				app.getQueueableGuilds().length != 0 && !Arrays.asList(app.getQueueableGuilds()).contains(guild.getIdLong())
 		) {
-			DIH4JDALogger.info("Deleting /%s in blacklisted Guild: %s", cmd.getName(), guild.getName());
+			DIH4JDALogger.info("Deleting /%s in non-queueable Guild: %s", cmd.getName(), guild.getName());
 			cmd.delete().queue();
 		}
 	}

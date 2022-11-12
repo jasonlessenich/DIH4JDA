@@ -21,46 +21,28 @@ import java.util.Map;
 public abstract class RestrictedCommand {
 	private final Map<Long, Cooldown> COOLDOWN_CACHE = new HashMap<>();
 
-	//The command requirements
-	private Pair<Boolean, Long[]> requiredGuilds = new Pair<>(null, null);
+	private Long[] requiredGuilds = new Long[]{};
 	private Permission[] requiredPermissions = new Permission[]{};
 	private Long[] requiredUsers = new Long[]{};
 	private Long[] requiredRoles = new Long[]{};
 	private Duration commandCooldown = Duration.ZERO;
 
 	/**
-	 * Allows a set of {@link Guild}s to update their Slash Commands.
+	 * Allows to require a set of {@link Guild}s only in which the command can get executed.
 	 *
-	 * @param restrictQueue If enabled, this will only queue this command in the specified guilds. For that
-	 *                      to work, the command MUST be of {@link RegistrationType#GUILD}. If
-	 *                      {@link DIH4JDABuilder#setGuildSmartQueue(boolean)} is enabled, this
-	 *                      will also delete the command in all the other guilds.
-	 *                      This does simply nothing when using with {@link SlashCommand.Subcommand}.
-	 * @param guilds        An array of {@link Long}s.
+	 * @param guilds        A {@link Long} array, containting the guild ids.
 	 */
-	public final void setRequiredGuilds(boolean restrictQueue, Long... guilds) {
-		requiredGuilds = new Pair<>(restrictQueue, guilds);
+	public final void setRequiredGuilds(Long... guilds) {
+		requiredGuilds = guilds;
 	}
 
 	/**
-	 * The guilds that the command should or should not be registered on.
-	 * The {@link Boolean} represents either if the command should (true) or should not (false) be registered on
-	 * these guilds.
-	 * And the {@link Long} array contains the guild ids.
+	 * The required guilds the command can be executed in.
 	 *
-	 * @return a {@link Pair} containing the {@link Boolean} and {@link Long} array for the guild ids.
+	 * @return The {@link Long} array containing the guild ids.
 	 */
-	public Pair<Boolean, Long[]> getRequiredGuilds() {
+	public Long[] getRequiredGuilds() {
 		return requiredGuilds;
-	}
-
-	/**
-	 * Allows a set of {@link Guild}s to update their Slash Commands.
-	 *
-	 * @param guilds An array of {@link Long}s.
-	 */
-	public final void setRequiredGuilds(@Nonnull Long... guilds) {
-		setRequiredGuilds(false, guilds);
 	}
 
 	/**
@@ -84,7 +66,7 @@ public abstract class RestrictedCommand {
 	/**
 	 * The user ids from the {@link net.dv8tion.jda.api.entities.User} that are allowed to execute the command.
 	 *
-	 * @return the {@link Long} array containing the user ids.
+	 * @return The {@link Long} array containing the user ids.
 	 */
 	public final Long[] getRequiredUsers() {
 		return requiredUsers;
@@ -93,7 +75,7 @@ public abstract class RestrictedCommand {
 	/**
 	 * Allows to require a set of {@link Long}s (user Ids) which are able to execute the corresponding command.
 	 *
-	 * @param users the {@link net.dv8tion.jda.api.entities.User} ids as an {@link Long} array.
+	 * @param users The {@link net.dv8tion.jda.api.entities.User} ids as an {@link Long} array.
 	 */
 	public final void setRequiredUsers(@Nonnull Long... users) {
 		requiredUsers = users;
@@ -102,7 +84,7 @@ public abstract class RestrictedCommand {
 	/**
 	 * The {@link net.dv8tion.jda.api.entities.Role}s that are required to execute the command.
 	 *
-	 * @return the {@link Long} array containing the role ids.
+	 * @return The {@link Long} array containing the role ids.
 	 */
 	public final Long[] getRequiredRoles() {
 		return requiredRoles;
@@ -111,7 +93,7 @@ public abstract class RestrictedCommand {
 	/**
 	 * Allows to require a set of {@link Long}s (role Ids) which are able to execute the corresponding command.
 	 *
-	 * @param roles the {@link net.dv8tion.jda.api.entities.Role} ids as an {@link Long} array.
+	 * @param roles The {@link net.dv8tion.jda.api.entities.Role} ids as an {@link Long} array.
 	 */
 	public final void setRequiredRoles(@Nonnull Long... roles) {
 		requiredRoles = roles;
