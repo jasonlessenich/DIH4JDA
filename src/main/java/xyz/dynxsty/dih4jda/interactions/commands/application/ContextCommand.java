@@ -1,5 +1,7 @@
 package xyz.dynxsty.dih4jda.interactions.commands.application;
 
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.command.GenericContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -11,7 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
  * @see ContextCommand.Message#execute
  * @since v1.5
  */
-public abstract class ContextCommand<E> extends BaseApplicationCommand<E, CommandData> {
+public abstract class ContextCommand<E extends GenericCommandInteractionEvent> extends BaseApplicationCommand<E, CommandData> {
 
 	private ContextCommand() {}
 

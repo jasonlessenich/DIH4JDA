@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
  * public class PingCommand extends SlashCommand implements AutoCompletable {
  *
  *     public PingCommand() {
- *         setSlashCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id", true, true));
+ *         setCommandData(Commands.slash("ping", "Ping someone").addOption(OptionType.STRING, "user-id", "The user's id", true, true));
  *     }
  *
  *     @Override
