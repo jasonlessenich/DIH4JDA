@@ -24,8 +24,7 @@ import java.util.stream.Collectors;
  */
 public class CommandUtils {
 
-	private CommandUtils() {
-	}
+	private CommandUtils() {}
 
 	/**
 	 * Compares two {@link SlashCommandData} (Slash Command) objects.

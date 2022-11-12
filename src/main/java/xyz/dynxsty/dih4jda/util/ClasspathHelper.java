@@ -14,8 +14,7 @@ import java.util.List;
  * @since v1.6
  */
 public class ClasspathHelper {
-	private ClasspathHelper() {
-	}
+	private ClasspathHelper() {}
 
 	/**
 	 * Gets all {@link URL}s in the specified package.

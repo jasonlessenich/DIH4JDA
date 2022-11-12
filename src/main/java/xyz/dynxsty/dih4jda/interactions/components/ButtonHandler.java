@@ -8,6 +8,10 @@ import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 import javax.annotation.Nonnull;
 import java.util.Map;
 
+/**
+ * An interface that contains the method that should be executed when a user interacts with a
+ * {@link Button}.
+ */
 public interface ButtonHandler {
 	/**
 	 * Method that must be overridden for all Commands that handle Button Interactions.

@@ -12,8 +12,7 @@ import java.util.List;
  */
 public class ClassUtils {
 
-	private ClassUtils() {
-	}
+	private ClassUtils() {}
 
 	/**
 	 * Checks if the given base class implements a certain class.

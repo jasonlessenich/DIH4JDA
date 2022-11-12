@@ -12,8 +12,7 @@ import java.lang.reflect.Constructor;
  */
 public class Checks {
 
-	private Checks() {
-	}
+	private Checks() {}
 
 	/**
 	 * Checks if the given base class implements a certain class.

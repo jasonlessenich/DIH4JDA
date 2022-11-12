@@ -13,8 +13,7 @@ import java.util.List;
  * @since v1.4
  */
 public class AutoCompleteUtils {
-	private AutoCompleteUtils() {
-	}
+	private AutoCompleteUtils() {}
 
 	/**
 	 * Filters all AutoComplete choices based on the user's current input.

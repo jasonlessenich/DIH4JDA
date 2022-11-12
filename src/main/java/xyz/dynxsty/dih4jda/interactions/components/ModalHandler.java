@@ -9,6 +9,10 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * An interface that contains the method that should be executed when a user interacts with a
+ * {@link net.dv8tion.jda.api.interactions.modals.Modal}.
+ */
 public interface ModalHandler {
 	/**
 	 * Method that must be overridden for all Commands that handle Modal Interactions.

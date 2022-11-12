@@ -12,8 +12,7 @@ public class ComponentIdBuilder {
 
 	private static String separator = ":";
 
-	private ComponentIdBuilder() {
-	}
+	private ComponentIdBuilder() {}
 
 	/**
 	 * Changes the default component-id separator.
