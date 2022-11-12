@@ -1,7 +1,7 @@
 package com.dynxsty.tests;
 
-import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 import org.junit.jupiter.api.Test;
+import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
 public class ComponentIdTest {
 	@Test

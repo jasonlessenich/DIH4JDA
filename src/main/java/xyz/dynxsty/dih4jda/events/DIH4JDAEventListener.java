@@ -4,9 +4,9 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
-import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
 
 /**

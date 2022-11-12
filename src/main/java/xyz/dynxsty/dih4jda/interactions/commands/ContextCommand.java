@@ -3,9 +3,6 @@ package xyz.dynxsty.dih4jda.interactions.commands;
 import net.dv8tion.jda.api.events.interaction.command.MessageContextInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import xyz.dynxsty.dih4jda.DIH4JDALogger;
-
-import javax.annotation.Nonnull;
 
 /**
  * Model class which represents a single Context Command.

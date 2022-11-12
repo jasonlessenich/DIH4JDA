@@ -8,7 +8,6 @@ import xyz.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.interactions.commands.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RegistrationType;
-import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
