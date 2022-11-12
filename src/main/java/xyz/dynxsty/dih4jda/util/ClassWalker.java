@@ -46,7 +46,7 @@ public class ClassWalker {
 	public @Nonnull Set<Class<?>> getAllClasses() throws DIH4JDAException {
 		try {
 			String packagePath = packageName.replace('.', '/');
-			ClassLoader classLoader = IoUtil.getClassLoaderForClass(ClassWalker.class);
+			ClassLoader classLoader = IOUtils.getClassLoaderForClass(ClassWalker.class);
 
 			URL resourceUrl = classLoader.getResource(packagePath);
 			if (resourceUrl == null) {

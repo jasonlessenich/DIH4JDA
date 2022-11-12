@@ -7,8 +7,8 @@ import javax.annotation.Nonnull;
  *
  * @since v1.6
  */
-public class IoUtil {
-    private IoUtil() {}
+public class IOUtils {
+    private IOUtils() {}
 
     /**
      * Tries to get the classloader for the given class.
