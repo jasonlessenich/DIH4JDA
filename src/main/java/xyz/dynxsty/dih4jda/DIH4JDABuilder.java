@@ -13,7 +13,8 @@ import javax.annotation.Nullable;
 import java.util.concurrent.Executor;
 
 /**
- * Builder-System used to build {@link DIH4JDA}.
+ * Builder class used to instantiate a new {@link DIH4JDA} instance. 
+ * @see DIH4JDA
  */
 public class DIH4JDABuilder {
 	private final JDA jda;
