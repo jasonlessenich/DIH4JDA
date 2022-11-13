@@ -143,7 +143,7 @@ public class DIH4JDA extends ListenerAdapter {
 	/**
 	 * The {@link DIH4JDAConfig} that is used by this specific {@link DIH4JDA} instance.
 	 *
-	 * @return The instance's configuration.
+	 * @return The instance's {@link DIH4JDAConfig configuration}.
 	 */
 	public @Nonnull DIH4JDAConfig getConfig() {
 		return config;
