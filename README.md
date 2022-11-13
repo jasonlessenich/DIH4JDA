@@ -34,7 +34,7 @@ dependencies {
 ```
 
 ## Setup
-To get started, [visit the Wiki! (Currently Outdated!)](https://github.com/DynxstyGIT/DIH4JDA/wiki)
+To get started, [visit the Wiki!](https://github.com/DynxstyGIT/DIH4JDA/wiki)
 
 
 
