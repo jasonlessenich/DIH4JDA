@@ -75,9 +75,9 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Disables the printing of stacktrace if an exception happens and there is no event listener registered.
+	 * Disables stacktrace-printing for all raised exceptions that were not catched by an {@link DIH4JDAEventListener}.
 	 *
-	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
+	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
 	public @Nonnull DIH4JDABuilder disableStacktracePrinting() {
 		config.setDefaultPrintStacktrace(false);
