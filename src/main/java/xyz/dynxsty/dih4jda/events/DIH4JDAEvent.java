@@ -69,6 +69,8 @@ public abstract class DIH4JDAEvent<I extends Interaction> {
 	}
 
 	/**
+	 * The follow-up interaction that was defined by instantiating the class.
+	 *
 	 * @return The follow-up interaction of this event.
 	 */
 	public I getInteraction() {

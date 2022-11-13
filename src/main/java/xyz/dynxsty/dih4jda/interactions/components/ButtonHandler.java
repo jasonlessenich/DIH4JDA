@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
  */
 public interface ButtonHandler {
 	/**
-	 * Method that must be overridden for all Commands that handle Button Interactions.
+	 * Method that must be overridden for all commands that handle button interactions.
 	 * All buttons that match the identifier will execute this class's implementation of the handleButton method.
 	 * This is best used with the {@link ComponentIdBuilder}.
 	 *
@@ -45,6 +45,8 @@ public interface ButtonHandler {
 	 *    }
 	 * }}</pre>
 	 *
+	 * @param event the {@link ButtonInteractionEvent}.
+	 * @param button the {@link Button} that the user interacted with.
 	 * @see DIH4JDA#addButtonMappings(IdMapping[])
 	 * @since v1.4
 	 */

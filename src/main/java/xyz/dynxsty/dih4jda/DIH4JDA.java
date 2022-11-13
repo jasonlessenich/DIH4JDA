@@ -73,13 +73,8 @@ public class DIH4JDA extends ListenerAdapter {
 	@Override
 	public void onReady(@Nonnull ReadyEvent event) {
 		if (config.getCommandPackages() == null) return;
-		try {
-			if (config.isRegisterOnReady() && handler != null) {
-				handler.registerInteractions();
-			}
-		} catch (ReflectiveOperationException e) {
-			e.printStackTrace();
-			DIH4JDALogger.error("Could not register commands: " + e.getMessage());
+		if (config.isRegisterOnReady() && handler != null) {
+			handler.registerInteractions();
 		}
 	}
 
@@ -94,6 +89,12 @@ public class DIH4JDA extends ListenerAdapter {
 		DIH4JDA.defaultRegistrationType = type;
 	}
 
+	/**
+	 * Gets the default {@link RegistrationType} that may be was set with
+	 * {@link DIH4JDA#setDefaultRegistrationType(RegistrationType)}
+	 *
+	 * @return the {@link RegistrationType}.
+	 */
 	public static RegistrationType getDefaultRegistrationType() {
 		return defaultRegistrationType;
 	}
@@ -102,13 +103,15 @@ public class DIH4JDA extends ListenerAdapter {
 	 * Registers all Interactions and replaces the old ones.
 	 * Please note that global commands may need up to an hour before they're fully registered.
 	 */
-	public void registerInteractions() throws ReflectiveOperationException {
+	public void registerInteractions() {
 		if (handler != null) {
 			handler.registerInteractions();
 		}
 	}
 
 	/**
+	 * The {@link DIH4JDAConfig} that is used by this specific {@link DIH4JDA} instance.
+	 *
 	 * @return The instance's configuration.
 	 */
 	public @Nonnull DIH4JDAConfig getConfig() {
@@ -118,6 +121,7 @@ public class DIH4JDA extends ListenerAdapter {
 	/**
 	 * Allows to add Listener classes (that implements {@link DIH4JDAEventListener}).
 	 *
+	 * @param classes the classes the implements {@link DIH4JDAEventListener}
 	 * @since v1.5
 	 */
 	public void addEventListener(@Nonnull Object... classes) {
@@ -133,6 +137,8 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
+	 * Gets all {@link DIH4JDAEventListener}s that was previously added with {@link DIH4JDA#addEventListener(Object...)}.
+	 *
 	 * @return A set of all Listener classes.
 	 * @see DIH4JDA#addEventListener(Object...)
 	 */

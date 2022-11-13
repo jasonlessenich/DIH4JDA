@@ -12,6 +12,14 @@ import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
  * @see AutoCompletable#handleAutoComplete(CommandAutoCompleteInteractionEvent, AutoCompleteQuery)
  */
 public class AutoCompleteExceptionEvent extends DIH4JDAThrowableEvent<CommandAutoCompleteInteraction> {
+
+	/**
+	 * Creates an exception event object.
+	 *
+	 * @param dih4jda the {@link DIH4JDA} instance that fired the event.
+	 * @param interaction the {@link CommandAutoCompleteInteraction}.
+	 * @param throwable the {@link Throwable} that was thrown.
+	 */
 	public AutoCompleteExceptionEvent(DIH4JDA dih4jda, CommandAutoCompleteInteraction interaction, Throwable throwable) {
 		super("onAutoCompleteException", dih4jda, interaction, throwable);
 	}

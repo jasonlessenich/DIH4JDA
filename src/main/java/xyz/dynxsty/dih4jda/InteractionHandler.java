@@ -167,10 +167,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * This method can be accessed from the {@link DIH4JDA} instance.
 	 * <br>This is automatically executed each time the {@link ListenerAdapter#onReady(net.dv8tion.jda.api.events.session.ReadyEvent)} event is executed.
 	 * (can be disabled using {@link DIH4JDABuilder#disableAutomaticCommandRegistration()})
-	 *
-	 * @throws ReflectiveOperationException If an error occurs.
 	 */
-	public void registerInteractions() throws ReflectiveOperationException {
+	public void registerInteractions() {
 		// retrieve (and smartqueue) guild commands
 		Pair<Set<SlashCommand>, Set<ContextCommand<?>>> data = new Pair<>(getSlashCommands(), getContextCommandData());
 		for (Guild guild : config.getJDA().getGuilds()) {

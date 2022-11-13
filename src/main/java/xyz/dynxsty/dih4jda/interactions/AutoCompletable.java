@@ -42,5 +42,11 @@ import javax.annotation.Nonnull;
  * @since v1.4
  */
 public interface AutoCompletable {
+	/**
+	 * Method that must be overridden for all commands that handle auto-complete interactions.
+	 *
+	 * @param event the {@link CommandAutoCompleteInteractionEvent}.
+	 * @param target the {@link AutoCompleteQuery} input.
+	 */
 	void handleAutoComplete(@Nonnull CommandAutoCompleteInteractionEvent event, @Nonnull AutoCompleteQuery target);
 }

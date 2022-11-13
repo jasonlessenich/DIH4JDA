@@ -20,6 +20,8 @@ public abstract class DIH4JDAThrowableEvent<I extends Interaction> extends DIH4J
 	}
 
 	/**
+	 * The {@link Throwable} that was thrown.
+	 *
 	 * @return The {@link Throwable} that was thrown.
 	 */
 	public Throwable getThrowable() {

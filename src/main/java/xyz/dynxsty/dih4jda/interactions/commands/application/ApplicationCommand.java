@@ -15,6 +15,11 @@ public abstract class ApplicationCommand<E extends GenericCommandInteractionEven
 	private T data;
 
 	/**
+	 * Creates a default {@link ApplicationCommand}.
+	 */
+	public ApplicationCommand() {}
+
+	/**
 	 * Sets this commands' {@link E CommandData}.
 	 *
 	 * @param data The {@link E CommandData} which should be used for this application command.
@@ -23,6 +28,11 @@ public abstract class ApplicationCommand<E extends GenericCommandInteractionEven
 		this.data = data;
 	}
 
+	/**
+	 * Gets the command data that was previously set with {@link ApplicationCommand#setCommandData(Object)}
+	 *
+	 * @return the command data object.
+	 */
 	public final T getCommandData() {
 		return data;
 	}
