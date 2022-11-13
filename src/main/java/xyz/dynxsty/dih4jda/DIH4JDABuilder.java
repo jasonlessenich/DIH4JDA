@@ -29,7 +29,7 @@ public class DIH4JDABuilder {
 	 * Sets the {@link JDA} instance the handler will be used for.
 	 *
 	 * @param instance The {@link JDA} instance.
-	 * @return a new {@link DIH4JDABuilder} instance. Usefully for chaining methods.
+	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
 	public static @Nonnull DIH4JDABuilder setJDA(@Nonnull JDA instance) {
 		return new DIH4JDABuilder(instance);
