@@ -306,7 +306,7 @@ public class InteractionHandler extends ListenerAdapter {
 				if (data != null) {
 					command.setCommandData(data);
 				}
-				if (command.getRegistrationType() != RegistrationType.GUILD && (command.getQueueableGuilds() != null || command.getQueueableGuilds().length != 0)) {
+				if (command.getRegistrationType() != RegistrationType.GUILD && command.getQueueableGuilds().length != 0) {
 					throw new UnsupportedOperationException(command.getClass().getName() + " attempted to require guilds for a non-global command!");
 				}
 				searchForAutoCompletable(command, command.getClass());
@@ -442,8 +442,7 @@ public class InteractionHandler extends ListenerAdapter {
 				if (data != null) {
 					context.setCommandData(data);
 				}
-				if (context.getRegistrationType() != RegistrationType.GUILD &&
-						context.getQueueableGuilds() != null || context.getQueueableGuilds().length != 0) {
+				if (context.getRegistrationType() != RegistrationType.GUILD && context.getQueueableGuilds().length != 0) {
 					throw new UnsupportedOperationException(context.getClass().getName() + " attempted to require guilds for a non-global command!");
 				}
 				commands.add(context);
