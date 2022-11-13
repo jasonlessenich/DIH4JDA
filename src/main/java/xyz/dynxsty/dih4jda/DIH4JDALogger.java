@@ -8,6 +8,7 @@ import xyz.dynxsty.dih4jda.util.ArrayUtil;
  * This handler's own Logging System.
  * <br> To disable certain {@link DIH4JDALogger.Type}s, simple use {@link DIH4JDABuilder#disableLogging(Type...)}.
  */
+//TODO java docs
 public class DIH4JDALogger {
 	/**
 	 * Creates a new, default instance of the {@link DIH4JDALogger}.
