@@ -71,6 +71,12 @@ val sourcesJar = task<Jar>("sourcesJar") {
 
 javadoc.apply {
     isFailOnError = isCI
+
+    //Javadocs are scuffed on these version I don't know and care why.
+    if (javaVersion <= JavaVersion.VERSION_13) {
+        isFailOnError = false;
+    }
+
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.encoding = "UTF-8"
 
