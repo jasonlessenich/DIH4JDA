@@ -31,6 +31,7 @@ public class CommandUtils {
 	 *
 	 * @param data    The {@link SlashCommandData}
 	 * @param command The other {@link SlashCommandData} object.
+	 * @param isGlobalCommand a {@link Boolean} that is ture if the provided commands are global commands else false.
 	 * @return Whether both {@link SlashCommandData} objects share the same properties.
 	 * @since v1.5
 	 */
@@ -54,6 +55,7 @@ public class CommandUtils {
 	 *
 	 * @param data    The {@link CommandData}
 	 * @param command The other {@link CommandData} object.
+	 * @param isGlobalCommand a {@link Boolean} that is ture if the provided commands are global commands else false.
 	 * @return Whether both {@link CommandData} objects share the same properties.
 	 * @since v1.5
 	 */
@@ -129,6 +131,7 @@ public class CommandUtils {
 	 *
 	 * @param command The {@link Command}.
 	 * @param data    The {@link CommandData}.
+	 * @param isGlobalCommand a {@link Boolean} that is ture if the provided commands are global commands else false.
 	 * @return Whether the given Command originates from the given CommandData.
 	 * @since v1.5
 	 */
@@ -143,6 +146,7 @@ public class CommandUtils {
 	/**
 	 * Used to create one command name out of the SlashCommand, SlashSubCommandGroup and SlashSubCommand
 	 *
+	 * @param args the arguments as {@link String}s you want to join together.
 	 * @return One combined string.
 	 * @since v1.4
 	 */
@@ -177,15 +181,28 @@ public class CommandUtils {
 			Set<ContextCommand<?>>> pair, RegistrationType type) {
 		return new Pair<>(
 				pair.getFirst().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()),
-				pair.getSecond().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()));
+				pair.getSecond().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet())
+		);
 	}
 
+	/**
+	 * Gets the mention from a {@link SlashCommand}.
+	 *
+	 * @param command the {@link SlashCommand} you want the mention from.
+	 * @return the mention as a {@link String}.
+	 */
 	public static @Nullable String getAsMention(@Nonnull SlashCommand command) {
 		Command entity = command.asCommand();
 		if (entity == null) return null;
 		return entity.getAsMention();
 	}
 
+	/**
+	 * Gets the mention from a {@link SlashCommand.Subcommand}.
+	 *
+	 * @param command the {@link SlashCommand.Subcommand} you want the mention from.
+	 * @return the mention as a {@link String}.
+	 */
 	public static @Nullable String getAsMention(@Nonnull SlashCommand.Subcommand command) {
 		Command.Subcommand entity = command.asSubcommand();
 		if (entity == null) return null;

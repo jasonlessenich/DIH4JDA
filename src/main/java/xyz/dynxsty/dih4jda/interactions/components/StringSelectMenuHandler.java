@@ -47,6 +47,8 @@ public interface StringSelectMenuHandler {
 	 *    }
 	 * }}</pre>
 	 *
+	 * @param event the provided {@link StringSelectInteractionEvent}.
+	 * @param values the provided selections.
 	 * @see DIH4JDA#addStringSelectMenuMappings(IdMapping[])
 	 * @since v1.4
 	 */

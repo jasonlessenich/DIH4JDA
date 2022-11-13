@@ -16,12 +16,21 @@ public class InsufficientPermissionsEvent extends DIH4JDAEvent<CommandInteractio
 
 	private final Set<Permission> permissions;
 
+	/**
+	 * Creates an instance of the {@link InsufficientPermissionsEvent}.
+	 *
+	 * @param dih4jda the {@link DIH4JDA} that fired this event.
+	 * @param interaction the {@link CommandInteraction}.
+	 * @param permissions the {@link Permission} that was required.
+	 */
 	public InsufficientPermissionsEvent(DIH4JDA dih4jda, CommandInteraction interaction, Set<Permission> permissions) {
 		super("onInsufficientPermissions", dih4jda, interaction);
 		this.permissions = permissions;
 	}
 
 	/**
+	 * Gets you all the permissions that are required to perform the {@link RestrictedCommand} that causes this event.
+	 *
 	 * @return An immutable {@link Set} of all "required" permissions for the executed command.
 	 * @see RestrictedCommand#setRequiredPermissions(Permission...)
 	 */

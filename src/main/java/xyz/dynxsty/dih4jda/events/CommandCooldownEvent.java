@@ -18,11 +18,23 @@ public class CommandCooldownEvent extends DIH4JDAEvent<CommandInteraction> {
 
 	private final RestrictedCommand.Cooldown cooldown;
 
+	/**
+	 * Creates a new instance of this event.
+	 *
+	 * @param dih4jda the {@link DIH4JDA} instance that fired this event.
+	 * @param interaction the {@link CommandInteraction}.
+	 * @param cooldown the {@link RestrictedCommand.Cooldown} the user has.
+	 */
 	public CommandCooldownEvent(DIH4JDA dih4jda, CommandInteraction interaction, RestrictedCommand.Cooldown cooldown) {
 		super("onCommandCooldown", dih4jda, interaction);
 		this.cooldown = cooldown;
 	}
 
+	/**
+	 * Gets you the {@link RestrictedCommand.Cooldown} the user has.
+	 *
+	 * @return the {@link RestrictedCommand.Cooldown} instance.
+	 */
 	public RestrictedCommand.Cooldown getCooldown() {
 		return cooldown;
 	}

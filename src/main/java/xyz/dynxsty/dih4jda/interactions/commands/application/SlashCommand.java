@@ -24,6 +24,11 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 	protected SlashCommand() {
 	}
 
+	/**
+	 * Gets all {@link Subcommand} as an array.
+	 *
+	 * @return all {@link Subcommand} as an array.
+	 */
 	public final Subcommand[] getSubcommands() {
 		return subcommands;
 	}
@@ -40,6 +45,11 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 		this.subcommands = classes;
 	}
 
+	/**
+	 * Gets you all {@link SubcommandGroup} as an array.
+	 *
+	 * @return all {@link SubcommandGroup} as an array.
+	 */
 	public final SubcommandGroup[] getSubcommandGroups() {
 		return subcommandGroups;
 	}
@@ -77,6 +87,11 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 	 */
 	public abstract static class Subcommand extends ApplicationCommand<SlashCommandInteractionEvent, SubcommandData> {
 		private SlashCommand parent = null;
+
+		/**
+		 * Creates a default instance.
+		 */
+		public Subcommand() {}
 
 		/**
 		 * Gets the {@link SlashCommand parent} for this subcommand.
@@ -134,6 +149,8 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 		}
 
 		/**
+		 * Gets the {@link SubcommandGroupData}.
+		 *
 		 * @return The corresponding {@link SubcommandGroupData}.
 		 */
 		public SubcommandGroupData getData() {
@@ -141,6 +158,8 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 		}
 
 		/**
+		 * Gets the {@link Subcommand}.
+		 *
 		 * @return An array of {@link Subcommand}s.
 		 */
 		public Subcommand[] getSubcommands() {

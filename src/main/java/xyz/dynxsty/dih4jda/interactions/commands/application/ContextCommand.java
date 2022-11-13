@@ -17,7 +17,23 @@ public abstract class ContextCommand<E extends GenericCommandInteractionEvent> e
 
 	private ContextCommand() {}
 
-	public abstract static class User extends ContextCommand<UserContextInteractionEvent> {}
+	/**
+	 * Creates a new user-context command.
+	 */
+	public abstract static class User extends ContextCommand<UserContextInteractionEvent> {
+		/**
+		 * Creates a new, default user command.
+		 */
+		public User() {}
+	}
 
-	public abstract static class Message extends ContextCommand<MessageContextInteractionEvent> {}
+	/**
+	 * Creates a new message-context command.
+	 */
+	public abstract static class Message extends ContextCommand<MessageContextInteractionEvent> {
+		/**
+		 * Creates a new, default message command.
+		 */
+		public Message() {}
+	}
 }

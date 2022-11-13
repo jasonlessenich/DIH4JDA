@@ -15,12 +15,21 @@ public class InvalidUserEvent extends DIH4JDAEvent<CommandInteraction> {
 
 	private final Set<Long> userIds;
 
+	/**
+	 * Creates a new instance of the {@link InvalidUserEvent}.
+	 *
+	 * @param dih4jda the {@link DIH4JDA} instance that fired the event.
+	 * @param interaction the {@link CommandInteraction}.
+	 * @param userIds the user ids that was allowed to execute {@link RestrictedCommand}.
+	 */
 	public InvalidUserEvent(DIH4JDA dih4jda, CommandInteraction interaction, Set<Long> userIds) {
 		super("onInvalidUser", dih4jda, interaction);
 		this.userIds = userIds;
 	}
 
 	/**
+	 * The ids of the user that was allowed to execute the {@link RestrictedCommand}.
+	 *
 	 * @return An immutable {@link Set} of all "required" users for the executed command.
 	 * @see RestrictedCommand#setRequiredUsers(Long...)
 	 */

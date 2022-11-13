@@ -58,6 +58,8 @@ public interface ModalHandler {
 	 *    }
 	 * }}</pre>
 	 *
+	 * @param event the provided {@link ModalInteractionEvent}.
+	 * @param values a {@link List} of the {@link ModalMapping} values.
 	 * @see DIH4JDA#addModalMappings(IdMapping[])
 	 * @since v1.4
 	 */

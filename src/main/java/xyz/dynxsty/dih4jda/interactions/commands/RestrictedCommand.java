@@ -24,6 +24,11 @@ public abstract class RestrictedCommand {
 	private Duration commandCooldown = Duration.ZERO;
 
 	/**
+	 * Creates a default instance.
+	 */
+	public RestrictedCommand() {}
+
+	/**
 	 * Allows to require a set of {@link Guild}s only in which the command can get executed.
 	 *
 	 * @param guilds        A {@link Long} array, containting the guild ids.
@@ -172,6 +177,8 @@ public abstract class RestrictedCommand {
 		}
 
 		/**
+		 * Gets you the {@link Instant} of when a user can use the {@link RestrictedCommand} the next time.
+		 *
 		 * @return The next {@link Instant time} the command may be used again.
 		 */
 		public Instant getNextUse() {
@@ -179,6 +186,8 @@ public abstract class RestrictedCommand {
 		}
 
 		/**
+		 * Gets you the {@link Instant} the user has used the {@link RestrictedCommand} the last time.
+		 *
 		 * @return The last {@link Instant time} the command was used.
 		 */
 		public Instant getLastUse() {

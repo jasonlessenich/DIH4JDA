@@ -50,6 +50,7 @@ public abstract class BaseApplicationCommand<E extends GenericCommandInteraction
     }
 
     /**
+     * Gets all the guilds that the command should be registered/queued in.
      *
      * @return the guild ids as an array of {@link Long}s.
      */

@@ -11,6 +11,7 @@ import java.util.concurrent.ForkJoinPool;
  * Simple data class which represents the config of a single {@link DIH4JDA}
  * instance.
  */
+//TODO a lot of java docs
 public class DIH4JDAConfig {
 	private JDA jda;
 	private String[] commandsPackages = new String[]{};

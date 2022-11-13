@@ -28,6 +28,7 @@ public class DIH4JDABuilder {
 	 * Sets the {@link JDA} instance the handler will be used for.
 	 *
 	 * @param instance The {@link JDA} instance.
+	 * @return a new {@link DIH4JDABuilder} instance. Usefully for chaining methods.
 	 */
 	public static @Nonnull DIH4JDABuilder setJDA(@Nonnull JDA instance) {
 		return new DIH4JDABuilder(instance);
@@ -38,6 +39,7 @@ public class DIH4JDABuilder {
 	 * command classes.
 	 *
 	 * @param pack The packages name.
+	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
 	 */
 	public @Nonnull DIH4JDABuilder setCommandPackages(@Nonnull String... pack) {
 		config.setCommandPackages(pack);
@@ -48,6 +50,7 @@ public class DIH4JDABuilder {
 	 * Sets the Executor that will be used to execute all commands  and events.
 	 *
 	 * @param executor The Executor.
+	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
 	 */
 	public @Nonnull DIH4JDABuilder setExecutor(@Nonnull Executor executor) {
 		config.setExecutor(executor);
@@ -58,6 +61,7 @@ public class DIH4JDABuilder {
 	 * Sets the types of logging that should be disabled.
 	 *
 	 * @param types All {@link DIH4JDALogger.Type}'s that should be disabled.
+	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
 	 */
 	public @Nonnull DIH4JDABuilder disableLogging(@Nullable DIH4JDALogger.Type... types) {
 		DIH4JDALogger.Type[] blocked;
@@ -72,6 +76,8 @@ public class DIH4JDABuilder {
 
 	/**
 	 * Disables the printing of stacktrace if an exception happens and there is no event listener registered.
+	 *
+	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
 	 */
 	public @Nonnull DIH4JDABuilder disableStacktracePrinting() {
 		config.setDefaultPrintStacktrace(false);
@@ -81,6 +87,8 @@ public class DIH4JDABuilder {
 	/**
 	 * Whether DIH4JDA should automatically register all interactions on each onReady event.
 	 * A manual registration of all interactions can be executed using {@link DIH4JDA#registerInteractions()}.
+	 *
+	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
 	 */
 	public @Nonnull DIH4JDABuilder disableAutomaticCommandRegistration() {
 		config.setRegisterOnReady(false);
@@ -93,6 +101,9 @@ public class DIH4JDABuilder {
 	 * If the Global SmartQueue is disabled Global Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call,
 	 * thus, making Global Commands unusable for about an hour, until they're registered again. <br>
 	 * By default, this also deletes unknown/unused commands. This behaviour can be disabled with {@link DIH4JDABuilder#disableUnknownCommandDeletion()}.
+	 *
+	 * @param enable a {@link Boolean} that is true if the {@link SmartQueue} should be enabled for global commands.
+	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
 	 */
 	public @Nonnull DIH4JDABuilder setGlobalSmartQueue(boolean enable) {
 		config.setGlobalSmartQueue(enable);
@@ -104,6 +115,9 @@ public class DIH4JDABuilder {
 	 * If the Guild SmartQueue is disabled Guild Slash/Context Commands get overridden on each {@link DIH4JDA#registerInteractions()} call.
 	 * It is <b>RECOMMENDED</b> to disable this functionality for 300+ servers to shorten the start-up time.
 	 * By default, this also deletes unknown/unused commands. This behaviour can be disabled with {@link DIH4JDABuilder#disableUnknownCommandDeletion()}.
+	 *
+	 * @param enable a {@link Boolean} that is true if the {@link SmartQueue} should be enabled for guild commands.
+	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
 	 */
 	public @Nonnull DIH4JDABuilder setGuildSmartQueue(boolean enable) {
 		config.setGuildSmartQueue(enable);
@@ -112,6 +126,8 @@ public class DIH4JDABuilder {
 
 	/**
 	 * Disables deletion of unknown/unused commands when using SmartQueue.
+	 *
+	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
 	 */
 	public @Nonnull DIH4JDABuilder disableUnknownCommandDeletion() {
 		config.setDeleteUnknownCommands(false);
@@ -121,6 +137,8 @@ public class DIH4JDABuilder {
 	/**
 	 * Disables the {@link CommandNotRegisteredException} getting thrown
 	 * for unregistered commands.
+	 *
+	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
 	 */
 	public @Nonnull DIH4JDABuilder disableUnregisteredCommandException() {
 		config.setThrowUnregisteredException(false);
@@ -131,6 +149,7 @@ public class DIH4JDABuilder {
 	 * Returns a {@link DIH4JDA} instance that has been validated.
 	 *
 	 * @return the built, usable {@link DIH4JDA}
+	 * @throws DIH4JDAException if anything was wrong with your configuration.
 	 */
 	public @Nonnull DIH4JDA build() throws DIH4JDAException {
 		if (Runtime.getRuntime().availableProcessors() == 1) {

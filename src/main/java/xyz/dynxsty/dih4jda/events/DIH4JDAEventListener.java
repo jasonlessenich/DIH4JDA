@@ -76,6 +76,7 @@ public interface DIH4JDAEventListener {
 	/**
 	 * An event that gets fired when the command is NOT executed in one of the required guild.
 	 *
+	 * @param event the provided {@link InvalidGuildEvent} instance.
 	 * @see RestrictedCommand#setRequiredGuilds(Long...)
 	 */
 	default void onInvalidGuild(InvalidGuildEvent event) {}

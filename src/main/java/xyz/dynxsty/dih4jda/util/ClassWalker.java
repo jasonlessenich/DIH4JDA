@@ -32,7 +32,12 @@ public class ClassWalker {
 	 * Example: com.java.example
 	 */
 	private final String packageName;
-    
+
+	/**
+	 * Creates a new instance that allows you to perform reflective operations for the defined package.
+	 *
+	 * @param packageName the package you want to perform operations on.
+	 */
 	public ClassWalker(@Nonnull String packageName) {
 		this.packageName = packageName;
 	}
@@ -40,6 +45,7 @@ public class ClassWalker {
 	/**
 	 * Gets all classes inside the given package and sub packages.
 	 *
+	 * @throws DIH4JDAException is thrown if anything happens during this reflection operation.
 	 * @return An unmodifiable {@link Set} of classes inside the given package.
 	 * @since v1.6
 	 */
@@ -105,8 +111,10 @@ public class ClassWalker {
 	/**
 	 * Gets all classes in the given package and sub packages which extend the specified class.
 	 *
+	 * @param <T> the instance of the class that was provided as a type.
 	 * @param type The parent class to search for.
-	 * @return An unmodifiable {@link Set} of classes which are assignable to the given type.
+	 * @throws DIH4JDAException is thrown by {@link ClassWalker#getAllClasses()}.
+	 * @return an unmodifiable {@link Set} of classes which are assignable to the given type.
 	 * @since v1.6
 	 */
 	@SuppressWarnings("unchecked") //Is actually checked because we filter out the un-assignable classes.

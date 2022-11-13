@@ -30,10 +30,20 @@ public class IdMapping<T> {
 		return new IdMapping<>(handler, ids);
 	}
 
+	/**
+	 * Gets you the ids that linked themselves with their {@link IdMapping#getHandler()}.
+	 *
+	 * @return the ids as an {@link String} array.
+	 */
 	public String[] getIds() {
 		return ids;
 	}
 
+	/**
+	 * Gets you the handler that was linked with the {@link IdMapping#getIds()}.
+	 *
+	 * @return the handler instance.
+	 */
 	public T getHandler() {
 		return handler;
 	}

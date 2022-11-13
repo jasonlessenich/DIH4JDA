@@ -15,12 +15,21 @@ public class InvalidRoleEvent extends DIH4JDAEvent<CommandInteraction> {
 
 	private final Set<Long> roleIds;
 
+	/**
+	 * Create a new instance of the {@link InvalidRoleEvent}.
+	 *
+	 * @param dih4jda the {@link DIH4JDA} that fired the event.
+	 * @param interaction the {@link CommandInteraction}.
+	 * @param roleIds the role ids that was allowed to execute the {@link RestrictedCommand}.
+	 */
 	public InvalidRoleEvent(DIH4JDA dih4jda, CommandInteraction interaction, Set<Long> roleIds) {
 		super("onInvalidRole", dih4jda, interaction);
 		this.roleIds = roleIds;
 	}
 
 	/**
+	 * The ids of the roles that was allowed to execute the {@link RestrictedCommand}.
+	 *
 	 * @return An immutable {@link Set} of all "required" roles for the executed command.
 	 * @see RestrictedCommand#setRequiredRoles(Long...)
 	 */

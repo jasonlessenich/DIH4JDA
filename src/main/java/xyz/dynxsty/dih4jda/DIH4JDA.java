@@ -26,6 +26,9 @@ import java.util.Set;
  * <b>DIH4JDA:</b><br>
  * <b>Creating a new {@link DIH4JDA} instance:</b>
  * <pre>{@code
+ *
+ * DIH4JDA.setDefaultRegistrationType(RegistrationType.GUILD);
+ *
  * DIH4JDA dih4JDA = DIH4JDABuilder
  *         .setJDA(jda) // Your JDA instance
  *         .setCommandsPackages("com.dynxsty.superawesomebot.commands") // The main package where all your commands are in.

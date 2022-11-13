@@ -6,6 +6,12 @@ package xyz.dynxsty.dih4jda.interactions.commands.application;
  *
  */
 public enum RegistrationType {
+	/**
+	 * Marks a command as a global command.
+	 */
 	GLOBAL,
+	/**
+	 * Marks a command as a guild only command.
+	 */
 	GUILD
 }

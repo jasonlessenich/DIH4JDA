@@ -8,7 +8,12 @@ import xyz.dynxsty.dih4jda.util.ArrayUtil;
  * This handler's own Logging System.
  * <br> To disable certain {@link DIH4JDALogger.Type}s, simple use {@link DIH4JDABuilder#disableLogging(Type...)}.
  */
+//TODO a lot of java docs
 public class DIH4JDALogger {
+	/**
+	 * Creates a new, default instance of the {@link DIH4JDALogger}.
+	 */
+	public DIH4JDALogger() {}
 
 	private static final org.slf4j.Logger log = JDALogger.getLog(DIH4JDALogger.class);
 	protected static Type[] blockedLogTypes = new Type[]{};
@@ -74,6 +79,9 @@ public class DIH4JDALogger {
 		log0(String.format(msg, args), Type.TRACE, Level.TRACE);
 	}
 
+	/**
+	 * All types that are supported by the {@link DIH4JDALogger}.
+	 */
 	public enum Type {
 		INFO,
 		WARN,
