@@ -125,9 +125,9 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Disables deletion of unknown/unused commands when using SmartQueue.
+	 * Disables the deletion of unknown/unused commands while using SmartQueue.
 	 *
-	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
+	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
 	public @Nonnull DIH4JDABuilder disableUnknownCommandDeletion() {
 		config.setDeleteUnknownCommands(false);
