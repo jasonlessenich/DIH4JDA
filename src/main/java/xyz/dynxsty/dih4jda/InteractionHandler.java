@@ -41,6 +41,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
+import xyz.dynxsty.dih4jda.interactions.components.IdMapping;
 import xyz.dynxsty.dih4jda.interactions.components.ModalHandler;
 import xyz.dynxsty.dih4jda.interactions.components.StringSelectMenuHandler;
 import xyz.dynxsty.dih4jda.util.Checks;
@@ -662,9 +663,10 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onButtonInteraction(@Nonnull ButtonInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				Optional<ButtonHandler> buttonOptional = dih4jda.getButtonHandlers().entrySet().stream()
-						.filter(f -> f.getKey().contains(ComponentIdBuilder.split(event.getComponentId())[0]))
-						.map(Map.Entry::getValue)
+				if (dih4jda.getButtonMappings().length == 0) return;
+				Optional<ButtonHandler> buttonOptional = Arrays.stream(dih4jda.getButtonMappings())
+						.filter(map -> Arrays.asList(map.getIds()).contains(ComponentIdBuilder.split(event.getComponentId())[0]))
+						.map(IdMapping::getHandler)
 						.findFirst();
 				if (buttonOptional.isEmpty()) {
 					DIH4JDALogger.warn(DIH4JDALogger.Type.BUTTON_NOT_FOUND, "Button with id \"%s\" could not be found.", event.getComponentId());
@@ -686,9 +688,10 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onStringSelectInteraction(@Nonnull StringSelectInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				Optional<StringSelectMenuHandler> selectMenuOptional = dih4jda.getStringSelectMenuHandlers().entrySet().stream()
-						.filter(f -> f.getKey().contains(ComponentIdBuilder.split(event.getComponentId())[0]))
-						.map(Map.Entry::getValue)
+				if (dih4jda.getStringSelectMenuMappings().length == 0) return;
+				Optional<StringSelectMenuHandler> selectMenuOptional = Arrays.stream(dih4jda.getStringSelectMenuMappings())
+						.filter(map -> Arrays.asList(map.getIds()).contains(ComponentIdBuilder.split(event.getComponentId())[0]))
+						.map(IdMapping::getHandler)
 						.findFirst();
 				if (selectMenuOptional.isEmpty()) {
 					DIH4JDALogger.warn(DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND, "Select Menu with id \"%s\" could not be found.", event.getComponentId());
@@ -705,10 +708,10 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onEntitySelectInteraction(@Nonnull EntitySelectInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				Optional<EntitySelectMenuHandler> selectMenuOptional = dih4jda.getEntitySelectMenuHandlers()
-						.entrySet().stream()
-						.filter(f -> f.getKey().contains(ComponentIdBuilder.split(event.getComponentId())[0]))
-						.map(Map.Entry::getValue)
+				if (dih4jda.getEntitySelectMenuMappings().length == 0) return;
+				Optional<EntitySelectMenuHandler> selectMenuOptional = Arrays.stream(dih4jda.getEntitySelectMenuMappings())
+						.filter(map -> Arrays.asList(map.getIds()).contains(ComponentIdBuilder.split(event.getComponentId())[0]))
+						.map(IdMapping::getHandler)
 						.findFirst();
 				if (selectMenuOptional.isEmpty()) {
 					DIH4JDALogger.warn(DIH4JDALogger.Type.SELECT_MENU_NOT_FOUND, "Select Menu with id \"%s\" could not be found.", event.getComponentId());
@@ -730,9 +733,10 @@ public class InteractionHandler extends ListenerAdapter {
 	public void onModalInteraction(@Nonnull ModalInteractionEvent event) {
 		CompletableFuture.runAsync(() -> {
 			try {
-				Optional<ModalHandler> modalOptional = dih4jda.getModalHandlers().entrySet().stream()
-						.filter(f -> f.getKey().contains(ComponentIdBuilder.split(event.getModalId())[0]))
-						.map(Map.Entry::getValue)
+				if (dih4jda.getModalMappings().length == 0) return;
+				Optional<ModalHandler> modalOptional = Arrays.stream(dih4jda.getModalMappings())
+						.filter(map -> Arrays.asList(map.getIds()).contains(ComponentIdBuilder.split(event.getModalId())[0]))
+						.map(IdMapping::getHandler)
 						.findFirst();
 				if (modalOptional.isEmpty()) {
 					DIH4JDALogger.warn(DIH4JDALogger.Type.MODAL_NOT_FOUND, "Modal with id \"%s\" could not be found.", event.getModalId());
