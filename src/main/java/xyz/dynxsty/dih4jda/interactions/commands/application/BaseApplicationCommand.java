@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 import xyz.dynxsty.dih4jda.DIH4JDA;
 
 /**
- * An extension of {@link ApplicationCommand} which contains a {@link RegistrationType}.
+ * An extension of {@link ApplicationCommand} which contains a {@link RegistrationType} and {@link BaseApplicationCommand#queueableGuilds}.
  * This abstract class is meant for top-level commands, which can be queued either per-guild or globally.
  *
  * @param <E> The event this class uses.

@@ -84,7 +84,8 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Sets the default {@link RegistrationType} for all Commands.
+	 * Sets the default {@link RegistrationType} for all
+	 * {@link xyz.dynxsty.dih4jda.interactions.commands.application.ApplicationCommand Application Commands}.
 	 * This is set to {@link RegistrationType#GLOBAL} if not set otherwise.
 	 *
 	 * @param type The {@link RegistrationType}.
