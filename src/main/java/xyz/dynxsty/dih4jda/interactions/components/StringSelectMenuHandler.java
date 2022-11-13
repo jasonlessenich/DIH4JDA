@@ -48,7 +48,7 @@ public interface StringSelectMenuHandler {
 	 *    }
 	 * }}</pre>
 	 *
-	 * @see DIH4JDA#addStringSelectMenuHandlers(Map)
+	 * @see DIH4JDA#addStringSelectMenuMappings(IdMapping[])
 	 * @since v1.4
 	 */
 	void handleStringSelectMenu(@Nonnull StringSelectInteractionEvent event, @Nonnull List<String> values);

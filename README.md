@@ -1,7 +1,7 @@
 # DIH4JDA – Dynxsty's Interaction Handler for JDA
 ![image](https://user-images.githubusercontent.com/48297101/154980678-ae9db212-f38b-4a4e-a628-0f94d13086b7.png)
 
-[![maven-central](https://img.shields.io/maven-central/v/xyz.dynxsty/dih4jda.svg)](https://search.maven.org/search?q=g:%22xyz.dynxsty%22%20AND%20a:%22dih4jda%22)
+[![maven-central](https://img.shields.io/maven-central/v/xyz.dynxsty/dih4jda.svg)](https://central.sonatype.dev/search?q=dih4jda&sort=name&namespace=xyz.dynxsty)
 [![javadoc](https://javadoc.io/badge2/xyz.dynxsty/dih4jda/javadoc.svg)](https://javadoc.io/doc/xyz.dynxsty/dih4jda)
 [![](https://jitpack.io/v/DynxstyGIT/DIH4JDA.svg)](https://jitpack.io/#DynxstyGIT/DIH4JDA)
 
@@ -34,7 +34,7 @@ dependencies {
 ```
 
 ## Setup
-To get started, [visit the Wiki! (Currently Outdated!)](https://github.com/DynxstyGIT/DIH4JDA/wiki)
+To get started, [visit the Wiki!](https://github.com/DynxstyGIT/DIH4JDA/wiki)
 
 
 

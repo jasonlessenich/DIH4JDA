@@ -59,7 +59,7 @@ public interface ModalHandler {
 	 *    }
 	 * }}</pre>
 	 *
-	 * @see DIH4JDA#addModalHandlers(Map)
+	 * @see DIH4JDA#addModalMappings(IdMapping[])
 	 * @since v1.4
 	 */
 	void handleModal(@Nonnull ModalInteractionEvent event, @Nonnull List<ModalMapping> values);
