@@ -36,11 +36,10 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Sets the packages that house all Command classes. DIH4JDA then uses the {@link ClassWalker} to "scan" the packages for all
-	 * command classes.
+	 * Allows to specify package(s) that house all {@link xyz.dynxsty.dih4jda.interactions.commands.application.ApplicationCommand}s classes. DIH4JDA then uses the {@link ClassWalker} to "scan" for those classes.
 	 *
-	 * @param pack The packages name.
-	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
+	 * @param pack The packages.
+	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
 	public @Nonnull DIH4JDABuilder setCommandPackages(@Nonnull String... pack) {
 		config.setCommandPackages(pack);
