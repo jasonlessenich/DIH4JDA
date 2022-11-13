@@ -2,6 +2,11 @@ package xyz.dynxsty.dih4jda.interactions.components;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Simple POJO that holds a handler, {@link T}, and an array of {@link String}s.
+ *
+ * @param <T> {@link T The handlers type}.
+ */
 public class IdMapping<T> {
 
 	private final T handler;
