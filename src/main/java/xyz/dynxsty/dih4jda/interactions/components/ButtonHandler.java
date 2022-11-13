@@ -46,7 +46,7 @@ public interface ButtonHandler {
 	 *    }
 	 * }}</pre>
 	 *
-	 * @see DIH4JDA#addButtonHandlers(Map)
+	 * @see DIH4JDA#addButtonMappings(IdMapping[])
 	 * @since v1.4
 	 */
 	void handleButton(@Nonnull ButtonInteractionEvent event, @Nonnull Button button);

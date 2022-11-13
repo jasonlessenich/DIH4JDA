@@ -21,8 +21,8 @@ public interface EntitySelectMenuHandler {
      * This is best used with the {@link ComponentIdBuilder}.
      *
      * <pre>
-     *     {@code
-     * public class TestCommand extends SlashCommand implements EntitySelectMenuHandler {
+     * {@code
+     *     public class TestCommand extends SlashCommand implements EntitySelectMenuHandler {
      *
      *     public TestCommand() {
      *         setCommandData(Commands.slash("test", "test description"));
@@ -38,8 +38,9 @@ public interface EntitySelectMenuHandler {
      *        for (IMentionable entity : values) {
      *            event.getChannel().sendMessage(String.format("Mention: %s", entity.getAsMention())
      *        }
-     *  }
+     *   }
      * }
+     *}
      * </pre>
      *
      * @param event the {@link EntitySelectInteractionEvent} instance.

@@ -141,7 +141,7 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Convenience method which replaces {@link DIH4JDA#getConfig()#getJDA()}
+	 * Gets the {@link JDA} instance {@link DIH4JDA} uses.
 	 *
 	 * @return The {@link JDA} instance.
 	 */

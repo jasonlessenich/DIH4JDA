@@ -151,11 +151,11 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Returns an unmodifiable Map of all retrieved (and/or queued) commands, where the key is the commands' name &
+	 * Returns an unmodifiable Map of all retrieved (and/or queued) commands, where the key is the commands' name and
 	 * the value the {@link Command} instance itself.
 	 * This map is empty if {@link DIH4JDA#registerInteractions()} wasn't called before.
 	 *
-	 * @return An immutable {@link Map} containing all global & guild commands.
+	 * @return An immutable {@link Map} containing all global and guild commands.
 	 */
 	@Nonnull
 	public static Map<String, Command> getRetrievedCommands() {

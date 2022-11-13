@@ -20,7 +20,7 @@ import java.util.Set;
 /**
  * <h1>Smart Queue</h1>
  * This Class handles all the SmartQueue functionality which can be disabled using
- * {@link DIH4JDABuilder#setGlobalSmartQueue(boolean)} & {@link DIH4JDABuilder#setGuildSmartQueue(boolean)}.
+ * {@link DIH4JDABuilder#setGlobalSmartQueue(boolean)} and {@link DIH4JDABuilder#setGuildSmartQueue(boolean)}.
  * <br><br>
  * <p>
  * This basically retrieves all existing commands and compares them with the local ones, thus, only queuing

@@ -73,6 +73,7 @@ javadoc.apply {
 
 build.apply {
     dependsOn(jar)
+    dependsOn(sourcesJar)
     dependsOn(javadocJar)
 }
 
