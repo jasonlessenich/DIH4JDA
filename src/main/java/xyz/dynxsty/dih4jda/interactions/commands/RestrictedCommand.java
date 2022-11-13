@@ -2,10 +2,6 @@ package xyz.dynxsty.dih4jda.interactions.commands;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import xyz.dynxsty.dih4jda.DIH4JDABuilder;
-import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
-import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
-import xyz.dynxsty.dih4jda.util.Pair;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
