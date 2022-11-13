@@ -16,6 +16,12 @@ group = "xyz.dynxsty"
 val archivesBaseName = "dih4jda"
 version = "1.6.0-alpha.2"
 
+val javaVersion = JavaVersion.current()
+val isCI = System.getProperty("GIT_COMMIT") != null // jitpack
+        || System.getenv("GIT_COMMIT") != null
+        || System.getProperty("GITHUB_ACTIONS") != null // Github Actions
+        || System.getenv("GITHUB_ACTIONS") != null
+
 repositories {
     mavenCentral()
     maven(url = "https://m2.dv8tion.net/releases")
@@ -58,12 +64,17 @@ val sourcesJar = task<Jar>("sourcesJar") {
 }
 
 javadoc.apply {
+    isFailOnError = isCI
     options.memberLevel = JavadocMemberLevel.PUBLIC
     options.encoding = "UTF-8"
 
     (options as? StandardJavadocDocletOptions)?.let { opt ->
-        opt.addStringOption("Xdoclint:none", "-quiet")
         opt.addStringOption("charSet", "UTF-8")
+
+        // Fix for https://stackoverflow.com/questions/52326318/maven-javadoc-search-redirects-to-undefined-url
+        if (javaVersion in JavaVersion.VERSION_11..JavaVersion.VERSION_12) {
+            opt.addBooleanOption("-no-module-directories", true)
+        }
     }
 
     dependsOn(sourcesJar)
