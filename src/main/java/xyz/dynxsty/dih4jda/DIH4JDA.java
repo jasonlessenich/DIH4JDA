@@ -168,7 +168,7 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets all {@link DIH4JDAEventListener}s that was previously added with {@link DIH4JDA#addEventListener(Object...)}.
+	 * Gets all {@link DIH4JDAEventListener}s that were previously added using {@link DIH4JDA#addEventListener(Object...)}.
 	 *
 	 * @return A set of all Listener classes.
 	 * @see DIH4JDA#addEventListener(Object...)
