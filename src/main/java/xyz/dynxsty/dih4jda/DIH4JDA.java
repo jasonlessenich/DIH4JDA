@@ -23,19 +23,48 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * <b>DIH4JDA:</b><br>
- * <b>Creating a new {@link DIH4JDA} instance:</b>
+ <h1>Getting Started</h1>
+ *
+ * Creating a new DIH4JDA instance is fairly easy:
+ *
  * <pre>{@code
- *
- * DIH4JDA.setDefaultRegistrationType(RegistrationType.GUILD);
- *
- * DIH4JDA dih4JDA = DIH4JDABuilder
+ * DIH4JDA dih4jda = DIH4JDABuilder
  *         .setJDA(jda) // Your JDA instance
- *         .setCommandsPackages("com.dynxsty.superawesomebot.commands") // The main package where all your commands are in.
  *         .build();
  * }</pre>
- * Upon calling .build();, the bot will automatically register all Commands that are in the given commandsPackage.
- * (if not disabled)
+ *
+ * Now, you get to decide how you want your commands to be registered:
+ *
+ * <h2>Manual Command Registration</h2>
+ *
+ * To manually register commands, use the following methods, <b>AFTER</b> you've <code>.build();</code> your DIH4JDA instance, like that:
+ *
+ * <pre>{@code
+ * DIH4JDA dih4jda = DIH4JDABuilder
+ *         .setJDA(jda) // Your JDA instance
+ *         .build();
+ * dih4jda.addSlashCommands(new PingCommand(), new HelloWorldCommand());
+ * dih4jda.addContextMenus(new PingUserContext(), new HelloWorldMessageContext());
+ * }</pre>
+ *
+ * <h2>Automatic Command Registration</h2>
+ *
+ * Alternatively, you can specify packages on the {@link DIH4JDABuilder} instance which will be scanned for all classes that extend one of the following classes:
+ *
+ * <ul>
+ *     <li>{@link SlashCommand}</li>
+ *     <li>{@link ContextCommand.User}</li>
+ *     <li>{@link ContextCommand.Message}</li>
+ * </ul>
+ *
+ * <pre>{@code
+ * DIH4JDA dih4jda = DIH4JDABuilder
+ *         .setJDA(jda) // Your JDA instance
+ *         .setCommandPackages("xyz.dynxsty.bot.commands") // OPTIONAL: The package(s) that contains all your commands
+ *         .build();
+ * }</pre>
+ *
+ * Upon calling <code>.build();</code>, the bot will register all commands that are in the specified package(s).
  */
 public class DIH4JDA extends ListenerAdapter {
 
