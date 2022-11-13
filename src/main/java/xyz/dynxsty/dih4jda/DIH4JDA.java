@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- <h1>Getting Started</h1>
+ * <p><b>Getting Started</b></p>
  *
  * Creating a new DIH4JDA instance is fairly easy:
  *
@@ -35,7 +35,7 @@ import java.util.Set;
  *
  * Now, you get to decide how you want your commands to be registered:
  *
- * <h2>Manual Command Registration</h2>
+ * <p><b>Manual Command Registration</b></p>
  *
  * To manually register commands, use the following methods, <b>AFTER</b> you've <code>.build();</code> your DIH4JDA instance, like that:
  *
@@ -47,7 +47,7 @@ import java.util.Set;
  * dih4jda.addContextMenus(new PingUserContext(), new HelloWorldMessageContext());
  * }</pre>
  *
- * <h2>Automatic Command Registration</h2>
+ * <p><b>Automatic Command Registration</b></p>
  *
  * Alternatively, you can specify packages on the {@link DIH4JDABuilder} instance which will be scanned for all classes that extend one of the following classes:
  *
