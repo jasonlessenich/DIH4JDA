@@ -103,6 +103,7 @@ javadoc.apply {
 
     dependsOn(sourcesJar)
     source = sourcesJar.source.asFileTree
+    exclude("xyz/dynxsty/dih4jda/DIH4JDALogger.java")
     exclude("MANIFEST.MF")
 }
 
