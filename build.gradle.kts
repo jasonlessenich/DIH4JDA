@@ -25,7 +25,7 @@ var isCI: Boolean = System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GITHUB_ACTIONS") != null
 
 if (getProjectProperty("manualCI") != null) {
-    isCI = getProjectProperty("manualCI").toBoolean();
+    isCI = getProjectProperty("manualCI").toBoolean()
 }
 
 repositories {
