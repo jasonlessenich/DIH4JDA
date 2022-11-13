@@ -19,7 +19,7 @@ DIH4JDA itself is distributed through [Maven Central](https://central.sonatype.d
 <dependency>
   <groupId>xyz.dynxsty</groupId>
   <artifactId>dih4jda</artifactId>
-  <version>1.6-alpha.1</version>
+  <version>1.6.0-alpha.4</version>
 </dependency>
 ```
 
@@ -28,7 +28,7 @@ DIH4JDA itself is distributed through [Maven Central](https://central.sonatype.d
 ```gradle
 dependencies {
     [...]
-    implementation("xyz.dynxsty:dih4jda:1.6-alpha.1")
+    implementation("xyz.dynxsty:dih4jda:1.6.0-alpha.4")
 }
 ```
 
