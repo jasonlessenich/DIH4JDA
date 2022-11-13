@@ -146,10 +146,10 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Returns a {@link DIH4JDA} instance that has been validated.
+	 * Returns a validated {@link DIH4JDA} instance.
 	 *
-	 * @return the built, usable {@link DIH4JDA}
-	 * @throws DIH4JDAException if anything was wrong with your configuration.
+	 * @return The built, usable {@link DIH4JDA}
+	 * @throws DIH4JDAException If anything was wrong with your configuration.
 	 */
 	public @Nonnull DIH4JDA build() throws DIH4JDAException {
 		if (Runtime.getRuntime().availableProcessors() == 1) {
