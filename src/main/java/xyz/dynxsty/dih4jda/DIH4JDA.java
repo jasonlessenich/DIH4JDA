@@ -122,8 +122,7 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets the default {@link RegistrationType} that may be was set with
-	 * {@link DIH4JDA#setDefaultRegistrationType(RegistrationType)}
+	 * Gets the default {@link RegistrationType}.
 	 *
 	 * @return the {@link RegistrationType}.
 	 */
