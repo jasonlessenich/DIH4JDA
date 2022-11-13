@@ -558,7 +558,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Permission[] permissions = command.getRequiredPermissions();
 		Long[] userIds = command.getRequiredUsers();
 		Long[] roleIds = command.getRequiredRoles();
-		if (type == RegistrationType.GUILD && guildIds != null && interaction.isFromGuild() &&
+		if (type == RegistrationType.GUILD && guildIds != null && guildIds.length != 0 && interaction.isFromGuild() &&
 				interaction.getGuild() != null && !Arrays.asList(guildIds).contains(interaction.getGuild().getIdLong())
 		) {
 			DIH4JDAEvent.fire(new InvalidGuildEvent(dih4jda, interaction, Set.of(guildIds)));
