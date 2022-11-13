@@ -138,7 +138,7 @@ public class DIH4JDABuilder {
 	 * Disables the {@link CommandNotRegisteredException} getting thrown
 	 * for unregistered commands.
 	 *
-	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
+	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
 	public @Nonnull DIH4JDABuilder disableUnregisteredCommandException() {
 		config.setThrowUnregisteredException(false);
