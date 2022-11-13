@@ -81,6 +81,14 @@ javadoc.apply {
         if (javaVersion in JavaVersion.VERSION_11..JavaVersion.VERSION_12) {
             opt.addBooleanOption("-no-module-directories", true)
         }
+
+        // Java 13 changed accessibility rules.
+        // On versions less than Java 13, we simply ignore the errors.
+        if (javaVersion >= JavaVersion.VERSION_13) {
+            opt.addBooleanOption("Xdoclint:all", true)
+        } else {
+            opt.addBooleanOption("Xdoclint:all, -accessibility", true)
+        }
     }
 
     dependsOn(sourcesJar)
