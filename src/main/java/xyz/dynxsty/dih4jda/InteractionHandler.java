@@ -36,6 +36,7 @@ import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ApplicationCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
@@ -483,20 +484,21 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param event The {@link SlashCommandInteractionEvent} that was fired.
 	 */
 	private void handleSlashCommand(@Nonnull SlashCommandInteractionEvent event) throws CommandNotRegisteredException {
-		boolean base = slashCommandIndex.containsKey(event.getFullCommandName());
-		ApplicationCommand<SlashCommandInteractionEvent, ?> command = base ?
-				slashCommandIndex.get(event.getFullCommandName()) : subcommandIndex.get(event.getFullCommandName());
-		if (command == null) {
+		SlashCommand slashcommand = slashCommandIndex.get(event.getFullCommandName());
+		SlashCommand.Subcommand subcommand = subcommandIndex.get(event.getFullCommandName());
+		if (slashcommand == null && subcommand == null) {
 			if (config.isThrowUnregisteredException()) {
 				throw new CommandNotRegisteredException(String.format("Slash Command \"%s\" is not registered.", event.getFullCommandName()));
 			}
 		} else {
 			// check for parent if command is subcommand
-			if (!base && !passesRequirements(event, subcommandIndex.get(event.getFullCommandName()).getParent())) {
-				return;
-			}
-			if (passesRequirements(event, command)) {
-				command.execute(event);
+			if (slashcommand == null) {
+				BaseApplicationCommand<SlashCommandInteractionEvent, ?> base = subcommand.getParent();
+				if (passesRequirements(event, base, base.getRegistrationType()) && passesRequirements(event, subcommand, base.getRegistrationType())) {
+					subcommand.execute(event);
+				}
+			} else if (passesRequirements(event, slashcommand, slashcommand.getRegistrationType())) {
+				slashcommand.execute(event);
 			}
 		}
 	}
@@ -514,7 +516,7 @@ public class InteractionHandler extends ListenerAdapter {
 				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getFullCommandName()));
 			}
 		} else {
-			if (passesRequirements(event, context)) {
+			if (passesRequirements(event, context, context.getRegistrationType())) {
 				context.execute(event);
 			}
 		}
@@ -533,7 +535,7 @@ public class InteractionHandler extends ListenerAdapter {
 				throw new CommandNotRegisteredException(String.format("Context Command \"%s\" is not registered.", event.getFullCommandName()));
 			}
 		} else {
-			if (passesRequirements(event, context)) {
+			if (passesRequirements(event, context, context.getRegistrationType())) {
 				context.execute(event);
 			}
 		}
@@ -546,20 +548,24 @@ public class InteractionHandler extends ListenerAdapter {
 	 *
 	 * @param interaction The {@link CommandInteraction}.
 	 * @param command The {@link RestrictedCommand} which contains the (possible) restrictions.
+	 * @param type The {@link RegistrationType} of the {@link BaseApplicationCommand}.
 	 * @return Whether the event was fired.
 	 * @since v1.5
 	 */
-	private boolean passesRequirements(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command) {
+	private boolean passesRequirements(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command, RegistrationType type) {
 		long userId = interaction.getUser().getIdLong();
 		Long[] guildIds = command.getRequiredGuilds();
 		Permission[] permissions = command.getRequiredPermissions();
 		Long[] userIds = command.getRequiredUsers();
 		Long[] roleIds = command.getRequiredRoles();
-		if (guildIds != null && interaction.isFromGuild() && interaction.getGuild() != null && !Arrays.asList(guildIds).contains(interaction.getGuild().getIdLong())) {
+		if (type == RegistrationType.GUILD && guildIds != null && interaction.isFromGuild() &&
+				interaction.getGuild() != null && !Arrays.asList(guildIds).contains(interaction.getGuild().getIdLong())
+		) {
 			DIH4JDAEvent.fire(new InvalidGuildEvent(dih4jda, interaction, Set.of(guildIds)));
 			return false;
 		}
-		if (permissions != null && permissions.length != 0 && interaction.isFromGuild() && interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
+		if (permissions != null && permissions.length != 0 && interaction.isFromGuild() &&
+				interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
 			DIH4JDAEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
 			return false;
 		}
@@ -569,7 +575,8 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 		if (interaction.isFromGuild() && interaction.getGuild() != null && interaction.getMember() != null) {
 			Member member = interaction.getMember();
-			if (roleIds != null && roleIds.length != 0 && !member.getRoles().isEmpty() && member.getRoles().stream().noneMatch(r -> Arrays.asList(roleIds).contains(r.getIdLong()))) {
+			if (roleIds != null && roleIds.length != 0 && !member.getRoles().isEmpty() &&
+					member.getRoles().stream().noneMatch(r -> Arrays.asList(roleIds).contains(r.getIdLong()))) {
 				DIH4JDAEvent.fire(new InvalidRoleEvent(dih4jda, interaction, Set.of(roleIds)));
 				return false;
 			}
