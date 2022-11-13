@@ -103,7 +103,7 @@ public class DIH4JDABuilder {
 	 * By default, this also deletes unknown/unused commands. This behaviour can be disabled with {@link DIH4JDABuilder#disableUnknownCommandDeletion()}.
 	 *
 	 * @param enable a {@link Boolean} that is true if the {@link SmartQueue} should be enabled for global commands.
-	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
+	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
 	public @Nonnull DIH4JDABuilder setGlobalSmartQueue(boolean enable) {
 		config.setGlobalSmartQueue(enable);
