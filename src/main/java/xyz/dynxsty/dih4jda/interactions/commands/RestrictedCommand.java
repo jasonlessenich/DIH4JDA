@@ -99,9 +99,9 @@ public abstract class RestrictedCommand {
 	 * Allows to set a cooldown for this command.
 	 * The user has to wait the provided {@link Duration} until they can execute this command again.
 	 * If the user executes the command while they're on cooldown, the {@link xyz.dynxsty.dih4jda.events.CommandCooldownEvent}
-	 * is fired.
+	 * is fired.<br>
 	 *
-	 * <h2>Command Cooldowns DO NOT persist between sessions!</h2>
+	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
 	 *
 	 * @param commandCooldown The {@link Duration} the user has to wait between command executions.
 	 */
@@ -120,9 +120,9 @@ public abstract class RestrictedCommand {
 	}
 
 	/**
-	 * Manually applies a cooldown for the specified user id.
+	 * Manually applies a cooldown for the specified user id.<br>
 	 *
-	 * <h2>Command Cooldowns DO NOT persist between sessions!</h2>
+	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
 	 *
 	 * @param userId The targets' user id.
 	 * @param nextUse The {@link Instant} that marks the time the command can be used again.
@@ -146,9 +146,9 @@ public abstract class RestrictedCommand {
 	}
 
 	/**
-	 * Returns whether the command can be used by the specified user.
+	 * Returns whether the command can be used by the specified user.<br>
 	 *
-	 * <h2>Command Cooldowns DO NOT persist between sessions!</h2>
+	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
 	 *
 	 * @param userId The targets' user id.
 	 * @return Whether the command can be executed.

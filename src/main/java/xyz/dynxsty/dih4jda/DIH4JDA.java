@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * <h1>DIH4JDA</h1>
- * <h2>Creating a new {@link DIH4JDA} instance:</h2>
+ * <b>DIH4JDA:</b><br>
+ * <b>Creating a new {@link DIH4JDA} instance:</b>
  * <pre>{@code
  * DIH4JDA dih4JDA = DIH4JDABuilder
  *         .setJDA(jda) // Your JDA instance

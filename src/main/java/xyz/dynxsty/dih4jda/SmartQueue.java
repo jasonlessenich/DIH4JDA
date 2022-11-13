@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * <h1>Smart Queue</h1>
+ * <b>Smart Queue</b><br>
  * This Class handles all the SmartQueue functionality which can be disabled using
  * {@link DIH4JDABuilder#setGlobalSmartQueue(boolean)} and {@link DIH4JDABuilder#setGuildSmartQueue(boolean)}.
  * <br><br>

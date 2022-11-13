@@ -82,9 +82,9 @@ public interface DIH4JDAEventListener {
 
 	/**
 	 * An event that gets fired when the user, which invoked the command, is not yet able to use this command due to
-	 * a specified {@link RestrictedCommand#setCommandCooldown(Duration) Command Cooldown}
+	 * a specified {@link RestrictedCommand#setCommandCooldown(Duration) Command Cooldown}<br>
 	 *
-	 * <h2>Command Cooldowns DO NOT persist between sessions!</h2>
+	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
 	 *
 	 * @param event The {@link CommandCooldownEvent} that was fired.
 	 * @see RestrictedCommand#setCommandCooldown(Duration)
