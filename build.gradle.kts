@@ -12,15 +12,21 @@ java {
     targetCompatibility = JavaVersion.VERSION_11
 }
 
+fun getProjectProperty(name: String) = project.properties[name] as? String
+
 group = "xyz.dynxsty"
 val archivesBaseName = "dih4jda"
 version = "1.6.0-alpha.2"
 
 val javaVersion = JavaVersion.current()
-val isCI = System.getProperty("GIT_COMMIT") != null // jitpack
+var isCI: Boolean = System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GIT_COMMIT") != null
-        || System.getProperty("GITHUB_ACTIONS") != null // Github Actions
+        || System.getProperty("GITHUB_ACTIONS") != null // GitHub Actions
         || System.getenv("GITHUB_ACTIONS") != null
+
+if (getProjectProperty("manualCI") != null) {
+    isCI = getProjectProperty("manualCI").toBoolean();
+}
 
 repositories {
     mavenCentral()
@@ -87,8 +93,6 @@ build.apply {
     dependsOn(sourcesJar)
     dependsOn(javadocJar)
 }
-
-fun getProjectProperty(name: String) = project.properties[name] as? String
 
 ////////////////////////////////////////
 ////////////////////////////////////////
