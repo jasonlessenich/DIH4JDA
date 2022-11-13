@@ -35,7 +35,6 @@ import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.application.ApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
@@ -547,8 +546,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * If not, this will then fire the corresponding event using {@link DIH4JDAEvent#fire(DIH4JDAEvent)}
 	 *
 	 * @param interaction The {@link CommandInteraction}.
-	 * @param command The {@link RestrictedCommand} which contains the (possible) restrictions.
-	 * @param type The {@link RegistrationType} of the {@link BaseApplicationCommand}.
+	 * @param command     The {@link RestrictedCommand} which contains the (possible) restrictions.
+	 * @param type        The {@link RegistrationType} of the {@link BaseApplicationCommand}.
 	 * @return Whether the event was fired.
 	 * @since v1.5
 	 */
