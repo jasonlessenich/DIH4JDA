@@ -87,7 +87,7 @@ public class DIH4JDA extends ListenerAdapter {
 	/**
 	 * Constructs a new DIH4JDA instance
 	 *
-	 * @param config The instance's configuration.
+	 * @param config The instance's {@link DIH4JDAConfig configuration}.
 	 */
 	protected DIH4JDA(@Nonnull DIH4JDAConfig config) throws DIH4JDAException {
 		this.config = config;
