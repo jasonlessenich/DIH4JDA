@@ -88,7 +88,7 @@ public class DIH4JDABuilder {
 	 * Whether DIH4JDA should automatically register all interactions on each onReady event.
 	 * A manual registration of all interactions can be executed using {@link DIH4JDA#registerInteractions()}.
 	 *
-	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
+	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
 	public @Nonnull DIH4JDABuilder disableAutomaticCommandRegistration() {
 		config.setRegisterOnReady(false);
