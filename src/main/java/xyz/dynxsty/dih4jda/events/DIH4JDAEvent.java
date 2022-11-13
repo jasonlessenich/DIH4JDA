@@ -9,6 +9,8 @@ import java.lang.reflect.Method;
 
 /**
  * A generic event, which holds the events' name, the {@link DIH4JDA} instance and the {@link I follow-up interaction}.
+ *
+ * @param <I> The follow-up {@link Interaction}
  */
 public abstract class DIH4JDAEvent<I extends Interaction> {
 	private final String eventName;
@@ -25,6 +27,7 @@ public abstract class DIH4JDAEvent<I extends Interaction> {
 	 * Fires an event from the {@link DIH4JDAEventListener}.
 	 *
 	 * @param event The {@link DIH4JDAEvent} to fire.
+	 * @param <I> The follow-up {@link Interaction}
 	 * @since v1.5
 	 */
 	public static <I extends Interaction> void fire(@Nonnull DIH4JDAEvent<I> event) {
@@ -48,6 +51,8 @@ public abstract class DIH4JDAEvent<I extends Interaction> {
 	}
 
 	/**
+	 * The internal name of the event.
+	 *
 	 * @return The internal event name.
 	 */
 	public String getEventName() {
@@ -55,6 +60,8 @@ public abstract class DIH4JDAEvent<I extends Interaction> {
 	}
 
 	/**
+	 * The {@link DIH4JDA} instance that fired the event.
+	 *
 	 * @return The {@link DIH4JDA} instance.
 	 */
 	public DIH4JDA getDIH4JDA() {

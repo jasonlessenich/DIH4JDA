@@ -7,7 +7,6 @@ import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
 import javax.annotation.Nonnull;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An interface that contains the method that should be executed when a user interacts with a

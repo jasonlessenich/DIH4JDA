@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 /**
  * Model class which represents a single Context Command.
  *
+ * @param <E> the {@link GenericCommandInteractionEvent} event.
  * @see ContextCommand.User#execute
  * @see ContextCommand.Message#execute
  * @since v1.5
