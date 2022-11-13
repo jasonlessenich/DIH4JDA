@@ -61,7 +61,7 @@ public class DIH4JDABuilder {
 	 * Sets the types of logging that should be disabled.
 	 *
 	 * @param types All {@link DIH4JDALogger.Type}'s that should be disabled.
-	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
+	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
 	public @Nonnull DIH4JDABuilder disableLogging(@Nullable DIH4JDALogger.Type... types) {
 		DIH4JDALogger.Type[] blocked;
