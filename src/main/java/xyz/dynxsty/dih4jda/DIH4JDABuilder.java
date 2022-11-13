@@ -47,7 +47,7 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Sets the Executor that will be used to execute all commands  and events.
+	 * Allows to specify a custom {@link Executor} that will be used to execute all commands and events.
 	 *
 	 * @param executor The Executor.
 	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
