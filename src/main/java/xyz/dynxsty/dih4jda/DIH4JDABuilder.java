@@ -75,7 +75,8 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Disables stacktrace-printing for all raised exceptions that were not catched by an {@link DIH4JDAEventListener}.
+	 * Disables stacktrace-printing for all raised exceptions that were not caught by an
+	 * {@link xyz.dynxsty.dih4jda.events.DIH4JDAEventListener}.
 	 *
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
