@@ -152,7 +152,7 @@ public class DIH4JDA extends ListenerAdapter {
 	/**
 	 * Allows to register {@link DIH4JDAEventListener event listener} classes.
 	 *
-	 * @param classes the classes the implements {@link DIH4JDAEventListener}
+	 * @param classes Implementations of {@link DIH4JDAEventListener}.
 	 * @since v1.5
 	 */
 	public void addEventListener(@Nonnull Object... classes) {
