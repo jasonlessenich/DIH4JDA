@@ -69,6 +69,10 @@ val sourcesJar = task<Jar>("sourcesJar") {
     from("src/main/java")
 }
 
+/*
+To find all missing javadocs / all javadocs warnings execute this command:
+./gradlew javadocJar --warning-mode all --stacktrace
+ */
 javadoc.apply {
     isFailOnError = isCI
 
