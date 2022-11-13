@@ -49,8 +49,8 @@ public class DIH4JDABuilder {
 	/**
 	 * Allows to specify a custom {@link Executor} that will be used to execute all commands and events.
 	 *
-	 * @param executor The Executor.
-	 * @return the {@link DIH4JDABuilder} instance. Usefully for chaining methods.
+	 * @param executor The custom {@link Executor}.
+	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
 	public @Nonnull DIH4JDABuilder setExecutor(@Nonnull Executor executor) {
 		config.setExecutor(executor);
