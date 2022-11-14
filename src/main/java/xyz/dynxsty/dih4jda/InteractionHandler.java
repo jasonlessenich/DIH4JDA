@@ -376,7 +376,7 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets all {@link SubcommandGroupData} (including Subcommands) of a single {@link SlashCommand}.
+	 * Gets all {@link SubcommandGroupData} (including Subcommands) from a single {@link SlashCommand}.
 	 *
 	 * @param command The base command's instance.
 	 * @return All {@link SubcommandGroupData} stored in a List.
