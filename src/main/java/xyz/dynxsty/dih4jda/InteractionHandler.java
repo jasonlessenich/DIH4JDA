@@ -223,11 +223,13 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Creates guild commands from the given (Slash-) CommandData
+	 * Uses the provided {@link Set} of {@link SlashCommandData} and {@link CommandData ContextCommandData} 
+	 * and queues them, using the specified {@link Guild} instance.
+	 * This also checks for {@link BaseApplicationCommand#getQueueableGuilds queueable guilds} and skips them if needed.
 	 *
 	 * @param guild           The {@link Guild}.
-	 * @param slashCommands   A set of {@link SlashCommandData}.
-	 * @param contextCommands A set of {@link CommandData},
+	 * @param slashCommands   A {@link Set} of {@link SlashCommandData}.
+	 * @param contextCommands A {@link Set} of {@link CommandData},
 	 */
 	private void upsert(@Nonnull Guild guild, @Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands) {
 		StringBuilder commandNames = new StringBuilder();
