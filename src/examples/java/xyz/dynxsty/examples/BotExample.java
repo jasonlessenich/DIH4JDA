@@ -19,8 +19,7 @@ public class BotExample {
         DIH4JDA.setDefaultRegistrationType(RegistrationType.GUILD);
         DIH4JDA dih4JDA = DIH4JDABuilder
                 .setJDA(jda)
-                .setCommandPackages("xyz.dynxsty.examples.commands") //The package where all of your commands are
-                // located.
+                .setCommandPackages("xyz.dynxsty.examples.commands") //The package where all of your commands are located
                 .build();
 
         //Added the PollCommand class to handle buttons with an id of 1 or 2.
