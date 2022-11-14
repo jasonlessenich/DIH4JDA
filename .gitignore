@@ -2,4 +2,5 @@
 .gradle/
 .idea/
 build/
-src/test/java/com/dynxsty/bot
+src/test/java/xyz/dynxsty/bot
+gradle.properties
