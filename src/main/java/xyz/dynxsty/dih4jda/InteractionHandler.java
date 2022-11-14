@@ -93,7 +93,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private final DIH4JDAConfig config;
 	/**
-	 * An Index of all {@link SlashCommand}s.
+	 * An {@link Map} of all {@link SlashCommand}s with their {@link SlashCommandInteractionEvent#getFullCommandName name} as their key.
 	 *
 	 * @see InteractionHandler#findSlashCommands(String)
 	 */
