@@ -7,7 +7,7 @@ public class InvalidPackageException extends DIH4JDAException {
 	/**
 	 * Creates a new {@link InvalidPackageException}.
 	 *
-	 * @param message the message as a {@link String} you want to provide for the user-
+	 * @param message The exceptions' message.
 	 */
 	public InvalidPackageException(String message) {
 		super(message);
