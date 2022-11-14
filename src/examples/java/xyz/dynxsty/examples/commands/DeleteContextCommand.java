@@ -17,6 +17,6 @@ public class DeleteContextCommand extends ContextCommand.Message {
     public void execute(MessageContextInteractionEvent event) {
         long messageId = event.getTarget().getIdLong();
         event.getTarget().delete().queue();
-        event.replyFormat("Message with id `%s` deleted.", messageId).queue();
+        event.replyFormat("Deleted message with id `%s`", messageId).queue();
     }
 }
