@@ -101,7 +101,8 @@ javadoc.apply {
         if (javaVersion >= JavaVersion.VERSION_13) {
             opt.addBooleanOption("Xdoclint:all", true)
         } else {
-            opt.addBooleanOption("Xdoclint:all, -accessibility", true)
+            //Can be ignored because JavaDocs are generated using Java 17.
+            opt.addBooleanOption("Xdoclint:all,-missing,-accessibility", true)
         }
     }
 
