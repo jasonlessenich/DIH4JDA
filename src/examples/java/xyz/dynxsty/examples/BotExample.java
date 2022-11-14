@@ -22,10 +22,10 @@ public class BotExample {
                 .setCommandPackages("xyz.dynxsty.examples.commands") //The package where all of your commands are located
                 .build();
 
-        //Added the PollCommand class to handle buttons with an id of 1 or 2.
+        // Maps the PollCommand class to handle buttons with an id of 1 or 2.
         dih4JDA.addButtonMappings(IdMapping.of(new PollCommand(), "1", "2"));
 
-        //Adds the DIH4JDAListener class as an event listener.
+        // Adds the DIH4JDAListener class as an event listener.
         dih4JDA.addEventListener(new DIH4JDAListener());
     }
 }
