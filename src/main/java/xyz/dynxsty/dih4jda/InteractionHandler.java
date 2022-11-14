@@ -66,7 +66,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
- * The Handler class, that finds, registers and handles all Commands and other Interactions.
+ * Handler class, that finds, registers and handles all Application Commands and their components.
  *
  * @see DIH4JDABuilder#disableAutomaticCommandRegistration()
  * @see DIH4JDA#registerInteractions()
