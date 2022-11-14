@@ -3,7 +3,7 @@ package xyz.dynxsty.dih4jda.util;
 import javax.annotation.Nonnull;
 
 /**
- * Utility class that contains some useful methods regarding the IO.
+ * Utility class that contains some useful methods regarding IO.
  *
  * @since v1.6
  */

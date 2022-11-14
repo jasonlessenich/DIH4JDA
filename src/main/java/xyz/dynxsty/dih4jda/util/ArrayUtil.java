@@ -12,11 +12,11 @@ public class ArrayUtil {
     private ArrayUtil() {}
 
     /**
-     * Checks if the given search object is inside the given array.
+     * Checks if the specified object is inside the specifed array.
      *
-     * @param array the array to check.
-     * @param search the {@link Object} to search for.
-     * @return true if the object is inside the array, otherwise false.
+     * @param array The array to check.
+     * @param search The {@link Object} to search for.
+     * @return Whether the object is contained inside the array.
      */
     public static boolean contains(@Nonnull Object[] array, @Nonnull Object search) {
         for (Object obj : array) {
