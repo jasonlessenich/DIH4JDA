@@ -46,9 +46,9 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 	}
 
 	/**
-	 * Gets you all {@link SubcommandGroup} as an array.
+	 * Returns an array of all {@link SubcommandGroups}s this command contains.
 	 *
-	 * @return all {@link SubcommandGroup} as an array.
+	 * @return An {@link SubcommandGroup}-array.
 	 */
 	public final SubcommandGroup[] getSubcommandGroups() {
 		return subcommandGroups;
