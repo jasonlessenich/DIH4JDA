@@ -224,7 +224,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	@SafeVarargs
 	public final void addButtonMappings(IdMapping<ButtonHandler>... mappings) {
-		validateHandlers(mappings);
+		validateMappings(mappings);
 		buttonMappings = mappings;
 	}
 
@@ -254,7 +254,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	@SafeVarargs
 	public final void addStringSelectMenuMappings(IdMapping<StringSelectMenuHandler>... mappings) {
-		validateHandlers(mappings);
+		validateMappings(mappings);
 		stringSelectMenuMappings = mappings;
 	}
 
@@ -285,7 +285,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	@SafeVarargs
 	public final void addEntitySelectMenuMappings(IdMapping<EntitySelectMenuHandler>... mappings) {
-		validateHandlers(mappings);
+		validateMappings(mappings);
 		entitySelectMenuMappings = mappings;
 	}
 
@@ -315,7 +315,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	@SafeVarargs
 	public final void addModalMappings(IdMapping<ModalHandler>... mappings) {
-		validateHandlers(mappings);
+		validateMappings(mappings);
 		modalMappings = mappings;
 	}
 
@@ -336,7 +336,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @param <T> The mappings' type.
 	 */
 	@SafeVarargs
-	private <T> void validateHandlers(@Nonnull IdMapping<T>... mappings) {
+	private <T> void validateMappings(@Nonnull IdMapping<T>... mappings) {
 		for (IdMapping<T> mapping : mappings) {
 			if (mapping.getHandler() == null) {
 				throw new IllegalArgumentException("Handler may not be null!");
