@@ -10,7 +10,7 @@ import java.time.Duration;
  * An event that gets fired when the user, which invoked the command, is not yet able to use this command due to
  * a specified {@link RestrictedCommand#setCommandCooldown(Duration) Command Cooldown}
  *
- * <h2>Command Cooldowns DO NOT persist between sessions!</h2>
+ * <b>Command Cooldowns DO NOT persist between sessions!</b>
  *
  * @see RestrictedCommand#setCommandCooldown(Duration)
  */
