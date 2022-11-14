@@ -172,7 +172,7 @@ public class InteractionHandler extends ListenerAdapter {
 		// retrieve (and smartqueue) guild commands
 		Pair<Set<SlashCommand>, Set<ContextCommand<?>>> data = new Pair<>(getSlashCommands(), getContextCommandData());
 		for (Guild guild : config.getJDA().getGuilds()) {
-			guild.retrieveCommands().queue(existing -> {
+			guild.retrieveCommands(true).queue(existing -> {
 				Pair<Set<SlashCommand>, Set<ContextCommand<?>>> guildData = CommandUtils.filterByType(data, RegistrationType.GUILD);
 				existing.forEach(this::cacheCommand);
 				// check if smart queuing is enabled
@@ -187,7 +187,7 @@ public class InteractionHandler extends ListenerAdapter {
 					" Please make sure that the bot was invited with the application.commands scope!", guild.getName()));
 		}
 		// retrieve (and smartqueue) global commands
-		config.getJDA().retrieveCommands().queue(existing -> {
+		config.getJDA().retrieveCommands(true).queue(existing -> {
 			Pair<Set<SlashCommand>, Set<ContextCommand<?>>> globalData = CommandUtils.filterByType(data, RegistrationType.GLOBAL);
 			existing.forEach(this::cacheCommand);
 			// check if smart queuing is enabled
