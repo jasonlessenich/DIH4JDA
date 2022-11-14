@@ -20,5 +20,5 @@ public class DIH4JDAListener implements DIH4JDAEventListener {
                 "command again.\n You can try again in: <t:%s:R>", event.getCooldown().getNextUse().toEpochMilli()).queue();
     }
 
-    //add more events if you need to handle these events.
+    // add more events if you need to
 }

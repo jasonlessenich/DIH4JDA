@@ -12,12 +12,12 @@ public class SayCommand extends SlashCommand {
     public SayCommand() {
         setCommandData(Commands.slash("say", "Sends a message.")
                 .addOption(OptionType.STRING, "str", "What you want to send as a message.", true));
-        setRequiredPermissions(Permission.ADMINISTRATOR); //Only administrators can execute this command.
+        setRequiredPermissions(Permission.ADMINISTRATOR); // Only administrators can execute this command.
     }
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        //Sends the message you specified in the slash command.
+        // Sends the message you specified in the 'str' option
         event.reply(event.getOption("str", OptionMapping::getAsString)).setEphemeral(false).queue();
     }
 }

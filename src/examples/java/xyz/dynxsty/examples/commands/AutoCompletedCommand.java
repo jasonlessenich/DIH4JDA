@@ -16,13 +16,13 @@ import java.util.List;
 public class AutoCompletedCommand extends SlashCommand implements AutoCompletable {
 
     public AutoCompletedCommand() {
-        setCommandData(Commands.slash("auto-complete", "Auto completed command.")
+        setCommandData(Commands.slash("auto-complete", "Example for a command that uses auto-completion")
                 .addOption(OptionType.INTEGER, "number", "Choose a number!", true, true));
     }
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        event.replyFormat("You chose the number: %s", event.getOption("number", OptionMapping::getAsInt)).queue();
+        event.replyFormat("You chose number: %s", event.getOption("number", OptionMapping::getAsInt)).queue();
     }
 
     @Override

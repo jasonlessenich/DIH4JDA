@@ -9,7 +9,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 public class DeleteContextCommand extends ContextCommand.Message {
 
     public DeleteContextCommand() {
-        setCommandData(Commands.context(Command.Type.MESSAGE, "delete"));
+        setCommandData(Commands.message("delete"));
         setRequiredPermissions(Permission.MESSAGE_MANAGE);
     }
 
