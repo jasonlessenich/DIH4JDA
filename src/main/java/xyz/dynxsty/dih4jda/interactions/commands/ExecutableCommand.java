@@ -1,8 +1,8 @@
 package xyz.dynxsty.dih4jda.interactions.commands;
 
 /**
- * Represents a command that can be executed.
- * @param <E> the event to pass to the command.
+ * Represents an executable command.
+ * @param <E> The corresponding event.
  */
 public interface ExecutableCommand<E> {
 
