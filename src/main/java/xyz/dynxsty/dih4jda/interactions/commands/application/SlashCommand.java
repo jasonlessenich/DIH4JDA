@@ -55,9 +55,9 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 	}
 
 	/**
-	 * Sets all Subcommand Groups that belong to this "base" command.
+	 * Adds {@link SubcommandGroups}s to this {@link SlashCommand}.
 	 *
-	 * @param groups A map of the {@link SubcommandGroupData} and their corresponding {@link Subcommand}s.
+	 * @param groups Instances of the {@link SubcommandGroup} class.
 	 */
 	public final void addSubcommandGroups(@Nonnull SubcommandGroup... groups) {
 		for (SubcommandGroup group : groups) {
