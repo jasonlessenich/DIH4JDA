@@ -24,7 +24,7 @@ import java.util.Set;
  * <br><br>
  * <p>
  * This basically retrieves all existing commands and compares them with the local ones, thus, only queuing
- * "new" (commands, which yet do not exist) or edited commands , which reduces the amount of total command updates.
+ * "new" (commands, which yet do not exist) or edited commands, which reduces the amount of total command updates.
  *
  * </p>
  * <br>
