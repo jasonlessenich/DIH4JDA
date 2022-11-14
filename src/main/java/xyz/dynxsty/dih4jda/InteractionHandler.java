@@ -318,7 +318,7 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Searches for Base- or Subcommand which implement the {@link AutoCompletable} interface.
+	 * Searches for {@link SlashCommand}s or {@link SlashCommand.Subcommand}s which implement the {@link AutoCompletable} interface.
 	 *
 	 * @param command The base {@link SlashCommand}.
 	 * @param clazz   The command's class.
