@@ -8,8 +8,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 
 /**
- * Simple data class which represents the config of a single {@link DIH4JDA}
- * instance.
+ * Simple data class which represents {@link DIH4JDA}'s configuration.
  */
 public class DIH4JDAConfig {
     private JDA jda;
