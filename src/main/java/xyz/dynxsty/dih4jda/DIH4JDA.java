@@ -90,7 +90,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * It is <b>highly recommended</b> to use the {@link DIH4JDABuilder} instead.
      *
      * @param config The instance's {@link DIH4JDAConfig configuration}.
-	 * @throws {@link DIH4JDAException} if the given {@link DIH4JDAConfig} is invalid.
+	 * @throws DIH4JDAException if the given {@link DIH4JDAConfig} is invalid.
 	 */
 	public DIH4JDA(@Nonnull DIH4JDAConfig config) throws DIH4JDAException {
 		validateConfig(config);
