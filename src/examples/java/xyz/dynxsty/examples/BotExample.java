@@ -8,6 +8,7 @@ import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.components.IdMapping;
 import xyz.dynxsty.examples.commands.PollCommand;
+import xyz.dynxsty.examples.listeners.DIH4JDAListener;
 
 public class BotExample {
 
@@ -24,5 +25,8 @@ public class BotExample {
 
         //Added the PollCommand class to handle buttons with an id of 1 or 2.
         dih4JDA.addButtonMappings(IdMapping.of(new PollCommand(), "1", "2"));
+
+        //Adds the DIH4JDAListener class as an event listener.
+        dih4JDA.addEventListener(new DIH4JDAListener());
     }
 }
