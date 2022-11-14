@@ -25,7 +25,7 @@ import java.util.Set;
 
 /**
  * <p><b>Getting Started</b></p>
- * <p>
+ *
  * Creating a new DIH4JDA instance is fairly easy:
  *
  * <pre>{@code
@@ -33,11 +33,11 @@ import java.util.Set;
  *         .setJDA(jda) // Your JDA instance
  *         .build();
  * }</pre>
- * <p>
+ *
  * Now, you get to decide how you want your commands to be registered:
  *
  * <p><b>Manual Command Registration</b></p>
- * <p>
+ *
  * To manually register commands, use the following methods, <b>AFTER</b> you've <code>.build();</code> your DIH4JDA instance, like that:
  *
  * <pre>{@code
@@ -49,7 +49,7 @@ import java.util.Set;
  * }</pre>
  *
  * <p><b>Automatic Command Registration</b></p>
- * <p>
+ *
  * Alternatively, you can specify packages on the {@link DIH4JDABuilder} instance which will be scanned for all classes that extend one of the following classes:
  *
  * <ul>
@@ -64,7 +64,7 @@ import java.util.Set;
  *         .setCommandPackages("xyz.dynxsty.bot.commands") // OPTIONAL: The package(s) that contains all your commands
  *         .build();
  * }</pre>
- * <p>
+ *
  * Upon calling <code>.build();</code>, the bot will register all commands that are in the specified package(s).
  */
 public class DIH4JDA extends ListenerAdapter {
