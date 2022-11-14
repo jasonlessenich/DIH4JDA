@@ -34,7 +34,9 @@ public class PollCommand extends SlashCommand implements ButtonHandler {
     @Override
     public void handleButton(@NotNull ButtonInteractionEvent event, @NotNull Button button) {
         // Handles buttons that were previously mapped using DIH4JDA#addButtonMappings
-        if (button.getId().equals("button:1")) {
+        String[] id = ComponentIdBuilder.split(button.getId());
+        // Splits the buttons' id on the specified separator (in this case ':')
+        if (id[1].equals("1")) {
             event.reply("You voted for option 1!").queue();
         } else {
             event.reply("You voted for option 2!").queue();
