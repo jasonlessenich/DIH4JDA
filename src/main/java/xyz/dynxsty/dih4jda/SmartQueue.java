@@ -46,7 +46,7 @@ public class SmartQueue {
 	}
 
 	/**
-	 * Compares CommandData with already existing Commands, removed duplicates and, if enabled, deleted unknown commands.
+	 * Compares the specified {@link CommandData} with already existing Commands, removes duplicates and, if enabled, deletes unknown commands.
 	 *
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
