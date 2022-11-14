@@ -32,6 +32,14 @@ if (getProjectProperty("manualCI") != null) {
     isCI = getProjectProperty("manualCI").toBoolean()
 }
 
+configure<SourceSetContainer> {
+    register("examples") {
+        java.srcDir("src/examples/java")
+        compileClasspath += sourceSets["main"].output
+        runtimeClasspath += sourceSets["main"].output
+    }
+}
+
 repositories {
     mavenCentral()
     maven(url = "https://m2.dv8tion.net/releases")
@@ -46,6 +54,12 @@ dependencies {
 
     implementation("com.github.DV8FromTheWorld:JDA:7a4b84173a")
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+
+    //Sets the dependencies for the examples
+    configurations["examplesImplementation"].withDependencies {
+        addAll(configurations["implementation"].allDependencies)
+        addAll(configurations["compileOnly"].allDependencies)
+    }
 }
 
 val jar: Jar by tasks
