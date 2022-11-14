@@ -34,9 +34,9 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 	}
 
 	/**
-	 * Sets all Subcommands that belong to this "base" command.
+	 * Adds {@link Subcommand}s to this {@link SlashCommand}. 
 	 *
-	 * @param classes The classes (must extend {@link Subcommand}) which should be registered as subcommands.
+	 * @param classes Instances of the {@link Subcommand}s to add.
 	 */
 	public final void addSubcommands(Subcommand... classes) {
 		for (Subcommand subcommand : classes) {
