@@ -1,4 +1,4 @@
-package com.dynxsty.tests;
+package xyz.dynxsty.tests;
 
 import org.junit.jupiter.api.Test;
 import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
