@@ -19,7 +19,6 @@ public class DIH4JDAConfig {
     private boolean guildSmartQueue = true;
     private boolean deleteUnknownCommands = true;
     private boolean throwUnregisteredException = true;
-    //We have to find a better name for this boolean
     private boolean defaultPrintStacktrace = true;
     private Executor executor = ForkJoinPool.commonPool();
 
