@@ -210,11 +210,12 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Creates global commands from the given (Slash-) CommandData
+	 * Uses the provided {@link Set} of {@link SlashCommandData} and {@link CommandData ContextCommandData} 
+	 * and queues them globally, using the {@link JDA} instance.
 	 *
 	 * @param jda             The {@link JDA} instance.
-	 * @param slashCommand    A set of {@link SlashCommandData}.
-	 * @param contextCommands A set of {@link CommandData},
+	 * @param slashCommand    A {@link Set} of {@link SlashCommandData}.
+	 * @param contextCommands A {@link Set} of {@link CommandData},
 	 */
 	private void upsert(@Nonnull JDA jda, @Nonnull Set<SlashCommand> slashCommand, @Nonnull Set<ContextCommand<?>> contextCommands) {
 		slashCommand.forEach(data -> jda.upsertCommand(data.getCommandData()).queue(this::cacheCommand));
