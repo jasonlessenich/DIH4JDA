@@ -25,7 +25,7 @@ var isCI: Boolean = System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GITHUB_ACTIONS") != null
 
 /*
-Add the manualCI property to your gralde.properties
+Add the manualCI property to your gradle.properties
 Sets failOnError on the javadocJar tasks to your specified boolean.
 */
 if (getProjectProperty("manualCI") != null) {
