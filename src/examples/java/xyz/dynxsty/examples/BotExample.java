@@ -23,7 +23,7 @@ public class BotExample {
                 .build();
 
         // Maps the PollCommand class to handle buttons with an id of 1 or 2.
-        dih4JDA.addButtonMappings(IdMapping.of(new PollCommand(), "1", "2"));
+        dih4JDA.addButtonMappings(IdMapping.of(new PollCommand(), "button:1", "button:2"));
 
         // Adds the DIH4JDAListener class as an event listener.
         dih4JDA.addEventListener(new DIH4JDAListener());

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
+import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -25,7 +26,8 @@ public class PollCommand extends SlashCommand implements ButtonHandler {
     public void execute(SlashCommandInteractionEvent event) {
         // Creates a message with buttons.
         event.reply("Choose between these two options!")
-                .addActionRow(Button.primary("1", "Option 1"), Button.secondary("2", "Option 2"))
+                .addActionRow(Button.primary(ComponentIdBuilder.build("button", "1"), "Option 1"),
+                        Button.secondary(ComponentIdBuilder.build("button", "2"), "Option 2"))
                 .setEphemeral(false).queue();
     }
 
