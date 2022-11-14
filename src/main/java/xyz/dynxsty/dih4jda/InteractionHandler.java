@@ -124,7 +124,7 @@ public class InteractionHandler extends ListenerAdapter {
 	private final Map<String, AutoCompletable> autoCompleteIndex;
 
 	/**
-	 * Constructs a new {@link InteractionHandler} from the supplied commands package.
+	 * Constructs a new {@link InteractionHandler} from the supplied {@link DIH4JDA} instance}.
 	 *
 	 * @param dih4jda The {@link DIH4JDA} instance.
 	 */
