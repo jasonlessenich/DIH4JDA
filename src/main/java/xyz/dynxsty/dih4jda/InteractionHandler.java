@@ -89,7 +89,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private final DIH4JDA dih4jda;
 	/**
-	 * The instance's configuration;
+	 * The instance's {@link DIH4JDAConfig configuration}.
 	 */
 	private final DIH4JDAConfig config;
 	/**
