@@ -51,6 +51,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
     testImplementation("ch.qos.logback:logback-classic:1.4.4")
+    //needed for reasons...
+    testCompileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
     implementation("com.github.DV8FromTheWorld:JDA:7a4b84173a")
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")

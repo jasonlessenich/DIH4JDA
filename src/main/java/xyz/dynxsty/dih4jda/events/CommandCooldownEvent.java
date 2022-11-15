@@ -3,16 +3,17 @@ package xyz.dynxsty.dih4jda.events;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownType;
 
 import java.time.Duration;
 
 /**
  * An event that gets fired when the user, which invoked the command, is not yet able to use this command due to
- * a specified {@link RestrictedCommand#setCommandCooldown(Duration) Command Cooldown}
+ * a specified {@link RestrictedCommand#setCommandCooldown(Duration, CooldownType)}  Command Cooldown}
  *
  * <b>Command Cooldowns DO NOT persist between sessions!</b>
  *
- * @see RestrictedCommand#setCommandCooldown(Duration)
+ * @see RestrictedCommand#setCommandCooldown(Duration, CooldownType)
  */
 public class CommandCooldownEvent extends DIH4JDAEvent<CommandInteraction> {
 

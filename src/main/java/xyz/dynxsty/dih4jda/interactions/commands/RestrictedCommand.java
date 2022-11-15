@@ -2,6 +2,9 @@ package xyz.dynxsty.dih4jda.interactions.commands;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
+import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownType;
+import xyz.dynxsty.dih4jda.util.Pair;
 
 import javax.annotation.Nonnull;
 import java.time.Duration;
@@ -15,13 +18,14 @@ import java.util.Map;
  * @since v1.6
  */
 public abstract class RestrictedCommand {
-	private final Map<Long, Cooldown> COOLDOWN_CACHE = new HashMap<>();
+	private final Map<Pair<Long, Long>, Cooldown> COOLDOWN_CACHE = new HashMap<>();
 
 	private Long[] requiredGuilds = new Long[]{};
 	private Permission[] requiredPermissions = new Permission[]{};
 	private Long[] requiredUsers = new Long[]{};
 	private Long[] requiredRoles = new Long[]{};
 	private Duration commandCooldown = Duration.ZERO;
+	private CooldownType cooldownType = CooldownType.USER_GLOBAL;
 
 	/**
 	 * Creates a default instance.
@@ -110,30 +114,45 @@ public abstract class RestrictedCommand {
 	 *
 	 * @param commandCooldown The {@link Duration} the user has to wait between command executions.
 	 */
-	public void setCommandCooldown(Duration commandCooldown) {
+	public void setCommandCooldown(Duration commandCooldown, CooldownType type) {
 		this.commandCooldown = commandCooldown;
+		this.cooldownType = type;
 	}
 
 	/**
 	 * Returns the {@link Duration} the user has to wait between command executions.
 	 *
 	 * @return The {@link Duration}.
-	 * @see RestrictedCommand#setCommandCooldown(Duration)
+	 * @see RestrictedCommand#setCommandCooldown(Duration, CooldownType)
 	 */
-	public Duration getCommandCooldown() {
-		return commandCooldown;
+	@Nonnull
+	public Pair<Duration, CooldownType> getCommandCooldown() {
+		return new Pair<>(commandCooldown, cooldownType);
 	}
 
 	/**
 	 * Manually applies a cooldown for the specified user id.<br>
-	 *
 	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
 	 *
-	 * @param userId The targets' user id.
-	 * @param nextUse The {@link Instant} that marks the time the command can be used again.
+	 * @param userId The id of the user you want to apply the cooldown on.
 	 */
-	public void applyCooldown(long userId, Instant nextUse) {
-		COOLDOWN_CACHE.put(userId, new Cooldown(Instant.now(), nextUse));
+	public void applyCooldown(long userId, long guildId, @Nonnull Instant nextUse) {
+		COOLDOWN_CACHE.put(new Pair<>(userId, guildId), new Cooldown(Instant.now(), nextUse, CooldownType.USER_GUILD));
+	}
+
+	//Type: User / Global
+	public void applyCooldown(@Nonnull User user, @Nonnull Instant nextUse) {
+		applyCooldown(user.getIdLong(), 0, nextUse);
+	}
+
+	//Type: User / Guild
+	public void applyCooldown(@Nonnull User user, @Nonnull Guild guild, @Nonnull Instant nextUse) {
+		applyCooldown(user.getIdLong(), guild.getIdLong(), nextUse);
+	}
+
+	//Type: everyone / Guild
+	public void applyCooldown(@Nonnull Guild guild, @Nonnull Instant nextUse) {
+		applyCooldown(0, guild.getIdLong(), nextUse);
 	}
 
 	/**
@@ -144,9 +163,12 @@ public abstract class RestrictedCommand {
 	 * @param userId The targets' user id.
 	 * @return The {@link Instant} that marks the time the command can be used again.
 	 */
-	public Cooldown retrieveCooldown(long userId) {
-		Cooldown cooldown = COOLDOWN_CACHE.get(userId);
-		if (cooldown == null) return new Cooldown(Instant.EPOCH, Instant.EPOCH);
+	@Nonnull
+	public Cooldown retrieveCooldown(long userId, long guildId) {
+		Cooldown cooldown = COOLDOWN_CACHE.get(new Pair<>(userId, guildId));
+		if (cooldown == null) {
+			return new Cooldown(Instant.EPOCH, Instant.EPOCH, CooldownType.USER_GLOBAL);
+		}
 		return cooldown;
 	}
 
@@ -156,24 +178,36 @@ public abstract class RestrictedCommand {
 	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
 	 *
 	 * @param userId The targets' user id.
+	 * @param guildId The targets' guild id.
 	 * @return Whether the command can be executed.
 	 */
-	public boolean hasCooldown(long userId) {
-		return retrieveCooldown(userId).getNextUse().isAfter(Instant.now());
+	public boolean hasCooldown(long userId, long guildId) {
+		Cooldown cooldown;
+		if (COOLDOWN_CACHE.get(new Pair<>(userId, 0L)) != null) {
+			cooldown = COOLDOWN_CACHE.get(new Pair<>(userId, 0L));
+		} else if (COOLDOWN_CACHE.get(new Pair<>(0L, guildId)) != null) {
+			cooldown = COOLDOWN_CACHE.get(new Pair<>(0L, guildId));
+		} else {
+			cooldown = retrieveCooldown(userId, guildId);
+		}
+		return cooldown.getNextUse().isAfter(Instant.now());
 	}
 
 	/**
 	 * Model class which represents a single command cooldown.
-	 *
-	 * <h2>Command Cooldowns DO NOT persist between sessions!</h2>
+	 * <p>
+	 * <b>Command Cooldowns DO NOT persist between sessions!</b>
 	 */
 	public static class Cooldown {
+
 		private final Instant lastUse;
 		private final Instant nextUse;
+		private final CooldownType type;
 
-		protected Cooldown(Instant lastUse, Instant nextUse) {
+		public Cooldown(@Nonnull Instant lastUse, @Nonnull Instant nextUse, @Nonnull CooldownType type) {
 			this.lastUse = lastUse;
 			this.nextUse = nextUse;
+			this.type = type;
 		}
 
 		/**
@@ -181,6 +215,7 @@ public abstract class RestrictedCommand {
 		 *
 		 * @return The next {@link Instant time} the command may be used again.
 		 */
+		@Nonnull
 		public Instant getNextUse() {
 			return nextUse;
 		}
@@ -190,8 +225,14 @@ public abstract class RestrictedCommand {
 		 *
 		 * @return The last {@link Instant time} the command was used.
 		 */
+		@Nonnull
 		public Instant getLastUse() {
 			return lastUse;
+		}
+
+		@Nonnull
+		public CooldownType getType() {
+			return type;
 		}
 	}
 }

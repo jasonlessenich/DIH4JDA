@@ -37,6 +37,7 @@ import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
@@ -582,12 +583,20 @@ public class InteractionHandler extends ListenerAdapter {
 			}
 		}
 		// check if the command has enabled some sort of cooldown
-		if (command.getCommandCooldown() != Duration.ZERO) {
-			if (command.hasCooldown(userId)) {
-				DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, command.retrieveCooldown(userId)));
+		Pair<Duration, CooldownType> cooldownPair = command.getCommandCooldown();
+		if (cooldownPair.getFirst() != Duration.ZERO) {
+			long guildId = interaction.getGuild().getIdLong();
+			RestrictedCommand.Cooldown cooldown = command.retrieveCooldown(userId, guildId);
+			if (command.hasCooldown(userId, guildId)) {
+				DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, cooldown));
 				return false;
 			} else {
-				command.applyCooldown(userId, Instant.now().plus(command.getCommandCooldown()));
+				Instant nextUse = Instant.now().plus(cooldownPair.getFirst());
+				switch (cooldownPair.getSecond()) {
+					case USER_GLOBAL: command.applyCooldown(interaction.getUser(), nextUse); break;
+					case USER_GUILD: command.applyCooldown(interaction.getUser(), interaction.getGuild(), nextUse); break;
+					case GUILD: command.applyCooldown(interaction.getGuild(), nextUse); break;
+				}
 			}
 		}
 		return true;
