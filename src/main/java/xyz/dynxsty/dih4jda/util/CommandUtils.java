@@ -31,6 +31,7 @@ public class CommandUtils {
 	 * @since v1.6
 	 */
 	public static boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
+		//.toMap() function is necessary because the DataObject does not have a custom implementation of .equals()
 		return data.toMap().equals(other.toMap());
 	}
 
