@@ -43,8 +43,7 @@ public class ClasspathHelper {
 	 * a jar.
 	 *
 	 * @param name the path of the resource.
-	 * @return the formatted path or the same if the given path is already in the
-	 * right format.
+	 * @return the formatted path or the same if the given path is already in the right format.
 	 * @since v1.6
 	 */
 	private static @Nonnull String getResourceName(@Nonnull String name) {
