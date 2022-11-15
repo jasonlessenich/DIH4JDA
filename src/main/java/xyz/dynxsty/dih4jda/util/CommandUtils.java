@@ -43,7 +43,7 @@ public class CommandUtils {
 	 * @return Whether the given Command originates from the given CommandData.
 	 * @since v1.5
 	 */
-	public static boolean equals(@Nonnull Command command, Object data) {
+	public static boolean equals(@Nonnull Command command, @Nonnull Object data) {
 		if (command.getType() == Command.Type.SLASH) {
 			return CommandUtils.equals(((SlashCommandData) data).toData(), SlashCommandData.fromCommand(command).toData());
 		} else {
@@ -58,7 +58,8 @@ public class CommandUtils {
 	 * @return One combined string.
 	 * @since v1.4
 	 */
-	public static @Nonnull String buildCommandPath(String... args) {
+	@Nonnull
+	public static String buildCommandPath(@Nonnull String... args) {
 		return String.join(" ", args);
 	}
 
@@ -70,7 +71,8 @@ public class CommandUtils {
 	 * @return The formatted String.
 	 * @since v1.5
 	 */
-	public static @Nonnull String getNames(@Nonnull Set<ContextCommand<?>> command, @Nonnull Set<SlashCommand> slash) {
+	@Nonnull
+	public static String getNames(@Nonnull Set<ContextCommand<?>> command, @Nonnull Set<SlashCommand> slash) {
 		StringBuilder names = new StringBuilder();
 		command.forEach(c -> names.append(", ").append(c.getCommandData().getName()));
 		slash.forEach(c -> names.append(", /").append(c.getCommandData().getName()));
@@ -85,8 +87,9 @@ public class CommandUtils {
 	 * @return The modified {@link Pair}.
 	 * @since v1.5.2
 	 */
-	public static @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> filterByType(@Nonnull Pair<Set<SlashCommand>,
-			Set<ContextCommand<?>>> pair, RegistrationType type) {
+	@Nonnull
+	public static Pair<Set<SlashCommand>, Set<ContextCommand<?>>> filterByType(@Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> pair,
+																			   @Nonnull RegistrationType type) {
 		return new Pair<>(
 				pair.getFirst().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()),
 				pair.getSecond().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet())
@@ -99,7 +102,8 @@ public class CommandUtils {
 	 * @param command the {@link SlashCommand} you want the mention from.
 	 * @return the mention as a {@link String}.
 	 */
-	public static @Nullable String getAsMention(@Nonnull SlashCommand command) {
+	@Nullable
+	public static String getAsMention(@Nonnull SlashCommand command) {
 		Command entity = command.asCommand();
 		if (entity == null) {
 			return null;
@@ -113,7 +117,8 @@ public class CommandUtils {
 	 * @param command the {@link SlashCommand.Subcommand} you want the mention from.
 	 * @return the mention as a {@link String}.
 	 */
-	public static @Nullable String getAsMention(@Nonnull SlashCommand.Subcommand command) {
+	@Nullable
+	public static String getAsMention(@Nonnull SlashCommand.Subcommand command) {
 		Command.Subcommand entity = command.asSubcommand();
 		if (entity == null) {
 			return null;
