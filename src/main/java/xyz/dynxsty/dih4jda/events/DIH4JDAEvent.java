@@ -17,7 +17,7 @@ public abstract class DIH4JDAEvent<I extends Interaction> {
 	private final DIH4JDA dih4jda;
 	private final I interaction;
 
-	protected DIH4JDAEvent(@Nonnull String eventName, @Nonnull DIH4JDA dih4jda, I interaction) {
+	protected DIH4JDAEvent(@Nonnull String eventName, @Nonnull DIH4JDA dih4jda, @Nonnull I interaction) {
 		this.eventName = eventName;
 		this.dih4jda = dih4jda;
 		this.interaction = interaction;
@@ -55,6 +55,7 @@ public abstract class DIH4JDAEvent<I extends Interaction> {
 	 *
 	 * @return The internal event name.
 	 */
+	@Nonnull
 	public String getEventName() {
 		return eventName;
 	}
@@ -64,6 +65,7 @@ public abstract class DIH4JDAEvent<I extends Interaction> {
 	 *
 	 * @return The {@link DIH4JDA} instance.
 	 */
+	@Nonnull
 	public DIH4JDA getDIH4JDA() {
 		return dih4jda;
 	}
@@ -73,6 +75,7 @@ public abstract class DIH4JDAEvent<I extends Interaction> {
 	 *
 	 * @return The follow-up interaction of this event.
 	 */
+	@Nonnull
 	public I getInteraction() {
 		return interaction;
 	}

@@ -51,7 +51,8 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGlobal(@Nonnull List<Command> existing) {
+	@Nonnull
+	protected Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGlobal(@Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(existing, null);
 		}
@@ -65,7 +66,8 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
+	@Nonnull
+	protected Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(existing, guild);
 		}
@@ -80,15 +82,16 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */
-	private @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> removeDuplicates(@Nonnull final List<Command> existing, @Nullable Guild guild) {
+	@Nonnull
+	private Pair<Set<SlashCommand>, Set<ContextCommand<?>>> removeDuplicates(@Nonnull final List<Command> existing, @Nullable Guild guild) {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
 		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());
 		DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE, prefix + "Found %s existing command(s)", existing.size());
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
-			if (contextCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData(), global)) ||
-					slashCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData(), global))) {
+			if (contextCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData())) ||
+					slashCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData()))) {
 				// check for command in blacklisted guilds
 				if (!global) {
 					slashCommands.forEach(slash -> checkRequiredGuilds(guild, cmd, slash));
@@ -100,8 +103,8 @@ public class SmartQueue {
 			}
 			return false;
 		});
-		contextCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData(), global)));
-		slashCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData(), global)));
+		contextCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData())));
+		slashCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData())));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
 			commands.forEach(c -> checkUnknown(prefix, existing, c));
@@ -109,7 +112,7 @@ public class SmartQueue {
 		return new Pair<>(slashCommands, contextCommands);
 	}
 
-	private void checkUnknown(String prefix, @Nonnull final List<Command> existing, Command command) {
+	private void checkUnknown(@Nonnull String prefix, @Nonnull final List<Command> existing, @Nonnull Command command) {
 		if (existing.contains(command)) {
 			if (deleteUnknown) {
 				DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_DELETED_UNKNOWN, prefix + "Deleting unknown %s command: %s", command.getType(), command.getName());
@@ -121,7 +124,7 @@ public class SmartQueue {
 	}
 
 	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull BaseApplicationCommand<?, ? extends CommandData> app) {
-		if (CommandUtils.equals(cmd, app.getCommandData(), false) && app.getQueueableGuilds() != null &&
+		if (CommandUtils.equals(cmd, app.getCommandData()) && app.getQueueableGuilds() != null &&
 				app.getQueueableGuilds().length != 0 && !Arrays.asList(app.getQueueableGuilds()).contains(guild.getIdLong())
 		) {
 			DIH4JDALogger.info("Deleting /%s in non-queueable Guild: %s", cmd.getName(), guild.getName());

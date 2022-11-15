@@ -1,5 +1,7 @@
 package xyz.dynxsty.dih4jda.util;
 
+import javax.annotation.Nonnull;
+
 /**
  * A Pair of two elements.
  *
@@ -17,7 +19,7 @@ public class Pair<F, S> {
 	 * @param first the first {@link Object}.
 	 * @param second the second {@link Object}.
 	 */
-	public Pair(F first, S second) {
+	public Pair(@Nonnull F first, @Nonnull S second) {
 		this.first = first;
 		this.second = second;
 	}
@@ -27,6 +29,7 @@ public class Pair<F, S> {
 	 *
 	 * @return the first {@link Object}.
 	 */
+	@Nonnull
 	public F getFirst() {
 		return first;
 	}
@@ -36,6 +39,7 @@ public class Pair<F, S> {
 	 *
 	 * @return the second {@link Object}.
 	 */
+	@Nonnull
 	public S getSecond() {
 		return second;
 	}

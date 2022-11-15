@@ -5,6 +5,7 @@ import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownType;
 
+import javax.annotation.Nonnull;
 import java.time.Duration;
 
 /**
@@ -26,7 +27,8 @@ public class CommandCooldownEvent extends DIH4JDAEvent<CommandInteraction> {
 	 * @param interaction the {@link CommandInteraction}.
 	 * @param cooldown the {@link RestrictedCommand.Cooldown} the user has.
 	 */
-	public CommandCooldownEvent(DIH4JDA dih4jda, CommandInteraction interaction, RestrictedCommand.Cooldown cooldown) {
+	public CommandCooldownEvent(@Nonnull DIH4JDA dih4jda, @Nonnull CommandInteraction interaction,
+								@Nonnull RestrictedCommand.Cooldown cooldown) {
 		super("onCommandCooldown", dih4jda, interaction);
 		this.cooldown = cooldown;
 	}
@@ -36,6 +38,7 @@ public class CommandCooldownEvent extends DIH4JDAEvent<CommandInteraction> {
 	 *
 	 * @return the {@link RestrictedCommand.Cooldown} instance.
 	 */
+	@Nonnull
 	public RestrictedCommand.Cooldown getCooldown() {
 		return cooldown;
 	}

@@ -3,6 +3,8 @@ package xyz.dynxsty.dih4jda.interactions.commands.application;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * An extension of {@link ApplicationCommand} which contains a {@link RegistrationType} and {@link BaseApplicationCommand#queueableGuilds}.
  * This abstract class is meant for top-level commands, which can be queued either per-guild or globally.
@@ -18,14 +20,14 @@ public abstract class BaseApplicationCommand<E extends GenericCommandInteraction
     /**
      * Creates a default {@link BaseApplicationCommand}.
      */
-    public BaseApplicationCommand() {
-    }
+    public BaseApplicationCommand() {}
 
     /**
      * The {@link RegistrationType} the command got assigned.
      *
      * @return the {@link RegistrationType}.
      */
+    @Nonnull
     public final RegistrationType getRegistrationType() {
         return registrationType;
     }
@@ -35,7 +37,7 @@ public abstract class BaseApplicationCommand<E extends GenericCommandInteraction
      *
      * @param type the {@link RegistrationType} to set.
      */
-    public final void setRegistrationType(RegistrationType type) {
+    public final void setRegistrationType(@Nonnull RegistrationType type) {
         this.registrationType = type;
     }
 
@@ -45,7 +47,7 @@ public abstract class BaseApplicationCommand<E extends GenericCommandInteraction
 	 *
 	 * @param queueableGuilds The guild ids, as a {@link Long} array.
 	 */
-    public void setQueueableGuilds(Long... queueableGuilds) {
+    public void setQueueableGuilds(@Nonnull Long... queueableGuilds) {
         this.queueableGuilds = queueableGuilds;
     }
 
@@ -54,6 +56,7 @@ public abstract class BaseApplicationCommand<E extends GenericCommandInteraction
      *
      * @return the guild ids as an array of {@link Long}s.
      */
+    @Nonnull
     public Long[] getQueueableGuilds() {
         return queueableGuilds;
     }

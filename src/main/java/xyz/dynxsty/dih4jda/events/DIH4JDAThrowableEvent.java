@@ -14,7 +14,8 @@ public abstract class DIH4JDAThrowableEvent<I extends Interaction> extends DIH4J
 
 	private final Throwable throwable;
 
-	protected DIH4JDAThrowableEvent(@Nonnull String eventName, @Nonnull DIH4JDA dih4jda, @Nonnull I interaction, @Nonnull Throwable throwable) {
+	protected DIH4JDAThrowableEvent(@Nonnull String eventName, @Nonnull DIH4JDA dih4jda, @Nonnull I interaction,
+									@Nonnull Throwable throwable) {
 		super(eventName, dih4jda, interaction);
 		this.throwable = throwable;
 	}
@@ -24,6 +25,7 @@ public abstract class DIH4JDAThrowableEvent<I extends Interaction> extends DIH4J
 	 *
 	 * @return The {@link Throwable} that was thrown.
 	 */
+	@Nonnull
 	public Throwable getThrowable() {
 		return throwable;
 	}

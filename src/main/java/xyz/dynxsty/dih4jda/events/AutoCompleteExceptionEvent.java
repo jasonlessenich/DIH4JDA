@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.interactions.commands.CommandAutoCompleteInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 
+import javax.annotation.Nonnull;
+
 /**
  * An event that gets fired when an exception gets raised while handling an autocomplete interaction.
  *
@@ -20,7 +22,8 @@ public class AutoCompleteExceptionEvent extends DIH4JDAThrowableEvent<CommandAut
 	 * @param interaction the {@link CommandAutoCompleteInteraction}.
 	 * @param throwable the {@link Throwable} that was thrown.
 	 */
-	public AutoCompleteExceptionEvent(DIH4JDA dih4jda, CommandAutoCompleteInteraction interaction, Throwable throwable) {
+	public AutoCompleteExceptionEvent(@Nonnull DIH4JDA dih4jda, @Nonnull CommandAutoCompleteInteraction interaction,
+									  @Nonnull Throwable throwable) {
 		super("onAutoCompleteException", dih4jda, interaction, throwable);
 	}
 }

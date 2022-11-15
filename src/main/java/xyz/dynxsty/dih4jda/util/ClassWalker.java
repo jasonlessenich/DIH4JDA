@@ -48,7 +48,8 @@ public class ClassWalker {
 	 * @return An unmodifiable {@link Set} of classes inside the given package.
 	 * @since v1.6
 	 */
-	public @Nonnull Set<Class<?>> getAllClasses() throws DIH4JDAException {
+	@Nonnull
+	public Set<Class<?>> getAllClasses() throws DIH4JDAException {
 		try {
 			String packagePath = packageName.replace('.', '/');
 			ClassLoader classLoader = IoUtils.getClassLoaderForClass(ClassWalker.class);
@@ -102,7 +103,8 @@ public class ClassWalker {
 	 * @return the name plus the .class file extension.
 	 * @since v1.6
 	 */
-	private @Nonnull String mapFileToName(@Nonnull Path file) {
+	@Nonnull
+	private String mapFileToName(@Nonnull Path file) {
 		String path = file.toString().replace(file.getFileSystem().getSeparator(), ".");
 		return path.substring(path.indexOf(packageName), path.length() - ".class".length());
 	}
@@ -117,7 +119,8 @@ public class ClassWalker {
 	 * @since v1.6
 	 */
 	@SuppressWarnings("unchecked") //Is actually checked because we filter out the un-assignable classes.
-	public @Nonnull <T> Set<Class<? extends T>> getSubTypesOf(@Nonnull Class<T> type) throws DIH4JDAException {
+	@Nonnull
+	public <T> Set<Class<? extends T>> getSubTypesOf(@Nonnull Class<T> type) throws DIH4JDAException {
 		return getAllClasses()
 				.stream()
 				.filter(type::isAssignableFrom)
@@ -131,7 +134,7 @@ public class ClassWalker {
 	 * @since v1.6
 	 */
 	private static class UncheckedClassLoadException extends RuntimeException {
-		public UncheckedClassLoadException(Throwable cause) {
+		public UncheckedClassLoadException(@Nonnull Throwable cause) {
 			super(cause);
 		}
 	}

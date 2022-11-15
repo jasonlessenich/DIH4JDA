@@ -37,7 +37,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @param guilds        A {@link Long} array, containting the guild ids.
 	 */
-	public final void setRequiredGuilds(Long... guilds) {
+	public final void setRequiredGuilds(@Nonnull Long... guilds) {
 		requiredGuilds = guilds;
 	}
 
@@ -46,6 +46,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @return The {@link Long} array containing the guild ids.
 	 */
+	@Nonnull
 	public Long[] getRequiredGuilds() {
 		return requiredGuilds;
 	}
@@ -55,6 +56,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @return the {@link Permission}.
 	 */
+	@Nonnull
 	public final Permission[] getRequiredPermissions() {
 		return requiredPermissions;
 	}
@@ -73,6 +75,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @return The {@link Long} array containing the user ids.
 	 */
+	@Nonnull
 	public final Long[] getRequiredUsers() {
 		return requiredUsers;
 	}
@@ -91,6 +94,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @return The {@link Long} array containing the role ids.
 	 */
+	@Nonnull
 	public final Long[] getRequiredRoles() {
 		return requiredRoles;
 	}
@@ -114,7 +118,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @param commandCooldown The {@link Duration} the user has to wait between command executions.
 	 */
-	public void setCommandCooldown(Duration commandCooldown, CooldownType type) {
+	public void setCommandCooldown(@Nonnull Duration commandCooldown, @Nonnull CooldownType type) {
 		this.commandCooldown = commandCooldown;
 		this.cooldownType = type;
 	}
@@ -204,7 +208,7 @@ public abstract class RestrictedCommand {
 		private final Instant nextUse;
 		private final CooldownType type;
 
-		public Cooldown(@Nonnull Instant lastUse, @Nonnull Instant nextUse, @Nonnull CooldownType type) {
+		protected Cooldown(@Nonnull Instant lastUse, @Nonnull Instant nextUse, @Nonnull CooldownType type) {
 			this.lastUse = lastUse;
 			this.nextUse = nextUse;
 			this.type = type;

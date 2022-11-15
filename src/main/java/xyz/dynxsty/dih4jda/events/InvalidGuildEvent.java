@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
@@ -22,7 +23,8 @@ public class InvalidGuildEvent extends DIH4JDAEvent<CommandInteraction> {
 	 * @param interaction the {@link CommandInteraction}.
 	 * @param guildIds the guild ids that the {@link RestrictedCommand} could be executed on.
 	 */
-	public InvalidGuildEvent(DIH4JDA dih4jda, CommandInteraction interaction, Set<Long> guildIds) {
+	public InvalidGuildEvent(@Nonnull DIH4JDA dih4jda, @Nonnull CommandInteraction interaction,
+							 @Nonnull Set<Long> guildIds) {
 		super("onInvalidGuild", dih4jda, interaction);
 		this.guildIds = guildIds;
 	}
@@ -33,6 +35,7 @@ public class InvalidGuildEvent extends DIH4JDAEvent<CommandInteraction> {
 	 * @return An immutable {@link Set} of all "required" guilds for the executed command.
 	 * @see RestrictedCommand#setRequiredGuilds(Long...)
 	 */
+	@Nonnull
 	public Set<Long> getGuildIds() {
 		return guildIds;
 	}

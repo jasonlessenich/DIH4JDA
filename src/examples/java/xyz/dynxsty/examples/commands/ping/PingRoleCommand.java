@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
+import javax.annotation.Nonnull;
+
 public class PingRoleCommand extends SlashCommand.Subcommand {
 
     public PingRoleCommand() {
@@ -15,7 +17,7 @@ public class PingRoleCommand extends SlashCommand.Subcommand {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(@Nonnull SlashCommandInteractionEvent event) {
         Role role = event.getOption("role", OptionMapping::getAsRole);
         event.reply(role.getAsMention()).setEphemeral(false).queue();
     }

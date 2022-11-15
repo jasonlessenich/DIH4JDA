@@ -54,7 +54,7 @@ dependencies {
     //needed for reasons...
     testCompileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
-    implementation("com.github.DV8FromTheWorld:JDA:7a4b84173a")
+    implementation("com.github.DV8FromTheWorld:JDA:3e37938a3a")
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
     //Sets the dependencies for the examples

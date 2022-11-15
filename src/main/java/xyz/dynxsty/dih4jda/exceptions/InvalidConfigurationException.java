@@ -1,5 +1,7 @@
 package xyz.dynxsty.dih4jda.exceptions;
 
+import javax.annotation.Nonnull;
+
 /**
  * Exception that is thrown for an invalid configuration.
  */
@@ -9,7 +11,7 @@ public class InvalidConfigurationException extends DIH4JDAException {
 	 *
 	 * @param message The exceptions' message.
 	 */
-	public InvalidConfigurationException(String message) {
+	public InvalidConfigurationException(@Nonnull String message) {
 		super(message);
 	}
 }

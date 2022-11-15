@@ -232,7 +232,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashCommands   A {@link Set} of {@link SlashCommandData}.
 	 * @param contextCommands A {@link Set} of {@link CommandData},
 	 */
-	private void upsert(@Nonnull Guild guild, @Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands) {
+	private void upsert(@Nonnull Guild guild, @Nonnull Set<SlashCommand> slashCommands,
+						@Nonnull Set<ContextCommand<?>> contextCommands) {
 		StringBuilder commandNames = new StringBuilder();
 		slashCommands.forEach(data -> {
 			Long[] guildIds = data.getQueueableGuilds();
@@ -258,7 +259,7 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 	}
 
-	private void cacheCommand(Command command) {
+	private void cacheCommand(@Nonnull Command command) {
 		RETRIEVED_COMMANDS.put(command.getName(), command);
 	}
 
@@ -267,7 +268,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link SlashCommand}.
 	 */
-	private void findSlashCommands(String pkg) throws ReflectiveOperationException, DIH4JDAException {
+	private void findSlashCommands(@Nonnull String pkg) throws ReflectiveOperationException, DIH4JDAException {
 		ClassWalker classes = new ClassWalker(pkg);
 		Set<Class<? extends SlashCommand>> subTypes = classes.getSubTypesOf(SlashCommand.class);
 		for (Class<? extends SlashCommand> subType : subTypes) {
@@ -284,7 +285,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Loops through all classes found in the commands package that is a subclass of
 	 * {@link ContextCommand}.
 	 */
-	private void findContextCommands(String pkg) throws ReflectiveOperationException, DIH4JDAException {
+	private void findContextCommands(@Nonnull String pkg) throws ReflectiveOperationException, DIH4JDAException {
 		ClassWalker classes = new ClassWalker(pkg);
 		Set<Class<? extends ContextCommand>> subTypes = classes.getSubTypesOf(ContextCommand.class);
 		for (Class<? extends ContextCommand> subType : subTypes) {
@@ -300,7 +301,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Gets all Commands that were found in {@link InteractionHandler#findSlashCommands(String)} and adds
 	 * them to the {@link InteractionHandler#slashCommandIndex}.
 	 */
-	private @Nonnull Set<SlashCommand> getSlashCommands() {
+	@Nonnull
+	private Set<SlashCommand> getSlashCommands() {
 		Set<SlashCommand> commands = new HashSet<>();
 		for (SlashCommand command : this.slashCommands) {
 			if (command != null) {
@@ -355,7 +357,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param commandClass The base command's class.
 	 * @return The new {@link CommandListUpdateAction}.
 	 */
-	private @Nullable SlashCommandData getBaseCommandData(@Nonnull SlashCommand command, @Nonnull Class<? extends SlashCommand> commandClass) {
+	@Nullable
+	private SlashCommandData getBaseCommandData(@Nonnull SlashCommand command, @Nonnull Class<? extends SlashCommand> commandClass) {
 		// find component (and modal) handlers
 		if (command.getCommandData() == null) {
 			DIH4JDALogger.warn("Class %s is missing CommandData. It will be ignored.", commandClass.getName());
@@ -382,7 +385,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param command The base command's instance.
 	 * @return All {@link SubcommandGroupData} stored in a List.
 	 */
-	private @Nonnull Set<SubcommandGroupData> getSubcommandGroupData(@Nonnull SlashCommand command) {
+	@Nonnull
+	private Set<SubcommandGroupData> getSubcommandGroupData(@Nonnull SlashCommand command) {
 		Set<SubcommandGroupData> groupDataList = new HashSet<>();
 		for (SlashCommand.SubcommandGroup group : command.getSubcommandGroups()) {
 			if (group != null) {
@@ -410,7 +414,9 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param subGroupName The Subcommand Group's name. (if available)
 	 * @return The new {@link CommandListUpdateAction}.
 	 */
-	private @Nonnull Set<SubcommandData> getSubcommandData(@Nonnull SlashCommand command, @Nonnull SlashCommand.Subcommand[] subcommands, @Nullable String subGroupName) {
+	@Nonnull
+	private Set<SubcommandData> getSubcommandData(@Nonnull SlashCommand command, @Nonnull SlashCommand.Subcommand[] subcommands,
+												  @Nullable String subGroupName) {
 		Set<SubcommandData> subDataList = new HashSet<>();
 		for (SlashCommand.Subcommand subcommand : subcommands) {
 			if (subcommand != null) {
@@ -436,7 +442,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * Gets all Guild Context commands registered in {@link InteractionHandler#findContextCommands(String)} and
 	 * returns their {@link CommandData} as a List.
 	 */
-	private @Nonnull Set<ContextCommand<?>> getContextCommandData() {
+	@Nonnull
+	private Set<ContextCommand<?>> getContextCommandData() {
 		Set<ContextCommand<?>> commands = new HashSet<>();
 		for (ContextCommand<?> context : contextCommands) {
 			if (context != null) {
@@ -460,7 +467,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param commandClass The base context command's class.
 	 * @return The new {@link CommandListUpdateAction}.
 	 */
-	private @Nullable CommandData getContextCommandData(@Nonnull ContextCommand<?> command, @Nonnull Class<? extends ContextCommand> commandClass) {
+	@Nullable
+	private CommandData getContextCommandData(@Nonnull ContextCommand<?> command, @Nonnull Class<? extends ContextCommand> commandClass) {
 		CommandData data = command.getCommandData();
 		if (data == null) {
 			DIH4JDALogger.warn("Class %s is missing CommandData. It will be ignored.", commandClass.getName());
@@ -553,7 +561,8 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @return Whether the event was fired.
 	 * @since v1.5
 	 */
-	private boolean passesRequirements(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command, RegistrationType type) {
+	private boolean passesRequirements(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command,
+									   @Nonnull RegistrationType type) {
 		long userId = interaction.getUser().getIdLong();
 		Long[] guildIds = command.getRequiredGuilds();
 		Permission[] permissions = command.getRequiredPermissions();

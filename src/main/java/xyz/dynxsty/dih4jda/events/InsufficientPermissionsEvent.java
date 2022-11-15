@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
@@ -23,7 +24,8 @@ public class InsufficientPermissionsEvent extends DIH4JDAEvent<CommandInteractio
 	 * @param interaction the {@link CommandInteraction}.
 	 * @param permissions the {@link Permission} that was required.
 	 */
-	public InsufficientPermissionsEvent(DIH4JDA dih4jda, CommandInteraction interaction, Set<Permission> permissions) {
+	public InsufficientPermissionsEvent(@Nonnull DIH4JDA dih4jda, @Nonnull CommandInteraction interaction,
+										@Nonnull Set<Permission> permissions) {
 		super("onInsufficientPermissions", dih4jda, interaction);
 		this.permissions = permissions;
 	}
@@ -34,6 +36,7 @@ public class InsufficientPermissionsEvent extends DIH4JDAEvent<CommandInteractio
 	 * @return An immutable {@link Set} of all "required" permissions for the executed command.
 	 * @see RestrictedCommand#setRequiredPermissions(Permission...)
 	 */
+	@Nonnull
 	public Set<Permission> getPermissions() {
 		return permissions;
 	}
