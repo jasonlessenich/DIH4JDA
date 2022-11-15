@@ -603,7 +603,7 @@ public class InteractionHandler extends ListenerAdapter {
 		CompletableFuture.runAsync(() -> {
 			try {
 				handleSlashCommand(event);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
@@ -619,7 +619,7 @@ public class InteractionHandler extends ListenerAdapter {
 		CompletableFuture.runAsync(() -> {
 			try {
 				handleUserContextCommand(event);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
@@ -635,7 +635,7 @@ public class InteractionHandler extends ListenerAdapter {
 		CompletableFuture.runAsync(() -> {
 			try {
 				handleMessageContextCommand(event);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
@@ -654,7 +654,7 @@ public class InteractionHandler extends ListenerAdapter {
 				if (autoComplete != null) {
 					autoComplete.handleAutoComplete(event, event.getFocusedOption());
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				DIH4JDAEvent.fire(new AutoCompleteExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
@@ -679,7 +679,7 @@ public class InteractionHandler extends ListenerAdapter {
 				} else {
 					buttonOptional.get().handleButton(event, event.getButton());
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
@@ -704,7 +704,7 @@ public class InteractionHandler extends ListenerAdapter {
 				} else {
 					selectMenuOptional.get().handleStringSelectMenu(event, event.getValues());
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
@@ -724,7 +724,7 @@ public class InteractionHandler extends ListenerAdapter {
 				} else {
 					selectMenuOptional.get().handleEntitySelectMenu(event, event.getValues());
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
@@ -749,7 +749,7 @@ public class InteractionHandler extends ListenerAdapter {
 				} else {
 					modalOptional.get().handleModal(event, event.getValues());
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				DIH4JDAEvent.fire(new ModalExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
