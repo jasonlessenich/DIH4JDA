@@ -87,8 +87,8 @@ public class SmartQueue {
 		DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE, prefix + "Found %s existing command(s)", existing.size());
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
-			if (contextCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData(), global)) ||
-					slashCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData(), global))) {
+			if (contextCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData())) ||
+					slashCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData()))) {
 				// check for command in blacklisted guilds
 				if (!global) {
 					slashCommands.forEach(slash -> checkRequiredGuilds(guild, cmd, slash));
@@ -100,8 +100,8 @@ public class SmartQueue {
 			}
 			return false;
 		});
-		contextCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData(), global)));
-		slashCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData(), global)));
+		contextCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData())));
+		slashCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData())));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
 			commands.forEach(c -> checkUnknown(prefix, existing, c));
@@ -121,7 +121,7 @@ public class SmartQueue {
 	}
 
 	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull BaseApplicationCommand<?, ? extends CommandData> app) {
-		if (CommandUtils.equals(cmd, app.getCommandData(), false) && app.getQueueableGuilds() != null &&
+		if (CommandUtils.equals(cmd, app.getCommandData()) && app.getQueueableGuilds() != null &&
 				app.getQueueableGuilds().length != 0 && !Arrays.asList(app.getQueueableGuilds()).contains(guild.getIdLong())
 		) {
 			DIH4JDALogger.info("Deleting /%s in non-queueable Guild: %s", cmd.getName(), guild.getName());
