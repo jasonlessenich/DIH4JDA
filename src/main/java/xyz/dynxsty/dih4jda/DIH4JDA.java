@@ -121,7 +121,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param type The {@link RegistrationType}.
 	 */
-	public static void setDefaultRegistrationType(RegistrationType type) {
+	public static void setDefaultRegistrationType(@Nonnull RegistrationType type) {
 		DIH4JDA.defaultRegistrationType = type;
 	}
 
@@ -130,6 +130,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @return the {@link RegistrationType}.
 	 */
+	@Nonnull
 	public static RegistrationType getDefaultRegistrationType() {
 		return defaultRegistrationType;
 	}
@@ -149,7 +150,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @return The instance's {@link DIH4JDAConfig configuration}.
 	 */
-	public @Nonnull DIH4JDAConfig getConfig() {
+	@Nonnull
+	public DIH4JDAConfig getConfig() {
 		return config;
 	}
 
@@ -187,7 +189,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @return The {@link JDA} instance.
 	 */
-	public @Nonnull JDA getJDA() {
+	@Nonnull
+	public JDA getJDA() {
 		return config.getJDA();
 	}
 
@@ -196,7 +199,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param commands An array of commands to register.
 	 */
-	public void addSlashCommands(SlashCommand... commands) {
+	public void addSlashCommands(@Nonnull SlashCommand... commands) {
 		handler.slashCommands.addAll(List.of(commands));
 	}
 
@@ -205,7 +208,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @param commands An array of commands to register.
 	 */
-	public void addContextCommands(ContextCommand<?>... commands) {
+	public void addContextCommands(@Nonnull ContextCommand<?>... commands) {
 		handler.contextCommands.addAll(List.of(commands));
 	}
 
@@ -224,7 +227,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @param mappings All {@link ButtonHandler}, as an array of {@link IdMapping}.
 	 */
 	@SafeVarargs
-	public final void addButtonMappings(IdMapping<ButtonHandler>... mappings) {
+	public final void addButtonMappings(@Nonnull IdMapping<ButtonHandler>... mappings) {
 		validateMappings(mappings);
 		buttonMappings = mappings;
 	}
@@ -234,7 +237,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @return An {@link IdMapping} array which contains the never-null ids and handlers.
 	 */
-	public final @Nonnull IdMapping<ButtonHandler>[] getButtonMappings() {
+	@Nonnull
+	public final IdMapping<ButtonHandler>[] getButtonMappings() {
 		return buttonMappings;
 	}
 
@@ -254,7 +258,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @see DIH4JDA#addEntitySelectMenuMappings(IdMapping[])
 	 */
 	@SafeVarargs
-	public final void addStringSelectMenuMappings(IdMapping<StringSelectMenuHandler>... mappings) {
+	public final void addStringSelectMenuMappings(@Nonnull IdMapping<StringSelectMenuHandler>... mappings) {
 		validateMappings(mappings);
 		stringSelectMenuMappings = mappings;
 	}
@@ -265,7 +269,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @return An {@link IdMapping} array which contains the never-null ids and handlers.
 	 * @see DIH4JDA#addStringSelectMenuMappings(IdMapping[])
 	 */
-	public final @Nonnull IdMapping<StringSelectMenuHandler>[] getStringSelectMenuMappings() {
+	@Nonnull
+	public final IdMapping<StringSelectMenuHandler>[] getStringSelectMenuMappings() {
 		return stringSelectMenuMappings;
 	}
 
@@ -285,7 +290,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @see DIH4JDA#addStringSelectMenuMappings(IdMapping[])
 	 */
 	@SafeVarargs
-	public final void addEntitySelectMenuMappings(IdMapping<EntitySelectMenuHandler>... mappings) {
+	public final void addEntitySelectMenuMappings(@Nonnull IdMapping<EntitySelectMenuHandler>... mappings) {
 		validateMappings(mappings);
 		entitySelectMenuMappings = mappings;
 	}
@@ -296,7 +301,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @return An {@link IdMapping} array which contains the never-null ids and handlers.
 	 * @see DIH4JDA#addEntitySelectMenuMappings(IdMapping[])
 	 */
-	public final @Nonnull IdMapping<EntitySelectMenuHandler>[] getEntitySelectMenuMappings() {
+	@Nonnull
+	public final IdMapping<EntitySelectMenuHandler>[] getEntitySelectMenuMappings() {
 		return entitySelectMenuMappings;
 	}
 
@@ -315,7 +321,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @param mappings All {@link ModalHandler}, as an array of {@link IdMapping}.
 	 */
 	@SafeVarargs
-	public final void addModalMappings(IdMapping<ModalHandler>... mappings) {
+	public final void addModalMappings(@Nonnull IdMapping<ModalHandler>... mappings) {
 		validateMappings(mappings);
 		modalMappings = mappings;
 	}
@@ -325,7 +331,8 @@ public class DIH4JDA extends ListenerAdapter {
 	 *
 	 * @return An {@link IdMapping} array which contains the never-null ids and handlers.
 	 */
-	public final @Nonnull IdMapping<ModalHandler>[] getModalMappings() {
+	@Nonnull
+	public final IdMapping<ModalHandler>[] getModalMappings() {
 		return modalMappings;
 	}
 

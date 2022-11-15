@@ -31,7 +31,8 @@ public class DIH4JDABuilder {
 	 * @param instance The {@link JDA} instance.
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
-	public static @Nonnull DIH4JDABuilder setJDA(@Nonnull JDA instance) {
+	@Nonnull
+	public static DIH4JDABuilder setJDA(@Nonnull JDA instance) {
 		return new DIH4JDABuilder(instance);
 	}
 
@@ -41,7 +42,8 @@ public class DIH4JDABuilder {
 	 * @param pack The packages.
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
-	public @Nonnull DIH4JDABuilder setCommandPackages(@Nonnull String... pack) {
+	@Nonnull
+	public DIH4JDABuilder setCommandPackages(@Nonnull String... pack) {
 		config.setCommandPackages(pack);
 		return this;
 	}
@@ -52,7 +54,8 @@ public class DIH4JDABuilder {
 	 * @param executor The custom {@link Executor}.
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
-	public @Nonnull DIH4JDABuilder setExecutor(@Nonnull Executor executor) {
+	@Nonnull
+	public DIH4JDABuilder setExecutor(@Nonnull Executor executor) {
 		config.setExecutor(executor);
 		return this;
 	}
@@ -63,7 +66,8 @@ public class DIH4JDABuilder {
 	 * @param types All {@link DIH4JDALogger.Type}'s that should be disabled.
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
-	public @Nonnull DIH4JDABuilder disableLogging(@Nullable DIH4JDALogger.Type... types) {
+	@Nonnull
+	public DIH4JDABuilder disableLogging(@Nullable DIH4JDALogger.Type... types) {
 		DIH4JDALogger.Type[] blocked;
 		if (types == null || types.length < 1) {
 			blocked = DIH4JDALogger.Type.values();
@@ -80,7 +84,8 @@ public class DIH4JDABuilder {
 	 *
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
-	public @Nonnull DIH4JDABuilder disableStacktracePrinting() {
+	@Nonnull
+	public DIH4JDABuilder disableStacktracePrinting() {
 		config.setDefaultPrintStacktrace(false);
 		return this;
 	}
@@ -91,7 +96,8 @@ public class DIH4JDABuilder {
 	 *
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
-	public @Nonnull DIH4JDABuilder disableAutomaticCommandRegistration() {
+	@Nonnull
+	public DIH4JDABuilder disableAutomaticCommandRegistration() {
 		config.setRegisterOnReady(false);
 		return this;
 	}
@@ -106,7 +112,8 @@ public class DIH4JDABuilder {
 	 * @param enable a {@link Boolean} that is true if the {@link SmartQueue} should be enabled for global commands.
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
-	public @Nonnull DIH4JDABuilder setGlobalSmartQueue(boolean enable) {
+	@Nonnull
+	public DIH4JDABuilder setGlobalSmartQueue(boolean enable) {
 		config.setGlobalSmartQueue(enable);
 		return this;
 	}
@@ -120,7 +127,8 @@ public class DIH4JDABuilder {
 	 * @param enable a {@link Boolean} that is true if the {@link SmartQueue} should be enabled for guild commands.
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
-	public @Nonnull DIH4JDABuilder setGuildSmartQueue(boolean enable) {
+	@Nonnull
+	public DIH4JDABuilder setGuildSmartQueue(boolean enable) {
 		config.setGuildSmartQueue(enable);
 		return this;
 	}
@@ -130,7 +138,8 @@ public class DIH4JDABuilder {
 	 *
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
-	public @Nonnull DIH4JDABuilder disableUnknownCommandDeletion() {
+	@Nonnull
+	public DIH4JDABuilder disableUnknownCommandDeletion() {
 		config.setDeleteUnknownCommands(false);
 		return this;
 	}
@@ -141,7 +150,8 @@ public class DIH4JDABuilder {
 	 *
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
 	 */
-	public @Nonnull DIH4JDABuilder disableUnregisteredCommandException() {
+	@Nonnull
+	public DIH4JDABuilder disableUnregisteredCommandException() {
 		config.setThrowUnregisteredException(false);
 		return this;
 	}
@@ -152,7 +162,8 @@ public class DIH4JDABuilder {
 	 * @return The built, usable {@link DIH4JDA}
 	 * @throws DIH4JDAException If anything was wrong with your configuration.
 	 */
-	public @Nonnull DIH4JDA build() throws DIH4JDAException {
+	@Nonnull
+	public DIH4JDA build() throws DIH4JDAException {
 		if (Runtime.getRuntime().availableProcessors() == 1) {
 			DIH4JDALogger.warn("You are running DIH4JDA on a single core CPU. A special system property was set to disable asynchronous command execution.");
 			System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "1");
