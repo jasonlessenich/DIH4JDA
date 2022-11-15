@@ -37,34 +37,7 @@ public class CommandUtils {
 	 * @since v1.5
 	 */
 	public static boolean equals(@Nonnull SlashCommandData data, @Nonnull SlashCommandData command, boolean isGlobalCommand) {
-		if (data.getType() != command.getType()) {
-			return false;
-		}
-		if (!data.getName().equals(command.getName())) {
-			return false;
-		}
-		if (!data.getDescription().equals(command.getDescription())) {
-			return false;
-		}
-		if (isGlobalCommand && (data.isGuildOnly() != command.isGuildOnly())) {
-			return false;
-		}
-		if (!equals(data.getDefaultPermissions(), command.getDefaultPermissions())) {
-			return false;
-		}
-		if (!data.getOptions().stream().allMatch(o -> command.getOptions().stream().anyMatch(op -> equals(o, op)))) {
-			return false;
-		}
-		if (!data.getSubcommandGroups().stream().allMatch(o -> command.getSubcommandGroups().stream().anyMatch(op -> equals(o, op)))) {
-			return false;
-		}
-		if (!equals(data.getDescriptionLocalizations(), command.getDescriptionLocalizations())) {
-			return false;
-		}
-		if (!equals(data.getNameLocalizations(), command.getNameLocalizations())) {
-			return false;
-		}
-		return data.getSubcommands().stream().allMatch(o -> command.getSubcommands().stream().anyMatch(op -> equals(o, op)));
+		return data.toData().toMap().equals(command.toData().toMap());
 	}
 
 	/**
@@ -77,19 +50,7 @@ public class CommandUtils {
 	 * @since v1.5
 	 */
 	public static boolean equals(@Nonnull CommandData data, @Nonnull CommandData command, boolean isGlobalCommand) {
-		if (data.getType() != command.getType()) {
-			return false;
-		}
-		if (isGlobalCommand && (data.isGuildOnly() != command.isGuildOnly())) {
-			return false;
-		}
-		if (!equals(data.getDefaultPermissions(), command.getDefaultPermissions())) {
-			return false;
-		}
-		if (!equals(data.getNameLocalizations(), command.getNameLocalizations())) {
-			return false;
-		}
-		return data.getName().equals(command.getName());
+		return data.toData().toMap().equals(command.toData().toMap());
 	}
 
 	/**
@@ -125,19 +86,7 @@ public class CommandUtils {
 	 * @since v1.5
 	 */
 	public static boolean equals(@Nonnull SubcommandData data, @Nonnull SubcommandData subcommand) {
-		if (!data.getName().equals(subcommand.getName())) {
-			return false;
-		}
-		if (!data.getDescription().equals(subcommand.getDescription())) {
-			return false;
-		}
-		if (!equals(data.getDescriptionLocalizations(), subcommand.getDescriptionLocalizations())) {
-			return false;
-		}
-		if (!equals(data.getNameLocalizations(), subcommand.getNameLocalizations())) {
-			return false;
-		}
-		return data.getOptions().stream().allMatch(o -> subcommand.getOptions().stream().anyMatch(op -> equals(o, op)));
+		return data.toData().toMap().equals(subcommand.toData().toMap());
 	}
 
 	/**
@@ -149,19 +98,7 @@ public class CommandUtils {
 	 * @since v1.5
 	 */
 	public static boolean equals(@Nonnull SubcommandGroupData data, @Nonnull SubcommandGroupData group) {
-		if (!data.getName().equals(group.getName())) {
-			return false;
-		}
-		if (!data.getDescription().equals(group.getDescription())) {
-			return false;
-		}
-		if (!equals(data.getDescriptionLocalizations(), group.getDescriptionLocalizations())) {
-			return false;
-		}
-		if (!equals(data.getNameLocalizations(), group.getNameLocalizations())) {
-			return false;
-		}
-		return data.getSubcommands().stream().allMatch(o -> group.getSubcommands().stream().anyMatch(op -> equals(o, op)));
+		return data.toData().toMap().equals(group.toData().toMap());
 	}
 
 	/**
@@ -173,37 +110,7 @@ public class CommandUtils {
 	 * @since v1.5
 	 */
 	public static boolean equals(@Nonnull OptionData data, @Nonnull OptionData option) {
-		if (data.getType() != option.getType()) {
-			return false;
-		}
-		if (!data.getName().equals(option.getName())) {
-			return false;
-		}
-		if (!data.getDescription().equals(option.getDescription())) {
-			return false;
-		}
-		if (!data.getChoices().equals(option.getChoices())) {
-			return false;
-		}
-		if (!data.getChannelTypes().equals(option.getChannelTypes())) {
-			return false;
-		}
-		if (!Objects.equals(data.getMaxValue(), option.getMaxValue())) {
-			return false;
-		}
-		if (!Objects.equals(data.getMinValue(), option.getMinValue())) {
-			return false;
-		}
-		if (data.isAutoComplete() != option.isAutoComplete()) {
-			return false;
-		}
-		if (!equals(data.getDescriptionLocalizations(), option.getDescriptionLocalizations())) {
-			return false;
-		}
-		if (!equals(data.getNameLocalizations(), option.getNameLocalizations())) {
-			return false;
-		}
-		return data.isRequired() == option.isRequired();
+		return data.toData().toMap().equals(option.toData().toMap());
 	}
 
 	/**
