@@ -64,6 +64,9 @@ public class CommandUtils {
 		if (!equals(data.getNameLocalizations(), command.getNameLocalizations())) {
 			return false;
 		}
+		if (data.isNSFW() != command.isNSFW()) {
+			return false;
+		}
 		return data.getSubcommands().stream().allMatch(o -> command.getSubcommands().stream().anyMatch(op -> equals(o, op)));
 	}
 
@@ -87,6 +90,9 @@ public class CommandUtils {
 			return false;
 		}
 		if (!equals(data.getNameLocalizations(), command.getNameLocalizations())) {
+			return false;
+		}
+		if (data.isNSFW() != command.isNSFW()) {
 			return false;
 		}
 		return data.getName().equals(command.getName());
