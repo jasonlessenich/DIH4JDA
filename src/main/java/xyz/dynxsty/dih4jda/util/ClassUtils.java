@@ -1,5 +1,7 @@
 package xyz.dynxsty.dih4jda.util;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -22,7 +24,7 @@ public class ClassUtils {
 	 * @return Whether the base class is implementing the given class.
 	 * @since v1.4
 	 */
-	public static boolean doesImplement(Class<?> base, Class<?> implementation) {
+	public static boolean doesImplement(@Nonnull Class<?> base, @Nonnull Class<?> implementation) {
 		return implementation.isAssignableFrom(base);
 	}
 
@@ -34,8 +36,11 @@ public class ClassUtils {
 	 * @throws ReflectiveOperationException If an error occurs.
 	 * @since v1.5.3
 	 */
-	public static Object getInstance(Class<?> clazz) throws ReflectiveOperationException {
-		if (Modifier.isAbstract(clazz.getModifiers())) return null;
+	@Nullable
+	public static Object getInstance(@Nonnull Class<?> clazz) throws ReflectiveOperationException {
+		if (Modifier.isAbstract(clazz.getModifiers()))  {
+			return null;
+		}
 		for (Constructor<?> constructor : clazz.getConstructors()) {
 			List<Class<?>> params = Arrays.asList(constructor.getParameterTypes());
 			if (params.isEmpty()) {

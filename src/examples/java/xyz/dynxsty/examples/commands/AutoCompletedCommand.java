@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class AutoCompletedCommand extends SlashCommand implements AutoCompletable {
@@ -21,7 +22,7 @@ public class AutoCompletedCommand extends SlashCommand implements AutoCompletabl
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(@Nonnull SlashCommandInteractionEvent event) {
         event.replyFormat("You chose number: %s", event.getOption("number", OptionMapping::getAsInt)).queue();
     }
 

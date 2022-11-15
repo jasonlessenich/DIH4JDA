@@ -4,6 +4,8 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.event.Level;
 import xyz.dynxsty.dih4jda.util.ArrayUtil;
 
+import javax.annotation.Nonnull;
+
 /**
  * This handler's own Logging System.
  * <br> To disable certain {@link DIH4JDALogger.Type}s, simple use {@link DIH4JDABuilder#disableLogging(Type...)}.
@@ -18,7 +20,7 @@ public class DIH4JDALogger {
 	private static final org.slf4j.Logger log = JDALogger.getLog(DIH4JDALogger.class);
 	protected static Type[] blockedLogTypes = new Type[]{};
 
-	private static void log0(String msg, Type type, Level level) {
+	private static void log0(@Nonnull String msg, @Nonnull Type type, @Nonnull Level level) {
 		if (ArrayUtil.contains(blockedLogTypes, type)) return;
 		switch (level) {
 			case INFO:
@@ -39,43 +41,43 @@ public class DIH4JDALogger {
 		}
 	}
 
-	public static void info(Type type, String msg, Object... args) {
+	public static void info(@Nonnull Type type, @Nonnull String msg, @Nonnull Object... args) {
 		log0(String.format(msg, args), type, Level.INFO);
 	}
 
-	public static void info(String msg, Object... args) {
+	public static void info(@Nonnull String msg, @Nonnull Object... args) {
 		log0(String.format(msg, args), Type.INFO, Level.INFO);
 	}
 
-	public static void warn(Type type, String msg, Object... args) {
+	public static void warn(@Nonnull Type type, @Nonnull String msg, @Nonnull Object... args) {
 		log0(String.format(msg, args), type, Level.WARN);
 	}
 
-	public static void warn(String msg, Object... args) {
+	public static void warn(@Nonnull String msg, @Nonnull Object... args) {
 		log0(String.format(msg, args), Type.WARN, Level.WARN);
 	}
 
-	public static void error(Type type, String msg, Object... args) {
+	public static void error(@Nonnull Type type, @Nonnull String msg, @Nonnull Object... args) {
 		log0(String.format(msg, args), type, Level.ERROR);
 	}
 
-	public static void error(String msg, Object... args) {
+	public static void error(@Nonnull String msg, @Nonnull Object... args) {
 		log0(String.format(msg, args), Type.ERROR, Level.ERROR);
 	}
 
-	public static void debug(Type type, String msg, Object... args) {
+	public static void debug(@Nonnull Type type, @Nonnull String msg, @Nonnull Object... args) {
 		log0(String.format(msg, args), type, Level.DEBUG);
 	}
 
-	public static void debug(String msg, Object... args) {
+	public static void debug(@Nonnull String msg, @Nonnull Object... args) {
 		log0(String.format(msg, args), Type.DEBUG, Level.DEBUG);
 	}
 
-	public static void trace(Type type, String msg, Object... args) {
+	public static void trace(@Nonnull Type type, @Nonnull String msg, @Nonnull Object... args) {
 		log0(String.format(msg, args), type, Level.TRACE);
 	}
 
-	public static void trace(String msg, Object... args) {
+	public static void trace(@Nonnull String msg, @Nonnull Object... args) {
 		log0(String.format(msg, args), Type.TRACE, Level.TRACE);
 	}
 

@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
+import javax.annotation.Nonnull;
+
 public class PingUserSubCommand extends SlashCommand.Subcommand {
 
     public PingUserSubCommand() {
@@ -14,7 +16,7 @@ public class PingUserSubCommand extends SlashCommand.Subcommand {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(@Nonnull SlashCommandInteractionEvent event) {
         event.replyFormat("<@%s>", event.getOption("id", OptionMapping::getAsLong)).setEphemeral(false).queue();
     }
 }

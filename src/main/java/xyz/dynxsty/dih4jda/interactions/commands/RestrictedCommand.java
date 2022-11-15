@@ -33,7 +33,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @param guilds        A {@link Long} array, containting the guild ids.
 	 */
-	public final void setRequiredGuilds(Long... guilds) {
+	public final void setRequiredGuilds(@Nonnull Long... guilds) {
 		requiredGuilds = guilds;
 	}
 
@@ -42,6 +42,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @return The {@link Long} array containing the guild ids.
 	 */
+	@Nonnull
 	public Long[] getRequiredGuilds() {
 		return requiredGuilds;
 	}
@@ -51,6 +52,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @return the {@link Permission}.
 	 */
+	@Nonnull
 	public final Permission[] getRequiredPermissions() {
 		return requiredPermissions;
 	}
@@ -69,6 +71,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @return The {@link Long} array containing the user ids.
 	 */
+	@Nonnull
 	public final Long[] getRequiredUsers() {
 		return requiredUsers;
 	}
@@ -87,6 +90,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @return The {@link Long} array containing the role ids.
 	 */
+	@Nonnull
 	public final Long[] getRequiredRoles() {
 		return requiredRoles;
 	}
@@ -110,7 +114,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @param commandCooldown The {@link Duration} the user has to wait between command executions.
 	 */
-	public void setCommandCooldown(Duration commandCooldown) {
+	public void setCommandCooldown(@Nonnull Duration commandCooldown) {
 		this.commandCooldown = commandCooldown;
 	}
 
@@ -120,6 +124,7 @@ public abstract class RestrictedCommand {
 	 * @return The {@link Duration}.
 	 * @see RestrictedCommand#setCommandCooldown(Duration)
 	 */
+	@Nonnull
 	public Duration getCommandCooldown() {
 		return commandCooldown;
 	}
@@ -132,7 +137,7 @@ public abstract class RestrictedCommand {
 	 * @param userId The targets' user id.
 	 * @param nextUse The {@link Instant} that marks the time the command can be used again.
 	 */
-	public void applyCooldown(long userId, Instant nextUse) {
+	public void applyCooldown(long userId, @Nonnull Instant nextUse) {
 		COOLDOWN_CACHE.put(userId, new Cooldown(Instant.now(), nextUse));
 	}
 
@@ -144,6 +149,7 @@ public abstract class RestrictedCommand {
 	 * @param userId The targets' user id.
 	 * @return The {@link Instant} that marks the time the command can be used again.
 	 */
+	@Nonnull
 	public Cooldown retrieveCooldown(long userId) {
 		Cooldown cooldown = COOLDOWN_CACHE.get(userId);
 		if (cooldown == null) return new Cooldown(Instant.EPOCH, Instant.EPOCH);
@@ -171,7 +177,7 @@ public abstract class RestrictedCommand {
 		private final Instant lastUse;
 		private final Instant nextUse;
 
-		protected Cooldown(Instant lastUse, Instant nextUse) {
+		protected Cooldown(@Nonnull Instant lastUse, @Nonnull Instant nextUse) {
 			this.lastUse = lastUse;
 			this.nextUse = nextUse;
 		}
@@ -181,6 +187,7 @@ public abstract class RestrictedCommand {
 		 *
 		 * @return The next {@link Instant time} the command may be used again.
 		 */
+		@Nonnull
 		public Instant getNextUse() {
 			return nextUse;
 		}
@@ -190,6 +197,7 @@ public abstract class RestrictedCommand {
 		 *
 		 * @return The last {@link Instant time} the command was used.
 		 */
+		@Nonnull
 		public Instant getLastUse() {
 			return lastUse;
 		}

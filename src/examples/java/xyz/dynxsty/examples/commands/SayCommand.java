@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
+import javax.annotation.Nonnull;
+
 public class SayCommand extends SlashCommand {
 
     public SayCommand() {
@@ -16,7 +18,7 @@ public class SayCommand extends SlashCommand {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(@Nonnull SlashCommandInteractionEvent event) {
         // Sends the message you specified in the 'str' option
         event.reply(event.getOption("str", OptionMapping::getAsString)).setEphemeral(false).queue();
     }

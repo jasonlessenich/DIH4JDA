@@ -21,14 +21,14 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 	private Subcommand[] subcommands = new Subcommand[]{};
 	private SubcommandGroup[] subcommandGroups = new SubcommandGroup[]{};
 
-	protected SlashCommand() {
-	}
+	protected SlashCommand() {}
 
 	/**
 	 * Returns an array of all {@link Subcommand}s this command contains.
 	 *
 	 * @return An {@link Subcommand}-array.
 	 */
+	@Nonnull
 	public final Subcommand[] getSubcommands() {
 		return subcommands;
 	}
@@ -38,7 +38,7 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 	 *
 	 * @param classes Instances of the {@link Subcommand}s to add.
 	 */
-	public final void addSubcommands(Subcommand... classes) {
+	public final void addSubcommands(@Nonnull Subcommand... classes) {
 		for (Subcommand subcommand : classes) {
 			subcommand.parent = this;
 		}
@@ -50,6 +50,7 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 	 *
 	 * @return An {@link SubcommandGroup}-array.
 	 */
+	@Nonnull
 	public final SubcommandGroup[] getSubcommandGroups() {
 		return subcommandGroups;
 	}
@@ -69,7 +70,7 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 	}
 
 	@Override
-	public void execute(SlashCommandInteractionEvent event) {}
+	public void execute(@Nonnull SlashCommandInteractionEvent event) {}
 
 	/**
 	 * Gets the corresponding {@link Command JDA entity} for this command.
@@ -77,8 +78,11 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 	 *
 	 * @return The {@link Command} corresponding to this class.
 	 */
-	public @Nullable Command asCommand() {
-		if (getCommandData() == null) return null;
+	@Nullable
+	public Command asCommand() {
+		if (getCommandData() == null) {
+			return null;
+		}
 		return InteractionHandler.getRetrievedCommands().get(getCommandData().getName());
 	}
 
@@ -98,6 +102,7 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 		 *
 		 * @return The corresponding {@link SlashCommand}.
 		 */
+		@Nullable
 		public SlashCommand getParent() {
 			return parent;
 		}
@@ -108,7 +113,8 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 		 *
 		 * @return The {@link Command.Subcommand} corresponding to this class.
 		 */
-		public @Nullable Command.Subcommand asSubcommand() {
+		@Nullable
+		public Command.Subcommand asSubcommand() {
 			if (getCommandData() == null) return null;
 			Command cmd = parent.asCommand();
 			if (cmd == null) return null;
@@ -129,7 +135,7 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 		private final SubcommandGroupData data;
 		private final Subcommand[] subcommands;
 
-		private SubcommandGroup(SubcommandGroupData data, Subcommand... subcommands) {
+		private SubcommandGroup(@Nonnull SubcommandGroupData data, @Nonnull Subcommand... subcommands) {
 			this.data = data;
 			this.subcommands = subcommands;
 		}
@@ -142,9 +148,10 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 		 * @return The {@link SubcommandGroup}.
 		 */
 		@Nonnull
-		public static SubcommandGroup of(SubcommandGroupData data, Subcommand... subcommands) {
-			if (data == null) throw new IllegalArgumentException("SubcommandGroupData may not be null!");
-			if (subcommands == null || subcommands.length == 0) throw new IllegalArgumentException("Subcommands may not be empty!");
+		public static SubcommandGroup of(@Nonnull SubcommandGroupData data, @Nonnull Subcommand... subcommands) {
+			if (subcommands.length == 0) {
+				throw new IllegalArgumentException("Subcommands may not be empty!");
+			}
 			return new SubcommandGroup(data, subcommands);
 		}
 
@@ -153,6 +160,7 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 		 *
 		 * @return The corresponding {@link SubcommandGroupData}.
 		 */
+		@Nonnull
 		public SubcommandGroupData getData() {
 			return data;
 		}
@@ -162,6 +170,7 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 		 *
 		 * @return An array of {@link Subcommand}s.
 		 */
+		@Nonnull
 		public Subcommand[] getSubcommands() {
 			return subcommands;
 		}

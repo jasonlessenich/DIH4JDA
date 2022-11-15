@@ -16,7 +16,8 @@ public class IoUtils {
      * @return The {@link ClassLoader} for the given class or the context-classloader if
      * the {@link ClassLoader} was null.
      */
-    public static @Nonnull ClassLoader getClassLoaderForClass(@Nonnull Class<?> clazz) {
+    @Nonnull
+    public static ClassLoader getClassLoaderForClass(@Nonnull Class<?> clazz) {
         return clazz.getClassLoader() == null ? Thread.currentThread().getContextClassLoader() : clazz.getClassLoader();
     }
 }

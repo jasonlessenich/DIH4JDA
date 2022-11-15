@@ -51,7 +51,8 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGlobal(@Nonnull List<Command> existing) {
+	@Nonnull
+	protected Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGlobal(@Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(existing, null);
 		}
@@ -65,7 +66,8 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} and {@link CommandData}.
 	 * @since v1.5
 	 */
-	protected @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
+	@Nonnull
+	protected Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(existing, guild);
 		}
@@ -80,7 +82,8 @@ public class SmartQueue {
 	 * @return A {@link Pair} with the remaining {@link SlashCommandData} & {@link CommandData}.
 	 * @since v1.5
 	 */
-	private @Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> removeDuplicates(@Nonnull final List<Command> existing, @Nullable Guild guild) {
+	@Nonnull
+	private Pair<Set<SlashCommand>, Set<ContextCommand<?>>> removeDuplicates(@Nonnull final List<Command> existing, @Nullable Guild guild) {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
 		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());
@@ -109,7 +112,7 @@ public class SmartQueue {
 		return new Pair<>(slashCommands, contextCommands);
 	}
 
-	private void checkUnknown(String prefix, @Nonnull final List<Command> existing, Command command) {
+	private void checkUnknown(@Nonnull String prefix, @Nonnull final List<Command> existing, @Nonnull Command command) {
 		if (existing.contains(command)) {
 			if (deleteUnknown) {
 				DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_DELETED_UNKNOWN, prefix + "Deleting unknown %s command: %s", command.getType(), command.getName());

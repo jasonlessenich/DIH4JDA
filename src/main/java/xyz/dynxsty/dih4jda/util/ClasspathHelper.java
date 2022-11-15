@@ -23,7 +23,8 @@ public class ClasspathHelper {
 	 * @return A {@link Collection} of {@link URL}s, based on the given package name.
 	 * @since v1.6
 	 */
-	public static @Nonnull Collection<URL> forPackage(@Nonnull String packageName) {
+	@Nonnull
+	public static Collection<URL> forPackage(@Nonnull String packageName) {
 		List<URL> results = new ArrayList<>();
 		ClassLoader loader = IoUtils.getClassLoaderForClass(ClasspathHelper.class);
 
@@ -46,7 +47,8 @@ public class ClasspathHelper {
 	 * @return the formatted path or the same if the given path is already in the right format.
 	 * @since v1.6
 	 */
-	private static @Nonnull String getResourceName(@Nonnull String name) {
+	@Nonnull
+	private static String getResourceName(@Nonnull String name) {
 		String resource = name.replace(".", "/")
 				.replace("\\", "/");
 		if (resource.startsWith("/")) {
