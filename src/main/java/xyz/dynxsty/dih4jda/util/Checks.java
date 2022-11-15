@@ -22,7 +22,7 @@ public class Checks {
 	 * @return Whether the base class is implementing the given class.
 	 * @since v1.4
 	 */
-	public static boolean checkImplementation(Class<?> base, Class<?> implementation) {
+	public static boolean checkImplementation(@Nonnull Class<?> base, @Nonnull Class<?> implementation) {
 		return ClassUtils.doesImplement(base, implementation);
 	}
 

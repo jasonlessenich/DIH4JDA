@@ -10,6 +10,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
+import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -23,7 +24,7 @@ public class PollCommand extends SlashCommand implements ButtonHandler {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(@Nonnull SlashCommandInteractionEvent event) {
         // Creates a message with buttons.
         event.reply("Choose between these two options!")
                 .addActionRow(Button.primary(ComponentIdBuilder.build("button", "1"), "Option 1"),

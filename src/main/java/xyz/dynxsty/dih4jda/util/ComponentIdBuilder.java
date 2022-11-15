@@ -1,5 +1,7 @@
 package xyz.dynxsty.dih4jda.util;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -20,7 +22,7 @@ public class ComponentIdBuilder {
 	 * @param separator The string that should act as the separator.
 	 * @since v1.4
 	 */
-	public static void setDefaultSeparator(String separator) {
+	public static void setDefaultSeparator(@Nonnull String separator) {
 		ComponentIdBuilder.separator = separator;
 	}
 
@@ -30,6 +32,7 @@ public class ComponentIdBuilder {
 	 * @return The separator.
 	 * @since v1.4
 	 */
+	@Nonnull
 	public static String getSeparator() {
 		return separator;
 	}
@@ -45,7 +48,8 @@ public class ComponentIdBuilder {
 	 * @return The built component-id, as a {@link String}.
 	 * @since v1.4
 	 */
-	public static String build(String identifier, Object... args) {
+	@Nonnull
+	public static String build(@Nonnull String identifier, @Nonnull Object... args) {
 		StringBuilder sb = new StringBuilder(identifier);
 		if (args.length > 0) {
 			sb.append(separator).append(Arrays.stream(args).map(Object::toString).collect(Collectors.joining(separator)));
@@ -60,7 +64,8 @@ public class ComponentIdBuilder {
 	 * @return The split String as an array.
 	 * @since v1.4
 	 */
-	public static String[] split(String id) {
+	@Nonnull
+	public static String[] split(@Nonnull String id) {
 		return id.split(separator);
 	}
 }

@@ -6,6 +6,8 @@ import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
+import javax.annotation.Nonnull;
+
 /**
  * An event that gets fired when an exception gets raised while executing any command.
  *
@@ -22,7 +24,8 @@ public class CommandExceptionEvent extends DIH4JDAThrowableEvent<CommandInteract
 	 * @param interaction the {@link CommandInteraction}.
 	 * @param throwable the {@link Throwable} that was thrown.
 	 */
-	public CommandExceptionEvent(DIH4JDA dih4jda, CommandInteraction interaction, Throwable throwable) {
+	public CommandExceptionEvent(@Nonnull DIH4JDA dih4jda, @Nonnull CommandInteraction interaction,
+								 @Nonnull Throwable throwable) {
 		super("onCommandException", dih4jda, interaction, throwable);
 	}
 }

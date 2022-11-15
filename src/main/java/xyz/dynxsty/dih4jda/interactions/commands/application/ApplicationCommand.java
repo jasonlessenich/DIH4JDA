@@ -4,6 +4,9 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 import xyz.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Model class for all <a href="https://discord.com/developers/docs/interactions/application-commands">Application Commands</a>.
  * For top-level commands, see {@link BaseApplicationCommand} which features an additional {@link RegistrationType}.
@@ -24,7 +27,7 @@ public abstract class ApplicationCommand<E extends GenericCommandInteractionEven
 	 *
 	 * @param data The {@link E CommandData} which should be used for this application command.
 	 */
-	public final void setCommandData(T data) {
+	public final void setCommandData(@Nonnull T data) {
 		this.data = data;
 	}
 
@@ -33,6 +36,7 @@ public abstract class ApplicationCommand<E extends GenericCommandInteractionEven
 	 *
 	 * @return the command data object.
 	 */
+	@Nullable
 	public final T getCommandData() {
 		return data;
 	}

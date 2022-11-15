@@ -1,5 +1,7 @@
 package xyz.dynxsty.dih4jda.exceptions;
 
+import javax.annotation.Nonnull;
+
 /**
  * Exception that is thrown for everything that is related to reflection inside DIH4JDA.
  */
@@ -9,7 +11,7 @@ public class DIH4JDAReflectionException extends DIH4JDAException {
      *
      * @param cause the {@link Throwable} that causes this exception.
      */
-    public DIH4JDAReflectionException(Throwable cause) {
+    public DIH4JDAReflectionException(@Nonnull Throwable cause) {
         super(cause);
     }
 }

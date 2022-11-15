@@ -27,7 +27,9 @@ public class AutoCompleteUtils {
 	 * @return The filtered {@link List} of {@link Command.Choice}s.
 	 * @since v1.4
 	 */
-	public static @Nonnull List<Command.Choice> filterChoices(@Nonnull CommandAutoCompleteInteractionEvent event, List<Command.Choice> choices) {
+	@Nonnull
+	public static List<Command.Choice> filterChoices(@Nonnull CommandAutoCompleteInteractionEvent event,
+															  @Nonnull List<Command.Choice> choices) {
 		return filterChoices(event.getFocusedOption().getValue().toLowerCase(), choices);
 	}
 
@@ -43,7 +45,9 @@ public class AutoCompleteUtils {
 	 * @return The filtered {@link List} of {@link Command.Choice}s.
 	 * @since v1.4
 	 */
-	public static @Nonnull List<Command.Choice> filterChoices(@Nonnull CommandAutoCompleteInteractionEvent event, Command.Choice... choices) {
+	@Nonnull
+	public static List<Command.Choice> filterChoices(@Nonnull CommandAutoCompleteInteractionEvent event,
+															 @Nonnull Command.Choice... choices) {
 		return filterChoices(event.getFocusedOption().getValue().toLowerCase(), Arrays.asList(choices));
 	}
 
@@ -59,7 +63,8 @@ public class AutoCompleteUtils {
 	 * @return The filtered {@link List} of {@link Command.Choice}s.
 	 * @since v1.4
 	 */
-	public static @Nonnull List<Command.Choice> filterChoices(String filter, @Nonnull List<Command.Choice> choices) {
+	@Nonnull
+	public static List<Command.Choice> filterChoices(@Nonnull String filter, @Nonnull List<Command.Choice> choices) {
 		choices.removeIf(choice -> !choice.getName().toLowerCase().contains(filter.toLowerCase()));
 		return choices;
 	}
@@ -76,7 +81,8 @@ public class AutoCompleteUtils {
 	 * @return The filtered {@link List} of {@link Command.Choice}s.
 	 * @since v1.4
 	 */
-	public static @Nonnull List<Command.Choice> filterChoices(String filter, Command.Choice... choices) {
+	@Nonnull
+	public static List<Command.Choice> filterChoices(@Nonnull String filter, @Nonnull Command.Choice... choices) {
 		return filterChoices(filter, Arrays.asList(choices));
 	}
 }

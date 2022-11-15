@@ -12,7 +12,7 @@ public class IdMapping<T> {
 	private final T handler;
 	private final String[] ids;
 
-	private IdMapping(T handler, String... ids) {
+	private IdMapping(@Nonnull T handler, @Nonnull String... ids) {
 		this.handler = handler;
 		this.ids = ids;
 	}
@@ -26,7 +26,7 @@ public class IdMapping<T> {
 	 * @param <T> The {@link IdMapping}s type.
 	 */
 	@Nonnull
-	public static <T> IdMapping<T> of(T handler, String... ids) {
+	public static <T> IdMapping<T> of(@Nonnull T handler, @Nonnull String... ids) {
 		return new IdMapping<>(handler, ids);
 	}
 
@@ -35,6 +35,7 @@ public class IdMapping<T> {
 	 *
 	 * @return the ids as an {@link String} array.
 	 */
+	@Nonnull
 	public String[] getIds() {
 		return ids;
 	}
@@ -44,6 +45,7 @@ public class IdMapping<T> {
 	 *
 	 * @return the handler instance.
 	 */
+	@Nonnull
 	public T getHandler() {
 		return handler;
 	}

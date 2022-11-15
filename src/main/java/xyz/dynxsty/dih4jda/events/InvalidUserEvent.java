@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 
+import javax.annotation.Nonnull;
 import java.util.Set;
 
 /**
@@ -22,7 +23,8 @@ public class InvalidUserEvent extends DIH4JDAEvent<CommandInteraction> {
 	 * @param interaction the {@link CommandInteraction}.
 	 * @param userIds the user ids that was allowed to execute {@link RestrictedCommand}.
 	 */
-	public InvalidUserEvent(DIH4JDA dih4jda, CommandInteraction interaction, Set<Long> userIds) {
+	public InvalidUserEvent(@Nonnull DIH4JDA dih4jda, @Nonnull CommandInteraction interaction,
+							@Nonnull Set<Long> userIds) {
 		super("onInvalidUser", dih4jda, interaction);
 		this.userIds = userIds;
 	}
@@ -33,6 +35,7 @@ public class InvalidUserEvent extends DIH4JDAEvent<CommandInteraction> {
 	 * @return An immutable {@link Set} of all "required" users for the executed command.
 	 * @see RestrictedCommand#setRequiredUsers(Long...)
 	 */
+	@Nonnull
 	public Set<Long> getUserIds() {
 		return userIds;
 	}

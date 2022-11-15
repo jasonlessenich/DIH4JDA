@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.interactions.DiscordLocale;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
+import javax.annotation.Nonnull;
+
 public class LocalizedCommand extends SlashCommand {
 
     public LocalizedCommand() {
@@ -14,7 +16,7 @@ public class LocalizedCommand extends SlashCommand {
     }
 
     @Override
-    public void execute(SlashCommandInteractionEvent event) {
+    public void execute(@Nonnull SlashCommandInteractionEvent event) {
         event.reply("ENGLISH!").queue();
     }
 }

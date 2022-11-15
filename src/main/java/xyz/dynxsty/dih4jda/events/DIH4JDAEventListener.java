@@ -9,6 +9,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
+import javax.annotation.Nonnull;
 import java.time.Duration;
 
 /**
@@ -25,14 +26,14 @@ public interface DIH4JDAEventListener {
 	 * @see ContextCommand.User#execute(Object)
 	 * @see ContextCommand.Message#execute(Object)
 	 */
-	default void onCommandException(CommandExceptionEvent event) {}
+	default void onCommandException(@Nonnull CommandExceptionEvent event) {}
 
 	/**
 	 * An event that gets fired when an exception gets raised while interacting with a message component.
 	 *
 	 * @param event The {@link ComponentExceptionEvent} that was fired.
 	 */
-	default void onComponentException(ComponentExceptionEvent event) {}
+	default void onComponentException(@Nonnull ComponentExceptionEvent event) {}
 
 	/**
 	 * An event that gets fired when an exception gets raised while handling an autocomplete interaction.
@@ -40,14 +41,14 @@ public interface DIH4JDAEventListener {
 	 * @param event The {@link AutoCompleteExceptionEvent} that was fired.
 	 * @see AutoCompletable#handleAutoComplete(CommandAutoCompleteInteractionEvent, AutoCompleteQuery)
 	 */
-	default void onAutoCompleteException(AutoCompleteExceptionEvent event) {}
+	default void onAutoCompleteException(@Nonnull AutoCompleteExceptionEvent event) {}
 
 	/**
 	 * An event that gets fired when an exception gets raised while handling a modal interaction.
 	 *
 	 * @param event The {@link ModalExceptionEvent} that was fired.
 	 */
-	default void onModalException(ModalExceptionEvent event) {}
+	default void onModalException(@Nonnull ModalExceptionEvent event) {}
 
 	/**
 	 * An event that gets fired when the user, which invoked the command, does NOT have one of the required permissions.
@@ -55,7 +56,7 @@ public interface DIH4JDAEventListener {
 	 * @param event The {@link InsufficientPermissionsEvent} that was fired.
 	 * @see RestrictedCommand#setRequiredPermissions(Permission...)
 	 */
-	default void onInsufficientPermissions(InsufficientPermissionsEvent event) {}
+	default void onInsufficientPermissions(@Nonnull InsufficientPermissionsEvent event) {}
 
 	/**
 	 * An event that gets fired when the user, which invoked the command, is NOT allowed to use this command.
@@ -63,7 +64,7 @@ public interface DIH4JDAEventListener {
 	 * @param event The {@link InvalidUserEvent} that was fired.
 	 * @see RestrictedCommand#setRequiredUsers(Long...)
 	 */
-	default void onInvalidUser(InvalidUserEvent event) {}
+	default void onInvalidUser(@Nonnull InvalidUserEvent event) {}
 
 	/**
 	 * An event that gets fired when the user, which invoked the command, does NOT have the required roles to use this command.
@@ -71,7 +72,7 @@ public interface DIH4JDAEventListener {
 	 * @param event The {@link InvalidRoleEvent} that was fired.
 	 * @see RestrictedCommand#setRequiredRoles(Long...)
 	 */
-	default void onInvalidRole(InvalidRoleEvent event) {}
+	default void onInvalidRole(@Nonnull InvalidRoleEvent event) {}
 
 	/**
 	 * An event that gets fired when the command is NOT executed in one of the required guild.
@@ -79,7 +80,7 @@ public interface DIH4JDAEventListener {
 	 * @param event the provided {@link InvalidGuildEvent} instance.
 	 * @see RestrictedCommand#setRequiredGuilds(Long...)
 	 */
-	default void onInvalidGuild(InvalidGuildEvent event) {}
+	default void onInvalidGuild(@Nonnull InvalidGuildEvent event) {}
 
 	/**
 	 * An event that gets fired when the user, which invoked the command, is not yet able to use this command due to
@@ -90,6 +91,6 @@ public interface DIH4JDAEventListener {
 	 * @param event The {@link CommandCooldownEvent} that was fired.
 	 * @see RestrictedCommand#setCommandCooldown(Duration)
 	 */
-	default void onCommandCooldown(CommandCooldownEvent event) {}
+	default void onCommandCooldown(@Nonnull CommandCooldownEvent event) {}
 }
 

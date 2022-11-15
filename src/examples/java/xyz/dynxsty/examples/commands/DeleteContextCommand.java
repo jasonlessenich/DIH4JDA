@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 
+import javax.annotation.Nonnull;
+
 public class DeleteContextCommand extends ContextCommand.Message {
 
     public DeleteContextCommand() {
@@ -14,7 +16,7 @@ public class DeleteContextCommand extends ContextCommand.Message {
     }
 
     @Override
-    public void execute(MessageContextInteractionEvent event) {
+    public void execute(@Nonnull MessageContextInteractionEvent event) {
         long messageId = event.getTarget().getIdLong();
         event.getTarget().delete().queue();
         event.replyFormat("Deleted message with id `%s`", messageId).queue();
