@@ -140,23 +140,23 @@ public abstract class RestrictedCommand {
 	 *
 	 * @param userId The id of the user you want to apply the cooldown on.
 	 */
-	public void applyCooldown(long userId, long guildId, @Nonnull Instant nextUse) {
-		COOLDOWN_CACHE.put(new Pair<>(userId, guildId), new Cooldown(Instant.now(), nextUse, CooldownType.USER_GUILD));
+	public void applyCooldown(long userId, long guildId, @Nonnull Instant nextUse, @Nonnull CooldownType type) {
+		COOLDOWN_CACHE.put(new Pair<>(userId, guildId), new Cooldown(Instant.now(), nextUse, type));
 	}
 
 	//Type: User / Global
 	public void applyCooldown(@Nonnull User user, @Nonnull Instant nextUse) {
-		applyCooldown(user.getIdLong(), 0, nextUse);
+		applyCooldown(user.getIdLong(), 0, nextUse, CooldownType.USER_GLOBAL);
 	}
 
 	//Type: User / Guild
 	public void applyCooldown(@Nonnull User user, @Nonnull Guild guild, @Nonnull Instant nextUse) {
-		applyCooldown(user.getIdLong(), guild.getIdLong(), nextUse);
+		applyCooldown(user.getIdLong(), guild.getIdLong(), nextUse, CooldownType.USER_GUILD);
 	}
 
 	//Type: everyone / Guild
 	public void applyCooldown(@Nonnull Guild guild, @Nonnull Instant nextUse) {
-		applyCooldown(0, guild.getIdLong(), nextUse);
+		applyCooldown(0, guild.getIdLong(), nextUse, CooldownType.GUILD);
 	}
 
 	/**
