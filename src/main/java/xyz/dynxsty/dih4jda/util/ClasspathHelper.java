@@ -25,7 +25,7 @@ public class ClasspathHelper {
 	 */
 	public static @Nonnull Collection<URL> forPackage(@Nonnull String packageName) {
 		List<URL> results = new ArrayList<>();
-		ClassLoader loader = IOUtils.getClassLoaderForClass(ClasspathHelper.class);
+		ClassLoader loader = IoUtils.getClassLoaderForClass(ClasspathHelper.class);
 
 		try {
 			Enumeration<URL> urls = loader.getResources(getResourceName(packageName));
