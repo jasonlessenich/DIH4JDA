@@ -135,28 +135,28 @@ public abstract class RestrictedCommand {
 	}
 
 	/**
-	 * Manually applies a cooldown for the specified user id.<br>
+	 * Manually applies a cooldown for the specified user and guild id.<br>
 	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
 	 *
 	 * @param userId The id of the user you want to apply the cooldown on.
 	 */
-	public void applyCooldown(long userId, long guildId, @Nonnull Instant nextUse, @Nonnull CooldownType type) {
-		COOLDOWN_CACHE.put(new Pair<>(userId, guildId), new Cooldown(Instant.now(), nextUse, type));
+	private void applyCooldown(long userId, long guildId, @Nonnull Instant nextUse) {
+		COOLDOWN_CACHE.put(new Pair<>(userId, guildId), new Cooldown(Instant.now(), nextUse));
 	}
 
 	//Type: User / Global
 	public void applyCooldown(@Nonnull User user, @Nonnull Instant nextUse) {
-		applyCooldown(user.getIdLong(), 0, nextUse, CooldownType.USER_GLOBAL);
+		applyCooldown(user.getIdLong(), 0, nextUse);
 	}
 
 	//Type: User / Guild
 	public void applyCooldown(@Nonnull User user, @Nonnull Guild guild, @Nonnull Instant nextUse) {
-		applyCooldown(user.getIdLong(), guild.getIdLong(), nextUse, CooldownType.USER_GUILD);
+		applyCooldown(user.getIdLong(), guild.getIdLong(), nextUse);
 	}
 
 	//Type: everyone / Guild
 	public void applyCooldown(@Nonnull Guild guild, @Nonnull Instant nextUse) {
-		applyCooldown(0, guild.getIdLong(), nextUse, CooldownType.GUILD);
+		applyCooldown(0, guild.getIdLong(), nextUse);
 	}
 
 	/**
@@ -171,7 +171,7 @@ public abstract class RestrictedCommand {
 	public Cooldown retrieveCooldown(long userId, long guildId) {
 		Cooldown cooldown = COOLDOWN_CACHE.get(new Pair<>(userId, guildId));
 		if (cooldown == null) {
-			return new Cooldown(Instant.EPOCH, Instant.EPOCH, CooldownType.USER_GLOBAL);
+			return new Cooldown(Instant.EPOCH, Instant.EPOCH);
 		}
 		return cooldown;
 	}
@@ -206,12 +206,10 @@ public abstract class RestrictedCommand {
 
 		private final Instant lastUse;
 		private final Instant nextUse;
-		private final CooldownType type;
 
-		protected Cooldown(@Nonnull Instant lastUse, @Nonnull Instant nextUse, @Nonnull CooldownType type) {
+		protected Cooldown(@Nonnull Instant lastUse, @Nonnull Instant nextUse) {
 			this.lastUse = lastUse;
 			this.nextUse = nextUse;
-			this.type = type;
 		}
 
 		/**
@@ -232,11 +230,6 @@ public abstract class RestrictedCommand {
 		@Nonnull
 		public Instant getLastUse() {
 			return lastUse;
-		}
-
-		@Nonnull
-		public CooldownType getType() {
-			return type;
 		}
 	}
 }

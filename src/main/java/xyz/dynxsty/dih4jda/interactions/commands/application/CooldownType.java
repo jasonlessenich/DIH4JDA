@@ -12,7 +12,6 @@ public enum CooldownType {
     /**
      * Limits the amount how often a user can execute a command on a guild.<br>
      * <b>User / Guild</b><br>
-     * <b>If no type is configured this will also be the standard type.</b>
      */
     USER_GUILD,
     /**
