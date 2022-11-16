@@ -45,6 +45,11 @@ public class Pair<F, S> {
 		return second;
 	}
 
+	/**
+	 * Returns a string representation of the object.
+	 *
+	 * @return The representation as a {@link String}.
+	 */
 	@Override
 	public String toString() {
 		return "Pair{" +
@@ -53,6 +58,12 @@ public class Pair<F, S> {
 				'}';
 	}
 
+	/**
+	 * Checks if the objects are qual.
+	 *
+	 * @param o The {@link Object} you want to compare.
+	 * @return True if they contain the same values.
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -65,6 +76,11 @@ public class Pair<F, S> {
 		return Objects.equals(first, pair.first) && Objects.equals(second, pair.second);
 	}
 
+	/**
+	 * Returns a hash code value for the object. This method is supported for the benefit of hash tables such as those provided by HashMap.
+	 *
+	 * @return A hash code value for this object.
+	 */
 	@Override
 	public int hashCode() {
 		return Objects.hash(first, second);
