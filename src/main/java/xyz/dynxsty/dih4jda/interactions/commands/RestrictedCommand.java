@@ -207,7 +207,6 @@ public abstract class RestrictedCommand {
 			case GUILD: cooldown = COOLDOWN_CACHE.get(new Pair<>(0L, guildId)); break;
 		}
 		if (cooldown == null) {
-			System.out.println("Creating cooldown!");
 			return new Cooldown(Instant.EPOCH, Instant.EPOCH);
 		}
 		return cooldown;
@@ -223,7 +222,6 @@ public abstract class RestrictedCommand {
 	 * @return Whether the command can be executed.
 	 */
 	public boolean hasCooldown(long userId, long guildId) {
-		System.out.println(COOLDOWN_CACHE);
 		Cooldown cooldown;
 		cooldown = retrieveCooldown(userId, guildId);
 		boolean hasCooldown = cooldown.getNextUse().isAfter(Instant.now());
@@ -234,8 +232,6 @@ public abstract class RestrictedCommand {
 				case GUILD: COOLDOWN_CACHE.remove(new Pair<>(0L, guildId)); break;
 			}
 		}
-		System.out.println("cooldown.getNextUse() = " + cooldown.getNextUse());
-		System.out.println("hasCooldown = " + hasCooldown);
 		return hasCooldown;
 	}
 

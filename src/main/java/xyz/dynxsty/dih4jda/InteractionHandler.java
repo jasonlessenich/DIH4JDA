@@ -601,7 +601,6 @@ public class InteractionHandler extends ListenerAdapter {
 				return false;
 			} else {
 				Instant nextUse = Instant.now().plus(cooldownPair.getFirst());
-				System.out.println(cooldownPair.getSecond());
 				switch (cooldownPair.getSecond()) {
 					case USER_GLOBAL: command.applyCooldown(interaction.getUser(), nextUse); break;
 					case USER_GUILD: command.applyCooldown(interaction.getUser(), interaction.getGuild(), nextUse); break;
