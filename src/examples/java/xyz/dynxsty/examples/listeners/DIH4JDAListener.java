@@ -5,6 +5,7 @@ import xyz.dynxsty.dih4jda.events.CommandExceptionEvent;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEventListener;
 
 import javax.annotation.Nonnull;
+import java.time.ZoneId;
 
 public class DIH4JDAListener implements DIH4JDAEventListener {
 
@@ -18,8 +19,8 @@ public class DIH4JDAListener implements DIH4JDAEventListener {
 
     @Override
     public void onCommandCooldown(@Nonnull CommandCooldownEvent event) {
-        event.getInteraction().getMessageChannel().sendMessageFormat("Seems like you have to wait before you use the " +
-                "command again.\n You can try again in: <t:%s:R>", event.getCooldown().getNextUse().toEpochMilli()).queue();
+        event.getInteraction().replyFormat("You are on cooldown. Next use <t:%s:R>",
+                event.getCooldown().getNextUse().atZone(ZoneId.systemDefault()).toEpochSecond()).queue();
     }
 
     // add more events if you need to
