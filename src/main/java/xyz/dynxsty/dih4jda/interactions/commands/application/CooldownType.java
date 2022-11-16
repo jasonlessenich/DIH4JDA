@@ -1,7 +1,8 @@
 package xyz.dynxsty.dih4jda.interactions.commands.application;
 
 /**
- * The supported {@link xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand.Cooldown} types.
+ * The supported {@link xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand.Cooldown} types.<br>
+ * <b>Cooldowns does not work between different shards or DIH4JDA instances.</b>
  */
 public enum CooldownType {
     /**

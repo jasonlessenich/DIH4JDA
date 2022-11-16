@@ -118,6 +118,7 @@ public abstract class RestrictedCommand {
 	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
 	 *
 	 * @param commandCooldown The {@link Duration} the user has to wait between command executions.
+	 * @param type The {@link CooldownType} you want to use.
 	 */
 	public void setCommandCooldown(@Nonnull Duration commandCooldown, @Nonnull CooldownType type) {
 		this.commandCooldown = commandCooldown;
@@ -138,24 +139,52 @@ public abstract class RestrictedCommand {
 	/**
 	 * Manually applies a cooldown for the specified user and guild id.<br>
 	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
+	 * <b>For internal use only!</b>
 	 *
 	 * @param userId The id of the user you want to apply the cooldown on.
+	 * @param guildId The id of the guild you want to apply the cooldown on.
+	 * @param  nextUse The time as an {@link Instant} where the user can execute the command the next time.
 	 */
 	private void applyCooldown(long userId, long guildId, @Nonnull Instant nextUse) {
 		COOLDOWN_CACHE.put(new Pair<>(userId, guildId), new Cooldown(Instant.now(), nextUse));
 	}
 
-	//Type: User / Global
+	/**
+	 * Manually applies a cooldown for the specified user.<br>
+	 * Represents the {@link CooldownType#USER_GLOBAL}.<br>
+	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
+	 * <b>For internal use only!</b>
+	 *
+	 * @param user The {@link User} you want to apply the cooldown on.
+	 * @param nextUse The time as an {@link Instant} where the user can execute the command the next time.
+	 */
 	public void applyCooldown(@Nonnull User user, @Nonnull Instant nextUse) {
 		applyCooldown(user.getIdLong(), 0, nextUse);
 	}
 
-	//Type: User / Guild
+	/**
+	 * Manually applies a cooldown for the specified user and guild.<br>
+	 * Represents the {@link CooldownType#USER_GUILD}.<br>
+	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
+	 * <b>For internal use only!</b>
+	 *
+	 * @param user The {@link User} you want to apply the cooldown on.
+	 * @param guild The {@link Guild} you want to apply the cooldown on.
+	 * @param nextUse The time as an {@link Instant} where the user can execute the command the next time.
+	 */
 	public void applyCooldown(@Nonnull User user, @Nonnull Guild guild, @Nonnull Instant nextUse) {
 		applyCooldown(user.getIdLong(), guild.getIdLong(), nextUse);
 	}
 
-	//Type: everyone / Guild
+	/**
+	 * Manually applies a cooldown for the specified guild.<br>
+	 * Represents the {@link CooldownType#GUILD}.<br>
+	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
+	 * <b>For internal use only!</b>
+	 *
+	 * @param guild The {@link Guild} you want to apply the cooldown on.
+	 * @param nextUse The time as an {@link Instant} where the user can execute the command the next time.
+	 */
 	public void applyCooldown(@Nonnull Guild guild, @Nonnull Instant nextUse) {
 		applyCooldown(0, guild.getIdLong(), nextUse);
 	}
@@ -166,6 +195,7 @@ public abstract class RestrictedCommand {
 	 * both the nextUse and the lastUse of {@link Instant#EPOCH} instead.
 	 *
 	 * @param userId The targets' user id.
+	 * @param guildId The targets' guild id.
 	 * @return The {@link Instant} that marks the time the command can be used again.
 	 */
 	@Nonnull
