@@ -52,7 +52,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
     testImplementation("ch.qos.logback:logback-classic:1.4.4")
 
-    implementation("com.github.DV8FromTheWorld:JDA:3e37938a3a")
+    implementation("com.github.DV8FromTheWorld:JDA:7d6775cca6")
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
     //Sets the dependencies for the examples
