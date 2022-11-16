@@ -17,6 +17,7 @@ public class ArrayUtil {
      * @param array The array to check.
      * @param search The {@link Object} to search for.
      * @return Whether the object is contained inside the array.
+     * @since v1.6
      */
     public static boolean contains(@Nonnull Object[] array, @Nonnull Object search) {
         for (Object obj : array) {
