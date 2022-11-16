@@ -9,7 +9,6 @@ import xyz.dynxsty.dih4jda.util.Pair;
 import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -270,6 +269,11 @@ public abstract class RestrictedCommand {
 			return lastUse;
 		}
 
+		/**
+		 * Returns a string representation of the object.
+		 *
+		 * @return The representation as a {@link String}.
+		 */
 		@Override
 		public String toString() {
 			return "Cooldown{" +
