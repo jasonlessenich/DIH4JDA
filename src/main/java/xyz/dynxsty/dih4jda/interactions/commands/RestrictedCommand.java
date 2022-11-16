@@ -9,6 +9,7 @@ import xyz.dynxsty.dih4jda.util.Pair;
 import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -169,8 +170,14 @@ public abstract class RestrictedCommand {
 	 */
 	@Nonnull
 	public Cooldown retrieveCooldown(long userId, long guildId) {
-		Cooldown cooldown = COOLDOWN_CACHE.get(new Pair<>(userId, guildId));
+		Cooldown cooldown = null;
+		switch (cooldownType) {
+			case USER_GLOBAL: cooldown = COOLDOWN_CACHE.get(new Pair<>(userId, 0L)); break;
+			case USER_GUILD: cooldown = COOLDOWN_CACHE.get(new Pair<>(userId, guildId)); break;
+			case GUILD: cooldown = COOLDOWN_CACHE.get(new Pair<>(0L, guildId)); break;
+		}
 		if (cooldown == null) {
+			System.out.println("Creating cooldown!");
 			return new Cooldown(Instant.EPOCH, Instant.EPOCH);
 		}
 		return cooldown;
@@ -186,15 +193,20 @@ public abstract class RestrictedCommand {
 	 * @return Whether the command can be executed.
 	 */
 	public boolean hasCooldown(long userId, long guildId) {
+		System.out.println(COOLDOWN_CACHE);
 		Cooldown cooldown;
-		if (COOLDOWN_CACHE.get(new Pair<>(userId, 0L)) != null) {
-			cooldown = COOLDOWN_CACHE.get(new Pair<>(userId, 0L));
-		} else if (COOLDOWN_CACHE.get(new Pair<>(0L, guildId)) != null) {
-			cooldown = COOLDOWN_CACHE.get(new Pair<>(0L, guildId));
-		} else {
-			cooldown = retrieveCooldown(userId, guildId);
+		cooldown = retrieveCooldown(userId, guildId);
+		boolean hasCooldown = cooldown.getNextUse().isAfter(Instant.now());
+		if (!hasCooldown) {
+			switch (cooldownType) {
+				case USER_GLOBAL: COOLDOWN_CACHE.remove(new Pair<>(userId, 0L)); break;
+				case USER_GUILD: COOLDOWN_CACHE.remove(new Pair<>(userId, guildId)); break;
+				case GUILD: COOLDOWN_CACHE.remove(new Pair<>(0L, guildId)); break;
+			}
 		}
-		return cooldown.getNextUse().isAfter(Instant.now());
+		System.out.println("cooldown.getNextUse() = " + cooldown.getNextUse());
+		System.out.println("hasCooldown = " + hasCooldown);
+		return hasCooldown;
 	}
 
 	/**
@@ -230,6 +242,14 @@ public abstract class RestrictedCommand {
 		@Nonnull
 		public Instant getLastUse() {
 			return lastUse;
+		}
+
+		@Override
+		public String toString() {
+			return "Cooldown{" +
+					"lastUse=" + lastUse +
+					", nextUse=" + nextUse +
+					'}';
 		}
 	}
 }
