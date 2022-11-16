@@ -101,6 +101,7 @@ public class CommandUtils {
 	 *
 	 * @param command the {@link SlashCommand} you want the mention from.
 	 * @return the mention as a {@link String}.
+	 * @since v1.6
 	 */
 	@Nullable
 	public static String getAsMention(@Nonnull SlashCommand command) {
@@ -116,6 +117,7 @@ public class CommandUtils {
 	 *
 	 * @param command the {@link SlashCommand.Subcommand} you want the mention from.
 	 * @return the mention as a {@link String}.
+	 * @since v1.6
 	 */
 	@Nullable
 	public static String getAsMention(@Nonnull SlashCommand.Subcommand command) {
