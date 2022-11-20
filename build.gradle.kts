@@ -50,9 +50,9 @@ repositories {
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
-    testImplementation("ch.qos.logback:logback-classic:1.4.4")
+    testImplementation("ch.qos.logback:logback-classic:1.4.5")
 
-    api("com.github.DV8FromTheWorld:JDA:7d6775cca6")
+    api("com.github.DV8FromTheWorld:JDA:88e4c221bd")
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
     //Sets the dependencies for the examples
