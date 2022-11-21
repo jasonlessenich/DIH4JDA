@@ -47,6 +47,7 @@ public class Checks {
 	 *
 	 * @param argument The {@link Object} to check.
 	 * @param name The name of the {@link Object}.
+	 * @throws IllegalArgumentException if the given argument is null.
 	 */
 	public static void notNull(@Nullable final Object argument, @Nonnull final String name) {
 		if (argument == null) {

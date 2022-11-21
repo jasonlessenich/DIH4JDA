@@ -35,6 +35,7 @@ public abstract class ApplicationCommand<E extends GenericCommandInteractionEven
 	 * Gets the command data that was previously set with {@link ApplicationCommand#setCommandData(Object)}
 	 *
 	 * @return the command data object.
+	 * @throws IllegalArgumentException if data is null.
 	 */
 	@Nonnull
 	public final T getCommandData() {
