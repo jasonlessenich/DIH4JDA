@@ -214,12 +214,24 @@ public class InteractionHandler extends ListenerAdapter {
 	 * and queues them globally, using the {@link JDA} instance.
 	 *
 	 * @param jda             The {@link JDA} instance.
-	 * @param slashCommand    A {@link Set} of {@link SlashCommandData}.
+	 * @param slashCommands    A {@link Set} of {@link SlashCommandData}.
 	 * @param contextCommands A {@link Set} of {@link CommandData},
 	 */
-	private void upsert(@Nonnull JDA jda, @Nonnull Set<SlashCommand> slashCommand, @Nonnull Set<ContextCommand<?>> contextCommands) {
-		slashCommand.forEach(data -> jda.upsertCommand(data.getCommandData()).queue(this::cacheCommand));
-		contextCommands.forEach(data -> jda.upsertCommand(data.getCommandData()).queue(this::cacheCommand));
+	private void upsert(@Nonnull JDA jda, @Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands) {
+		slashCommands.forEach(data -> {
+			if (data.getCommandData() == null) {
+				DIH4JDALogger.error("The given SlashCommand instances data is null and can not be upserted to " +
+						"Discord.");
+			}
+			jda.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
+		});
+		contextCommands.forEach(data -> {
+			if (data.getCommandData() == null) {
+				DIH4JDALogger.error("The given ContextCommand instances data is null and can not be upserted to " +
+						"Discord.");
+			}
+			jda.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
+		});
 	}
 
 	/**
@@ -236,20 +248,40 @@ public class InteractionHandler extends ListenerAdapter {
 		StringBuilder commandNames = new StringBuilder();
 		slashCommands.forEach(data -> {
 			Long[] guildIds = data.getQueueableGuilds();
-			if (guildIds == null || guildIds.length == 0 || Arrays.asList(guildIds).contains(guild.getIdLong())) {
+			if (data.getCommandData() != null || guildIds.length == 0 ||
+					Arrays.asList(guildIds).contains(guild.getIdLong())) {
+				if (data.getCommandData() == null) {
+					DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash " +
+							"command because the data is null.");
+				}
 				guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
 				commandNames.append(", /").append(data.getCommandData().getName());
 			} else {
-				DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping Registration of /%s for Guild: %s", data.getCommandData().getName(), guild.getName());
+				if (data.getCommandData() == null) {
+					DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash " +
+							"command because the data is null.");
+				} else {
+					DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash " +
+							"command because the data is null.");
+				}
 			}
 		});
 		contextCommands.forEach(data -> {
 			Long[] guildIds = data.getQueueableGuilds();
-			if (guildIds == null || guildIds.length == 0 || Arrays.asList(guildIds).contains(guild.getIdLong())) {
+			if (guildIds.length == 0 || Arrays.asList(guildIds).contains(guild.getIdLong())) {
+				if (data.getCommandData() == null) {
+					return;
+				}
 				guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
 				commandNames.append(", ").append(data.getCommandData().getName());
 			} else {
-				DIH4JDALogger.info(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping Registration of %s for Guild: %s", data.getCommandData().getName(), guild.getName());
+				if (data.getCommandData() == null) {
+					DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash " +
+							"command because the data is null.");
+				} else {
+					DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash " +
+							"command because the data is null.");
+				}
 			}
 		});
 		if (!commandNames.toString().isEmpty()) {
