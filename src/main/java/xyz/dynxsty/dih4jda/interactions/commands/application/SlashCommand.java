@@ -78,11 +78,8 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 	 *
 	 * @return The {@link Command} corresponding to this class.
 	 */
-	@Nullable
+	@Nonnull
 	public Command asCommand() {
-		if (getCommandData() == null) {
-			return null;
-		}
 		return InteractionHandler.getRetrievedCommands().get(getCommandData().getName());
 	}
 
@@ -115,9 +112,7 @@ public abstract class SlashCommand extends BaseApplicationCommand<SlashCommandIn
 		 */
 		@Nullable
 		public Command.Subcommand asSubcommand() {
-			if (getCommandData() == null) return null;
 			Command cmd = parent.asCommand();
-			if (cmd == null) return null;
 			List<Command.Subcommand> subcommands = new ArrayList<>(cmd.getSubcommands());
 			cmd.getSubcommandGroups().forEach(g -> subcommands.addAll(g.getSubcommands()));
 			return subcommands.stream()

@@ -124,8 +124,8 @@ public class SmartQueue {
 	}
 
 	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull BaseApplicationCommand<?, ? extends CommandData> app) {
-		if (CommandUtils.equals(cmd, app.getCommandData()) && app.getQueueableGuilds() != null &&
-				app.getQueueableGuilds().length != 0 && !Arrays.asList(app.getQueueableGuilds()).contains(guild.getIdLong())
+		if (CommandUtils.equals(cmd, app.getCommandData()) && app.getQueueableGuilds().length != 0 &&
+				!Arrays.asList(app.getQueueableGuilds()).contains(guild.getIdLong())
 		) {
 			DIH4JDALogger.info("Deleting /%s in non-queueable Guild: %s", cmd.getName(), guild.getName());
 			cmd.delete().queue();

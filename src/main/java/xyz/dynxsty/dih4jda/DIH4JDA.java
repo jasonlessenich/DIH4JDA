@@ -346,10 +346,7 @@ public class DIH4JDA extends ListenerAdapter {
 	@SafeVarargs
 	private <T> void validateMappings(@Nonnull IdMapping<T>... mappings) {
 		for (IdMapping<T> mapping : mappings) {
-			if (mapping.getHandler() == null) {
-				throw new IllegalArgumentException("Handler may not be null!");
-			}
-			if (mapping.getIds() == null || mapping.getIds().length == 0) {
+			if (mapping.getIds().length == 0) {
 				throw new IllegalArgumentException("Ids may not be empty or null!");
 			}
 		}

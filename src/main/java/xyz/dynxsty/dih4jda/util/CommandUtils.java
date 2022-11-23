@@ -103,12 +103,9 @@ public class CommandUtils {
 	 * @return the mention as a {@link String}.
 	 * @since v1.6
 	 */
-	@Nullable
+	@Nonnull
 	public static String getAsMention(@Nonnull SlashCommand command) {
 		Command entity = command.asCommand();
-		if (entity == null) {
-			return null;
-		}
 		return entity.getAsMention();
 	}
 
