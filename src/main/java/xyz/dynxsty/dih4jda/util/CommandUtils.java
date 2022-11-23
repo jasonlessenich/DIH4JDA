@@ -1,13 +1,9 @@
 package xyz.dynxsty.dih4jda.util;
 
-import com.google.common.collect.Maps;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
@@ -38,28 +34,30 @@ public class CommandUtils {
 		//.toMap() function is necessary because the DataObject does not have a custom implementation of .equals()
 		return data.toMap().equals(other.toMap());
 	}
+
 	/**
-	 * Checks if the {@link Command} is equal to the given {@link CommandData}.
+	 * Takes a {@link Command} object that wraps a {@link SlashCommandData} object and compares it to a
+	 * {@link SlashCommand} object.
 	 *
-	 * @param command The {@link Command}.
-	 * @param data    The {@link CommandData}.
-	 * @return Whether the given Command originates from the given CommandData.
-	 * @since v1.5
+	 * @param cmd The {@link Command} that wraps a {@link SlashCommandData} object.
+	 * @param data The {@link SlashCommand} to compare two.
+	 * @return true if both are identical.
+	 * @see CommandUtils#equals(DataObject, DataObject)
 	 */
-	/*
-	public static boolean equals(@Nonnull Command command, @Nonnull Object data) {
-		if (command.getType() == Command.Type.SLASH) {
-			return CommandUtils.equals(((SlashCommandData) data).toData(), SlashCommandData.fromCommand(command).toData());
-		} else {
-			return CommandUtils.equals(((CommandData) data).toData(), CommandData.fromCommand(command).toData());
-		}
+	public static boolean compareSlashCommands(@Nonnull Command cmd, @Nonnull SlashCommand data) {
+		return equals(SlashCommandData.fromCommand(cmd).toData(), data.getCommandData().toData());
 	}
 
-	public static boolean equals(@Nonnull Command command, @Nonnull Command data) {
-		return CommandUtils.equals(SlashCommandData.fromCommand(data).toData(),
-				SlashCommandData.fromCommand(command).toData());
+	/**
+	 * Takes a {@link Command} object that wraps a context-command and compares it to a {@link ContextCommand} object.
+	 *
+	 * @param cmd The {@link Command} that wraps a context-command.
+	 * @param data The {@link ContextCommand} to compare two.
+	 * @return true if both are identical.
+	 */
+	public static boolean compareContextCommands(@Nonnull Command cmd, @Nonnull ContextCommand<?> data) {
+		return equals(CommandData.fromCommand(cmd).toData(), data.getCommandData().toData());
 	}
-	*/
 
 	/**
 	 * Used to create one command name out of the SlashCommand, SlashSubCommandGroup and SlashSubCommand
