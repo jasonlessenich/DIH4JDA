@@ -1,9 +1,13 @@
 package xyz.dynxsty.dih4jda.util;
 
+import com.google.common.collect.Maps;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.interactions.command.CommandImpl;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
@@ -34,7 +38,6 @@ public class CommandUtils {
 		//.toMap() function is necessary because the DataObject does not have a custom implementation of .equals()
 		return data.toMap().equals(other.toMap());
 	}
-
 	/**
 	 * Checks if the {@link Command} is equal to the given {@link CommandData}.
 	 *
@@ -43,6 +46,7 @@ public class CommandUtils {
 	 * @return Whether the given Command originates from the given CommandData.
 	 * @since v1.5
 	 */
+	/*
 	public static boolean equals(@Nonnull Command command, @Nonnull Object data) {
 		if (command.getType() == Command.Type.SLASH) {
 			return CommandUtils.equals(((SlashCommandData) data).toData(), SlashCommandData.fromCommand(command).toData());
@@ -50,6 +54,12 @@ public class CommandUtils {
 			return CommandUtils.equals(((CommandData) data).toData(), CommandData.fromCommand(command).toData());
 		}
 	}
+
+	public static boolean equals(@Nonnull Command command, @Nonnull Command data) {
+		return CommandUtils.equals(SlashCommandData.fromCommand(data).toData(),
+				SlashCommandData.fromCommand(command).toData());
+	}
+	*/
 
 	/**
 	 * Used to create one command name out of the SlashCommand, SlashSubCommandGroup and SlashSubCommand
