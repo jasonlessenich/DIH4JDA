@@ -240,8 +240,7 @@ public class InteractionHandler extends ListenerAdapter {
 				guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
 				commandNames.append(", /").append(data.getCommandData().getName());
 			} else {
-				DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash " +
-						"command because the data is null.");
+				DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash command because the data is null.");
 			}
 		});
 		contextCommands.forEach(data -> {
