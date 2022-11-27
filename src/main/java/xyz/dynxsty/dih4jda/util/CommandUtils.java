@@ -10,6 +10,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,10 @@ public class CommandUtils {
 	//synchronized -> because DataObject is not thread safe!
 	public static synchronized boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
 		//.toMap() function is necessary because the DataObject does not have a custom implementation of .equals()
+		StringBuilder builder = new StringBuilder();
+		builder.append("Obj1 : " + data.toMap()).append("\n")
+				.append("Obj2: " + other.toMap()).append("\n\n");
+		System.out.println(builder);
 		return data.toMap().equals(other.toMap());
 	}
 
@@ -81,7 +86,7 @@ public class CommandUtils {
 	 * @since v1.5
 	 */
 	@Nonnull
-	public static String getNames(@Nonnull Set<ContextCommand<?>> command, @Nonnull Set<SlashCommand> slash) {
+	public static String getNames(@Nonnull List<ContextCommand<?>> command, @Nonnull List<SlashCommand> slash) {
 		StringBuilder names = new StringBuilder();
 		command.forEach(c -> names.append(", ").append(c.getCommandData().getName()));
 		slash.forEach(c -> names.append(", /").append(c.getCommandData().getName()));
@@ -97,11 +102,11 @@ public class CommandUtils {
 	 * @since v1.5.2
 	 */
 	@Nonnull
-	public static Pair<Set<SlashCommand>, Set<ContextCommand<?>>> filterByType(@Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> pair,
-																			   @Nonnull RegistrationType type) {
+	public static Pair<List<SlashCommand>, List<ContextCommand<?>>> filterByType(@Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> pair,
+																				@Nonnull RegistrationType type) {
 		return new Pair<>(
-				pair.getFirst().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()),
-				pair.getSecond().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet())
+				pair.getFirst().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toList()),
+				pair.getSecond().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toList())
 		);
 	}
 

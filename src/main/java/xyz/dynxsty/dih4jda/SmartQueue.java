@@ -13,6 +13,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -34,11 +35,12 @@ import java.util.Set;
  * @since v1.5
  */
 public class SmartQueue {
-	private final Set<SlashCommand> slashCommands;
-	private final Set<ContextCommand<?>> contextCommands;
+	private final List<SlashCommand> slashCommands;
+	private final List<ContextCommand<?>> contextCommands;
 	private final boolean deleteUnknown;
 
-	protected SmartQueue(@Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands, boolean deleteUnknown) {
+	protected SmartQueue(@Nonnull List<SlashCommand> slashCommands, @Nonnull List<ContextCommand<?>> contextCommands,
+						 boolean deleteUnknown) {
 		this.slashCommands = slashCommands;
 		this.contextCommands = contextCommands;
 		this.deleteUnknown = deleteUnknown;
@@ -51,7 +53,7 @@ public class SmartQueue {
 	 * @since v1.5
 	 */
 	@Nonnull
-	protected Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGlobal(@Nonnull List<Command> existing) {
+	protected Pair<List<SlashCommand>, List<ContextCommand<?>>> checkGlobal(@Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(existing, null);
 		}
@@ -66,7 +68,7 @@ public class SmartQueue {
 	 * @since v1.5
 	 */
 	@Nonnull
-	protected Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
+	protected Pair<List<SlashCommand>, List<ContextCommand<?>>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(existing, guild);
 		}
@@ -82,15 +84,20 @@ public class SmartQueue {
 	 * @since v1.5
 	 */
 	@Nonnull
-	private Pair<Set<SlashCommand>, Set<ContextCommand<?>>> removeDuplicates(@Nonnull final List<Command> existing, @Nullable Guild guild) {
+	private Pair<List<SlashCommand>, List<ContextCommand<?>>> removeDuplicates(@Nonnull final List<Command> existing, @Nullable Guild guild) {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
 		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());
 		DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE, prefix + "Found %s existing command(s)", existing.size());
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
-			if (contextCommands.stream().anyMatch(data -> CommandUtils.compareContextCommands(cmd, data)) ||
-				slashCommands.stream().anyMatch(data -> CommandUtils.compareSlashCommands(cmd, data))) {
+			boolean b;
+			if (cmd.getType().equals(Command.Type.SLASH)) {
+				b = slashCommands.stream().anyMatch(data -> CommandUtils.compareSlashCommands(cmd, data));
+			} else {
+				b = contextCommands.stream().anyMatch(data -> CommandUtils.compareContextCommands(cmd, data));
+			}
+			if (b) {
 				// check for command in blacklisted guilds
 				if (!global) {
 					slashCommands.forEach(slash -> checkRequiredGuilds(guild, cmd, slash));
@@ -106,7 +113,7 @@ public class SmartQueue {
 		slashCommands.removeIf(data -> existing.stream().anyMatch(cmd -> CommandUtils.compareSlashCommands(cmd, data)));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
-			commands.forEach(c -> checkUnknown(prefix, existing, c));
+			commands.forEach(cmd -> checkUnknown(prefix, existing, cmd));
 		}
 		return new Pair<>(slashCommands, contextCommands);
 	}
