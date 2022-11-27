@@ -30,8 +30,7 @@ public class CommandUtils {
 	 * @return Whether both {@link DataObject} share the same properties.
 	 * @since v1.6
 	 */
-	//synchronized -> because DataObject is not thread safe!
-	public static synchronized boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
+	public static boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
 		//.toMap() function is necessary because the DataObject does not have a custom implementation of .equals()
 		return data.toMap().equals(other.toMap());
 	}
