@@ -3,9 +3,9 @@ package xyz.dynxsty.dih4jda.interactions.commands.application;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import xyz.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
+import xyz.dynxsty.dih4jda.util.Checks;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Model class for all <a href="https://discord.com/developers/docs/interactions/application-commands">Application Commands</a>.
@@ -35,9 +35,11 @@ public abstract class ApplicationCommand<E extends GenericCommandInteractionEven
 	 * Gets the command data that was previously set with {@link ApplicationCommand#setCommandData(Object)}
 	 *
 	 * @return the command data object.
+	 * @throws IllegalArgumentException if data is null.
 	 */
-	@Nullable
+	@Nonnull
 	public final T getCommandData() {
+		Checks.notNull(data, "Command data");
 		return data;
 	}
 }

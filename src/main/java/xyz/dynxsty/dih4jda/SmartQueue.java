@@ -4,7 +4,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
-import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.util.CommandUtils;
@@ -39,7 +38,8 @@ public class SmartQueue {
 	private final Set<ContextCommand<?>> contextCommands;
 	private final boolean deleteUnknown;
 
-	protected SmartQueue(@Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands, boolean deleteUnknown) {
+	protected SmartQueue(@Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands,
+						 boolean deleteUnknown) {
 		this.slashCommands = slashCommands;
 		this.contextCommands = contextCommands;
 		this.deleteUnknown = deleteUnknown;
@@ -90,8 +90,13 @@ public class SmartQueue {
 		DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE, prefix + "Found %s existing command(s)", existing.size());
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
-			if (contextCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData())) ||
-					slashCommands.stream().anyMatch(data -> CommandUtils.equals(cmd, data.getCommandData()))) {
+			boolean isCheckingGuilds;
+			if (cmd.getType().equals(Command.Type.SLASH)) {
+				isCheckingGuilds = slashCommands.stream().anyMatch(data -> CommandUtils.compareSlashCommands(cmd, data));
+			} else {
+				isCheckingGuilds = contextCommands.stream().anyMatch(data -> CommandUtils.compareContextCommands(cmd, data));
+			}
+			if (isCheckingGuilds) {
 				// check for command in blacklisted guilds
 				if (!global) {
 					slashCommands.forEach(slash -> checkRequiredGuilds(guild, cmd, slash));
@@ -103,11 +108,11 @@ public class SmartQueue {
 			}
 			return false;
 		});
-		contextCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData())));
-		slashCommands.removeIf(data -> existing.stream().anyMatch(p -> CommandUtils.equals(p, data.getCommandData())));
+		contextCommands.removeIf(data -> existing.stream().anyMatch(cmd -> CommandUtils.compareContextCommands(cmd, data)));
+		slashCommands.removeIf(data -> existing.stream().anyMatch(cmd -> CommandUtils.compareSlashCommands(cmd, data)));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
-			commands.forEach(c -> checkUnknown(prefix, existing, c));
+			commands.forEach(cmd -> checkUnknown(prefix, existing, cmd));
 		}
 		return new Pair<>(slashCommands, contextCommands);
 	}
@@ -123,10 +128,17 @@ public class SmartQueue {
 		}
 	}
 
-	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull BaseApplicationCommand<?, ? extends CommandData> app) {
-		if (CommandUtils.equals(cmd, app.getCommandData()) && app.getQueueableGuilds() != null &&
-				app.getQueueableGuilds().length != 0 && !Arrays.asList(app.getQueueableGuilds()).contains(guild.getIdLong())
-		) {
+	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull SlashCommand data) {
+		if (CommandUtils.compareSlashCommands(cmd, data) && data.getQueueableGuilds().length != 0 &&
+				!Arrays.asList(data.getQueueableGuilds()).contains(guild.getIdLong())) {
+			DIH4JDALogger.info("Deleting /%s in non-queueable Guild: %s", cmd.getName(), guild.getName());
+			cmd.delete().queue();
+		}
+	}
+
+	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull ContextCommand<?> data) {
+		if (CommandUtils.compareContextCommands(cmd, data) && data.getQueueableGuilds().length != 0 &&
+				!Arrays.asList(data.getQueueableGuilds()).contains(guild.getIdLong())) {
 			DIH4JDALogger.info("Deleting /%s in non-queueable Guild: %s", cmd.getName(), guild.getName());
 			cmd.delete().queue();
 		}

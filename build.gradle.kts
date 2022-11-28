@@ -16,7 +16,7 @@ fun getProjectProperty(name: String) = project.properties[name] as? String
 
 group = "xyz.dynxsty"
 val archivesBaseName = "dih4jda"
-version = "1.6.0-beta.2"
+version = "1.6.1"
 
 val javaVersion = JavaVersion.current()
 var isCI: Boolean = System.getProperty("GIT_COMMIT") != null // jitpack
@@ -48,13 +48,13 @@ repositories {
 
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
-    testImplementation("ch.qos.logback:logback-classic:1.4.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
+    testImplementation("ch.qos.logback:logback-classic:1.4.5")
     //needed for reasons...
     testCompileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
-    implementation("com.github.DV8FromTheWorld:JDA:3e37938a3a")
+    api("net.dv8tion:JDA:5.0.0-beta.1")
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
     //Sets the dependencies for the examples

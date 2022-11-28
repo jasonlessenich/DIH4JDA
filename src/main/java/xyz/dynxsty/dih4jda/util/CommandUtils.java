@@ -10,6 +10,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,25 +31,32 @@ public class CommandUtils {
 	 * @return Whether both {@link DataObject} share the same properties.
 	 * @since v1.6
 	 */
-	public static boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
-		//.toMap() function is necessary because the DataObject does not have a custom implementation of .equals()
-		return data.toMap().equals(other.toMap());
+	public static synchronized boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
+		return Arrays.equals(ArrayUtil.sortArrayFromDataObject(data), ArrayUtil.sortArrayFromDataObject(other));
 	}
 
 	/**
-	 * Checks if the {@link Command} is equal to the given {@link CommandData}.
+	 * Takes a {@link Command} object that wraps a {@link SlashCommandData} object and compares it to a
+	 * {@link SlashCommand} object.
 	 *
-	 * @param command The {@link Command}.
-	 * @param data    The {@link CommandData}.
-	 * @return Whether the given Command originates from the given CommandData.
-	 * @since v1.5
+	 * @param cmd The {@link Command} that wraps a {@link SlashCommandData} object.
+	 * @param data The {@link SlashCommand} to compare two.
+	 * @return true if both are identical.
+	 * @see CommandUtils#equals(DataObject, DataObject)
 	 */
-	public static boolean equals(@Nonnull Command command, @Nonnull Object data) {
-		if (command.getType() == Command.Type.SLASH) {
-			return CommandUtils.equals(((SlashCommandData) data).toData(), SlashCommandData.fromCommand(command).toData());
-		} else {
-			return CommandUtils.equals(((CommandData) data).toData(), CommandData.fromCommand(command).toData());
-		}
+	public static boolean compareSlashCommands(@Nonnull Command cmd, @Nonnull SlashCommand data) {
+		return equals(CommandData.fromCommand(cmd).toData(), data.getCommandData().toData());
+	}
+
+	/**
+	 * Takes a {@link Command} object that wraps a context-command and compares it to a {@link ContextCommand} object.
+	 *
+	 * @param cmd The {@link Command} that wraps a context-command.
+	 * @param data The {@link ContextCommand} to compare two.
+	 * @return true if both are identical.
+	 */
+	public static boolean compareContextCommands(@Nonnull Command cmd, @Nonnull ContextCommand<?> data) {
+		return equals(CommandData.fromCommand(cmd).toData(), data.getCommandData().toData());
 	}
 
 	/**
@@ -89,10 +97,10 @@ public class CommandUtils {
 	 */
 	@Nonnull
 	public static Pair<Set<SlashCommand>, Set<ContextCommand<?>>> filterByType(@Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> pair,
-																			   @Nonnull RegistrationType type) {
+																				@Nonnull RegistrationType type) {
 		return new Pair<>(
-				pair.getFirst().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()),
-				pair.getSecond().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet())
+				pair.getFirst().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toSet()),
+				pair.getSecond().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toSet())
 		);
 	}
 
@@ -101,13 +109,11 @@ public class CommandUtils {
 	 *
 	 * @param command the {@link SlashCommand} you want the mention from.
 	 * @return the mention as a {@link String}.
+	 * @since v1.6
 	 */
-	@Nullable
+	@Nonnull
 	public static String getAsMention(@Nonnull SlashCommand command) {
 		Command entity = command.asCommand();
-		if (entity == null) {
-			return null;
-		}
 		return entity.getAsMention();
 	}
 
@@ -116,6 +122,7 @@ public class CommandUtils {
 	 *
 	 * @param command the {@link SlashCommand.Subcommand} you want the mention from.
 	 * @return the mention as a {@link String}.
+	 * @since v1.6
 	 */
 	@Nullable
 	public static String getAsMention(@Nonnull SlashCommand.Subcommand command) {

@@ -15,6 +15,7 @@ public class IoUtils {
      * @param clazz The class you want to get the classloader from.
      * @return The {@link ClassLoader} for the given class or the context-classloader if
      * the {@link ClassLoader} was null.
+     * @since v1.6
      */
     @Nonnull
     public static ClassLoader getClassLoaderForClass(@Nonnull Class<?> clazz) {

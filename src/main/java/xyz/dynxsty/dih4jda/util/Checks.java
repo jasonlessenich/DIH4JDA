@@ -3,6 +3,7 @@ package xyz.dynxsty.dih4jda.util;
 import xyz.dynxsty.dih4jda.DIH4JDALogger;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 
 /**
@@ -39,5 +40,18 @@ public class Checks {
 		}
 		DIH4JDALogger.warn(String.format("Class %s contains unknown constructor parameters!", base.getSimpleName()));
 		return false;
+	}
+
+	/**
+	 * Throws an {@link IllegalArgumentException} if the given {@link Object} is null.
+	 *
+	 * @param argument The {@link Object} to check.
+	 * @param name The name of the {@link Object}.
+	 * @throws IllegalArgumentException if the given argument is null.
+	 */
+	public static void notNull(@Nullable final Object argument, @Nonnull final String name) {
+		if (argument == null) {
+			throw new IllegalArgumentException(name + " may not be null");
+		}
 	}
 }
