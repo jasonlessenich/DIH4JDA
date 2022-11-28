@@ -231,8 +231,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashCommands   A {@link Set} of {@link SlashCommandData}.
 	 * @param contextCommands A {@link Set} of {@link CommandData},
 	 */
-	private void upsert(@Nonnull Guild guild, @Nonnull Set<SlashCommand> slashCommands,
-						@Nonnull Set<ContextCommand<?>> contextCommands) {
+	private void upsert(@Nonnull Guild guild, @Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands) {
 		StringBuilder commandNames = new StringBuilder();
 		slashCommands.forEach(data -> {
 			Long[] guildIds = data.getQueueableGuilds();

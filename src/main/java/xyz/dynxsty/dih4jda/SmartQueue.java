@@ -38,7 +38,8 @@ public class SmartQueue {
 	private final Set<ContextCommand<?>> contextCommands;
 	private final boolean deleteUnknown;
 
-	protected SmartQueue(@Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands, boolean deleteUnknown) {
+	protected SmartQueue(@Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands,
+						 boolean deleteUnknown) {
 		this.slashCommands = slashCommands;
 		this.contextCommands = contextCommands;
 		this.deleteUnknown = deleteUnknown;
@@ -89,8 +90,13 @@ public class SmartQueue {
 		DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE, prefix + "Found %s existing command(s)", existing.size());
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
-			if (contextCommands.stream().anyMatch(data -> CommandUtils.compareContextCommands(cmd, data)) ||
-				slashCommands.stream().anyMatch(data -> CommandUtils.compareSlashCommands(cmd, data))) {
+			boolean isCheckingGuilds;
+			if (cmd.getType().equals(Command.Type.SLASH)) {
+				isCheckingGuilds = slashCommands.stream().anyMatch(data -> CommandUtils.compareSlashCommands(cmd, data));
+			} else {
+				isCheckingGuilds = contextCommands.stream().anyMatch(data -> CommandUtils.compareContextCommands(cmd, data));
+			}
+			if (isCheckingGuilds) {
 				// check for command in blacklisted guilds
 				if (!global) {
 					slashCommands.forEach(slash -> checkRequiredGuilds(guild, cmd, slash));
@@ -106,7 +112,7 @@ public class SmartQueue {
 		slashCommands.removeIf(data -> existing.stream().anyMatch(cmd -> CommandUtils.compareSlashCommands(cmd, data)));
 		// remove unknown commands, if enabled
 		if (!commands.isEmpty()) {
-			commands.forEach(c -> checkUnknown(prefix, existing, c));
+			commands.forEach(cmd -> checkUnknown(prefix, existing, cmd));
 		}
 		return new Pair<>(slashCommands, contextCommands);
 	}

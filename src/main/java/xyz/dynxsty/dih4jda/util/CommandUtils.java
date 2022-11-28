@@ -10,6 +10,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,9 +31,8 @@ public class CommandUtils {
 	 * @return Whether both {@link DataObject} share the same properties.
 	 * @since v1.6
 	 */
-	public static boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
-		//.toMap() function is necessary because the DataObject does not have a custom implementation of .equals()
-		return data.toMap().equals(other.toMap());
+	public static synchronized boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
+		return Arrays.equals(ArrayUtil.sortArrayFromDataObject(data), ArrayUtil.sortArrayFromDataObject(other));
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class CommandUtils {
 	 * @see CommandUtils#equals(DataObject, DataObject)
 	 */
 	public static boolean compareSlashCommands(@Nonnull Command cmd, @Nonnull SlashCommand data) {
-		return equals(SlashCommandData.fromCommand(cmd).toData(), data.getCommandData().toData());
+		return equals(CommandData.fromCommand(cmd).toData(), data.getCommandData().toData());
 	}
 
 	/**
@@ -97,10 +97,10 @@ public class CommandUtils {
 	 */
 	@Nonnull
 	public static Pair<Set<SlashCommand>, Set<ContextCommand<?>>> filterByType(@Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> pair,
-																			   @Nonnull RegistrationType type) {
+																				@Nonnull RegistrationType type) {
 		return new Pair<>(
-				pair.getFirst().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet()),
-				pair.getSecond().stream().filter(c -> c.getRegistrationType() == type).collect(Collectors.toSet())
+				pair.getFirst().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toSet()),
+				pair.getSecond().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toSet())
 		);
 	}
 

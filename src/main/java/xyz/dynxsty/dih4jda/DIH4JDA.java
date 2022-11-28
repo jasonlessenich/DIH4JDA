@@ -108,7 +108,9 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	@Override
 	public void onReady(@Nonnull ReadyEvent event) {
-		if (config.getCommandPackages() == null) return;
+		if (config.getCommandPackages() == null) {
+			return;
+		}
 		if (config.isRegisterOnReady() && handler != null) {
 			handler.registerInteractions();
 		}
