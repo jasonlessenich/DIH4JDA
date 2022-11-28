@@ -37,10 +37,10 @@ public class CommandUtils {
 		boolean bo = Arrays.equals(ArrayUtil.getSortedArrayFromDataObject(data),
 				ArrayUtil.getSortedArrayFromDataObject(other));
 		//.toMap() function is necessary because the DataObject does not have a custom implementation of .equals()
-		System.out.println(data.toMap());
+		/*System.out.println(data.toMap());
 		System.out.println("\n");
 		System.out.println(other.toMap());
-		System.out.println("Equals: " + bo + "\n\n");
+		System.out.println("Equals: " + bo + "\n\n");*/
 		return bo;
 	}
 
