@@ -9,7 +9,7 @@ A fairly easy-to-use command framework for the [Java Discord API](https://github
 
 ## Installation
 
-This version of DIH4JDA **must** be used with the following version of JDA: [`net.dv8tion:JDA:5.0.0-alpha.23`](https://github.com/DV8FromTheWorld/JDA/releases)
+This version of DIH4JDA **must** be used with the following version of JDA: [`net.dv8tion:JDA:5.0.0-beta.1`](https://github.com/DV8FromTheWorld/JDA/releases)
 
 DIH4JDA itself is distributed through [Maven Central](https://central.sonatype.dev/search?q=dih4jda&sort=name&namespace=xyz.dynxsty):
 
@@ -19,7 +19,7 @@ DIH4JDA itself is distributed through [Maven Central](https://central.sonatype.d
 <dependency>
   <groupId>xyz.dynxsty</groupId>
   <artifactId>dih4jda</artifactId>
-  <version>1.6.0-beta.3</version>
+  <version>1.6.0</version>
 </dependency>
 ```
 
@@ -28,7 +28,7 @@ DIH4JDA itself is distributed through [Maven Central](https://central.sonatype.d
 ```kotlin
 dependencies {
     [...]
-    implementation("xyz.dynxsty:dih4jda:1.6.0-beta.3")
+    implementation("xyz.dynxsty:dih4jda:1.6.0")
 }
 ```
 
