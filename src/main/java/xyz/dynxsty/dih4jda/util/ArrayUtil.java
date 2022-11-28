@@ -1,6 +1,9 @@
 package xyz.dynxsty.dih4jda.util;
 
+import net.dv8tion.jda.api.utils.data.DataObject;
+
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 /**
  * Utility class that contains some useful methods regarding arrays.
@@ -26,5 +29,11 @@ public class ArrayUtil {
             }
         }
         return false;
+    }
+
+    public static byte[] getSortedArrayFromDataObject(@Nonnull DataObject dataObject) {
+        byte[] array = dataObject.toJson();
+        Arrays.sort(array);
+        return array;
     }
 }

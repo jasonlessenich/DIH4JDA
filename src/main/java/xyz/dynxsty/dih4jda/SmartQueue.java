@@ -90,11 +90,15 @@ public class SmartQueue {
 		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());
 		DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE, prefix + "Found %s existing command(s)", existing.size());
 		// remove already-existing commands
+		System.out.println("commands = " + commands);
+		System.out.println("slashCommands = " + slashCommands);
 		commands.removeIf(cmd -> {
 			boolean b;
 			if (cmd.getType().equals(Command.Type.SLASH)) {
+				System.out.println("Checking slash command: " + cmd);
 				b = slashCommands.stream().anyMatch(data -> CommandUtils.compareSlashCommands(cmd, data));
 			} else {
+				System.out.println("Checking command: " + cmd);
 				b = contextCommands.stream().anyMatch(data -> CommandUtils.compareContextCommands(cmd, data));
 			}
 			if (b) {

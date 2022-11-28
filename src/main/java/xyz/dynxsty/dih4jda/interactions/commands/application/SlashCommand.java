@@ -10,6 +10,7 @@ import xyz.dynxsty.dih4jda.InteractionHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**

@@ -10,6 +10,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,12 +34,14 @@ public class CommandUtils {
 	 */
 	//synchronized -> because DataObject is not thread safe!
 	public static synchronized boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
+		boolean bo = Arrays.equals(ArrayUtil.getSortedArrayFromDataObject(data),
+				ArrayUtil.getSortedArrayFromDataObject(other));
 		//.toMap() function is necessary because the DataObject does not have a custom implementation of .equals()
-		StringBuilder builder = new StringBuilder();
-		builder.append("Obj1 : " + data.toMap()).append("\n")
-				.append("Obj2: " + other.toMap()).append("\n\n");
-		System.out.println(builder);
-		return data.toMap().equals(other.toMap());
+		System.out.println(data.toMap());
+		System.out.println("\n");
+		System.out.println(other.toMap());
+		System.out.println("Equals: " + bo + "\n\n");
+		return bo;
 	}
 
 	/**
@@ -51,7 +54,7 @@ public class CommandUtils {
 	 * @see CommandUtils#equals(DataObject, DataObject)
 	 */
 	public static boolean compareSlashCommands(@Nonnull Command cmd, @Nonnull SlashCommand data) {
-		return equals(SlashCommandData.fromCommand(cmd).toData(), data.getCommandData().toData());
+		return equals(CommandData.fromCommand(cmd).toData(), data.getCommandData().toData());
 	}
 
 	/**
