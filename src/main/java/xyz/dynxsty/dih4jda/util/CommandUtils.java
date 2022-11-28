@@ -11,7 +11,6 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
