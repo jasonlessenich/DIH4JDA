@@ -175,7 +175,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Pair<Set<SlashCommand>, Set<ContextCommand<?>>> data = new Pair<>(getSlashCommands(), getContextCommandData());
 		for (Guild guild : config.getJDA().getGuilds()) {
 			guild.retrieveCommands(true).queue(existing -> {
-				Pair<List<SlashCommand>, List<ContextCommand<?>>> guildData = CommandUtils.filterByType(data, RegistrationType.GUILD);
+				Pair<Set<SlashCommand>, Set<ContextCommand<?>>> guildData = CommandUtils.filterByType(data, RegistrationType.GUILD);
 				existing.forEach(this::cacheCommand);
 				// check if smart queuing is enabled
 				if (config.isGuildSmartQueue()) {
@@ -190,7 +190,7 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 		// retrieve (and smartqueue) global commands
 		config.getJDA().retrieveCommands(true).queue(existing -> {
-			Pair<List<SlashCommand>, List<ContextCommand<?>>> globalData = CommandUtils.filterByType(data, RegistrationType.GLOBAL);
+			Pair<Set<SlashCommand>, Set<ContextCommand<?>>> globalData = CommandUtils.filterByType(data, RegistrationType.GLOBAL);
 			existing.forEach(this::cacheCommand);
 			// check if smart queuing is enabled
 			if (config.isGlobalSmartQueue()) {
@@ -219,7 +219,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashCommands    A {@link Set} of {@link SlashCommandData}.
 	 * @param contextCommands A {@link Set} of {@link CommandData},
 	 */
-	private void upsert(@Nonnull JDA jda, @Nonnull List<SlashCommand> slashCommands, @Nonnull List<ContextCommand<?>> contextCommands) {
+	private void upsert(@Nonnull JDA jda, @Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands) {
 		slashCommands.forEach(data -> jda.upsertCommand(data.getCommandData()).queue(this::cacheCommand));
 		contextCommands.forEach(data -> jda.upsertCommand(data.getCommandData()).queue(this::cacheCommand));
 	}
@@ -233,7 +233,7 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashCommands   A {@link Set} of {@link SlashCommandData}.
 	 * @param contextCommands A {@link Set} of {@link CommandData},
 	 */
-	private void upsert(@Nonnull Guild guild, @Nonnull List<SlashCommand> slashCommands, @Nonnull List<ContextCommand<?>> contextCommands) {
+	private void upsert(@Nonnull Guild guild, @Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands) {
 		StringBuilder commandNames = new StringBuilder();
 		slashCommands.forEach(data -> {
 			Long[] guildIds = data.getQueueableGuilds();

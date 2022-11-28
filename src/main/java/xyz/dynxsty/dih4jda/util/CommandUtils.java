@@ -81,7 +81,7 @@ public class CommandUtils {
 	 * @since v1.5
 	 */
 	@Nonnull
-	public static String getNames(@Nonnull List<ContextCommand<?>> command, @Nonnull List<SlashCommand> slash) {
+	public static String getNames(@Nonnull Set<ContextCommand<?>> command, @Nonnull Set<SlashCommand> slash) {
 		StringBuilder names = new StringBuilder();
 		command.forEach(c -> names.append(", ").append(c.getCommandData().getName()));
 		slash.forEach(c -> names.append(", /").append(c.getCommandData().getName()));
@@ -97,11 +97,11 @@ public class CommandUtils {
 	 * @since v1.5.2
 	 */
 	@Nonnull
-	public static Pair<List<SlashCommand>, List<ContextCommand<?>>> filterByType(@Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> pair,
+	public static Pair<Set<SlashCommand>, Set<ContextCommand<?>>> filterByType(@Nonnull Pair<Set<SlashCommand>, Set<ContextCommand<?>>> pair,
 																				@Nonnull RegistrationType type) {
 		return new Pair<>(
-				pair.getFirst().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toList()),
-				pair.getSecond().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toList())
+				pair.getFirst().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toSet()),
+				pair.getSecond().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toSet())
 		);
 	}
 

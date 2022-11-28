@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,11 +36,11 @@ import java.util.Set;
  * @since v1.5
  */
 public class SmartQueue {
-	private final List<SlashCommand> slashCommands;
-	private final List<ContextCommand<?>> contextCommands;
+	private final Set<SlashCommand> slashCommands;
+	private final Set<ContextCommand<?>> contextCommands;
 	private final boolean deleteUnknown;
 
-	protected SmartQueue(@Nonnull List<SlashCommand> slashCommands, @Nonnull List<ContextCommand<?>> contextCommands,
+	protected SmartQueue(@Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands,
 						 boolean deleteUnknown) {
 		this.slashCommands = slashCommands;
 		this.contextCommands = contextCommands;
@@ -53,7 +54,7 @@ public class SmartQueue {
 	 * @since v1.5
 	 */
 	@Nonnull
-	protected Pair<List<SlashCommand>, List<ContextCommand<?>>> checkGlobal(@Nonnull List<Command> existing) {
+	protected Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGlobal(@Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(existing, null);
 		}
@@ -68,7 +69,7 @@ public class SmartQueue {
 	 * @since v1.5
 	 */
 	@Nonnull
-	protected Pair<List<SlashCommand>, List<ContextCommand<?>>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
+	protected Pair<Set<SlashCommand>, Set<ContextCommand<?>>> checkGuild(@Nonnull Guild guild, @Nonnull List<Command> existing) {
 		if (!existing.isEmpty()) {
 			return removeDuplicates(existing, guild);
 		}
@@ -84,7 +85,7 @@ public class SmartQueue {
 	 * @since v1.5
 	 */
 	@Nonnull
-	private Pair<List<SlashCommand>, List<ContextCommand<?>>> removeDuplicates(@Nonnull final List<Command> existing, @Nullable Guild guild) {
+	private Pair<Set<SlashCommand>, Set<ContextCommand<?>>> removeDuplicates(@Nonnull final List<Command> existing, @Nullable Guild guild) {
 		List<Command> commands = new ArrayList<>(existing);
 		boolean global = guild == null;
 		String prefix = String.format("[%s] ", global ? "Global" : guild.getName());
