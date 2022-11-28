@@ -91,13 +91,13 @@ public class SmartQueue {
 		DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE, prefix + "Found %s existing command(s)", existing.size());
 		// remove already-existing commands
 		commands.removeIf(cmd -> {
-			boolean b;
+			boolean isCheckingGuilds;
 			if (cmd.getType().equals(Command.Type.SLASH)) {
-				b = slashCommands.stream().anyMatch(data -> CommandUtils.compareSlashCommands(cmd, data));
+				isCheckingGuilds = slashCommands.stream().anyMatch(data -> CommandUtils.compareSlashCommands(cmd, data));
 			} else {
-				b = contextCommands.stream().anyMatch(data -> CommandUtils.compareContextCommands(cmd, data));
+				isCheckingGuilds = contextCommands.stream().anyMatch(data -> CommandUtils.compareContextCommands(cmd, data));
 			}
-			if (b) {
+			if (isCheckingGuilds) {
 				// check for command in blacklisted guilds
 				if (!global) {
 					slashCommands.forEach(slash -> checkRequiredGuilds(guild, cmd, slash));

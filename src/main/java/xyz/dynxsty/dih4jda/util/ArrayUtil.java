@@ -31,7 +31,14 @@ public class ArrayUtil {
         return false;
     }
 
-    public static byte[] getSortedArrayFromDataObject(@Nonnull DataObject dataObject) {
+    /**
+     * Gets the json-byte array and sorts it via {@link Arrays#sort(byte[])}.
+     *
+     * @param dataObject The {@link DataObject} to get the json-byte array from.
+     * @return A sorted byte array.
+     * @since v1.6.1
+     */
+    public static byte[] sortArrayFromDataObject(@Nonnull DataObject dataObject) {
         byte[] array = dataObject.toJson();
         Arrays.sort(array);
         return array;

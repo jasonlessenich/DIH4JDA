@@ -32,16 +32,8 @@ public class CommandUtils {
 	 * @return Whether both {@link DataObject} share the same properties.
 	 * @since v1.6
 	 */
-	//synchronized -> because DataObject is not thread safe!
 	public static synchronized boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
-		boolean bo = Arrays.equals(ArrayUtil.getSortedArrayFromDataObject(data),
-				ArrayUtil.getSortedArrayFromDataObject(other));
-		//.toMap() function is necessary because the DataObject does not have a custom implementation of .equals()
-		/*System.out.println(data.toMap());
-		System.out.println("\n");
-		System.out.println(other.toMap());
-		System.out.println("Equals: " + bo + "\n\n");*/
-		return bo;
+		return Arrays.equals(ArrayUtil.sortArrayFromDataObject(data), ArrayUtil.sortArrayFromDataObject(other));
 	}
 
 	/**
