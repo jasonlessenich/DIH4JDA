@@ -12,7 +12,7 @@ import java.util.Set;
  *
  * @see RestrictedCommand#setRequiredRoles(Long...)
  */
-public class InvalidRoleEvent extends DIH4JDAEvent<CommandInteraction> {
+public class InvalidRoleEvent extends DIH4JDAInteractionEvent<CommandInteraction> {
 
 	private final Set<Long> roleIds;
 

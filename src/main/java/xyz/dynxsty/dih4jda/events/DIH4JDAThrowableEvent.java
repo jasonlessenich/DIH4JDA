@@ -6,11 +6,11 @@ import xyz.dynxsty.dih4jda.DIH4JDA;
 import javax.annotation.Nonnull;
 
 /**
- * Further abstraction of the {@link DIH4JDAEvent} class, which features {@link Throwable}s.
+ * Further abstraction of the {@link DIH4JDAInteractionEvent} class, which features {@link Throwable}s.
  *
  * @param <I> The follow-up interaction for this event.
  */
-public abstract class DIH4JDAThrowableEvent<I extends Interaction> extends DIH4JDAEvent<I> {
+public abstract class DIH4JDAThrowableEvent<I extends Interaction> extends DIH4JDAInteractionEvent<I> {
 
 	private final Throwable throwable;
 

@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
@@ -20,17 +21,20 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
+import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.AutoCompleteExceptionEvent;
 import xyz.dynxsty.dih4jda.events.CommandCooldownEvent;
 import xyz.dynxsty.dih4jda.events.CommandExceptionEvent;
 import xyz.dynxsty.dih4jda.events.ComponentExceptionEvent;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEvent;
+import xyz.dynxsty.dih4jda.events.DIH4JDAInteractionEvent;
 import xyz.dynxsty.dih4jda.events.InsufficientPermissionsEvent;
 import xyz.dynxsty.dih4jda.events.InvalidGuildEvent;
 import xyz.dynxsty.dih4jda.events.InvalidRoleEvent;
 import xyz.dynxsty.dih4jda.events.InvalidUserEvent;
 import xyz.dynxsty.dih4jda.events.ModalExceptionEvent;
+import xyz.dynxsty.dih4jda.events.interactions.TextCommandEvent;
 import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
@@ -39,6 +43,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationComm
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import xyz.dynxsty.dih4jda.interactions.components.IdMapping;
@@ -84,6 +89,7 @@ public class InteractionHandler extends ListenerAdapter {
 
 	protected final Set<SlashCommand> slashCommands;
 	protected final Set<ContextCommand<?>> contextCommands;
+	protected final Set<TextCommand> textCommands;
 	/**
 	 * The main {@link DIH4JDA} instance.
 	 */
@@ -123,6 +129,9 @@ public class InteractionHandler extends ListenerAdapter {
 	 */
 	private final Map<String, AutoCompletable> autoCompleteIndex;
 
+	// TODO: Docs
+	private final Map<String, TextCommand> textCommandsIndex;
+
 	/**
 	 * Constructs a new {@link InteractionHandler} from the supplied {@link DIH4JDA} instance}.
 	 *
@@ -134,10 +143,12 @@ public class InteractionHandler extends ListenerAdapter {
 
 		slashCommands = new HashSet<>();
 		contextCommands = new HashSet<>();
+		textCommands = new HashSet<>();
 		for (String pkg : config.getCommandPackages()) {
 			try {
 				findSlashCommands(pkg);
 				findContextCommands(pkg);
+				findTextCommands(pkg);
 			} catch (ReflectiveOperationException | DIH4JDAException e) {
 				DIH4JDALogger.error("An error occurred while initializing commands in package %s: %s", pkg, e.getMessage());
 			}
@@ -148,6 +159,7 @@ public class InteractionHandler extends ListenerAdapter {
 		messageContextIndex = new HashMap<>();
 		userContextIndex = new HashMap<>();
 		autoCompleteIndex = new HashMap<>();
+		textCommandsIndex = new HashMap<>();
 	}
 
 	/**
@@ -163,12 +175,12 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	/**
-	 * Registers all interactions.
+	 * Registers all commands.
 	 * This method can be accessed from the {@link DIH4JDA} instance.
 	 * <br>This is automatically executed each time the {@link ListenerAdapter#onReady(net.dv8tion.jda.api.events.session.ReadyEvent)} event is executed.
 	 * (can be disabled using {@link DIH4JDABuilder#disableAutomaticCommandRegistration()})
 	 */
-	public void registerInteractions() {
+	public void registerCommands() {
 		// retrieve (and smartqueue) guild commands
 		Pair<Set<SlashCommand>, Set<ContextCommand<?>>> data = new Pair<>(getSlashCommands(), getContextCommandData());
 		for (Guild guild : config.getJDA().getGuilds()) {
@@ -207,6 +219,7 @@ public class InteractionHandler extends ListenerAdapter {
 			DIH4JDALogger.info("Created %s AutoComplete binding(s): %s", autoCompleteIndex.size(),
 					autoCompleteIndex.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue().getClass().getSimpleName()).collect(Collectors.joining(", ")));
 		}
+		getTextCommands().forEach(t -> textCommandsIndex.put(t.getName(), t));
 	}
 
 	/**
@@ -274,7 +287,7 @@ public class InteractionHandler extends ListenerAdapter {
 			if (Checks.checkEmptyConstructor(subType)) {
 				slashCommands.add((SlashCommand) ClassUtils.getInstance(subType));
 			} else {
-				DIH4JDALogger.error("Could not initialize %s! The class MUST contain a empty public constructor.", subType.getName());
+				DIH4JDALogger.error("Could not initialize %s! The class MUST contain a public constructor with no arguments!", subType.getName());
 			}
 		}
 	}
@@ -291,9 +304,38 @@ public class InteractionHandler extends ListenerAdapter {
 			if (Checks.checkEmptyConstructor(subType)) {
 				contextCommands.add((ContextCommand<?>) ClassUtils.getInstance(subType));
 			} else {
-				DIH4JDALogger.error("Could not initialize %s! The class MUST contain a empty public constructor.", subType.getName());
+				DIH4JDALogger.error("Could not initialize %s! The class MUST contain a public constructor with no arguments!", subType.getName());
 			}
 		}
+	}
+
+	// TODO: Docs
+	private void findTextCommands(@Nonnull String pkg) throws ReflectiveOperationException, DIH4JDAException {
+		ClassWalker classes = new ClassWalker(pkg);
+		Set<Class<? extends TextCommand>> subTypes = classes.getSubTypesOf(TextCommand.class);
+		for (Class<? extends TextCommand> subType : subTypes) {
+			if (Checks.checkEmptyConstructor(subType)) {
+				textCommands.add((TextCommand) ClassUtils.getInstance(subType));
+			} else {
+				DIH4JDALogger.error("Could not initialize %s! The class MUST contain a public constructor with no arguments!", subType.getName());
+			}
+		}
+	}
+
+	// TODO: Docs
+	@Nonnull
+	public Set<TextCommand> getTextCommands() {
+		Set<TextCommand> commands = new HashSet<>();
+		for (TextCommand command : this.textCommands) {
+			if (command != null) {
+				if (command.getName() == null || command.getName().isEmpty()) {
+					DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "Found invalid text command in class %s! TextCommand name may not be empty or null!", command.getClass().getName());
+				} else {
+					commands.add(command);
+				}
+			}
+		}
+		return commands;
 	}
 
 	/**
@@ -530,6 +572,24 @@ public class InteractionHandler extends ListenerAdapter {
 		}
 	}
 
+	private void handleTextCommand(@NotNull MessageReceivedEvent event) throws CommandNotRegisteredException {
+		String prefix = dih4jda.getEffectivePrefix(event.getGuild().getIdLong());
+		String content = event.getMessage().getContentRaw();
+		if (!content.startsWith(prefix)) return;
+		String[] args = content.split("\\s+");
+		TextCommand command = textCommandsIndex.get(args[0].substring(prefix.length()));
+		if (command == null) {
+			if (config.isThrowUnregisteredException()) {
+				throw new CommandNotRegisteredException(String.format("Text Command \"%s\" is not registered.", args[0]));
+			}
+		} else {
+			// TODO: Implement Command Requirements
+			//if (passesRequirements(event, command, RegistrationType.GUILD)) {
+				command.execute(new TextCommandEvent("onTextCommandEvent", dih4jda, event));
+			//}
+		}
+	}
+
 	/**
 	 * Checks if the given {@link CommandInteraction} passes the
 	 * {@link RestrictedCommand} requirements.
@@ -551,30 +611,30 @@ public class InteractionHandler extends ListenerAdapter {
 		if (type == RegistrationType.GUILD && guildIds.length != 0 && interaction.isFromGuild() &&
 				interaction.getGuild() != null && !Arrays.asList(guildIds).contains(interaction.getGuild().getIdLong())
 		) {
-			DIH4JDAEvent.fire(new InvalidGuildEvent(dih4jda, interaction, Set.of(guildIds)));
+			DIH4JDAInteractionEvent.fire(new InvalidGuildEvent(dih4jda, interaction, Set.of(guildIds)));
 			return false;
 		}
 		if (permissions.length != 0 && interaction.isFromGuild() &&
 				interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
-			DIH4JDAEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
+			DIH4JDAInteractionEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
 			return false;
 		}
 		if (userIds.length != 0 && !Arrays.asList(userIds).contains(userId)) {
-			DIH4JDAEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
+			DIH4JDAInteractionEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
 			return false;
 		}
 		if (interaction.isFromGuild() && interaction.getGuild() != null && interaction.getMember() != null) {
 			Member member = interaction.getMember();
 			if (roleIds.length != 0 && !member.getRoles().isEmpty() &&
 					member.getRoles().stream().noneMatch(r -> Arrays.asList(roleIds).contains(r.getIdLong()))) {
-				DIH4JDAEvent.fire(new InvalidRoleEvent(dih4jda, interaction, Set.of(roleIds)));
+				DIH4JDAInteractionEvent.fire(new InvalidRoleEvent(dih4jda, interaction, Set.of(roleIds)));
 				return false;
 			}
 		}
 		// check if the command has enabled some sort of cooldown
 		if (command.getCommandCooldown() != Duration.ZERO) {
 			if (command.hasCooldown(userId)) {
-				DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, command.retrieveCooldown(userId)));
+				DIH4JDAInteractionEvent.fire(new CommandCooldownEvent(dih4jda, interaction, command.retrieveCooldown(userId)));
 				return false;
 			} else {
 				command.applyCooldown(userId, Instant.now().plus(command.getCommandCooldown()));
@@ -594,7 +654,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleSlashCommand(event);
 			} catch (Throwable e) {
-				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
+				DIH4JDAInteractionEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -610,7 +670,7 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleUserContextCommand(event);
 			} catch (Throwable e) {
-				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
+				DIH4JDAInteractionEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -626,7 +686,19 @@ public class InteractionHandler extends ListenerAdapter {
 			try {
 				handleMessageContextCommand(event);
 			} catch (Throwable e) {
-				DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
+				DIH4JDAInteractionEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
+			}
+		}, config.getExecutor());
+	}
+
+	@Override
+	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
+		CompletableFuture.runAsync(() -> {
+			try {
+				handleTextCommand(event);
+			} catch (Throwable e) {
+				// TODO: Implement Exceptions
+				// DIH4JDAInteractionEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -645,7 +717,7 @@ public class InteractionHandler extends ListenerAdapter {
 					autoComplete.handleAutoComplete(event, event.getFocusedOption());
 				}
 			} catch (Throwable e) {
-				DIH4JDAEvent.fire(new AutoCompleteExceptionEvent(dih4jda, event, e));
+				DIH4JDAInteractionEvent.fire(new AutoCompleteExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -670,7 +742,7 @@ public class InteractionHandler extends ListenerAdapter {
 					buttonOptional.get().handleButton(event, event.getButton());
 				}
 			} catch (Throwable e) {
-				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
+				DIH4JDAInteractionEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -695,7 +767,7 @@ public class InteractionHandler extends ListenerAdapter {
 					selectMenuOptional.get().handleStringSelectMenu(event, event.getValues());
 				}
 			} catch (Throwable e) {
-				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
+				DIH4JDAInteractionEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -715,7 +787,7 @@ public class InteractionHandler extends ListenerAdapter {
 					selectMenuOptional.get().handleEntitySelectMenu(event, event.getValues());
 				}
 			} catch (Throwable e) {
-				DIH4JDAEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
+				DIH4JDAInteractionEvent.fire(new ComponentExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}
@@ -740,7 +812,7 @@ public class InteractionHandler extends ListenerAdapter {
 					modalOptional.get().handleModal(event, event.getValues());
 				}
 			} catch (Throwable e) {
-				DIH4JDAEvent.fire(new ModalExceptionEvent(dih4jda, event, e));
+				DIH4JDAInteractionEvent.fire(new ModalExceptionEvent(dih4jda, event, e));
 			}
 		}, config.getExecutor());
 	}

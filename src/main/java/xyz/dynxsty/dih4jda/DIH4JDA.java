@@ -11,6 +11,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationComm
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import xyz.dynxsty.dih4jda.interactions.components.IdMapping;
@@ -19,8 +20,10 @@ import xyz.dynxsty.dih4jda.interactions.components.StringSelectMenuHandler;
 import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
 import javax.annotation.Nonnull;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -85,6 +88,12 @@ public class DIH4JDA extends ListenerAdapter {
 	private final Set<DIH4JDAEventListener> listeners;
 	private final InteractionHandler handler;
 
+	// TODO: Docs
+	private String globalPrefix = "!";
+
+	// TODO: Docs
+	private Map<Long, String> guildPrefixOverrides = new HashMap<>();
+
 	/**
 	 * Constructs a new DIH4JDA instance using the specified {@link DIH4JDAConfig}.
 	 * It is <b>highly recommended</b> to use the {@link DIH4JDABuilder} instead.
@@ -112,7 +121,7 @@ public class DIH4JDA extends ListenerAdapter {
 			return;
 		}
 		if (config.isRegisterOnReady() && handler != null) {
-			handler.registerInteractions();
+			handler.registerCommands();
 		}
 	}
 
@@ -143,7 +152,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	public void registerInteractions() {
 		if (handler != null) {
-			handler.registerInteractions();
+			handler.registerCommands();
 		}
 	}
 
@@ -212,6 +221,11 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	public void addContextCommands(@Nonnull ContextCommand<?>... commands) {
 		handler.contextCommands.addAll(List.of(commands));
+	}
+
+	// TODO: Docs
+	public void addTextCommands(@Nonnull TextCommand... commands) {
+		handler.textCommands.addAll(List.of(commands));
 	}
 
 	/**
@@ -336,6 +350,38 @@ public class DIH4JDA extends ListenerAdapter {
 	@Nonnull
 	public final IdMapping<ModalHandler>[] getModalMappings() {
 		return modalMappings;
+	}
+
+	// TODO: Docs
+	public String getGlobalPrefix() {
+		return globalPrefix;
+	}
+
+	// TODO: Docs
+	public void setGlobalPrefix(String globalPrefix) {
+		this.globalPrefix = globalPrefix;
+	}
+
+	// TODO: Docs
+	public Map<Long, String> getGuildPrefixOverrides() {
+		return guildPrefixOverrides;
+	}
+
+	// TODO: Docs
+	public void addGuildPrefixOverride(Long guildId, String prefix) {
+		guildPrefixOverrides.put(guildId, prefix);
+	}
+
+	// TODO: Docs
+	public String removeGuildPrefixOverride(Long guildId) {
+		return guildPrefixOverrides.remove(guildId);
+	}
+
+	// TODO: Docs
+	public String getEffectivePrefix(Long guildId) {
+		String prefix = guildPrefixOverrides.get(guildId);
+		if (prefix == null) return globalPrefix;
+		else return prefix;
 	}
 
 	/**

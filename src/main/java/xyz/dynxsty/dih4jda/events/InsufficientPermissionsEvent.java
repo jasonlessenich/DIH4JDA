@@ -13,7 +13,7 @@ import java.util.Set;
  *
  * @see RestrictedCommand#setRequiredPermissions(Permission...)
  */
-public class InsufficientPermissionsEvent extends DIH4JDAEvent<CommandInteraction> {
+public class InsufficientPermissionsEvent extends DIH4JDAInteractionEvent<CommandInteraction> {
 
 	private final Set<Permission> permissions;
 
