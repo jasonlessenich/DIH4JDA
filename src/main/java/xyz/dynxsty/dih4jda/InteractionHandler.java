@@ -328,15 +328,32 @@ public class InteractionHandler extends ListenerAdapter {
 	public Set<TextCommand> getTextCommands() {
 		Set<TextCommand> commands = new HashSet<>();
 		for (TextCommand command : this.textCommands) {
-			if (command != null) {
-				if (command.getName() == null || command.getName().isEmpty()) {
-					DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "Found invalid text command in class %s! TextCommand name may not be empty or null!", command.getClass().getName());
-				} else {
-					commands.add(command);
-				}
+			if (command != null && checkTextCommand(command)) {
+				commands.add(command);
 			}
 		}
 		return commands;
+	}
+
+	// TODO: Docs
+	private boolean checkTextCommand(@NotNull TextCommand command) {
+		if (command.getName() == null || command.getName().isEmpty()) {
+			DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) name may not be empty or null!", command.getClass().getName());
+			return false;
+		}
+		if (!command.getName().toLowerCase().equals(command.getName())) {
+			DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) name MUST be lowercase!", command.getClass().getName());
+			return false;
+		}
+		// TODO: fix check for aliases
+		if ((config.isEnableHelpCommand() && config.getHelpCommandNames().contains(command.getName())) ||
+				textCommandsIndex.values().stream().anyMatch(t -> t.getName().equals(command.getName()) || Arrays.asList(t.getAliases()).contains(command.getName()))
+		) {
+			DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand in class (%s) uses a name (%s) that is already taken!", command.getClass().getName(), command.getName());
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
