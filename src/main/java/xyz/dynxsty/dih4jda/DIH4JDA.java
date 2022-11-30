@@ -1,8 +1,10 @@
 package xyz.dynxsty.dih4jda;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
@@ -20,11 +22,14 @@ import xyz.dynxsty.dih4jda.interactions.components.StringSelectMenuHandler;
 import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * <p><b>Getting Started</b></p>
@@ -92,7 +97,7 @@ public class DIH4JDA extends ListenerAdapter {
 	private String globalPrefix = "!";
 
 	// TODO: Docs
-	private Map<Long, String> guildPrefixOverrides = new HashMap<>();
+	private final Map<Long, String> guildPrefixOverrides = new HashMap<>();
 
 	/**
 	 * Constructs a new DIH4JDA instance using the specified {@link DIH4JDAConfig}.
@@ -226,6 +231,27 @@ public class DIH4JDA extends ListenerAdapter {
 	// TODO: Docs
 	public void addTextCommands(@Nonnull TextCommand... commands) {
 		handler.textCommands.addAll(List.of(commands));
+	}
+
+	public Set<TextCommand> getTextCommands() {
+		return handler.textCommands;
+	}
+
+	public Map<String, List<TextCommand>> getTextCommandsCategorized() {
+		Map<String, List<TextCommand>> categorized = new HashMap<>();
+		handler.textCommands.forEach(c -> {
+			String category = c.getCategory() == null ? "Uncategorized" : c.getCategory();
+			if (categorized.containsKey(category)) {
+				List<TextCommand> mapped = categorized.get(category);
+				mapped.add(c);
+				categorized.put(category, mapped);
+			} else {
+				List<TextCommand> command = new ArrayList<>();
+				command.add(c);
+				categorized.put(category, command);
+			}
+		});
+		return categorized;
 	}
 
 	/**
@@ -378,8 +404,9 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	// TODO: Docs
-	public String getEffectivePrefix(Long guildId) {
-		String prefix = guildPrefixOverrides.get(guildId);
+	public String getEffectivePrefix(Guild guild) {
+		if (guild == null) return globalPrefix;
+		String prefix = guildPrefixOverrides.get(guild.getIdLong());
 		if (prefix == null) return globalPrefix;
 		else return prefix;
 	}

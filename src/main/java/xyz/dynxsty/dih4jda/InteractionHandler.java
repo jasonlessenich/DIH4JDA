@@ -28,7 +28,6 @@ import xyz.dynxsty.dih4jda.events.CommandCooldownEvent;
 import xyz.dynxsty.dih4jda.events.CommandExceptionEvent;
 import xyz.dynxsty.dih4jda.events.ComponentExceptionEvent;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEvent;
-import xyz.dynxsty.dih4jda.events.DIH4JDAInteractionEvent;
 import xyz.dynxsty.dih4jda.events.InsufficientPermissionsEvent;
 import xyz.dynxsty.dih4jda.events.InvalidGuildEvent;
 import xyz.dynxsty.dih4jda.events.InvalidRoleEvent;
@@ -60,10 +59,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -573,10 +574,15 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	private void handleTextCommand(@NotNull MessageReceivedEvent event) throws CommandNotRegisteredException {
-		String prefix = dih4jda.getEffectivePrefix(event.getGuild().getIdLong());
+		String prefix = dih4jda.getEffectivePrefix(event.getGuild());
 		String content = event.getMessage().getContentRaw();
 		if (!content.startsWith(prefix)) return;
 		String[] args = content.split("\\s+");
+		TextCommandEvent textEvent = new TextCommandEvent("onTextCommandEvent", dih4jda, event);
+		if (config.isEnableHelpCommand() && config.getHelpCommandNames().contains(args[0].substring(prefix.length()))) {
+			config.getHelpCommandConsumer().accept(textEvent, new ArrayList<>(textCommandsIndex.values()));
+			return;
+		}
 		TextCommand command = textCommandsIndex.get(args[0].substring(prefix.length()));
 		if (command == null) {
 			if (config.isThrowUnregisteredException()) {
@@ -585,7 +591,7 @@ public class InteractionHandler extends ListenerAdapter {
 		} else {
 			// TODO: Implement Command Requirements
 			//if (passesRequirements(event, command, RegistrationType.GUILD)) {
-				command.execute(new TextCommandEvent("onTextCommandEvent", dih4jda, event));
+				command.execute(textEvent);
 			//}
 		}
 	}

@@ -1,11 +1,23 @@
 package xyz.dynxsty.dih4jda.config;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.DIH4JDALogger;
+import xyz.dynxsty.dih4jda.events.interactions.TextCommandEvent;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
 
+import java.awt.*;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * Simple data class which represents {@link DIH4JDA}'s configuration.
@@ -20,7 +32,24 @@ public class DIH4JDAConfig {
     private boolean deleteUnknownCommands = true;
     private boolean throwUnregisteredException = true;
     private boolean defaultPrintStacktrace = true;
+    private boolean enableHelpCommand = true;
     private Executor executor = ForkJoinPool.commonPool();
+    private List<String> helpCommandNames = List.of("help");
+    private BiConsumer<TextCommandEvent, List<TextCommand>> helpCommandConsumer = (event, commands) -> {
+        String prefix = event.getDIH4JDA().getEffectivePrefix(event.getGuild());
+        Map<String, List<TextCommand>> categorizedCommand = event.getDIH4JDA().getTextCommandsCategorized();
+		// build embed
+		EmbedBuilder builder = new EmbedBuilder()
+				.setTitle("Help List")
+				.setColor(Color.blue)
+				.setTimestamp(Instant.now());
+	    categorizedCommand.forEach((category, list) -> {
+		    builder.appendDescription(String.format("%n**%s**%n", category));
+		    list.forEach(c -> builder.appendDescription(String.format("`%s%s`%s%n", prefix, c.getName(),
+                    c.getDescription() == null ? "" : ": " + c.getDescription())));
+	    });
+		event.getMessage().replyEmbeds(builder.build()).queue();
+    };
 
     /**
      * Creates a default instance.
@@ -217,5 +246,35 @@ public class DIH4JDAConfig {
      */
     public void setThrowUnregisteredException(boolean throwUnregisteredException) {
         this.throwUnregisteredException = throwUnregisteredException;
+    }
+
+    // TODO: Docs
+    public boolean isEnableHelpCommand() {
+        return enableHelpCommand;
+    }
+
+    // TODO: Docs
+    public void setEnableHelpCommand(boolean enableHelpCommand) {
+        this.enableHelpCommand = enableHelpCommand;
+    }
+
+    // TODO: Docs
+    public void setHelpCommandNames(List<String> helpCommandNames) {
+        this.helpCommandNames = helpCommandNames;
+    }
+
+    // TODO: Docs
+    public List<String> getHelpCommandNames() {
+        return helpCommandNames;
+    }
+
+    // TODO: Docs
+    public void setHelpCommandConsumer(BiConsumer<TextCommandEvent, List<TextCommand>> helpCommandConsumer) {
+        this.helpCommandConsumer = helpCommandConsumer;
+    }
+
+    // TODO: Docs
+    public BiConsumer<TextCommandEvent, List<TextCommand>> getHelpCommandConsumer() {
+        return helpCommandConsumer;
     }
 }
