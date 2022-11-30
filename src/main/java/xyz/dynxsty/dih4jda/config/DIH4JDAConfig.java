@@ -37,7 +37,7 @@ public class DIH4JDAConfig {
     private List<String> helpCommandNames = List.of("help");
     private BiConsumer<TextCommandEvent, List<TextCommand>> helpCommandConsumer = (event, commands) -> {
         String prefix = event.getDIH4JDA().getEffectivePrefix(event.getGuild());
-        Map<String, List<TextCommand>> categorizedCommand = event.getDIH4JDA().getTextCommandsCategorized();
+        Map<String, List<TextCommand>> categorizedCommand = event.getDIH4JDA().getTextCommandsCategorized("Uncategorized");
 		// build embed
 		EmbedBuilder builder = new EmbedBuilder()
 				.setTitle("Help List")
