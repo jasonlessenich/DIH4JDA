@@ -220,7 +220,16 @@ public class InteractionHandler extends ListenerAdapter {
 			DIH4JDALogger.info("Created %s AutoComplete binding(s): %s", autoCompleteIndex.size(),
 					autoCompleteIndex.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue().getClass().getSimpleName()).collect(Collectors.joining(", ")));
 		}
-		getTextCommands().forEach(t -> textCommandsIndex.put(t.getName(), t));
+		textCommands.forEach(t -> {
+			if (checkTextCommand(t)) {
+				textCommandsIndex.put(t.getName(), t);
+				if (t.getAliases() != null && t.getAliases().length > 0) {
+					for (String alias : t.getAliases()) {
+						textCommandsIndex.put(alias, t);
+					}
+				}
+			}
+		});
 	}
 
 	/**
@@ -324,18 +333,6 @@ public class InteractionHandler extends ListenerAdapter {
 	}
 
 	// TODO: Docs
-	@Nonnull
-	public Set<TextCommand> getTextCommands() {
-		Set<TextCommand> commands = new HashSet<>();
-		for (TextCommand command : this.textCommands) {
-			if (command != null && checkTextCommand(command)) {
-				commands.add(command);
-			}
-		}
-		return commands;
-	}
-
-	// TODO: Docs
 	private boolean checkTextCommand(@NotNull TextCommand command) {
 		if (command.getName() == null || command.getName().isEmpty()) {
 			DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) name may not be empty or null!", command.getClass().getName());
@@ -345,14 +342,20 @@ public class InteractionHandler extends ListenerAdapter {
 			DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) name MUST be lowercase!", command.getClass().getName());
 			return false;
 		}
-		// TODO: fix check for aliases
+		if (command.getAliases() != null && command.getAliases().length > 0) {
+			for (String alias : command.getAliases()) {
+				if (!alias.toLowerCase().equals(alias)) {
+					DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) aliases MUST be lowercase!", command.getClass().getName());
+					return false;
+				}
+			}
+		}
 		if ((config.isEnableHelpCommand() && config.getHelpCommandNames().contains(command.getName())) ||
 				textCommandsIndex.values().stream().anyMatch(t -> t.getName().equals(command.getName()) || Arrays.asList(t.getAliases()).contains(command.getName()))
 		) {
 			DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand in class (%s) uses a name (%s) that is already taken!", command.getClass().getName(), command.getName());
 			return false;
 		}
-
 		return true;
 	}
 

@@ -8,7 +8,7 @@ public abstract class TextCommand extends RestrictedCommand implements Executabl
 	private String name;
 	private String description;
 	private String category;
-	private String[] aliases;
+	private String[] aliases = new String[]{};
 
 	// TODO: Docs
 	public String getName() {

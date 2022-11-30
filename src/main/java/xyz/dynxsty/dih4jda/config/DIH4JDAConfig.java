@@ -10,6 +10,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
 import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Simple data class which represents {@link DIH4JDA}'s configuration.
@@ -45,7 +47,13 @@ public class DIH4JDAConfig {
 				.setTimestamp(Instant.now());
 	    categorizedCommand.forEach((category, list) -> {
 		    builder.appendDescription(String.format("%n**%s**%n", category));
-		    list.forEach(c -> builder.appendDescription(String.format("`%s%s`%s%n", prefix, c.getName(),
+		    list.forEach(c -> builder.appendDescription(String.format("`%s%s`%s%s%n", prefix, c.getName(),
+                    c.getAliases() != null && c.getAliases().length > 0 ?
+                            String.format(" (%s)",
+                                    Arrays.stream(c.getAliases())
+                                            .map(s -> String.format("`%s%s`", prefix, s))
+                                            .collect(Collectors.joining(", "))
+                            ) : "",
                     c.getDescription() == null ? "" : ": " + c.getDescription())));
 	    });
 		event.getMessage().replyEmbeds(builder.build()).queue();
