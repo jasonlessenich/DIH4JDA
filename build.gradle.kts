@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     java
     `java-library`
@@ -70,8 +72,11 @@ dependencies {
 }
 
 val jar: Jar by tasks
+val shadowJar: ShadowJar by tasks
 val javadoc: Javadoc by tasks
 val build: Task by tasks
+
+shadowJar.archiveClassifier.set("withDependencies")
 
 tasks.withType<Test> {
     useJUnitPlatform()
@@ -136,6 +141,7 @@ build.apply {
     dependsOn(jar)
     dependsOn(sourcesJar)
     dependsOn(javadocJar)
+    dependsOn(shadowJar)
 }
 
 ////////////////////////////////////////
