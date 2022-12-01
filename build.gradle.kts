@@ -46,6 +46,7 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
+val lombokVersion = "1.18.24"
 
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
@@ -54,6 +55,12 @@ dependencies {
 
     api("net.dv8tion:JDA:5.0.0-beta.1")
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+
+    //Lombok's annotations
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {
