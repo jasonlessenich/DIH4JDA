@@ -35,6 +35,7 @@ import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.ApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
@@ -181,7 +182,7 @@ public class InteractionHandler extends ListenerAdapter {
 				}
 				// upsert all (remaining) guild commands
 				if (!guildData.getFirst().isEmpty() || !guildData.getSecond().isEmpty()) {
-					upsert(guild, guildData.getFirst(), guildData.getSecond());
+					update(guild, guildData.getFirst(), guildData.getSecond());
 				}
 			}, error -> DIH4JDALogger.error("Could not retrieve commands for guild %s!" +
 					" Please make sure that the bot was invited with the application.commands scope!", guild.getName()));
@@ -196,7 +197,7 @@ public class InteractionHandler extends ListenerAdapter {
 			}
 			// upsert all (remaining) global commands
 			if (!globalData.getFirst().isEmpty() || !globalData.getSecond().isEmpty()) {
-				upsert(config.getJda(), globalData.getFirst(), globalData.getSecond());
+				update(config.getJda(), globalData.getFirst(), globalData.getSecond());
 				DIH4JDALogger.info(DIH4JDALogger.Type.COMMANDS_QUEUED, "Queued %s global command(s): %s",
 						globalData.getFirst().size() + globalData.getSecond().size(), CommandUtils.getNames(globalData.getSecond(), globalData.getFirst()));
 			}
@@ -217,9 +218,11 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashCommands    A {@link Set} of {@link SlashCommandData}.
 	 * @param contextCommands A {@link Set} of {@link CommandData},
 	 */
-	private void upsert(@Nonnull JDA jda, @Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands) {
-		slashCommands.forEach(data -> jda.upsertCommand(data.getCommandData()).queue(this::cacheCommand));
-		contextCommands.forEach(data -> jda.upsertCommand(data.getCommandData()).queue(this::cacheCommand));
+	private void update(@Nonnull JDA jda, @Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands) {
+		Set<SlashCommandData> slashCommandData = slashCommands.stream().map(ApplicationCommand::getCommandData).collect(Collectors.toSet());
+		Set<CommandData> contextCommandData = contextCommands.stream().map(ApplicationCommand::getCommandData).collect(Collectors.toSet());
+		jda.updateCommands().addCommands(slashCommandData).addCommands(contextCommandData)
+				.queue(commands -> commands.forEach(this::cacheCommand));
 	}
 
 	/**
@@ -231,13 +234,15 @@ public class InteractionHandler extends ListenerAdapter {
 	 * @param slashCommands   A {@link Set} of {@link SlashCommandData}.
 	 * @param contextCommands A {@link Set} of {@link CommandData},
 	 */
-	private void upsert(@Nonnull Guild guild, @Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands) {
+	private void update(@Nonnull Guild guild, @Nonnull Set<SlashCommand> slashCommands, @Nonnull Set<ContextCommand<?>> contextCommands) {
 		StringBuilder commandNames = new StringBuilder();
+		Set<SlashCommandData> slashCommandData = new HashSet<>();
+		Set<CommandData> contextCommandData = new HashSet<>();
 		slashCommands.forEach(data -> {
 			Long[] guildIds = data.getQueueableGuilds();
 			if (guildIds.length == 0 || Arrays.asList(guildIds).contains(guild.getIdLong())) {
-				guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
 				commandNames.append(", /").append(data.getCommandData().getName());
+				slashCommandData.add(data.getCommandData());
 			} else {
 				DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash command because the data is null.");
 			}
@@ -245,8 +250,8 @@ public class InteractionHandler extends ListenerAdapter {
 		contextCommands.forEach(data -> {
 			Long[] guildIds = data.getQueueableGuilds();
 			if (guildIds.length == 0 || Arrays.asList(guildIds).contains(guild.getIdLong())) {
-				guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
 				commandNames.append(", ").append(data.getCommandData().getName());
+				contextCommandData.add(data.getCommandData());
 			} else {
 				DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash " +
 						"command because the data is null.");
@@ -256,6 +261,8 @@ public class InteractionHandler extends ListenerAdapter {
 			DIH4JDALogger.info(DIH4JDALogger.Type.COMMANDS_QUEUED, "Queued %s command(s) in guild %s: %s",
 					slashCommands.size() + contextCommands.size(), guild.getName(), commandNames.substring(2));
 		}
+		guild.updateCommands().addCommands(slashCommandData).addCommands(contextCommandData)
+				.queue(commands -> commands.forEach(this::cacheCommand));
 	}
 
 	private void cacheCommand(@Nonnull Command command) {
