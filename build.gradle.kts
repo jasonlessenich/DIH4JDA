@@ -18,7 +18,7 @@ fun getProjectProperty(name: String) = project.properties[name] as? String
 
 group = "xyz.dynxsty"
 val archivesBaseName = "dih4jda"
-version = "1.7.0"
+version = "1.6.2"
 
 val javaVersion = JavaVersion.current()
 var isCI: Boolean = System.getProperty("GIT_COMMIT") != null // jitpack
