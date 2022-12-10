@@ -35,7 +35,6 @@ import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.application.ApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
@@ -299,7 +298,7 @@ public class InteractionHandler extends ListenerAdapter {
             });
             contextCommands.forEach(data -> {
                 Long[] guildIds = data.getQueueableGuilds();
-                if (guildIds.length == 0 || Arrays.asList(guildIds).contains(guild.getIdLong())) {
+                if (guildIds.length == 0 || List.of(guildIds).contains(guild.getIdLong())) {
                     guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
                     commandNames.append(", ").append(data.getCommandData().getName());
                 } else {
@@ -605,7 +604,7 @@ public class InteractionHandler extends ListenerAdapter {
         Long[] userIds = command.getRequiredUsers();
         Long[] roleIds = command.getRequiredRoles();
         if (type == RegistrationType.GUILD && guildIds.length != 0 && interaction.isFromGuild() &&
-                interaction.getGuild() != null && !Arrays.asList(guildIds).contains(interaction.getGuild().getIdLong())
+                interaction.getGuild() != null && !List.of(guildIds).contains(interaction.getGuild().getIdLong())
         ) {
             DIH4JDAEvent.fire(new InvalidGuildEvent(dih4jda, interaction, Set.of(guildIds)));
             return false;
@@ -615,14 +614,14 @@ public class InteractionHandler extends ListenerAdapter {
             DIH4JDAEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
             return false;
         }
-        if (userIds.length != 0 && !Arrays.asList(userIds).contains(userId)) {
+        if (userIds.length != 0 && !List.of(userIds).contains(userId)) {
             DIH4JDAEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
             return false;
         }
         if (interaction.isFromGuild() && interaction.getGuild() != null && interaction.getMember() != null) {
             Member member = interaction.getMember();
             if (roleIds.length != 0 && !member.getRoles().isEmpty() &&
-                    member.getRoles().stream().noneMatch(r -> Arrays.asList(roleIds).contains(r.getIdLong()))) {
+                    member.getRoles().stream().noneMatch(r -> List.of(roleIds).contains(r.getIdLong()))) {
                 DIH4JDAEvent.fire(new InvalidRoleEvent(dih4jda, interaction, Set.of(roleIds)));
                 return false;
             }
@@ -717,7 +716,7 @@ public class InteractionHandler extends ListenerAdapter {
             try {
                 if (dih4jda.getButtonMappings().length == 0) return;
                 Optional<ButtonHandler> buttonOptional = Arrays.stream(dih4jda.getButtonMappings())
-                        .filter(map -> Arrays.asList(map.getIds()).contains(ComponentIdBuilder.split(event.getComponentId())[0]))
+                        .filter(map -> List.of(map.getIds()).contains(ComponentIdBuilder.split(event.getComponentId())[0]))
                         .map(IdMapping::getHandler)
                         .findFirst();
                 if (buttonOptional.isEmpty()) {
@@ -742,7 +741,7 @@ public class InteractionHandler extends ListenerAdapter {
             try {
                 if (dih4jda.getStringSelectMenuMappings().length == 0) return;
                 Optional<StringSelectMenuHandler> selectMenuOptional = Arrays.stream(dih4jda.getStringSelectMenuMappings())
-                        .filter(map -> Arrays.asList(map.getIds()).contains(ComponentIdBuilder.split(event.getComponentId())[0]))
+                        .filter(map -> List.of(map.getIds()).contains(ComponentIdBuilder.split(event.getComponentId())[0]))
                         .map(IdMapping::getHandler)
                         .findFirst();
                 if (selectMenuOptional.isEmpty()) {
@@ -762,7 +761,7 @@ public class InteractionHandler extends ListenerAdapter {
             try {
                 if (dih4jda.getEntitySelectMenuMappings().length == 0) return;
                 Optional<EntitySelectMenuHandler> selectMenuOptional = Arrays.stream(dih4jda.getEntitySelectMenuMappings())
-                        .filter(map -> Arrays.asList(map.getIds()).contains(ComponentIdBuilder.split(event.getComponentId())[0]))
+                        .filter(map -> List.of(map.getIds()).contains(ComponentIdBuilder.split(event.getComponentId())[0]))
                         .map(IdMapping::getHandler)
                         .findFirst();
                 if (selectMenuOptional.isEmpty()) {
@@ -787,7 +786,7 @@ public class InteractionHandler extends ListenerAdapter {
             try {
                 if (dih4jda.getModalMappings().length == 0) return;
                 Optional<ModalHandler> modalOptional = Arrays.stream(dih4jda.getModalMappings())
-                        .filter(map -> Arrays.asList(map.getIds()).contains(ComponentIdBuilder.split(event.getModalId())[0]))
+                        .filter(map -> List.of(map.getIds()).contains(ComponentIdBuilder.split(event.getModalId())[0]))
                         .map(IdMapping::getHandler)
                         .findFirst();
                 if (modalOptional.isEmpty()) {

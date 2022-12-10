@@ -12,7 +12,6 @@ import xyz.dynxsty.dih4jda.util.Pair;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -129,14 +128,14 @@ public class SmartQueue {
 
 	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull SlashCommand data) {
 		if (CommandUtils.compareSlashCommands(cmd, data) && data.getQueueableGuilds().length != 0 &&
-				!Arrays.asList(data.getQueueableGuilds()).contains(guild.getIdLong())) {
+				!List.of(data.getQueueableGuilds()).contains(guild.getIdLong())) {
 			DIH4JDALogger.info("Deleting /%s in non-queueable Guild: %s", cmd.getName(), guild.getName());
 		}
 	}
 
 	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull ContextCommand<?> data) {
 		if (CommandUtils.compareContextCommands(cmd, data) && data.getQueueableGuilds().length != 0 &&
-				!Arrays.asList(data.getQueueableGuilds()).contains(guild.getIdLong())) {
+				!List.of(data.getQueueableGuilds()).contains(guild.getIdLong())) {
 			DIH4JDALogger.info("Deleting /%s in non-queueable Guild: %s", cmd.getName(), guild.getName());
 		}
 	}
