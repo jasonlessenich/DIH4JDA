@@ -288,22 +288,15 @@ public class InteractionHandler extends ListenerAdapter {
         } else {
             StringBuilder commandNames = new StringBuilder();
             slashCommands.forEach(data -> {
-                Long[] guildIds = data.getQueueableGuilds();
-                if (guildIds.length == 0 || List.of(guildIds).contains(guild.getIdLong())) {
+                if (CommandUtils.shouldBeRegistered(guild, data)) {
                     guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
                     commandNames.append(", /").append(data.getCommandData().getName());
-                } else {
-                    DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash command because the data is null.");
                 }
             });
             contextCommands.forEach(data -> {
-                Long[] guildIds = data.getQueueableGuilds();
-                if (guildIds.length == 0 || List.of(guildIds).contains(guild.getIdLong())) {
+                if (CommandUtils.shouldBeRegistered(guild, data)) {
                     guild.upsertCommand(data.getCommandData()).queue(this::cacheCommand);
                     commandNames.append(", ").append(data.getCommandData().getName());
-                } else {
-                    DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash " +
-                            "command because the data is null.");
                 }
             });
             if (!commandNames.toString().isEmpty()) {

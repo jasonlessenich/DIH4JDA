@@ -121,7 +121,8 @@ public class CommandUtils {
 		if (guildIds.length == 0 || List.of(guildIds).contains(guild.getIdLong())) {
 			return true;
 		} else {
-			DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a slash command because the data is null.");
+			DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a command, for " +
+							"guild %s.", guild.getName());
 		}
 		return false;
 	}
