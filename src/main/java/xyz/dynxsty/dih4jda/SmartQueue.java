@@ -12,7 +12,6 @@ import xyz.dynxsty.dih4jda.util.Pair;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -121,7 +120,6 @@ public class SmartQueue {
 		if (existing.contains(command)) {
 			if (deleteUnknown) {
 				DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_DELETED_UNKNOWN, prefix + "Deleting unknown %s command: %s", command.getType(), command.getName());
-				command.delete().queue();
 			} else {
 				DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_IGNORED_UNKNOWN, prefix + "Ignored unknown %s command: %s", command.getType(), command.getName());
 			}
@@ -130,17 +128,15 @@ public class SmartQueue {
 
 	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull SlashCommand data) {
 		if (CommandUtils.compareSlashCommands(cmd, data) && data.getQueueableGuilds().length != 0 &&
-				!Arrays.asList(data.getQueueableGuilds()).contains(guild.getIdLong())) {
+				!List.of(data.getQueueableGuilds()).contains(guild.getIdLong())) {
 			DIH4JDALogger.info("Deleting /%s in non-queueable Guild: %s", cmd.getName(), guild.getName());
-			cmd.delete().queue();
 		}
 	}
 
 	private void checkRequiredGuilds(Guild guild, Command cmd, @Nonnull ContextCommand<?> data) {
 		if (CommandUtils.compareContextCommands(cmd, data) && data.getQueueableGuilds().length != 0 &&
-				!Arrays.asList(data.getQueueableGuilds()).contains(guild.getIdLong())) {
+				!List.of(data.getQueueableGuilds()).contains(guild.getIdLong())) {
 			DIH4JDALogger.info("Deleting /%s in non-queueable Guild: %s", cmd.getName(), guild.getName());
-			cmd.delete().queue();
 		}
 	}
 }

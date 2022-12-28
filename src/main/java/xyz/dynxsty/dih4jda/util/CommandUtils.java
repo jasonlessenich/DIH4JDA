@@ -1,9 +1,12 @@
 package xyz.dynxsty.dih4jda.util;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import xyz.dynxsty.dih4jda.DIH4JDALogger;
+import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
@@ -11,6 +14,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -102,6 +106,25 @@ public class CommandUtils {
 				pair.getFirst().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toSet()),
 				pair.getSecond().stream().filter(c -> c.getRegistrationType().equals(type)).collect(Collectors.toSet())
 		);
+	}
+
+	/**
+	 * Checks if a command should be registered on a specific guild.
+	 *
+	 * @param guild The {@link Guild} to check.
+	 * @param command The {@link BaseApplicationCommand} to check.
+	 * @return true if the command should be registered.
+	 * @since v1.7
+	 */
+	public static boolean shouldBeRegistered(@Nonnull Guild guild, @Nonnull BaseApplicationCommand<?, ?> command) {
+		Long[] guildIds = command.getQueueableGuilds();
+		if (guildIds.length == 0 || List.of(guildIds).contains(guild.getIdLong())) {
+			return true;
+		} else {
+			DIH4JDALogger.error(DIH4JDALogger.Type.SLASH_COMMAND_SKIPPED, "Skipping registration of a command, for " +
+							"guild %s.", guild.getName());
+		}
+		return false;
 	}
 
 	/**
