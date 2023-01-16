@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionE
 import xyz.dynxsty.dih4jda.DIH4JDA;
 
 import javax.annotation.Nonnull;
+import java.util.function.Function;
 
 /**
  * An extension of {@link ApplicationCommand} which contains a {@link RegistrationType} and {@link BaseApplicationCommand#queueableGuilds}.
@@ -16,6 +17,7 @@ public abstract class BaseApplicationCommand<E extends GenericCommandInteraction
 
     private RegistrationType registrationType = DIH4JDA.getDefaultRegistrationType();
     private Long[] queueableGuilds = new Long[]{};
+	private Function<E, Boolean> canExecute = event -> true;
 
     /**
      * Creates a default {@link BaseApplicationCommand}.
@@ -60,4 +62,21 @@ public abstract class BaseApplicationCommand<E extends GenericCommandInteraction
     public Long[] getQueueableGuilds() {
         return queueableGuilds;
     }
+
+	/**
+	 * Sets a {@link Function} that determines whether the command can be executed.
+	 * @param canExecute The function to set.
+	 */
+	public void setCanExecuteFunction(@Nonnull Function<E, Boolean> canExecute) {
+		this.canExecute = canExecute;
+	}
+
+	/**
+	 * Gets the {@link Function} that determines whether the command can be executed.
+	 * @param event The event to pass to the function.
+	 * @return The result of the function as a boolean.
+	 */
+	public boolean canExecute(@Nonnull E event) {
+		return canExecute.apply(event);
+	}
 }
