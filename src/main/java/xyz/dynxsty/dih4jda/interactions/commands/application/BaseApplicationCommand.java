@@ -66,6 +66,7 @@ public abstract class BaseApplicationCommand<E extends GenericCommandInteraction
 	/**
 	 * Sets a {@link Function} that determines whether the command can be executed.
 	 * @param canExecute The function to set.
+	 * @since v1.7
 	 */
 	public void setCanExecuteFunction(@Nonnull Function<E, Boolean> canExecute) {
 		this.canExecute = canExecute;
@@ -75,6 +76,7 @@ public abstract class BaseApplicationCommand<E extends GenericCommandInteraction
 	 * Gets the {@link Function} that determines whether the command can be executed.
 	 * @param event The event to pass to the function.
 	 * @return The result of the function as a boolean.
+	 * @since v1.7
 	 */
 	public boolean canExecute(@Nonnull E event) {
 		return canExecute.apply(event);
