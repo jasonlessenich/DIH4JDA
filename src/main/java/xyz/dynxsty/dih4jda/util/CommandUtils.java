@@ -13,7 +13,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,21 +37,13 @@ public class CommandUtils {
 	 * @since v1.6
 	 */
 	public static boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
-		if (!sortOptionsFromDataObject(data).equals(sortOptionsFromDataObject(other))) {
+		if (!Arrays.equals(ArrayUtil.sortArrayFromDataArray(data.getArray("options")),
+				ArrayUtil.sortArrayFromDataArray(other.getArray("options")))) {
 			return false;
 		}
-		Map<String, Object> dataMap = data.toMap();
-		Map<String, Object> otherMap = other.toMap();
-		dataMap.remove("options");
-		otherMap.remove("options");
+		Map<String, Object> dataMap = data.remove("options").toMap();
+		Map<String, Object> otherMap = other.remove("options").toMap();
 		return dataMap.equals(otherMap);
-	}
-
-	@Nonnull
-	private static List<Object> sortOptionsFromDataObject(@Nonnull DataObject data) {
-		List<Object> list = data.getArray("options").toList();
-		list.sort(Comparator.comparing(o -> ((Map<String, String>) o).get("name")));
-		return list;
 	}
 
 	/**

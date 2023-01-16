@@ -1,6 +1,9 @@
 package xyz.dynxsty.dih4jda.util;
 
+import net.dv8tion.jda.api.utils.data.DataArray;
+
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 
 /**
  * Utility class that contains some useful methods regarding arrays.
@@ -26,5 +29,17 @@ public class ArrayUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * Checks if the specified object is inside the specified array.
+     * @param dataArray The array to check.
+     * @return Whether the object is contained inside the array.
+     */
+    @Nonnull
+    public static byte[] sortArrayFromDataArray(@Nonnull DataArray dataArray) {
+        byte[] array = dataArray.toJson();
+        Arrays.sort(array);
+        return array;
     }
 }
