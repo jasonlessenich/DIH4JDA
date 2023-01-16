@@ -13,8 +13,9 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,8 +36,22 @@ public class CommandUtils {
 	 * @return Whether both {@link DataObject} share the same properties.
 	 * @since v1.6
 	 */
-	public static synchronized boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
-		return Arrays.equals(ArrayUtil.sortArrayFromDataObject(data), ArrayUtil.sortArrayFromDataObject(other));
+	public static boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
+		if (!sortOptionsFromDataObject(data).equals(sortOptionsFromDataObject(other))) {
+			return false;
+		}
+		Map<String, Object> dataMap = data.toMap();
+		Map<String, Object> otherMap = other.toMap();
+		dataMap.remove("options");
+		otherMap.remove("options");
+		return dataMap.equals(otherMap);
+	}
+
+	@Nonnull
+	private static List<Object> sortOptionsFromDataObject(@Nonnull DataObject data) {
+		List<Object> list = data.getArray("options").toList();
+		list.sort(Comparator.comparing(o -> ((Map<String, String>) o).get("name")));
+		return list;
 	}
 
 	/**
