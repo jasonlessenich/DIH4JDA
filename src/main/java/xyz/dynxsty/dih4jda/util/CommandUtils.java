@@ -15,6 +15,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,8 +36,14 @@ public class CommandUtils {
 	 * @return Whether both {@link DataObject} share the same properties.
 	 * @since v1.6
 	 */
-	public static synchronized boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
-		return Arrays.equals(ArrayUtil.sortArrayFromDataObject(data), ArrayUtil.sortArrayFromDataObject(other));
+	public static boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
+		if (!Arrays.equals(ArrayUtil.sortArrayFromDataArray(data.getArray("options")),
+				ArrayUtil.sortArrayFromDataArray(other.getArray("options")))) {
+			return false;
+		}
+		Map<String, Object> dataMap = data.remove("options").toMap();
+		Map<String, Object> otherMap = other.remove("options").toMap();
+		return dataMap.equals(otherMap);
 	}
 
 	/**
