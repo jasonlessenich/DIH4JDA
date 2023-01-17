@@ -530,12 +530,20 @@ public class InteractionHandler extends ListenerAdapter {
             if (slashcommand == null) {
                 BaseApplicationCommand<SlashCommandInteractionEvent, ?> base = subcommand.getParent();
                 if (base != null) {
+                    if (!base.canExecute(event)) {
+                        return;
+                    }
                     if (passesRequirements(event, base, base.getRegistrationType()) && passesRequirements(event, subcommand, base.getRegistrationType())) {
                         subcommand.execute(event);
                     }
                 }
-            } else if (passesRequirements(event, slashcommand, slashcommand.getRegistrationType())) {
-                slashcommand.execute(event);
+            } else {
+                if (!slashcommand.canExecute(event)) {
+                    return;
+                }
+                if (passesRequirements(event, slashcommand, slashcommand.getRegistrationType())) {
+                    slashcommand.execute(event);
+                }
             }
         }
     }
