@@ -57,6 +57,12 @@ public interface ModalHandler {
 	 * 		event.reply("Thanks for your application!").queue();
 	 *    }
 	 * }}</pre>
+	 * <br>
+	 * Please do not forget to add the modal mappings to the {@link DIH4JDA} instance.
+	 * Only needed if you used the {@link ComponentIdBuilder} to create the button's id.
+	 * <pre>{@code
+	 * dih4JDA.addModalMappings(IdMapping.of(new TestCommand(), "test-button"));
+	 * }</pre>
 	 *
 	 * @param event the provided {@link ModalInteractionEvent}.
 	 * @param values a {@link List} of the {@link ModalMapping} values.
