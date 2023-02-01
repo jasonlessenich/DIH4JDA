@@ -45,7 +45,12 @@ public interface StringSelectMenuHandler {
 	 *        }
 	 * 		event.reply("Successfully added " + String.join(", ", event.getValues())).queue();
 	 *    }
-	 * }}</pre>
+	 * }}
+	 * </pre>
+	 * Please do not forget to add the button mappings to the {@link DIH4JDA} instance.<br>
+	 * <pre>{@code
+	 * dih4JDA.addStringSelectMenuMappings(IdMapping.of(new TestCommand(), "test-string-select-menu"));
+	 * }</pre>
 	 *
 	 * @param event the provided {@link StringSelectInteractionEvent}.
 	 * @param values the provided selections.

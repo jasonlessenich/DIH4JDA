@@ -2,6 +2,7 @@ package xyz.dynxsty.dih4jda.interactions.components;
 
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
+import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
 import javax.annotation.Nonnull;
@@ -42,6 +43,10 @@ public interface EntitySelectMenuHandler {
      * }
      *}
      * </pre>
+     * Please do not forget to add the button mappings to the {@link DIH4JDA} instance.<br>
+     * <pre>{@code
+     * dih4JDA.addEntitySelectMenuMappings(IdMapping.of(new TestCommand(), "test-entity-select-menu"));
+     * }</pre>
      *
      * @param event the {@link EntitySelectInteractionEvent} instance.
      * @param values the values that you could select.
