@@ -44,6 +44,11 @@ public interface ButtonHandler {
 	 * 		event.reply(content).queue();
 	 *    }
 	 * }}</pre>
+	 * <br>
+	 * In order for this to work, you manually have to configure the corresponding button mappings like that:<br>
+	 * <pre>{@code
+	 * dih4JDA.addButtonMappings(IdMapping.of(new TestCommand(), "test-button"));
+	 * }</pre>
 	 *
 	 * @param event the {@link ButtonInteractionEvent}.
 	 * @param button the {@link Button} that the user interacted with.
