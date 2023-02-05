@@ -45,7 +45,7 @@ public interface ButtonHandler {
 	 *    }
 	 * }}</pre>
 	 * <br>
-	 * Please do not forget to add the button mappings to the {@link DIH4JDA} instance.<br>
+	 * In order for this to work, you manually have to configure the corresponding button mappings like that:<br>
 	 * <pre>{@code
 	 * dih4JDA.addButtonMappings(IdMapping.of(new TestCommand(), "test-button"));
 	 * }</pre>

@@ -43,7 +43,7 @@ public interface EntitySelectMenuHandler {
      * }
      *}
      * </pre>
-     * Please do not forget to add the button mappings to the {@link DIH4JDA} instance.<br>
+     *  In order for this to work, you manually have to configure the corresponding entity-select menu mappings like that:<br>
      * <pre>{@code
      * dih4JDA.addEntitySelectMenuMappings(IdMapping.of(new TestCommand(), "test-entity-select-menu"));
      * }</pre>

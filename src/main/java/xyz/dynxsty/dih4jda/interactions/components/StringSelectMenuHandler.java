@@ -47,7 +47,7 @@ public interface StringSelectMenuHandler {
 	 *    }
 	 * }}
 	 * </pre>
-	 * Please do not forget to add the button mappings to the {@link DIH4JDA} instance.<br>
+     *  In order for this to work, you manually have to configure the corresponding string-select menu mappings like that:<br>
 	 * <pre>{@code
 	 * dih4JDA.addStringSelectMenuMappings(IdMapping.of(new TestCommand(), "test-string-select-menu"));
 	 * }</pre>

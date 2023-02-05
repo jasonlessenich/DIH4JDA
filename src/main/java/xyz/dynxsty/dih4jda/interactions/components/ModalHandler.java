@@ -58,7 +58,7 @@ public interface ModalHandler {
 	 *    }
 	 * }}</pre>
 	 * <br>
-	 * Please do not forget to add the modal mappings to the {@link DIH4JDA} instance.
+     *  In order for this to work, you manually have to configure the corresponding modal mappings like that:<br>
 	 * <pre>{@code
 	 * dih4JDA.addModalMappings(IdMapping.of(new TestCommand(), "test-modal"));
 	 * }</pre>
