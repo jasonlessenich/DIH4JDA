@@ -9,6 +9,7 @@ public abstract class TextCommand extends RestrictedCommand implements Executabl
 	private String description;
 	private String category;
 	private String[] aliases = new String[]{};
+	private TextOption[] options = new TextOption[]{};
 
 	// TODO: Docs
 	public String getName() {
@@ -48,5 +49,15 @@ public abstract class TextCommand extends RestrictedCommand implements Executabl
 	// TODO: Docs
 	public String[] getAliases() {
 		return aliases;
+	}
+
+	// TODO: Docs
+	public void setOptions(TextOption... options) {
+		this.options = options;
+	}
+
+	// TODO: Docs
+	public TextOption[] getOptions() {
+		return options;
 	}
 }
