@@ -10,6 +10,8 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationComm
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -161,5 +163,15 @@ public class CommandUtils {
 			return null;
 		}
 		return entity.getAsMention();
+	}
+
+	public static String formatTextCommand(String prefix, TextCommand command) {
+		StringBuilder sb = new StringBuilder(String.format("`%s%s", prefix, command.getName()));
+		command.getOptions();
+		for (TextOptionData o : command.getOptions()) {
+			sb.append(String.format(" %s", String.format(o.isRequired() ? "<%s>" : "<%s?>", o.getName())));
+		}
+		sb.append("`: ").append(command.getDescription());
+		return sb.toString();
 	}
 }
