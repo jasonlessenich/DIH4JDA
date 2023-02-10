@@ -28,8 +28,6 @@ public class DIH4JDABuilder {
 	private final JDA jda;
 	private final DIH4JDAConfig config;
 
-
-
 	private DIH4JDABuilder(@Nonnull JDA jda) {
 		this.config = new DIH4JDAConfig();
 		this.jda = jda;
