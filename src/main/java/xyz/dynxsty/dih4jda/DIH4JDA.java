@@ -111,7 +111,7 @@ public class DIH4JDA extends ListenerAdapter {
 		this.config = config;
 		DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
 		this.handler = new InteractionHandler(this);
-		this.config.getJDA().addEventListener(this, handler);
+		this.config.getJda().addEventListener(this, handler);
 		listeners = new HashSet<>();
 	}
 
@@ -122,7 +122,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	@Override
 	public void onReady(@Nonnull ReadyEvent event) {
-		if (config.getCommandPackages() == null) {
+		if (config.getCommandsPackages() == null) {
 			return;
 		}
 		if (config.isRegisterOnReady() && handler != null) {
@@ -207,7 +207,7 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	@Nonnull
 	public JDA getJDA() {
-		return config.getJDA();
+		return config.getJda();
 	}
 
 	/**
@@ -435,13 +435,13 @@ public class DIH4JDA extends ListenerAdapter {
 	 * @throws DIH4JDAException If specified the config is invalid.
 	 */
 	private void validateConfig(@Nonnull DIH4JDAConfig config) throws DIH4JDAException {
-		if (config.getJDA() == null) {
+		if (config.getJda() == null) {
 			throw new InvalidConfigurationException("JDA instance may not be null!");
 		}
 		if (config.getBlockedLogTypes() == null) {
 			throw new InvalidConfigurationException("Blocked Log Types may not be null!");
 		}
-		if (config.getCommandPackages() == null) {
+		if (config.getCommandsPackages() == null) {
 			throw new InvalidConfigurationException("Command Packages may not be null!");
 		}
 		if (config.getExecutor() == null) {

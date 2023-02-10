@@ -1,6 +1,6 @@
 package xyz.dynxsty.dih4jda.util;
 
-import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.DataArray;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -32,14 +32,13 @@ public class ArrayUtil {
     }
 
     /**
-     * Gets the json-byte array and sorts it via {@link Arrays#sort(byte[])}.
-     *
-     * @param dataObject The {@link DataObject} to get the json-byte array from.
-     * @return A sorted byte array.
-     * @since v1.6.1
+     * Checks if the specified object is inside the specified array.
+     * @param dataArray The array to check.
+     * @return Whether the object is contained inside the array.
      */
-    public static byte[] sortArrayFromDataObject(@Nonnull DataObject dataObject) {
-        byte[] array = dataObject.toJson();
+    @Nonnull
+    public static byte[] sortArrayFromDataArray(@Nonnull DataArray dataArray) {
+        byte[] array = dataArray.toJson();
         Arrays.sort(array);
         return array;
     }

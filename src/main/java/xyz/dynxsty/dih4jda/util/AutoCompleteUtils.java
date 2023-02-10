@@ -4,7 +4,6 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.interactions.commands.Command;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -48,7 +47,7 @@ public class AutoCompleteUtils {
 	@Nonnull
 	public static List<Command.Choice> filterChoices(@Nonnull CommandAutoCompleteInteractionEvent event,
 															 @Nonnull Command.Choice... choices) {
-		return filterChoices(event.getFocusedOption().getValue().toLowerCase(), Arrays.asList(choices));
+		return filterChoices(event.getFocusedOption().getValue().toLowerCase(), List.of(choices));
 	}
 
 	/**
@@ -83,6 +82,6 @@ public class AutoCompleteUtils {
 	 */
 	@Nonnull
 	public static List<Command.Choice> filterChoices(@Nonnull String filter, @Nonnull Command.Choice... choices) {
-		return filterChoices(filter, Arrays.asList(choices));
+		return filterChoices(filter, List.of(choices));
 	}
 }

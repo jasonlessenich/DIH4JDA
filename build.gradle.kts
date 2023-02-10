@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     java
     `java-library`
@@ -16,7 +18,7 @@ fun getProjectProperty(name: String) = project.properties[name] as? String
 
 group = "xyz.dynxsty"
 val archivesBaseName = "dih4jda"
-version = "1.6.1"
+version = "1.6.2"
 
 val javaVersion = JavaVersion.current()
 var isCI: Boolean = System.getProperty("GIT_COMMIT") != null // jitpack
@@ -46,14 +48,23 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
+val lombokVersion = "1.18.24"
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
     testImplementation("ch.qos.logback:logback-classic:1.4.5")
 
-    api("net.dv8tion:JDA:5.0.0-beta.1")
+    api("net.dv8tion:JDA:5.0.0-beta.3") {
+        exclude(module = "opus-java")
+    }
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+
+    //Lombok's annotations
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
     //Sets the dependencies for the examples
     configurations["examplesImplementation"].withDependencies {
@@ -63,8 +74,11 @@ dependencies {
 }
 
 val jar: Jar by tasks
+val shadowJar: ShadowJar by tasks
 val javadoc: Javadoc by tasks
 val build: Task by tasks
+
+shadowJar.archiveClassifier.set("withDependencies")
 
 tasks.withType<Test> {
     useJUnitPlatform()
@@ -129,6 +143,7 @@ build.apply {
     dependsOn(jar)
     dependsOn(sourcesJar)
     dependsOn(javadocJar)
+    dependsOn(shadowJar)
 }
 
 ////////////////////////////////////////

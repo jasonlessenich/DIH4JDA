@@ -4,7 +4,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -42,7 +41,7 @@ public class ClassUtils {
 			return null;
 		}
 		for (Constructor<?> constructor : clazz.getConstructors()) {
-			List<Class<?>> params = Arrays.asList(constructor.getParameterTypes());
+			List<Class<?>> params = List.of(constructor.getParameterTypes());
 			if (params.isEmpty()) {
 				return clazz.getConstructor().newInstance();
 			} else {

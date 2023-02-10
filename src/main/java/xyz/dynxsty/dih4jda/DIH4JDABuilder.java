@@ -54,7 +54,7 @@ public class DIH4JDABuilder {
 	 */
 	@Nonnull
 	public DIH4JDABuilder setCommandPackages(@Nonnull String... pack) {
-		config.setCommandPackages(pack);
+		config.setCommandsPackages(pack);
 		return this;
 	}
 
@@ -197,7 +197,7 @@ public class DIH4JDABuilder {
 			DIH4JDALogger.warn("You are running DIH4JDA on a single core CPU. A special system property was set to disable asynchronous command execution.");
 			System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", "1");
 		}
-		for (String pkg : config.getCommandPackages()) {
+		for (String pkg : config.getCommandsPackages()) {
 			if (pkg.isBlank() || pkg.isEmpty()) {
 				throw new InvalidPackageException("Commands package cannot be empty or blank.");
 			}
@@ -205,7 +205,7 @@ public class DIH4JDABuilder {
 				throw new InvalidPackageException("Package '" + pkg + "' does not exist.");
 			}
 		}
-		config.setJDA(jda);
+		config.setJda(jda);
 		return new DIH4JDA(config);
 	}
 }

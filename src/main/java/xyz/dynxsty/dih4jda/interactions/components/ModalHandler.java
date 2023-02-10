@@ -57,6 +57,11 @@ public interface ModalHandler {
 	 * 		event.reply("Thanks for your application!").queue();
 	 *    }
 	 * }}</pre>
+	 * <br>
+     *  In order for this to work, you manually have to configure the corresponding modal mappings like that:<br>
+	 * <pre>{@code
+	 * dih4JDA.addModalMappings(IdMapping.of(new TestCommand(), "test-modal"));
+	 * }</pre>
 	 *
 	 * @param event the provided {@link ModalInteractionEvent}.
 	 * @param values a {@link List} of the {@link ModalMapping} values.

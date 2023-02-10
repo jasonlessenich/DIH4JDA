@@ -45,7 +45,12 @@ public interface StringSelectMenuHandler {
 	 *        }
 	 * 		event.reply("Successfully added " + String.join(", ", event.getValues())).queue();
 	 *    }
-	 * }}</pre>
+	 * }}
+	 * </pre>
+     *  In order for this to work, you manually have to configure the corresponding string-select menu mappings like that:<br>
+	 * <pre>{@code
+	 * dih4JDA.addStringSelectMenuMappings(IdMapping.of(new TestCommand(), "test-string-select-menu"));
+	 * }</pre>
 	 *
 	 * @param event the provided {@link StringSelectInteractionEvent}.
 	 * @param values the provided selections.

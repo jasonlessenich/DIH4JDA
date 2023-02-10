@@ -17,7 +17,7 @@
 
 - [ ] Internal code
 - [ ] Documentation
-- [ ] Examples
+- [ ] Added examples
 - [ ] Other: \_____ <!-- Insert other type here -->
 
 <!-- Replace "NaN" with an issue number if this is a response to an issue -->
