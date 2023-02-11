@@ -1,4 +1,4 @@
-package xyz.dynxsty.dih4jda.events.interactions;
+package xyz.dynxsty.dih4jda.events.text;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;

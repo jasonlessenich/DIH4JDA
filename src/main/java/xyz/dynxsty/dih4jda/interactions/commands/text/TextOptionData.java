@@ -1,37 +1,26 @@
 package xyz.dynxsty.dih4jda.interactions.commands.text;
 
 public class TextOptionData {
-    public TextOptionData(String name, String description) {
+    public TextOptionData(TextOptionType type, String name, String description) {
+        this.type = type;
         this.name = name;
         this.description = description;
     }
 
-    public TextOptionData(String name, String description, boolean required) {
+    public TextOptionData(TextOptionType type, String name, String description, boolean required) {
+        this.type = type;
         this.name = name;
         this.description = description;
         this.required = required;
     }
 
+    private final TextOptionType type;
     private final String name;
     private final String description;
+    private boolean required = false;
 
-    private String defaultValue;
-    private String[] allowedValues = new String[]{};
-    private boolean required;
-
-    public TextOptionData setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-        return this;
-    }
-
-    public TextOptionData setAllowedValues(String... allowedValues) {
-        this.allowedValues = allowedValues;
-        return this;
-    }
-
-    public TextOptionData setRequired(boolean required) {
-        this.required = required;
-        return this;
+    public TextOptionType getType() {
+        return type;
     }
 
     public String getName() {
@@ -40,14 +29,6 @@ public class TextOptionData {
 
     public String getDescription() {
         return description;
-    }
-
-    public String getDefaultValue() {
-        return defaultValue;
-    }
-
-    public String[] getAllowedValues() {
-        return allowedValues;
     }
 
     public boolean isRequired() {

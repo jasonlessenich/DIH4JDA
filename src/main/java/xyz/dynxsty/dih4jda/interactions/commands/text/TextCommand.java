@@ -1,6 +1,6 @@
 package xyz.dynxsty.dih4jda.interactions.commands.text;
 
-import xyz.dynxsty.dih4jda.events.interactions.TextCommandEvent;
+import xyz.dynxsty.dih4jda.events.text.TextCommandEvent;
 import xyz.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 

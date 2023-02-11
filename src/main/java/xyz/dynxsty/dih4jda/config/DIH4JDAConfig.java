@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.DIH4JDALogger;
-import xyz.dynxsty.dih4jda.events.interactions.TextCommandEvent;
+import xyz.dynxsty.dih4jda.events.text.TextCommandEvent;
 import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
 import xyz.dynxsty.dih4jda.util.CommandUtils;
 
