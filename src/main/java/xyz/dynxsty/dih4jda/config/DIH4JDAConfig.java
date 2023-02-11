@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.DIH4JDALogger;
+import xyz.dynxsty.dih4jda.events.DIH4JDAMessageEvent;
+import xyz.dynxsty.dih4jda.events.text.HelpTextCommandEvent;
 import xyz.dynxsty.dih4jda.events.text.TextCommandEvent;
 import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
 import xyz.dynxsty.dih4jda.util.CommandUtils;
@@ -102,7 +104,7 @@ public class DIH4JDAConfig {
     /**
      * The {@link BiConsumer} used to generate the help list.
      */
-    private BiConsumer<TextCommandEvent, List<TextCommand>> helpCommandConsumer = (event, commands) -> {
+    private BiConsumer<HelpTextCommandEvent, List<TextCommand>> helpCommandConsumer = (event, commands) -> {
         final String prefix = event.getDIH4JDA().getEffectivePrefix(event.getGuild());
         final Map<String, List<TextCommand>> categorizedCommand = event.getDIH4JDA().getTextCommandsCategorized("Uncategorized");
         // build embed

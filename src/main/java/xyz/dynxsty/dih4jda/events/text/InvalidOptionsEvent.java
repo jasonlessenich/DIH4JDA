@@ -10,8 +10,8 @@ import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
 public class InvalidOptionsEvent extends DIH4JDAMessageEvent {
 	private final TextCommand textCommand;
 
-	public InvalidOptionsEvent(@NotNull String eventName, @NotNull DIH4JDA dih4jda, MessageReceivedEvent event, TextCommand command) {
-		super(eventName, dih4jda, event);
+	public InvalidOptionsEvent(@NotNull DIH4JDA dih4jda, MessageReceivedEvent event, TextCommand command) {
+		super("onInvalidOptions", dih4jda, event);
 		this.textCommand = command;
 	}
 

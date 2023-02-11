@@ -18,8 +18,8 @@ public class TextCommandEvent extends DIH4JDAMessageEvent {
 	private final TextCommand textCommand;
 	private final List<TextOptionMapping> mappings;
 
-	public TextCommandEvent(@NotNull String eventName, @NotNull DIH4JDA dih4jda, MessageReceivedEvent event, TextCommand command, List<TextOptionMapping> mappings) {
-		super(eventName, dih4jda, event);
+	public TextCommandEvent(@NotNull DIH4JDA dih4jda, MessageReceivedEvent event, TextCommand command, List<TextOptionMapping> mappings) {
+		super("onTextCommand", dih4jda, event);
 		this.textCommand = command;
 		this.mappings = mappings;
 	}

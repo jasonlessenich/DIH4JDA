@@ -3,6 +3,7 @@ package xyz.dynxsty.dih4jda;
 import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
+import xyz.dynxsty.dih4jda.events.text.HelpTextCommandEvent;
 import xyz.dynxsty.dih4jda.events.text.TextCommandEvent;
 import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
@@ -178,7 +179,7 @@ public class DIH4JDABuilder {
 	}
 
 	// TODO: Docs
-	public void setHelpCommandConsumer(BiConsumer<TextCommandEvent, List<TextCommand>> helpCommandConsumer) {
+	public void setHelpCommandConsumer(BiConsumer<HelpTextCommandEvent, List<TextCommand>> helpCommandConsumer) {
 		config.setHelpCommandConsumer(helpCommandConsumer);
 	}
 
