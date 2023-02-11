@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 /**
  * Builder class used to instantiate a new {@link DIH4JDA} instance. 

@@ -4,6 +4,8 @@ import xyz.dynxsty.dih4jda.events.interactions.TextCommandEvent;
 import xyz.dynxsty.dih4jda.interactions.commands.ExecutableCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 
+import java.util.List;
+
 public abstract class TextCommand extends RestrictedCommand implements ExecutableCommand<TextCommandEvent> {
 	private String name;
 	private String description;
@@ -57,7 +59,7 @@ public abstract class TextCommand extends RestrictedCommand implements Executabl
 	}
 
 	// TODO: Docs
-	public TextOptionData[] getOptions() {
-		return options;
+	public List<TextOptionData> getOptions() {
+		return List.of(options);
 	}
 }

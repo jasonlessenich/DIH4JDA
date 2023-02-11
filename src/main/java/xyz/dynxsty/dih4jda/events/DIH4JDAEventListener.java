@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
+import xyz.dynxsty.dih4jda.events.interactions.InvalidOptionsEvent;
 import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
@@ -92,5 +93,8 @@ public interface DIH4JDAEventListener {
 	 * @see RestrictedCommand#setCommandCooldown(Duration)
 	 */
 	default void onCommandCooldown(@Nonnull CommandCooldownEvent event) {}
+
+	// TODO: Docs
+	default void onInvalidOptions(InvalidOptionsEvent event) {}
 }
 

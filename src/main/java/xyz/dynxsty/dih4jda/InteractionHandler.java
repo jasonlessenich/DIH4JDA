@@ -32,6 +32,7 @@ import xyz.dynxsty.dih4jda.events.InvalidGuildEvent;
 import xyz.dynxsty.dih4jda.events.InvalidRoleEvent;
 import xyz.dynxsty.dih4jda.events.InvalidUserEvent;
 import xyz.dynxsty.dih4jda.events.ModalExceptionEvent;
+import xyz.dynxsty.dih4jda.events.interactions.InvalidOptionsEvent;
 import xyz.dynxsty.dih4jda.events.interactions.TextCommandEvent;
 import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
@@ -42,6 +43,8 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionData;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionMapping;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import xyz.dynxsty.dih4jda.interactions.components.IdMapping;
@@ -58,7 +61,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -640,26 +651,40 @@ public class InteractionHandler extends ListenerAdapter {
     }
 
     private void handleTextCommand(@Nonnull MessageReceivedEvent event) throws CommandNotRegisteredException {
-        String prefix = dih4jda.getEffectivePrefix(event.getGuild());
-        String content = event.getMessage().getContentRaw();
+        final String prefix = dih4jda.getEffectivePrefix(event.getGuild());
+        final String content = event.getMessage().getContentRaw();
+        // TODO: add mention prefix
         if (!content.startsWith(prefix)) return;
-        String[] args = content.split("\\s+");
-        TextCommandEvent textEvent = new TextCommandEvent("onTextCommandEvent", dih4jda, event);
-        if (config.isEnableHelpCommand() && config.getHelpCommandNames().contains(args[0].substring(prefix.length()))) {
-            config.getHelpCommandConsumer().accept(textEvent, new ArrayList<>(textCommandsIndex.values()));
-            return;
-        }
-        TextCommand command = textCommandsIndex.get(args[0].substring(prefix.length()));
+        final String[] args = content.split("\\s+");
+        final TextCommand command = textCommandsIndex.get(args[0].substring(prefix.length()));
+        // check if command is registered
         if (command == null) {
             if (config.isThrowUnregisteredException()) {
                 throw new CommandNotRegisteredException(String.format("Text Command \"%s\" is not registered.", args[0]));
             }
-        } else {
-            // TODO: Implement Command Requirements
-            //if (passesRequirements(event, command, RegistrationType.GUILD)) {
-            command.execute(textEvent);
-            //}
+            return;
         }
+        final List<TextOptionMapping> mappings = new ArrayList<>();
+        List<TextOptionData> options = command.getOptions();
+        // check and create TextOptionMappings
+        for (int i = 0; i < options.size(); i++) {
+            final TextOptionData option = options.get(i);
+            if (args.length - 1 >= i + 1) {
+                mappings.add(new TextOptionMapping(option, args[i + 1]));
+            } else if (option.isRequired()) {
+                DIH4JDAEvent.fire(new InvalidOptionsEvent("onInvalidOptions", dih4jda, event, command));
+                return;
+            }
+        }
+        final TextCommandEvent textEvent = new TextCommandEvent("onTextCommandEvent", dih4jda, event, command, mappings);
+        if (config.isEnableHelpCommand() && config.getHelpCommandNames().contains(args[0].substring(prefix.length()))) {
+            config.getHelpCommandConsumer().accept(textEvent, new ArrayList<>(textCommandsIndex.values()));
+            return;
+        }
+        // TODO: Implement Command Requirements
+        //if (passesRequirements(event, command, RegistrationType.GUILD)) {
+        command.execute(textEvent);
+        //}
     }
 
     /**

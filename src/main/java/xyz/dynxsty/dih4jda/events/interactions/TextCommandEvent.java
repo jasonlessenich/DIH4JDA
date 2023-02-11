@@ -1,58 +1,39 @@
 package xyz.dynxsty.dih4jda.events.interactions;
 
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.interactions.components.LayoutComponent;
-import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
-import net.dv8tion.jda.api.utils.FileUpload;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.DIH4JDA;
-import xyz.dynxsty.dih4jda.events.DIH4JDAEvent;
+import xyz.dynxsty.dih4jda.events.DIH4JDAMessageEvent;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionMapping;
 
-import javax.annotation.Nonnull;
+import java.util.List;
 
 // TODO: Docs
-public class TextCommandEvent extends DIH4JDAEvent {
+public class TextCommandEvent extends DIH4JDAMessageEvent {
 
-	private final MessageReceivedEvent event;
+	private final TextCommand textCommand;
+	private final List<TextOptionMapping> mappings;
 
-	public TextCommandEvent(@NotNull String eventName, @NotNull DIH4JDA dih4jda, MessageReceivedEvent event) {
-		super(eventName, dih4jda);
-		this.event = event;
+	public TextCommandEvent(@NotNull String eventName, @NotNull DIH4JDA dih4jda, MessageReceivedEvent event, TextCommand command, List<TextOptionMapping> mappings) {
+		super(eventName, dih4jda, event);
+		this.textCommand = command;
+		this.mappings = mappings;
 	}
 
 	// TODO: Docs
-	@Nonnull
-	public Message getMessage() {
-		return event.getMessage();
+	public TextCommand getTextCommand() {
+		return textCommand;
 	}
 
 	// TODO: Docs
-	@Nonnull
-	public User getAuthor() {
-		return event.getAuthor();
+	public String[] getSplit() {
+		return getMessage().getContentRaw().split("\\s+");
 	}
 
-	// TODO: Docs
-	@Nonnull
-	public MessageChannelUnion getChannel() {
-		return event.getChannel();
-	}
-
-	// TODO: Docs
-	@Nonnull
-	public Guild getGuild() {
-		return event.getGuild();
-	}
-
-	// TODO: Docs
-	@Nonnull
-	public MessageReceivedEvent getParentEvent() {
-		return event;
+	public TextOptionMapping getOption(String name) {
+		return mappings.stream()
+				.filter(m -> m.getOptionData().getName().equals(name))
+				.findFirst().orElse(null);
 	}
 }

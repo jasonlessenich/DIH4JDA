@@ -11,7 +11,6 @@ import xyz.dynxsty.dih4jda.util.CommandUtils;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
