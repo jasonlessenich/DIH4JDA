@@ -740,12 +740,7 @@ public class InteractionHandler extends ListenerAdapter {
         for (int i = 0; i < options.size(); i++) {
             final TextOptionData option = options.get(i);
             if (args.length - 1 >= i + 1) {
-                if (option.getType() == TextOptionType.MULTI_STRING) {
-                    final String s = String.join(" ", Arrays.copyOfRange(args, i + 1, args.length));
-                    mappings.add(new TextOptionMapping(option, s));
-                } else {
-                    mappings.add(new TextOptionMapping(option, args[i + 1]));
-                }
+                mappings.add(new TextOptionMapping(option, args, i + 1));
             } else if (option.isRequired()) {
                 DIH4JDAEvent.fire(new InvalidOptionsEvent(dih4jda, event, command));
                 return null;
