@@ -352,6 +352,7 @@ public class InteractionHandler extends ListenerAdapter {
 
     // TODO: Docs
     private boolean checkTextCommand(@Nonnull TextCommand command) {
+        // TODO: check for whitespace names
         if (command.getName() == null || command.getName().isEmpty()) {
             DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) name may not be empty or null!", command.getClass().getName());
             return false;
@@ -372,6 +373,33 @@ public class InteractionHandler extends ListenerAdapter {
                 textCommandsIndex.values().stream().anyMatch(t -> t.getName().equals(command.getName()) || Arrays.asList(t.getAliases()).contains(command.getName()))
         ) {
             DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand in class (%s) uses a name (%s) that is already taken!", command.getClass().getName(), command.getName());
+            return false;
+        }
+        List<TextOptionData> options = command.getOptions();
+        boolean requiredPassed = false;
+        for (int i = 0; i < options.size(); i++) {
+            final TextOptionData option = options.get(i);
+            if (!requiredPassed) requiredPassed = option.isRequired();
+            if (!checkTextCommandOptions(command, option, i, requiredPassed)) return false;
+        }
+        return true;
+    }
+
+    private boolean checkTextCommandOptions(TextCommand command, TextOptionData option, int index, boolean requiredPassed) {
+        if (option.getName() == null || option.getName().isEmpty()) {
+            DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) option name may not be empty or null!", command.getClass().getName());
+            return false;
+        }
+        if (!option.getName().toLowerCase().equals(option.getName())) {
+            DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) option name MUST be lowercase!", command.getClass().getName());
+            return false;
+        }
+        if (requiredPassed && !option.isRequired()) {
+            DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "Non-required options MUST be always after required ones.");
+            return false;
+        }
+        if (option.getType() == TextOptionType.MULTI_STRING && command.getOptions().size() - 1 != index) {
+            DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextOptionType#MULTI_STRING MUST be always the last option!");
             return false;
         }
         return true;
