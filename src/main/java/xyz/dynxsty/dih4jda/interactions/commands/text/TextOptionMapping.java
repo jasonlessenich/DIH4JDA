@@ -16,4 +16,8 @@ public class TextOptionMapping {
     public String getAsString() {
         return (String) value;
     }
+
+    public String getMultiString() {
+        return (String) value;
+    }
 }

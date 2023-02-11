@@ -47,6 +47,7 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionData;
 import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionMapping;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionType;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import xyz.dynxsty.dih4jda.interactions.components.IdMapping;
@@ -670,18 +671,8 @@ public class InteractionHandler extends ListenerAdapter {
             }
             return;
         }
-        final List<TextOptionMapping> mappings = new ArrayList<>();
-        List<TextOptionData> options = command.getOptions();
-        // check and create TextOptionMappings
-        for (int i = 0; i < options.size(); i++) {
-            final TextOptionData option = options.get(i);
-            if (args.length - 1 >= i + 1) {
-                mappings.add(new TextOptionMapping(option, args[i + 1]));
-            } else if (option.isRequired()) {
-                DIH4JDAEvent.fire(new InvalidOptionsEvent(dih4jda, event, command));
-                return;
-            }
-        }
+        final List<TextOptionMapping> mappings = getTextOptionMappings(dih4jda, event, args, command);
+        if (mappings == null) return;
         final TextCommandEvent textEvent = new TextCommandEvent(dih4jda, event, command, mappings);
         // TODO: Implement Command Requirements
         //if (passesRequirements(event, command, RegistrationType.GUILD)) {
@@ -740,6 +731,27 @@ public class InteractionHandler extends ListenerAdapter {
             }
         }
         return true;
+    }
+
+    public static List<TextOptionMapping> getTextOptionMappings(DIH4JDA dih4jda, MessageReceivedEvent event, String[] args, TextCommand command) {
+        final List<TextOptionMapping> mappings = new ArrayList<>();
+        List<TextOptionData> options = command.getOptions();
+        // check and create TextOptionMappings
+        for (int i = 0; i < options.size(); i++) {
+            final TextOptionData option = options.get(i);
+            if (args.length - 1 >= i + 1) {
+                if (option.getType() == TextOptionType.MULTI_STRING) {
+                    final String s = String.join(" ", Arrays.copyOfRange(args, i + 1, args.length));
+                    mappings.add(new TextOptionMapping(option, s));
+                } else {
+                    mappings.add(new TextOptionMapping(option, args[i + 1]));
+                }
+            } else if (option.isRequired()) {
+                DIH4JDAEvent.fire(new InvalidOptionsEvent(dih4jda, event, command));
+                return null;
+            }
+        }
+        return mappings;
     }
 
     /**
