@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Represents a basic restricted command.
+ * Represents a basic command.
  *
  * @since v1.6
  */
