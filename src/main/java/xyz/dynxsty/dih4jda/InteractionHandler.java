@@ -623,7 +623,12 @@ public class InteractionHandler extends ListenerAdapter {
         return !hasCooldown(interaction, command);
     }
 
-    //TODO docs
+    /**
+     * Checks if the given {@link CommandInteraction} and {@link net.dv8tion.jda.api.entities.User} has a cooldown.
+     * @param interaction The {@link CommandInteraction}.
+     * @param command The {@link RestrictedCommand} which contains the cooldown.
+     * @return true if the command and user has a cooldown, false otherwise.
+     */
     private boolean hasCooldown(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command) {
         // check if the command has enabled some sort of cooldown
         Pair<Duration, CooldownType> cooldownPair = command.getCommandCooldown();

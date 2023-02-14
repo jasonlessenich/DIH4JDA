@@ -19,7 +19,6 @@ import java.util.Map;
  *
  * @since v1.6
  */
-//TODO docs
 public abstract class RestrictedCommand {
 
 	private final Map<Long, Cooldown> COOLDOWN_USER_GLOBAL = new HashMap<>();
@@ -171,6 +170,14 @@ public abstract class RestrictedCommand {
 		COOLDOWN_USER_GUILD.put(new Pair<>(user.getIdLong(), guild.getIdLong()), Cooldown.forNextUse(nextUse));
 	}
 
+	/**
+	 * Checks if the provided {@link User} is on cooldown.<br>
+	 * <b>Checks only for the {@link CooldownType#USER_GLOBAL} type.</b>
+	 *
+	 * @see RestrictedCommand#hasCooldown(Member)
+	 * @param user The {@link User} to check.
+	 * @return true if the user is on cooldown, false otherwise.
+	 */
 	public boolean hasCooldown(@Nonnull User user) {
 		Cooldown cooldown = COOLDOWN_USER_GLOBAL.get(user.getIdLong());
 		if (cooldown == null) return false;
@@ -181,6 +188,14 @@ public abstract class RestrictedCommand {
 		return hasCooldown;
 	}
 
+	/**
+	 * Checks if the provided {@link User} is on cooldown.
+	 *
+	 * @see RestrictedCommand#hasCooldown(Member)
+	 * @param user The {@link User} to check.
+	 * @param guild The {@link Guild} to check.
+	 * @return true if the user is on cooldown, false otherwise.
+	 */
 	private boolean hasCooldown(@Nonnull User user, @Nonnull Guild guild) {
 		if (hasCooldown(user)) return true;
 		Cooldown cooldown = COOLDOWN_GUILD.get(guild.getIdLong());
@@ -194,6 +209,12 @@ public abstract class RestrictedCommand {
 		return hasCooldown;
 	}
 
+	/**
+	 * Checks if the provided {@link Member} is on cooldown.
+	 *
+	 * @param member The {@link Member} to check.
+	 * @return true if the user is on cooldown, false otherwise.
+	 */
 	public boolean hasCooldown(@Nonnull Member member) {
 		CooldownType type = retrieveCooldownType(member.getUser(), member.getGuild());
 		switch (type) {
@@ -208,6 +229,12 @@ public abstract class RestrictedCommand {
 		return false;
 	}
 
+	/**
+	 * Retrieves the {@link CooldownType} for the provided {@link User} and {@link Guild}.
+	 * @param user The {@link User} to check.
+	 * @param guild The {@link Guild} to check.
+	 * @return The {@link CooldownType}.
+	 */
 	private CooldownType retrieveCooldownType(@Nonnull User user, @Nonnull Guild guild) {
 		if (hasCooldown(user)) {
 			return CooldownType.USER_GLOBAL;
@@ -219,14 +246,31 @@ public abstract class RestrictedCommand {
 		return CooldownType.NONE;
 	}
 
+	/**
+	 * Removes the {@link RestrictedCommand#COOLDOWN_GUILD} and {@link RestrictedCommand#COOLDOWN_USER_GUILD} map entries
+	 * linked to the given inputs.
+	 * @param user The {@link User} to clean up.
+	 * @param guild The {@link Guild} to clean up.
+	 */
 	private void cleanUpCooldown(@Nonnull User user, @Nonnull Guild guild) {
 		COOLDOWN_USER_GUILD.remove(Pair.of(user.getIdLong(), guild.getIdLong()));
+		COOLDOWN_GUILD.remove(guild.getIdLong());
 	}
 
+	/**
+	 * Removes the {@link RestrictedCommand#COOLDOWN_USER_GLOBAL} map entries linked to the given input.
+	 * @param user The {@link User} to clean up.
+	 */
 	private void cleanUpCooldown(@Nonnull User user) {
 		COOLDOWN_USER_GLOBAL.remove(user.getIdLong());
 	}
 
+	/**
+	 * Retrieves the {@link Cooldown} for the provided {@link User} and {@link Guild}.
+	 * @param user The {@link User} to get the cooldown for.
+	 * @param guild The {@link Guild} to get the cooldown for
+	 * @return The {@link Cooldown}.
+	 */
 	@Nonnull
 	public Cooldown retrieveCooldown(@Nonnull User user, @Nullable Guild guild) {
 		if (guild == null) return retrieveCooldown(user);
@@ -244,6 +288,11 @@ public abstract class RestrictedCommand {
 		return Cooldown.forNextUse(Instant.EPOCH);
 	}
 
+	/**
+	 * Retrieves the {@link Cooldown} for the provided {@link User}.
+	 * @param user The {@link User} to get the cooldown for.
+	 * @return The {@link Cooldown}.
+	 */
 	@Nonnull
 	public Cooldown retrieveCooldown(@Nonnull User user) {
 		return COOLDOWN_USER_GLOBAL.get(user.getIdLong()) == null ? Cooldown.forNextUse(Instant.EPOCH) : COOLDOWN_USER_GLOBAL.get(user.getIdLong());

@@ -27,7 +27,15 @@ public class Pair<F, S> {
 		this.second = second;
 	}
 
-	//TODO docs
+	/**
+	 * Creates a new {@link Pair} of two {@link Object}s.
+	 *
+	 * @param first The first value.
+	 * @param second The second value.
+	 * @return The new {@link Pair}.
+	 * @param <F> The first {@link Object}
+	 * @param <S> The second {@link Object}.
+	 */
 	@Nonnull
 	@Contract(value = "_, _ -> new", pure = true)
 	public static <F, S> Pair<F, S> of(@Nonnull F first, @Nonnull S second) {
