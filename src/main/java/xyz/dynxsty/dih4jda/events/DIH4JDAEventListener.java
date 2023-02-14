@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.interactions.AutoCompleteQuery;
 import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownType;
+import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownScope;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 
 import javax.annotation.Nonnull;
@@ -85,12 +85,12 @@ public interface DIH4JDAEventListener {
 
 	/**
 	 * An event that gets fired when the user, which invoked the command, is not yet able to use this command due to
-	 * a specified {@link RestrictedCommand#setCommandCooldown(Duration, CooldownType) Command Cooldown}<br>
+	 * a specified {@link RestrictedCommand#setCommandCooldown(Duration, CooldownScope) Command Cooldown}<br>
 	 *
 	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
 	 *
 	 * @param event The {@link CommandCooldownEvent} that was fired.
-	 * @see RestrictedCommand#setCommandCooldown(Duration, CooldownType)
+	 * @see RestrictedCommand#setCommandCooldown(Duration, CooldownScope)
 	 */
 	default void onCommandCooldown(@Nonnull CommandCooldownEvent event) {}
 }

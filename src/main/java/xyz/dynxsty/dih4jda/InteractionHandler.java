@@ -37,7 +37,7 @@ import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
-import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownType;
+import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownScope;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
@@ -631,11 +631,11 @@ public class InteractionHandler extends ListenerAdapter {
      */
     private boolean hasCooldown(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command) {
         // check if the command has enabled some sort of cooldown
-        Pair<Duration, CooldownType> cooldownPair = command.getCommandCooldown();
-        if (cooldownPair.getFirst().equals(Duration.ZERO) || cooldownPair.getSecond().equals(CooldownType.NONE)) {
+        Pair<Duration, CooldownScope> cooldownPair = command.getCooldownConfiguration();
+        if (cooldownPair.getFirst().equals(Duration.ZERO) || cooldownPair.getSecond().equals(CooldownScope.NONE)) {
             return false;
         }
-        RestrictedCommand.Cooldown cooldown = command.retrieveCooldown(interaction.getUser(), interaction.getGuild());
+        RestrictedCommand.Cooldown cooldown = command.getCooldown(interaction.getUser(), interaction.getGuild());
         if (interaction.isFromGuild()) {
             if (command.hasCooldown(interaction.getMember())) {
                 DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, cooldown));

@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
-import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownType;
+import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownScope;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
@@ -21,7 +21,7 @@ public class PollCommand extends SlashCommand implements ButtonHandler {
     public PollCommand() {
         setCommandData(Commands.slash("poll", "Creates a poll with 2 options."));
         setRequiredPermissions(Permission.MESSAGE_MANAGE);
-        setCommandCooldown(Duration.of(1, ChronoUnit.MINUTES), CooldownType.USER_GLOBAL); // Add cooldown to prevent spam by users
+        setCommandCooldown(Duration.of(1, ChronoUnit.MINUTES), CooldownScope.USER_GLOBAL); // Add cooldown to prevent spam by users
     }
 
     @Override

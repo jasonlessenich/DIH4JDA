@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
-import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownType;
+import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownScope;
 import xyz.dynxsty.dih4jda.util.Pair;
 
 import javax.annotation.Nonnull;
@@ -29,8 +29,8 @@ public abstract class RestrictedCommand {
 	private Permission[] requiredPermissions = new Permission[]{};
 	private Long[] requiredUsers = new Long[]{};
 	private Long[] requiredRoles = new Long[]{};
-	private Duration commandCooldown = Duration.ZERO;
-	private CooldownType cooldownType = CooldownType.NONE;
+	private Duration cooldownDuration = Duration.ZERO;
+	private CooldownScope cooldownScope = CooldownScope.NONE;
 
 	/**
 	 * Creates a default instance.
@@ -121,29 +121,29 @@ public abstract class RestrictedCommand {
 	 *
 	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
 	 *
-	 * @param commandCooldown The {@link Duration} the user has to wait between command executions.
-	 * @param type The {@link CooldownType} you want to use.
+	 * @param duration The {@link Duration} the user has to wait between command executions.
+	 * @param scope The {@link CooldownScope} you want to use.
 	 * @since v1.6
 	 */
-	public void setCommandCooldown(@Nonnull Duration commandCooldown, @Nonnull CooldownType type) {
-		this.commandCooldown = commandCooldown;
-		this.cooldownType = type;
+	public void setCommandCooldown(@Nonnull Duration duration, @Nonnull CooldownScope scope) {
+		this.cooldownDuration = duration;
+		this.cooldownScope = scope;
 	}
 
 	/**
-	 * Returns the {@link Duration} the user has to wait between command executions.
+	 * Returns the {@link Duration} and {@link CooldownScope} the user has to wait between command executions.
 	 *
-	 * @return The {@link Duration}.
-	 * @see RestrictedCommand#setCommandCooldown(Duration, CooldownType)
+	 * @return A {@link Pair} that contains the {@link Duration} and the {@link CooldownScope}.
+	 * @see RestrictedCommand#setCommandCooldown(Duration, CooldownScope)
 	 * @since v1.6
 	 */
 	@Nonnull
-	public Pair<Duration, CooldownType> getCommandCooldown() {
-		return new Pair<>(commandCooldown, cooldownType);
+	public Pair<Duration, CooldownScope> getCooldownConfiguration() {
+		return new Pair<>(cooldownDuration, cooldownScope);
 	}
 
 	/**
-	 * Manually applies a cooldown with the type {@link CooldownType#USER_GLOBAL} to the provided {@link User}.
+	 * Manually applies a cooldown with the type {@link CooldownScope#USER_GLOBAL} to the provided {@link User}.
 	 *
 	 * @param user The {@link User} who the {@link Cooldown} should apply to.
 	 * @param  nextUse The time as an {@link Instant} where the user can execute the command the next time.
@@ -154,7 +154,7 @@ public abstract class RestrictedCommand {
 	}
 
 	/**
-	 * Manually applies a cooldown with the type {@link CooldownType#GUILD} to the provided {@link Guild}.
+	 * Manually applies a cooldown with the type {@link CooldownScope#GUILD} to the provided {@link Guild}.
 	 *
 	 * @param guild The {@link Guild} where the {@link Cooldown} should apply to.
 	 * @param nextUse The time as an {@link Instant} where the user can execute the command the next time.
@@ -165,7 +165,7 @@ public abstract class RestrictedCommand {
 	}
 
 	/**
-	 * Manually applies a cooldown with the type {@link CooldownType#MEMBER_GUILD} to the provided {@link User} and {@link Guild}.
+	 * Manually applies a cooldown with the type {@link CooldownScope#MEMBER_GUILD} to the provided {@link User} and {@link Guild}.
 	 * @param user The {@link User} who the {@link Cooldown} should apply to.
 	 * @param guild The {@link Guild} where the {@link Cooldown} should apply to.
 	 * @param nextUse The time as an {@link Instant} where the user can execute the command the next time.
@@ -177,7 +177,7 @@ public abstract class RestrictedCommand {
 
 	/**
 	 * Checks if the provided {@link User} is on cooldown.<br>
-	 * <b>Checks only for the {@link CooldownType#USER_GLOBAL} type.</b>
+	 * <b>Checks only for the {@link CooldownScope#USER_GLOBAL} type.</b>
 	 *
 	 * @see RestrictedCommand#hasCooldown(Member)
 	 * @param user The {@link User} to check.
@@ -219,7 +219,7 @@ public abstract class RestrictedCommand {
 	 * @since v1.7
 	 */
 	public boolean hasCooldown(@Nonnull Member member) {
-		CooldownType type = retrieveCooldownType(member.getUser(), member.getGuild());
+		CooldownScope type = retrieveCooldownType(member.getUser(), member.getGuild());
 		switch (type) {
 			case USER_GLOBAL:
 				return hasCooldown(member.getUser());
@@ -233,21 +233,21 @@ public abstract class RestrictedCommand {
 	}
 
 	/**
-	 * Retrieves the {@link CooldownType} for the provided {@link User} and {@link Guild}.
+	 * Retrieves the {@link CooldownScope} for the provided {@link User} and {@link Guild}.
 	 * @param user The {@link User} to check.
 	 * @param guild The {@link Guild} to check.
-	 * @return The {@link CooldownType}.
+	 * @return The {@link CooldownScope}.
 	 * @since v1.7
 	 */
-	private CooldownType retrieveCooldownType(@Nonnull User user, @Nonnull Guild guild) {
+	private CooldownScope retrieveCooldownType(@Nonnull User user, @Nonnull Guild guild) {
 		if (COOLDOWN_USER_GLOBAL.get(user.getIdLong()) != null) {
-			return CooldownType.USER_GLOBAL;
+			return CooldownScope.USER_GLOBAL;
 		} else if (COOLDOWN_GUILD.get(guild.getIdLong()) != null) {
-			return CooldownType.GUILD;
+			return CooldownScope.GUILD;
 		} else if (COOLDOWN_USER_GUILD.get(Pair.of(user.getIdLong(), guild.getIdLong())) != null) {
-			return CooldownType.MEMBER_GUILD;
+			return CooldownScope.MEMBER_GUILD;
 		}
-		return CooldownType.NONE;
+		return CooldownScope.NONE;
 	}
 
 	/**
@@ -283,9 +283,9 @@ public abstract class RestrictedCommand {
 	 * @since v1.7
 	 */
 	@Nonnull
-	public Cooldown retrieveCooldown(@Nonnull User user, @Nullable Guild guild) {
-		if (guild == null) return retrieveCooldown(user);
-		CooldownType type = retrieveCooldownType(user, guild);
+	public Cooldown getCooldown(@Nonnull User user, @Nullable Guild guild) {
+		if (guild == null) return getCooldown(user);
+		CooldownScope type = retrieveCooldownType(user, guild);
 		switch (type) {
 			case USER_GLOBAL:
 				return COOLDOWN_USER_GLOBAL.get(user.getIdLong());
@@ -306,7 +306,7 @@ public abstract class RestrictedCommand {
 	 * @since v1.7
 	 */
 	@Nonnull
-	public Cooldown retrieveCooldown(@Nonnull User user) {
+	public Cooldown getCooldown(@Nonnull User user) {
 		return COOLDOWN_USER_GLOBAL.get(user.getIdLong()) == null ? Cooldown.forNextUse(Instant.EPOCH) : COOLDOWN_USER_GLOBAL.get(user.getIdLong());
 	}
 
