@@ -1,5 +1,7 @@
 package xyz.dynxsty.dih4jda.util;
 
+import org.jetbrains.annotations.Contract;
+
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
@@ -23,6 +25,13 @@ public class Pair<F, S> {
 	public Pair(@Nonnull F first, @Nonnull S second) {
 		this.first = first;
 		this.second = second;
+	}
+
+	//TODO docs
+	@Nonnull
+	@Contract(value = "_, _ -> new", pure = true)
+	public static <F, S> Pair<F, S> of(@Nonnull F first, @Nonnull S second) {
+		return new Pair<>(first, second);
 	}
 
 	/**

@@ -2,11 +2,13 @@ package xyz.dynxsty.dih4jda.interactions.commands;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownType;
 import xyz.dynxsty.dih4jda.util.Pair;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -17,8 +19,12 @@ import java.util.Map;
  *
  * @since v1.6
  */
+//TODO docs
 public abstract class RestrictedCommand {
-	private final Map<Pair<Long, Long>, Cooldown> COOLDOWN_CACHE = new HashMap<>();
+
+	private final Map<Long, Cooldown> COOLDOWN_USER_GLOBAL = new HashMap<>();
+	private final Map<Pair<Long, Long>, Cooldown> COOLDOWN_USER_GUILD = new HashMap<>();
+	private final Map<Long, Cooldown> COOLDOWN_GUILD = new HashMap<>();
 
 	private Long[] requiredGuilds = new Long[]{};
 	private Permission[] requiredPermissions = new Permission[]{};
@@ -136,117 +142,150 @@ public abstract class RestrictedCommand {
 	}
 
 	/**
-	 * Manually applies a cooldown for the specified user and guild id.<br>
-	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
-	 * <b>For internal use only!</b>
+	 * Manually applies a cooldown with the type {@link CooldownType#USER_GLOBAL} to the provided {@link User}.
 	 *
-	 * @param userId The id of the user you want to apply the cooldown on.
-	 * @param guildId The id of the guild you want to apply the cooldown on.
+	 * @param user The {@link User} who the {@link Cooldown} should apply to.
 	 * @param  nextUse The time as an {@link Instant} where the user can execute the command the next time.
 	 */
-	private void applyCooldown(long userId, long guildId, @Nonnull Instant nextUse) {
-		COOLDOWN_CACHE.put(new Pair<>(userId, guildId), new Cooldown(Instant.now(), nextUse));
-	}
-
-	/**
-	 * Manually applies a cooldown for the specified user.<br>
-	 * Represents the {@link CooldownType#USER_GLOBAL}.<br>
-	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
-	 * <b>For internal use only!</b>
-	 *
-	 * @param user The {@link User} you want to apply the cooldown on.
-	 * @param nextUse The time as an {@link Instant} where the user can execute the command the next time.
-	 */
 	public void applyCooldown(@Nonnull User user, @Nonnull Instant nextUse) {
-		applyCooldown(user.getIdLong(), 0, nextUse);
+		COOLDOWN_USER_GLOBAL.put(user.getIdLong(), Cooldown.forNextUse(nextUse));
 	}
 
 	/**
-	 * Manually applies a cooldown for the specified user and guild.<br>
-	 * Represents the {@link CooldownType#USER_GUILD}.<br>
-	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
-	 * <b>For internal use only!</b>
+	 * Manually applies a cooldown with the type {@link CooldownType#GUILD} to the provided {@link Guild}.
 	 *
-	 * @param user The {@link User} you want to apply the cooldown on.
-	 * @param guild The {@link Guild} you want to apply the cooldown on.
-	 * @param nextUse The time as an {@link Instant} where the user can execute the command the next time.
-	 */
-	public void applyCooldown(@Nonnull User user, @Nonnull Guild guild, @Nonnull Instant nextUse) {
-		applyCooldown(user.getIdLong(), guild.getIdLong(), nextUse);
-	}
-
-	/**
-	 * Manually applies a cooldown for the specified guild.<br>
-	 * Represents the {@link CooldownType#GUILD}.<br>
-	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
-	 * <b>For internal use only!</b>
-	 *
-	 * @param guild The {@link Guild} you want to apply the cooldown on.
+	 * @param guild The {@link Guild} where the {@link Cooldown} should apply to.
 	 * @param nextUse The time as an {@link Instant} where the user can execute the command the next time.
 	 */
 	public void applyCooldown(@Nonnull Guild guild, @Nonnull Instant nextUse) {
-		applyCooldown(0, guild.getIdLong(), nextUse);
+		COOLDOWN_GUILD.put(guild.getIdLong(), Cooldown.forNextUse(nextUse));
 	}
 
 	/**
-	 * Gets the {@link Cooldown time} the specified user can execute this command again.
-	 * If the user has not executed the command yet, this will return a {@link Cooldown} with
-	 * both the nextUse and the lastUse of {@link Instant#EPOCH} instead.
-	 *
-	 * @param userId The targets' user id.
-	 * @param guildId The targets' guild id.
-	 * @return The {@link Instant} that marks the time the command can be used again.
+	 * Manually applies a cooldown with the type {@link CooldownType#MEMBER_GUILD} to the provided {@link User} and {@link Guild}.
+	 * @param user The {@link User} who the {@link Cooldown} should apply to.
+	 * @param guild The {@link Guild} where the {@link Cooldown} should apply to.
+	 * @param nextUse The time as an {@link Instant} where the user can execute the command the next time.
 	 */
-	@Nonnull
-	public Cooldown retrieveCooldown(long userId, long guildId) {
-		Cooldown cooldown = null;
-		switch (cooldownType) {
-			case USER_GLOBAL: cooldown = COOLDOWN_CACHE.get(new Pair<>(userId, 0L)); break;
-			case USER_GUILD: cooldown = COOLDOWN_CACHE.get(new Pair<>(userId, guildId)); break;
-			case GUILD: cooldown = COOLDOWN_CACHE.get(new Pair<>(0L, guildId)); break;
-		}
-		if (cooldown == null) {
-			return new Cooldown(Instant.EPOCH, Instant.EPOCH);
-		}
-		return cooldown;
+	public void applyCooldown(@Nonnull User user, @Nonnull Guild guild, @Nonnull Instant nextUse) {
+		COOLDOWN_USER_GUILD.put(new Pair<>(user.getIdLong(), guild.getIdLong()), Cooldown.forNextUse(nextUse));
 	}
 
-	/**
-	 * Returns whether the command can be used by the specified user.<br>
-	 *
-	 * <b>Command Cooldowns DO NOT persist between sessions!</b><br>
-	 *
-	 * @param userId The targets' user id.
-	 * @param guildId The targets' guild id.
-	 * @return Whether the command can be executed.
-	 */
-	public boolean hasCooldown(long userId, long guildId) {
-		Cooldown cooldown;
-		cooldown = retrieveCooldown(userId, guildId);
-		boolean hasCooldown = cooldown.getNextUse().isAfter(Instant.now());
-		if (!hasCooldown) {
-			switch (cooldownType) {
-				case USER_GLOBAL: COOLDOWN_CACHE.remove(new Pair<>(userId, 0L)); break;
-				case USER_GUILD: COOLDOWN_CACHE.remove(new Pair<>(userId, guildId)); break;
-				case GUILD: COOLDOWN_CACHE.remove(new Pair<>(0L, guildId)); break;
-			}
+	public boolean hasCooldown(@Nonnull User user) {
+		Cooldown cooldown = COOLDOWN_USER_GLOBAL.get(user.getIdLong());
+		if (cooldown == null) return false;
+		boolean hasCooldown = cooldown.isInCooldown();
+		if (hasCooldown) {
+			cleanUpCooldown(user);
 		}
 		return hasCooldown;
 	}
 
+	private boolean hasCooldown(@Nonnull User user, @Nonnull Guild guild) {
+		if (hasCooldown(user)) return true;
+		Cooldown cooldown = COOLDOWN_GUILD.get(guild.getIdLong());
+		if (cooldown == null) {
+			return false;
+		}
+		boolean hasCooldown = cooldown.isInCooldown();
+		if (hasCooldown) {
+			cleanUpCooldown(user, guild);
+		}
+		return hasCooldown;
+	}
+
+	public boolean hasCooldown(@Nonnull Member member) {
+		CooldownType type = retrieveCooldownType(member.getUser(), member.getGuild());
+		switch (type) {
+			case USER_GLOBAL:
+				return hasCooldown(member.getUser());
+			case GUILD:
+			case MEMBER_GUILD:
+				return hasCooldown(member.getUser(), member.getGuild());
+			case NONE:
+				return false;
+		}
+		return false;
+	}
+
+	private CooldownType retrieveCooldownType(@Nonnull User user, @Nonnull Guild guild) {
+		if (hasCooldown(user)) {
+			return CooldownType.USER_GLOBAL;
+		} else if (COOLDOWN_GUILD.get(guild.getIdLong()) != null) {
+			return CooldownType.GUILD;
+		} else if (COOLDOWN_USER_GUILD.get(Pair.of(user.getIdLong(), guild.getIdLong())) != null) {
+			return CooldownType.MEMBER_GUILD;
+		}
+		return CooldownType.NONE;
+	}
+
+	private void cleanUpCooldown(@Nonnull User user, @Nonnull Guild guild) {
+		COOLDOWN_USER_GUILD.remove(Pair.of(user.getIdLong(), guild.getIdLong()));
+	}
+
+	private void cleanUpCooldown(@Nonnull User user) {
+		COOLDOWN_USER_GLOBAL.remove(user.getIdLong());
+	}
+
+	@Nonnull
+	public Cooldown retrieveCooldown(@Nonnull User user, @Nullable Guild guild) {
+		if (guild == null) return retrieveCooldown(user);
+		CooldownType type = retrieveCooldownType(user, guild);
+		switch (type) {
+			case USER_GLOBAL:
+				return COOLDOWN_USER_GLOBAL.get(user.getIdLong());
+			case GUILD:
+				return COOLDOWN_GUILD.get(guild.getIdLong());
+			case MEMBER_GUILD:
+				return COOLDOWN_USER_GUILD.get(Pair.of(user.getIdLong(), guild.getIdLong()));
+			case NONE:
+				return Cooldown.forNextUse(Instant.EPOCH);
+		}
+		return Cooldown.forNextUse(Instant.EPOCH);
+	}
+
+	@Nonnull
+	public Cooldown retrieveCooldown(@Nonnull User user) {
+		return COOLDOWN_USER_GLOBAL.get(user.getIdLong()) == null ? Cooldown.forNextUse(Instant.EPOCH) : COOLDOWN_USER_GLOBAL.get(user.getIdLong());
+	}
+
+
 	/**
-	 * Model class which represents a single command cooldown.
-	 * <p>
+	 * Model class which represents a single command cooldown.<br>
 	 * <b>Command Cooldowns DO NOT persist between sessions!</b>
 	 */
 	public static class Cooldown {
 
+		/**
+		 * The {@link Instant} the user has used the {@link RestrictedCommand} the last time.
+		 */
 		private final Instant lastUse;
+		/**
+		 * The {@link Instant} of when a user can use the {@link RestrictedCommand} the next time.
+		 */
 		private final Instant nextUse;
 
-		protected Cooldown(@Nonnull Instant lastUse, @Nonnull Instant nextUse) {
+		/**
+		 * Creates a new {@link Cooldown} with the provided {@link Instant}s.
+		 *
+		 * @param lastUse The {@link Instant} the user has used the {@link RestrictedCommand} the last time.
+		 * @param nextUse The {@link Instant} of when a user can use the {@link RestrictedCommand} the next time.
+		 */
+		private Cooldown(@Nonnull Instant lastUse, @Nonnull Instant nextUse) {
 			this.lastUse = lastUse;
 			this.nextUse = nextUse;
+		}
+
+		/**
+		 * Creates a new {@link Cooldown} where the last use is set to the current {@link Instant} and
+		 * the next use is set to the provided {@link Instant}.
+		 *
+		 * @param nextUse The {@link Instant} of when a user can use the {@link RestrictedCommand} the next time.
+		 * @return The new {@link Cooldown}.
+		 */
+		@Nonnull
+		public static Cooldown forNextUse(@Nonnull Instant nextUse) {
+			return new Cooldown(Instant.now(), nextUse);
 		}
 
 		/**
@@ -267,6 +306,15 @@ public abstract class RestrictedCommand {
 		@Nonnull
 		public Instant getLastUse() {
 			return lastUse;
+		}
+
+		/**
+		 * Checks if the user is currently on cooldown.
+		 *
+		 * @return true if the user is on cooldown, false otherwise.
+		 */
+		public boolean isInCooldown() {
+			return Instant.now().isBefore(nextUse);
 		}
 
 		/**

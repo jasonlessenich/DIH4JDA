@@ -620,25 +620,38 @@ public class InteractionHandler extends ListenerAdapter {
 				return false;
 			}
 		}
-		// check if the command has enabled some sort of cooldown
-		Pair<Duration, CooldownType> cooldownPair = command.getCommandCooldown();
-		if (cooldownPair.getFirst() != Duration.ZERO) {
-			long guildId = interaction.getGuild().getIdLong();
-			RestrictedCommand.Cooldown cooldown = command.retrieveCooldown(userId, guildId);
-			if (command.hasCooldown(userId, guildId)) {
-				DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, cooldown));
-				return false;
-			} else {
-				Instant nextUse = Instant.now().plus(cooldownPair.getFirst());
-				switch (cooldownPair.getSecond()) {
-					case USER_GLOBAL: command.applyCooldown(interaction.getUser(), nextUse); break;
-					case USER_GUILD: command.applyCooldown(interaction.getUser(), interaction.getGuild(), nextUse); break;
-					case GUILD: command.applyCooldown(interaction.getGuild(), nextUse); break;
-				}
-			}
-		}
-		return true;
-	}
+        return !hasCooldown(interaction, command);
+    }
+
+    //TODO docs
+    private boolean hasCooldown(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command) {
+        // check if the command has enabled some sort of cooldown
+        Pair<Duration, CooldownType> cooldownPair = command.getCommandCooldown();
+        if (cooldownPair.getFirst() == Duration.ZERO) {
+            return false;
+        }
+        RestrictedCommand.Cooldown cooldown = command.retrieveCooldown(interaction.getUser(), interaction.getGuild());
+        if (interaction.isFromGuild()) {
+            if (command.hasCooldown(interaction.getMember())) {
+                DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, cooldown));
+                return true;
+            }
+            Instant nextUse = Instant.now().plus(cooldownPair.getFirst());
+            switch (cooldownPair.getSecond()) {
+                case USER_GLOBAL: command.applyCooldown(interaction.getUser(), nextUse); break;
+                case MEMBER_GUILD: command.applyCooldown(interaction.getUser(), interaction.getGuild(), nextUse); break;
+                case GUILD: command.applyCooldown(interaction.getGuild(), nextUse); break;
+            }
+        } else {
+            if (command.hasCooldown(interaction.getUser())) {
+                DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, cooldown));
+                return true;
+            }
+            Instant nextUse = Instant.now().plus(cooldownPair.getFirst());
+            command.applyCooldown(interaction.getUser(), nextUse);
+        }
+        return false;
+    }
 
     /**
      * Fired if Discord reports a {@link SlashCommandInteractionEvent}.

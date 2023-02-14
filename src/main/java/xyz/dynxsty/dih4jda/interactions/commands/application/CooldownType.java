@@ -11,13 +11,17 @@ public enum CooldownType {
      */
     USER_GLOBAL,
     /**
-     * Limits the amount how often a user can execute a command on a guild.<br>
-     * <b>User / Guild</b><br>
-     */
-    USER_GUILD,
-    /**
      * Limits the amount how often everyone can execute a command on a guild.<br>
      * <b>everyone / Guild</b>
      */
-    GUILD
+    GUILD,
+    /**
+     * Limits the amount how often a user can execute a command on a guild.<br>
+     * <b>Member / Guild</b><br>
+     */
+    MEMBER_GUILD,
+    /**
+     * No cooldown is applied.
+     */
+    NONE
 }
