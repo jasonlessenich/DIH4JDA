@@ -196,7 +196,10 @@ public abstract class RestrictedCommand {
 	private boolean hasCooldown(@Nonnull User user, @Nonnull Guild guild) {
 		if (hasCooldown(user)) return true;
 		Cooldown cooldown = COOLDOWN_GUILD.get(guild.getIdLong());
+		if (cooldown != null) return cooldown.isInCooldown();
+		cooldown = COOLDOWN_USER_GUILD.get(new Pair<>(user.getIdLong(), guild.getIdLong()));
 		if (cooldown == null) return false;
+
 		cleanUpCooldown(user, guild, cooldown);
 		return cooldown.isInCooldown();
 	}
@@ -235,7 +238,6 @@ public abstract class RestrictedCommand {
 		} else if (COOLDOWN_USER_GUILD.get(Pair.of(user.getIdLong(), guild.getIdLong())) != null) {
 			return CooldownType.MEMBER_GUILD;
 		}
-		System.out.println("No cooldown found for " + user.getName() + " in " + guild.getName());
 		return CooldownType.NONE;
 	}
 
