@@ -633,6 +633,7 @@ public class InteractionHandler extends ListenerAdapter {
         // check if the command has enabled some sort of cooldown
         Pair<Duration, CooldownType> cooldownPair = command.getCommandCooldown();
         if (cooldownPair.getFirst() == Duration.ZERO) {
+            System.out.println("No cooldown");
             return false;
         }
         RestrictedCommand.Cooldown cooldown = command.retrieveCooldown(interaction.getUser(), interaction.getGuild());

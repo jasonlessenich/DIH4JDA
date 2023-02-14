@@ -30,7 +30,7 @@ public abstract class RestrictedCommand {
 	private Long[] requiredUsers = new Long[]{};
 	private Long[] requiredRoles = new Long[]{};
 	private Duration commandCooldown = Duration.ZERO;
-	private CooldownType cooldownType = CooldownType.USER_GLOBAL;
+	private CooldownType cooldownType = CooldownType.NONE;
 
 	/**
 	 * Creates a default instance.
@@ -181,11 +181,8 @@ public abstract class RestrictedCommand {
 	public boolean hasCooldown(@Nonnull User user) {
 		Cooldown cooldown = COOLDOWN_USER_GLOBAL.get(user.getIdLong());
 		if (cooldown == null) return false;
-		boolean hasCooldown = cooldown.isInCooldown();
-		if (hasCooldown) {
-			cleanUpCooldown(user);
-		}
-		return hasCooldown;
+		cleanUpCooldown(user,cooldown);
+		return cooldown.isInCooldown();
 	}
 
 	/**
@@ -199,14 +196,9 @@ public abstract class RestrictedCommand {
 	private boolean hasCooldown(@Nonnull User user, @Nonnull Guild guild) {
 		if (hasCooldown(user)) return true;
 		Cooldown cooldown = COOLDOWN_GUILD.get(guild.getIdLong());
-		if (cooldown == null) {
-			return false;
-		}
-		boolean hasCooldown = cooldown.isInCooldown();
-		if (hasCooldown) {
-			cleanUpCooldown(user, guild);
-		}
-		return hasCooldown;
+		if (cooldown == null) return false;
+		cleanUpCooldown(user, guild, cooldown);
+		return cooldown.isInCooldown();
 	}
 
 	/**
@@ -236,13 +228,14 @@ public abstract class RestrictedCommand {
 	 * @return The {@link CooldownType}.
 	 */
 	private CooldownType retrieveCooldownType(@Nonnull User user, @Nonnull Guild guild) {
-		if (hasCooldown(user)) {
+		if (COOLDOWN_USER_GLOBAL.get(user.getIdLong()) != null) {
 			return CooldownType.USER_GLOBAL;
 		} else if (COOLDOWN_GUILD.get(guild.getIdLong()) != null) {
 			return CooldownType.GUILD;
 		} else if (COOLDOWN_USER_GUILD.get(Pair.of(user.getIdLong(), guild.getIdLong())) != null) {
 			return CooldownType.MEMBER_GUILD;
 		}
+		System.out.println("No cooldown found for " + user.getName() + " in " + guild.getName());
 		return CooldownType.NONE;
 	}
 
@@ -252,17 +245,21 @@ public abstract class RestrictedCommand {
 	 * @param user The {@link User} to clean up.
 	 * @param guild The {@link Guild} to clean up.
 	 */
-	private void cleanUpCooldown(@Nonnull User user, @Nonnull Guild guild) {
-		COOLDOWN_USER_GUILD.remove(Pair.of(user.getIdLong(), guild.getIdLong()));
-		COOLDOWN_GUILD.remove(guild.getIdLong());
+	private void cleanUpCooldown(@Nonnull User user, @Nonnull Guild guild, @Nonnull Cooldown cooldown) {
+		if (!cooldown.isInCooldown()) {
+			COOLDOWN_USER_GUILD.remove(Pair.of(user.getIdLong(), guild.getIdLong()));
+			COOLDOWN_GUILD.remove(guild.getIdLong());
+		}
 	}
 
 	/**
 	 * Removes the {@link RestrictedCommand#COOLDOWN_USER_GLOBAL} map entries linked to the given input.
 	 * @param user The {@link User} to clean up.
 	 */
-	private void cleanUpCooldown(@Nonnull User user) {
-		COOLDOWN_USER_GLOBAL.remove(user.getIdLong());
+	private void cleanUpCooldown(@Nonnull User user, @Nonnull Cooldown cooldown) {
+		if (!cooldown.isInCooldown()) {
+			COOLDOWN_USER_GLOBAL.remove(user.getIdLong());
+		}
 	}
 
 	/**
