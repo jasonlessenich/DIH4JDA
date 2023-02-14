@@ -17,7 +17,7 @@ public class Pair<F, S> {
 	private final S second;
 
 	/**
-	 * Creates a new {@link Pair} of to {@link Object}s.
+	 * Creates a new {@link Pair} of two {@link Object}s.
 	 *
 	 * @param first the first {@link Object}.
 	 * @param second the second {@link Object}.

@@ -123,6 +123,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @param commandCooldown The {@link Duration} the user has to wait between command executions.
 	 * @param type The {@link CooldownType} you want to use.
+	 * @since v1.6
 	 */
 	public void setCommandCooldown(@Nonnull Duration commandCooldown, @Nonnull CooldownType type) {
 		this.commandCooldown = commandCooldown;
@@ -134,6 +135,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @return The {@link Duration}.
 	 * @see RestrictedCommand#setCommandCooldown(Duration, CooldownType)
+	 * @since v1.6
 	 */
 	@Nonnull
 	public Pair<Duration, CooldownType> getCommandCooldown() {
@@ -145,6 +147,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @param user The {@link User} who the {@link Cooldown} should apply to.
 	 * @param  nextUse The time as an {@link Instant} where the user can execute the command the next time.
+	 * @since v1.7
 	 */
 	public void applyCooldown(@Nonnull User user, @Nonnull Instant nextUse) {
 		COOLDOWN_USER_GLOBAL.put(user.getIdLong(), Cooldown.forNextUse(nextUse));
@@ -155,6 +158,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @param guild The {@link Guild} where the {@link Cooldown} should apply to.
 	 * @param nextUse The time as an {@link Instant} where the user can execute the command the next time.
+	 * @since v1.7
 	 */
 	public void applyCooldown(@Nonnull Guild guild, @Nonnull Instant nextUse) {
 		COOLDOWN_GUILD.put(guild.getIdLong(), Cooldown.forNextUse(nextUse));
@@ -165,6 +169,7 @@ public abstract class RestrictedCommand {
 	 * @param user The {@link User} who the {@link Cooldown} should apply to.
 	 * @param guild The {@link Guild} where the {@link Cooldown} should apply to.
 	 * @param nextUse The time as an {@link Instant} where the user can execute the command the next time.
+	 * @since v1.7
 	 */
 	public void applyCooldown(@Nonnull User user, @Nonnull Guild guild, @Nonnull Instant nextUse) {
 		COOLDOWN_USER_GUILD.put(new Pair<>(user.getIdLong(), guild.getIdLong()), Cooldown.forNextUse(nextUse));
@@ -177,6 +182,7 @@ public abstract class RestrictedCommand {
 	 * @see RestrictedCommand#hasCooldown(Member)
 	 * @param user The {@link User} to check.
 	 * @return true if the user is on cooldown, false otherwise.
+	 * @since v1.7
 	 */
 	public boolean hasCooldown(@Nonnull User user) {
 		Cooldown cooldown = COOLDOWN_USER_GLOBAL.get(user.getIdLong());
@@ -192,6 +198,7 @@ public abstract class RestrictedCommand {
 	 * @param user The {@link User} to check.
 	 * @param guild The {@link Guild} to check.
 	 * @return true if the user is on cooldown, false otherwise.
+	 * @since v1.7
 	 */
 	private boolean hasCooldown(@Nonnull User user, @Nonnull Guild guild) {
 		if (hasCooldown(user)) return true;
@@ -209,6 +216,7 @@ public abstract class RestrictedCommand {
 	 *
 	 * @param member The {@link Member} to check.
 	 * @return true if the user is on cooldown, false otherwise.
+	 * @since v1.7
 	 */
 	public boolean hasCooldown(@Nonnull Member member) {
 		CooldownType type = retrieveCooldownType(member.getUser(), member.getGuild());
@@ -229,6 +237,7 @@ public abstract class RestrictedCommand {
 	 * @param user The {@link User} to check.
 	 * @param guild The {@link Guild} to check.
 	 * @return The {@link CooldownType}.
+	 * @since v1.7
 	 */
 	private CooldownType retrieveCooldownType(@Nonnull User user, @Nonnull Guild guild) {
 		if (COOLDOWN_USER_GLOBAL.get(user.getIdLong()) != null) {
@@ -246,6 +255,7 @@ public abstract class RestrictedCommand {
 	 * linked to the given inputs.
 	 * @param user The {@link User} to clean up.
 	 * @param guild The {@link Guild} to clean up.
+	 * @since v1.7
 	 */
 	private void cleanUpCooldown(@Nonnull User user, @Nonnull Guild guild, @Nonnull Cooldown cooldown) {
 		if (!cooldown.isInCooldown()) {
@@ -257,6 +267,7 @@ public abstract class RestrictedCommand {
 	/**
 	 * Removes the {@link RestrictedCommand#COOLDOWN_USER_GLOBAL} map entries linked to the given input.
 	 * @param user The {@link User} to clean up.
+	 * @since v1.7
 	 */
 	private void cleanUpCooldown(@Nonnull User user, @Nonnull Cooldown cooldown) {
 		if (!cooldown.isInCooldown()) {
@@ -269,6 +280,7 @@ public abstract class RestrictedCommand {
 	 * @param user The {@link User} to get the cooldown for.
 	 * @param guild The {@link Guild} to get the cooldown for
 	 * @return The {@link Cooldown}.
+	 * @since v1.7
 	 */
 	@Nonnull
 	public Cooldown retrieveCooldown(@Nonnull User user, @Nullable Guild guild) {
@@ -291,6 +303,7 @@ public abstract class RestrictedCommand {
 	 * Retrieves the {@link Cooldown} for the provided {@link User}.
 	 * @param user The {@link User} to get the cooldown for.
 	 * @return The {@link Cooldown}.
+	 * @since v1.7
 	 */
 	@Nonnull
 	public Cooldown retrieveCooldown(@Nonnull User user) {
@@ -301,15 +314,18 @@ public abstract class RestrictedCommand {
 	/**
 	 * Model class which represents a single command cooldown.<br>
 	 * <b>Command Cooldowns DO NOT persist between sessions!</b>
+	 * @since v1.7
 	 */
 	public static class Cooldown {
 
 		/**
 		 * The {@link Instant} the user has used the {@link RestrictedCommand} the last time.
+		 * @since v1.7
 		 */
 		private final Instant lastUse;
 		/**
 		 * The {@link Instant} of when a user can use the {@link RestrictedCommand} the next time.
+		 * @since v1.7
 		 */
 		private final Instant nextUse;
 
@@ -318,6 +334,7 @@ public abstract class RestrictedCommand {
 		 *
 		 * @param lastUse The {@link Instant} the user has used the {@link RestrictedCommand} the last time.
 		 * @param nextUse The {@link Instant} of when a user can use the {@link RestrictedCommand} the next time.
+		 * @since v1.7
 		 */
 		private Cooldown(@Nonnull Instant lastUse, @Nonnull Instant nextUse) {
 			this.lastUse = lastUse;
@@ -330,6 +347,7 @@ public abstract class RestrictedCommand {
 		 *
 		 * @param nextUse The {@link Instant} of when a user can use the {@link RestrictedCommand} the next time.
 		 * @return The new {@link Cooldown}.
+		 * @since v1.7
 		 */
 		@Nonnull
 		public static Cooldown forNextUse(@Nonnull Instant nextUse) {
@@ -340,6 +358,7 @@ public abstract class RestrictedCommand {
 		 * Gets you the {@link Instant} of when a user can use the {@link RestrictedCommand} the next time.
 		 *
 		 * @return The next {@link Instant time} the command may be used again.
+		 * @since v1.7
 		 */
 		@Nonnull
 		public Instant getNextUse() {
@@ -350,6 +369,7 @@ public abstract class RestrictedCommand {
 		 * Gets you the {@link Instant} the user has used the {@link RestrictedCommand} the last time.
 		 *
 		 * @return The last {@link Instant time} the command was used.
+		 * @since v1.7
 		 */
 		@Nonnull
 		public Instant getLastUse() {
@@ -360,6 +380,7 @@ public abstract class RestrictedCommand {
 		 * Checks if the user is currently on cooldown.
 		 *
 		 * @return true if the user is on cooldown, false otherwise.
+		 * @since v1.7
 		 */
 		public boolean isInCooldown() {
 			return Instant.now().isBefore(nextUse);
@@ -369,6 +390,7 @@ public abstract class RestrictedCommand {
 		 * Returns a string representation of the object.
 		 *
 		 * @return The representation as a {@link String}.
+		 * @since v1.7
 		 */
 		@Override
 		public String toString() {
