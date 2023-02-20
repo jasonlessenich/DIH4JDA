@@ -598,7 +598,7 @@ public class InteractionHandler extends ListenerAdapter {
 		Long[] userIds = command.getRequiredUsers();
 		Long[] roleIds = command.getRequiredRoles();
 		if (type == RegistrationType.GUILD && guildIds.length != 0 && interaction.isFromGuild() &&
-				interaction.getGuild() != null && !Arrays.asList(guildIds).contains(interaction.getGuild().getIdLong())
+				!Arrays.asList(guildIds).contains(interaction.getGuild().getIdLong())
 		) {
 			DIH4JDAEvent.fire(new InvalidGuildEvent(dih4jda, interaction, Set.of(guildIds)));
 			return false;
@@ -612,7 +612,7 @@ public class InteractionHandler extends ListenerAdapter {
 			DIH4JDAEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
 			return false;
 		}
-		if (interaction.isFromGuild() && interaction.getGuild() != null && interaction.getMember() != null) {
+		if (interaction.isFromGuild() && interaction.getMember() != null) {
 			Member member = interaction.getMember();
 			if (roleIds.length != 0 && !member.getRoles().isEmpty() &&
 					member.getRoles().stream().noneMatch(r -> Arrays.asList(roleIds).contains(r.getIdLong()))) {
