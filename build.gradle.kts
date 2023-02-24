@@ -91,6 +91,8 @@ tasks.withType<Test> {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
+    //enable this when the StaticAssignmentInConstructor error-prone error is fixed
+    //if (isCI) options.compilerArgs.add("-Werror")
 
     //error-prone configuration
     options.errorprone.disableWarningsInGeneratedCode.set(true)
