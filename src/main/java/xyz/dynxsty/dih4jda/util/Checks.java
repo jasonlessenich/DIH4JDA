@@ -12,7 +12,6 @@ import java.lang.reflect.Constructor;
  * @since v1.4
  */
 public class Checks {
-
 	private Checks() {}
 
 	/**

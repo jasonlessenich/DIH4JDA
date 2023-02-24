@@ -1,5 +1,7 @@
 package xyz.dynxsty.dih4jda.util;
 
+import lombok.Getter;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -10,7 +12,9 @@ import javax.annotation.Nonnull;
  * @since v1.5.2
  */
 public class Pair<F, S> {
+	@Getter
 	private final F first;
+	@Getter
 	private final S second;
 
 	/**
@@ -22,25 +26,5 @@ public class Pair<F, S> {
 	public Pair(@Nonnull F first, @Nonnull S second) {
 		this.first = first;
 		this.second = second;
-	}
-
-	/**
-	 * Gets you the {@link Object} that was defined as first.
-	 *
-	 * @return the first {@link Object}.
-	 */
-	@Nonnull
-	public F getFirst() {
-		return first;
-	}
-
-	/**
-	 * Gets you the {@link Object} that was defined as second.
-	 *
-	 * @return the second {@link Object}.
-	 */
-	@Nonnull
-	public S getSecond() {
-		return second;
 	}
 }

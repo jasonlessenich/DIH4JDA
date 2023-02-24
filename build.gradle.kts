@@ -1,12 +1,14 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
     java
-    `java-library`
     signing
+    `java-library`
     `maven-publish`
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.2.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("net.ltgt.errorprone") version "3.0.1"
 }
 
 java {
@@ -58,7 +60,10 @@ dependencies {
     api("net.dv8tion:JDA:5.0.0-beta.4") {
         exclude(module = "opus-java")
     }
+
+    //code saftey
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+    errorprone("com.google.errorprone:error_prone_core:2.18.0")
 
     //Lombok's annotations
     compileOnly("org.projectlombok:lombok:$lombokVersion")
@@ -84,8 +89,13 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.withType<JavaCompile> {
+tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
+
+    //error-prone configuration
+    options.errorprone.disableWarningsInGeneratedCode.set(true)
+    options.errorprone.errorproneArgs.addAll(
+            "-Xep:AnnotateFormatMethod:OFF", "-Xep:FutureReturnValueIgnored:OFF")
 }
 
 val javadocJar = task<Jar>("javadocJar") {

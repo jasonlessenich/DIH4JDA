@@ -12,7 +12,6 @@ import java.util.List;
  * @since v1.4
  */
 public class ClassUtils {
-
 	private ClassUtils() {}
 
 	/**
