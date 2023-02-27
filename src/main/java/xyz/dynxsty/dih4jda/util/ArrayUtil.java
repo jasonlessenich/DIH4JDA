@@ -11,11 +11,10 @@ import java.util.Arrays;
  * @since v1.6
  */
 public class ArrayUtil {
-
     private ArrayUtil() {}
 
     /**
-     * Checks if the specified object is inside the specifed array.
+     * Checks if the specified object is inside the specified array.
      *
      * @param array The array to check.
      * @param search The {@link Object} to search for.
@@ -23,12 +22,7 @@ public class ArrayUtil {
      * @since v1.6
      */
     public static boolean contains(@Nonnull Object[] array, @Nonnull Object search) {
-        for (Object obj : array) {
-            if (obj.equals(search)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.binarySearch(array, search) >= 0;
     }
 
     /**

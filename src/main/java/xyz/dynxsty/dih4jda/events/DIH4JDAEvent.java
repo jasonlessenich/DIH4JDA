@@ -1,5 +1,6 @@
 package xyz.dynxsty.dih4jda.events;
 
+import lombok.Getter;
 import net.dv8tion.jda.api.interactions.Interaction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.DIH4JDALogger;
@@ -13,8 +14,12 @@ import java.lang.reflect.Method;
  * @param <I> The follow-up {@link Interaction}
  */
 public abstract class DIH4JDAEvent<I extends Interaction> {
+
+	@Getter
 	private final String eventName;
+	@Getter
 	private final DIH4JDA dih4jda;
+	@Getter
 	private final I interaction;
 
 	protected DIH4JDAEvent(@Nonnull String eventName, @Nonnull DIH4JDA dih4jda, @Nonnull I interaction) {
@@ -31,13 +36,13 @@ public abstract class DIH4JDAEvent<I extends Interaction> {
 	 * @since v1.5
 	 */
 	public static <I extends Interaction> void fire(@Nonnull DIH4JDAEvent<I> event) {
-		if (event.getDIH4JDA().getEventListeners().isEmpty()) {
+		if (event.getDih4jda().getEventListeners().isEmpty()) {
 			DIH4JDALogger.warn(DIH4JDALogger.Type.EVENT_MISSING_HANDLER, "%s was fired, but not handled (No listener registered)", event.getEventName());
-			if (event instanceof DIH4JDAThrowableEvent && event.getDIH4JDA().getConfig().isDefaultPrintStacktrace()) {
+			if (event instanceof DIH4JDAThrowableEvent && event.getDih4jda().getConfig().isDefaultPrintStacktrace()) {
 				((DIH4JDAThrowableEvent<I>) event).getThrowable().printStackTrace();
 			}
 		}
-		for (DIH4JDAEventListener listener : event.getDIH4JDA().getEventListeners()) {
+		for (DIH4JDAEventListener listener : event.getDih4jda().getEventListeners()) {
 			try {
 				for (Method method : listener.getClass().getMethods()) {
 					if (method.getName().equals(event.getEventName())) {
@@ -48,35 +53,5 @@ public abstract class DIH4JDAEvent<I extends Interaction> {
 				DIH4JDALogger.error(e.getMessage());
 			}
 		}
-	}
-
-	/**
-	 * The internal name of the event.
-	 *
-	 * @return The internal event name.
-	 */
-	@Nonnull
-	public String getEventName() {
-		return eventName;
-	}
-
-	/**
-	 * The {@link DIH4JDA} instance that fired the event.
-	 *
-	 * @return The {@link DIH4JDA} instance.
-	 */
-	@Nonnull
-	public DIH4JDA getDIH4JDA() {
-		return dih4jda;
-	}
-
-	/**
-	 * The follow-up interaction that was defined by instantiating the class.
-	 *
-	 * @return The follow-up interaction of this event.
-	 */
-	@Nonnull
-	public I getInteraction() {
-		return interaction;
 	}
 }

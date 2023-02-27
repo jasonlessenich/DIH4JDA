@@ -1,5 +1,6 @@
 package xyz.dynxsty.dih4jda.events;
 
+import lombok.Getter;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
@@ -17,6 +18,7 @@ import java.time.Duration;
  */
 public class CommandCooldownEvent extends DIH4JDAEvent<CommandInteraction> {
 
+	@Getter
 	private final RestrictedCommand.Cooldown cooldown;
 
 	/**
@@ -30,15 +32,5 @@ public class CommandCooldownEvent extends DIH4JDAEvent<CommandInteraction> {
 								@Nonnull RestrictedCommand.Cooldown cooldown) {
 		super("onCommandCooldown", dih4jda, interaction);
 		this.cooldown = cooldown;
-	}
-
-	/**
-	 * Gets you the {@link RestrictedCommand.Cooldown} the user has.
-	 *
-	 * @return the {@link RestrictedCommand.Cooldown} instance.
-	 */
-	@Nonnull
-	public RestrictedCommand.Cooldown getCooldown() {
-		return cooldown;
 	}
 }

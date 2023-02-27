@@ -1,5 +1,6 @@
 package xyz.dynxsty.dih4jda.events;
 
+import lombok.Getter;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
@@ -14,6 +15,7 @@ import java.util.Set;
  */
 public class InvalidRoleEvent extends DIH4JDAEvent<CommandInteraction> {
 
+	@Getter
 	private final Set<Long> roleIds;
 
 	/**
@@ -26,16 +28,5 @@ public class InvalidRoleEvent extends DIH4JDAEvent<CommandInteraction> {
 	public InvalidRoleEvent(@Nonnull DIH4JDA dih4jda, @Nonnull CommandInteraction interaction, @Nonnull Set<Long> roleIds) {
 		super("onInvalidRole", dih4jda, interaction);
 		this.roleIds = roleIds;
-	}
-
-	/**
-	 * The ids of the roles that was allowed to execute the {@link RestrictedCommand}.
-	 *
-	 * @return An immutable {@link Set} of all "required" roles for the executed command.
-	 * @see RestrictedCommand#setRequiredRoles(Long...)
-	 */
-	@Nonnull
-	public Set<Long> getRoleIds() {
-		return roleIds;
 	}
 }
