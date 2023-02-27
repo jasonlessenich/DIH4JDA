@@ -6,9 +6,9 @@ plugins {
     signing
     `java-library`
     `maven-publish`
-    id("io.github.gradle-nexus.publish-plugin") version "1.2.0"
-    id("com.github.johnrengelman.shadow") version "8.0.0"
     id("net.ltgt.errorprone") version "3.0.1"
+    id("io.github.gradle-nexus.publish-plugin") version "1.2.0"
+    id("com.github.johnrengelman.shadow") version "8.1.0"
 }
 
 java {
@@ -95,6 +95,7 @@ tasks.withType<JavaCompile>().configureEach {
     if (isCI) options.compilerArgs.add("-Werror")
 
     //error-prone configuration
+    options.errorprone.isEnabled.set(true)
     options.errorprone.disableWarningsInGeneratedCode.set(true)
     options.errorprone.errorproneArgs.addAll(
             "-Xep:AnnotateFormatMethod:OFF", "-Xep:FutureReturnValueIgnored:OFF")
