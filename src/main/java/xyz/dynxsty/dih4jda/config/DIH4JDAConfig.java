@@ -3,7 +3,6 @@ package xyz.dynxsty.dih4jda.config;
 import lombok.Data;
 import net.dv8tion.jda.api.JDA;
 import xyz.dynxsty.dih4jda.DIH4JDA;
-import xyz.dynxsty.dih4jda.DIH4JDALogger;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
@@ -23,14 +22,6 @@ public class DIH4JDAConfig {
      * <b>Standard:</b> {@code new String[]{}}
      */
     private String[] commandsPackages = new String[]{};
-
-    /**
-     * All {@link DIH4JDALogger.Type}s that are not getting logged.<br>
-     * <b>Standard:</b> {@code new DIH4JDALogger.Type[]{}}
-     * @deprecated Use {@link DIH4JDALogger#disableLogging(DIH4JDALogger.Type...)} <b>Will be removed in 2.0</b>
-     */
-    @Deprecated(forRemoval = true)
-    private DIH4JDALogger.Type[] blockedLogTypes = new DIH4JDALogger.Type[]{};
 
     /**
      * A boolean that decides if commands are getting registered on the

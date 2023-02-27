@@ -121,7 +121,6 @@ public class DIH4JDA extends ListenerAdapter {
 	public DIH4JDA(@Nonnull DIH4JDAConfig config) throws DIH4JDAException {
 		validateConfig(config);
 		this.config = config;
-		DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
 		this.handler = new InteractionHandler(this);
 		this.config.getJda().addEventListener(this, handler);
 		eventListeners = new HashSet<>();
@@ -316,7 +315,6 @@ public class DIH4JDA extends ListenerAdapter {
 	 */
 	private void validateConfig(@Nonnull DIH4JDAConfig config) {
 		Checks.notNull(config.getJda(), "JDA instance");
-		Checks.notNull(config.getBlockedLogTypes(), "Blocked Log Types");
 		Checks.notNull(config.getCommandsPackages(), "Command Packages");
 		Checks.notNull(config.getExecutor(), "Executor");
 	}
