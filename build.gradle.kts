@@ -93,9 +93,9 @@ tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
 
     //error-prone configuration
-    options.errorprone.isEnabled.set(true)
+    options.errorprone.isEnabled.set(false)
     if (javaVersion >= JavaVersion.VERSION_17) {
-        options.errorprone.isEnabled.set(false)
+        options.errorprone.isEnabled.set(true)
         if (isCI) options.compilerArgs.add("-Werror")
 
     }
