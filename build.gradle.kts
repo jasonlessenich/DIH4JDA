@@ -57,7 +57,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
     testImplementation("ch.qos.logback:logback-classic:1.4.5")
 
-    api("net.dv8tion:JDA:5.0.0-beta.4") {
+    api("net.dv8tion:JDA:5.0.0-beta.5") {
         exclude(module = "opus-java")
     }
 
