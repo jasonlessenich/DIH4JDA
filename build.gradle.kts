@@ -6,7 +6,7 @@ plugins {
     signing
     `java-library`
     `maven-publish`
-    id("io.github.gradle-nexus.publish-plugin") version "1.2.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("com.github.johnrengelman.shadow") version "8.1.0"
     id("net.ltgt.errorprone") version "3.0.1"
 }
