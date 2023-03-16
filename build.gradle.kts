@@ -55,7 +55,7 @@ val lombokVersion = "1.18.26"
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
-    testImplementation("ch.qos.logback:logback-classic:1.4.5")
+    testImplementation("ch.qos.logback:logback-classic:1.4.6")
 
     api("net.dv8tion:JDA:5.0.0-beta.5") {
         exclude(module = "opus-java")
