@@ -22,7 +22,7 @@ group = "xyz.dynxsty"
 val archivesBaseName = "dih4jda"
 version = "1.6.2"
 
-val javaVersion = JavaVersion.current()
+val javaVersion: JavaVersion = JavaVersion.current()
 var isCI: Boolean = System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GIT_COMMIT") != null
         || System.getProperty("GITHUB_ACTIONS") != null // GitHub Actions
@@ -53,8 +53,8 @@ repositories {
 val lombokVersion = "1.18.26"
 
 dependencies {
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
     testImplementation("ch.qos.logback:logback-classic:1.4.7")
 
     api("net.dv8tion:JDA:5.0.0-beta.8") {
@@ -224,13 +224,11 @@ publishing {
     }
 }
 
-nexusPublishing {
-    repositories {
+nexusPublishing.repositories {
         sonatype {
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         }
-    }
 }
 
 // Turn off sign tasks if we don't have a key
