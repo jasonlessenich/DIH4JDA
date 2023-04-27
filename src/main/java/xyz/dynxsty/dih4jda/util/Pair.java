@@ -1,6 +1,7 @@
 package xyz.dynxsty.dih4jda.util;
 
 import org.jetbrains.annotations.Contract;
+import lombok.Getter;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
@@ -13,7 +14,9 @@ import java.util.Objects;
  * @since v1.5.2
  */
 public class Pair<F, S> {
+	@Getter
 	private final F first;
+	@Getter
 	private final S second;
 
 	/**

@@ -1,5 +1,6 @@
 package xyz.dynxsty.dih4jda.events;
 
+import lombok.Getter;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
@@ -14,6 +15,7 @@ import java.util.Set;
  */
 public class InvalidUserEvent extends DIH4JDAEvent<CommandInteraction> {
 
+	@Getter
 	private final Set<Long> userIds;
 
 	/**
@@ -27,16 +29,5 @@ public class InvalidUserEvent extends DIH4JDAEvent<CommandInteraction> {
 							@Nonnull Set<Long> userIds) {
 		super("onInvalidUser", dih4jda, interaction);
 		this.userIds = userIds;
-	}
-
-	/**
-	 * The ids of the user that was allowed to execute the {@link RestrictedCommand}.
-	 *
-	 * @return An immutable {@link Set} of all "required" users for the executed command.
-	 * @see RestrictedCommand#setRequiredUsers(Long...)
-	 */
-	@Nonnull
-	public Set<Long> getUserIds() {
-		return userIds;
 	}
 }

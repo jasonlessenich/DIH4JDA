@@ -1,6 +1,7 @@
 package xyz.dynxsty.dih4jda;
 
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.slf4j.Logger;
 import org.slf4j.event.Level;
 import xyz.dynxsty.dih4jda.util.ArrayUtil;
 
@@ -8,7 +9,7 @@ import javax.annotation.Nonnull;
 
 /**
  * This handler's own Logging System.
- * <br> To disable certain {@link DIH4JDALogger.Type}s, simple use {@link DIH4JDABuilder#disableLogging(Type...)}.
+ * <br> To disable certain {@link DIH4JDALogger.Type}s, simple use {@link DIH4JDALogger#disableLogging(Type...)}.
  */
 public class DIH4JDALogger {
 	/**
@@ -16,8 +17,17 @@ public class DIH4JDALogger {
 	 */
 	public DIH4JDALogger() {}
 
-	private static final org.slf4j.Logger log = JDALogger.getLog(DIH4JDALogger.class);
+	private static final Logger log = JDALogger.getLog(DIH4JDALogger.class);
 	protected static Type[] blockedLogTypes = new Type[]{};
+
+	/**
+	 * Sets the types of logging that should be disabled.
+	 *
+	 * @param types All {@link DIH4JDALogger.Type}'s that should be disabled.
+	 */
+	public static void disableLogging(@Nonnull Type... types) {
+		blockedLogTypes = types;
+	}
 
 	private static void log0(@Nonnull String msg, @Nonnull Type type, @Nonnull Level level) {
 		if (ArrayUtil.contains(blockedLogTypes, type)) return;
