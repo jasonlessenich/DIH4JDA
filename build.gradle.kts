@@ -6,9 +6,9 @@ plugins {
     signing
     `java-library`
     `maven-publish`
-    id("net.ltgt.errorprone") version "3.0.1"
-    id("io.github.gradle-nexus.publish-plugin") version "1.2.0"
-    id("com.github.johnrengelman.shadow") version "8.1.0"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("net.ltgt.errorprone") version "3.1.0"
 }
 
 java {
@@ -22,7 +22,7 @@ group = "xyz.dynxsty"
 val archivesBaseName = "dih4jda"
 version = "1.6.2"
 
-val javaVersion = JavaVersion.current()
+val javaVersion: JavaVersion = JavaVersion.current()
 var isCI: Boolean = System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GIT_COMMIT") != null
         || System.getProperty("GITHUB_ACTIONS") != null // GitHub Actions
@@ -53,11 +53,11 @@ repositories {
 val lombokVersion = "1.18.26"
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
-    testImplementation("ch.qos.logback:logback-classic:1.4.5")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testImplementation("ch.qos.logback:logback-classic:1.4.7")
 
-    api("net.dv8tion:JDA:5.0.0-beta.4") {
+    api("net.dv8tion:JDA:5.0.0-beta.8") {
         exclude(module = "opus-java")
     }
 
@@ -228,13 +228,11 @@ publishing {
     }
 }
 
-nexusPublishing {
-    repositories {
+nexusPublishing.repositories {
         sonatype {
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         }
-    }
 }
 
 // Turn off sign tasks if we don't have a key
