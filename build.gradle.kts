@@ -63,7 +63,7 @@ dependencies {
 
     //code saftey
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-    errorprone("com.google.errorprone:error_prone_core:2.19.0")
+    errorprone("com.google.errorprone:error_prone_core:2.19.1")
 
     //Lombok's annotations
     compileOnly("org.projectlombok:lombok:$lombokVersion")
@@ -97,7 +97,7 @@ tasks.withType<JavaCompile>().configureEach {
     //error-prone configuration
     options.errorprone.disableWarningsInGeneratedCode.set(true)
     options.errorprone.errorproneArgs.addAll(
-            "-Xep:AnnotateFormatMethod:OFF", "-Xep:FutureReturnValueIgnored:OFF", "-Xep:HidingField:OFF")
+            "-Xep:AnnotateFormatMethod:OFF", "-Xep:FutureReturnValueIgnored:OFF")
 }
 
 val javadocJar = task<Jar>("javadocJar") {
