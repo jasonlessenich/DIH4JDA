@@ -50,7 +50,7 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
-val lombokVersion = "1.18.26"
+val lombokVersion = "1.18.28"
 
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
