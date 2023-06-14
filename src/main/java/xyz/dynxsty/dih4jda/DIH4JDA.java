@@ -328,16 +328,6 @@ public class DIH4JDA extends ListenerAdapter {
 		modalMappings = mappings;
 	}
 
-	/**
-	 * Gets all {@link ModalHandler}s.
-	 *
-	 * @return An {@link IdMapping} array which contains the never-null ids and handlers.
-	 */
-	@Nonnull
-	public final IdMapping<ModalHandler>[] getModalMappings() {
-		return modalMappings;
-	}
-
 	// TODO: Docs
 	public String getGlobalPrefix() {
 		return globalPrefix;
