@@ -6,19 +6,16 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import xyz.dynxsty.dih4jda.DIH4JDALogger;
-import xyz.dynxsty.dih4jda.events.DIH4JDAEvent;
-import xyz.dynxsty.dih4jda.events.text.InvalidOptionsEvent;
 import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommandData;
 import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionData;
-import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionMapping;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -169,12 +166,12 @@ public class CommandUtils {
 	}
 
 	public static String formatTextCommand(String prefix, TextCommand command) {
-		StringBuilder sb = new StringBuilder(String.format("`%s%s", prefix, command.getName()));
-		command.getOptions();
-		for (TextOptionData o : command.getOptions()) {
+		final TextCommandData data = command.getCommandData();
+		StringBuilder sb = new StringBuilder(String.format("`%s%s", prefix, data.getName()));
+		for (TextOptionData o : data.getOptions()) {
 			sb.append(String.format(" %s", String.format(o.isRequired() ? "<%s>" : "<%s?>", o.getName())));
 		}
-		sb.append("`: ").append(command.getDescription());
+		sb.append("`: ").append(data.getDescription());
 		return sb.toString();
 	}
 }

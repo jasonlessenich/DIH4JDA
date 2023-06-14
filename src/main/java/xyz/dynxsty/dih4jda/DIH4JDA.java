@@ -230,15 +230,16 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	public Map<String, List<TextCommand>> getTextCommandsCategorized(@Nonnull String uncategorizedName) {
-		Map<String, List<TextCommand>> categorized = new HashMap<>();
+		final Map<String, List<TextCommand>> categorized = new HashMap<>();
 		handler.textCommands.forEach(c -> {
-			String category = c.getCategory() == null ? uncategorizedName : c.getCategory();
+			final String commandCategory = c.getCommandData().getCategory();
+			final String category = commandCategory == null || commandCategory.isEmpty() ? uncategorizedName : commandCategory;
 			if (categorized.containsKey(category)) {
-				List<TextCommand> mapped = categorized.get(category);
+				final List<TextCommand> mapped = categorized.get(category);
 				mapped.add(c);
 				categorized.put(category, mapped);
 			} else {
-				List<TextCommand> command = new ArrayList<>();
+				final List<TextCommand> command = new ArrayList<>();
 				command.add(c);
 				categorized.put(category, command);
 			}
