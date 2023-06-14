@@ -2,6 +2,7 @@ package xyz.dynxsty.dih4jda.util;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +35,7 @@ public class ClasspathHelper {
 				results.add(urls.nextElement());
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new UncheckedIOException(e);
 		}
 		return results;
 	}

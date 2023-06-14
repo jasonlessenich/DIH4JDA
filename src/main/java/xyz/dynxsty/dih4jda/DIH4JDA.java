@@ -1,5 +1,7 @@
 package xyz.dynxsty.dih4jda;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
@@ -7,7 +9,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
 import xyz.dynxsty.dih4jda.events.DIH4JDAEventListener;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
-import xyz.dynxsty.dih4jda.exceptions.InvalidConfigurationException;
 import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
@@ -18,6 +19,7 @@ import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import xyz.dynxsty.dih4jda.interactions.components.IdMapping;
 import xyz.dynxsty.dih4jda.interactions.components.ModalHandler;
 import xyz.dynxsty.dih4jda.interactions.components.StringSelectMenuHandler;
+import xyz.dynxsty.dih4jda.util.Checks;
 import xyz.dynxsty.dih4jda.util.ComponentIdBuilder;
 
 import javax.annotation.Nonnull;
@@ -78,16 +80,40 @@ public class DIH4JDA extends ListenerAdapter {
 	 * The default {@link RegistrationType} which is used for queuing new commands.
 	 * This can be overridden using {@link BaseApplicationCommand#setRegistrationType(RegistrationType)}
 	 */
+	@Getter(AccessLevel.PUBLIC)
 	private static RegistrationType defaultRegistrationType = RegistrationType.GLOBAL;
 
 	// Component Handler
+	/**
+	 * An {@link IdMapping} array that contains all {@link ButtonHandler}s that are registered to this instance.
+	 */
+	@Getter(AccessLevel.PUBLIC)
 	private IdMapping<ButtonHandler>[] buttonMappings = null;
+	/**
+	 * An {@link IdMapping} array that contains all {@link StringSelectMenuHandler}s that are registered to this instance.
+	 */
+	@Getter(AccessLevel.PUBLIC)
 	private IdMapping<StringSelectMenuHandler>[] stringSelectMenuMappings = null;
+	/**
+	 * An {@link IdMapping} array that contains all {@link EntitySelectMenuHandler}s that are registered to this instance.
+	 */
+	@Getter(AccessLevel.PUBLIC)
 	private IdMapping<EntitySelectMenuHandler>[] entitySelectMenuMappings = null;
+	/**
+	 * An {@link IdMapping} array that contains all {@link ModalHandler}s that are registered to this instance.
+	 */
+	@Getter(AccessLevel.PUBLIC)
 	private IdMapping<ModalHandler>[] modalMappings = null;
-
+	/**
+	 * The {@link DIH4JDAConfig} instance that is linked to this specific {@link DIH4JDA} instance.
+	 */
+	@Getter(AccessLevel.PUBLIC)
 	private final DIH4JDAConfig config;
-	private final Set<DIH4JDAEventListener> listeners;
+	/**
+	 * A set of all {@link DIH4JDAEventListener}s that are registered to this instance.
+	 */
+	@Getter(AccessLevel.PUBLIC)
+	private final Set<DIH4JDAEventListener> eventListeners;
 	private final InteractionHandler handler;
 
 	// TODO: Docs
@@ -109,7 +135,7 @@ public class DIH4JDA extends ListenerAdapter {
 		DIH4JDALogger.blockedLogTypes = config.getBlockedLogTypes();
 		this.handler = new InteractionHandler(this);
 		this.config.getJda().addEventListener(this, handler);
-		listeners = new HashSet<>();
+		eventListeners = new HashSet<>();
 	}
 
 	/**
@@ -139,16 +165,6 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets the default {@link RegistrationType}.
-	 *
-	 * @return the {@link RegistrationType}.
-	 */
-	@Nonnull
-	public static RegistrationType getDefaultRegistrationType() {
-		return defaultRegistrationType;
-	}
-
-	/**
 	 * Registers all Interactions and replaces the old ones.
 	 * Please note that global commands may need up to an hour before they're fully registered.
 	 */
@@ -156,16 +172,6 @@ public class DIH4JDA extends ListenerAdapter {
 		if (handler != null) {
 			handler.registerCommands();
 		}
-	}
-
-	/**
-	 * The {@link DIH4JDAConfig} that is used by this specific {@link DIH4JDA} instance.
-	 *
-	 * @return The instance's {@link DIH4JDAConfig configuration}.
-	 */
-	@Nonnull
-	public DIH4JDAConfig getConfig() {
-		return config;
 	}
 
 	/**
@@ -179,22 +185,11 @@ public class DIH4JDA extends ListenerAdapter {
 			try {
 				// check if class extends the ListenerAdapter
 				DIH4JDAEventListener adapter = (DIH4JDAEventListener) o;
-				listeners.add(adapter);
+				eventListeners.add(adapter);
 			} catch (ClassCastException e) {
 				throw new IllegalArgumentException("Listener classes must implement DIH4JDAEventListener!");
 			}
 		}
-	}
-
-	/**
-	 * Gets all {@link DIH4JDAEventListener}s that were previously added using {@link DIH4JDA#addEventListener(Object...)}.
-	 *
-	 * @return A set of all Listener classes.
-	 * @see DIH4JDA#addEventListener(Object...)
-	 */
-	@Nonnull
-	public Set<DIH4JDAEventListener> getEventListeners() {
-		return listeners;
 	}
 
 	/**
@@ -272,16 +267,6 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets all {@link ButtonHandler}s.
-	 *
-	 * @return An {@link IdMapping} array which contains the never-null ids and handlers.
-	 */
-	@Nonnull
-	public final IdMapping<ButtonHandler>[] getButtonMappings() {
-		return buttonMappings;
-	}
-
-	/**
 	 * Binds all {@link StringSelectMenuHandler}s to their id.
 	 * <br>
 	 * <pre>{@code
@@ -303,17 +288,6 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Gets all registered {@link StringSelectMenuHandler}s.
-	 *
-	 * @return An {@link IdMapping} array which contains the never-null ids and handlers.
-	 * @see DIH4JDA#addStringSelectMenuMappings(IdMapping[])
-	 */
-	@Nonnull
-	public final IdMapping<StringSelectMenuHandler>[] getStringSelectMenuMappings() {
-		return stringSelectMenuMappings;
-	}
-
-	/**
 	 * Binds all {@link EntitySelectMenuHandler}s to their id,
 	 * <br>
 	 * <pre>{@code
@@ -332,17 +306,6 @@ public class DIH4JDA extends ListenerAdapter {
 	public final void addEntitySelectMenuMappings(@Nonnull IdMapping<EntitySelectMenuHandler>... mappings) {
 		validateMappings(mappings);
 		entitySelectMenuMappings = mappings;
-	}
-
-	/**
-	 * Gets all registered {@link EntitySelectMenuHandler}s.
-	 *
-	 * @return An {@link IdMapping} array which contains the never-null ids and handlers.
-	 * @see DIH4JDA#addEntitySelectMenuMappings(IdMapping[])
-	 */
-	@Nonnull
-	public final IdMapping<EntitySelectMenuHandler>[] getEntitySelectMenuMappings() {
-		return entitySelectMenuMappings;
 	}
 
 	/**
@@ -425,24 +388,16 @@ public class DIH4JDA extends ListenerAdapter {
 	}
 
 	/**
-	 * Validates the specified {@link DIH4JDAConfig} and throws an {@link InvalidConfigurationException}
+	 * Validates the specified {@link DIH4JDAConfig} and throws an {@link IllegalArgumentException}
 	 * if the config is invalid.
 	 *
 	 * @param config The {@link DIH4JDAConfig} to validate.
-	 * @throws DIH4JDAException If specified the config is invalid.
+	 * @throws IllegalArgumentException If the config is invalid.
 	 */
-	private void validateConfig(@Nonnull DIH4JDAConfig config) throws DIH4JDAException {
-		if (config.getJda() == null) {
-			throw new InvalidConfigurationException("JDA instance may not be null!");
-		}
-		if (config.getBlockedLogTypes() == null) {
-			throw new InvalidConfigurationException("Blocked Log Types may not be null!");
-		}
-		if (config.getCommandsPackages() == null) {
-			throw new InvalidConfigurationException("Command Packages may not be null!");
-		}
-		if (config.getExecutor() == null) {
-			throw new InvalidConfigurationException("Executor may not be null!");
-		}
+	private void validateConfig(@Nonnull DIH4JDAConfig config) {
+		Checks.notNull(config.getJda(), "JDA instance");
+		Checks.notNull(config.getBlockedLogTypes(), "Blocked Log Types");
+		Checks.notNull(config.getCommandsPackages(), "Command Packages");
+		Checks.notNull(config.getExecutor(), "Executor");
 	}
 }

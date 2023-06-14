@@ -1,5 +1,6 @@
 package xyz.dynxsty.dih4jda.events;
 
+import lombok.Getter;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import xyz.dynxsty.dih4jda.DIH4JDA;
@@ -15,6 +16,7 @@ import java.util.Set;
  */
 public class InsufficientPermissionsEvent extends DIH4JDAInteractionEvent<CommandInteraction> {
 
+	@Getter
 	private final Set<Permission> permissions;
 
 	/**
@@ -28,16 +30,5 @@ public class InsufficientPermissionsEvent extends DIH4JDAInteractionEvent<Comman
 										@Nonnull Set<Permission> permissions) {
 		super("onInsufficientPermissions", dih4jda, interaction);
 		this.permissions = permissions;
-	}
-
-	/**
-	 * Gets you all the permissions that are required to perform the {@link RestrictedCommand} that causes this event.
-	 *
-	 * @return An immutable {@link Set} of all "required" permissions for the executed command.
-	 * @see RestrictedCommand#setRequiredPermissions(Permission...)
-	 */
-	@Nonnull
-	public Set<Permission> getPermissions() {
-		return permissions;
 	}
 }

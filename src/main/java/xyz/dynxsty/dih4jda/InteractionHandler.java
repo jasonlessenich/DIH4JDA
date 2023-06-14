@@ -625,20 +625,12 @@ public class InteractionHandler extends ListenerAdapter {
             if (slashcommand == null) {
                 BaseApplicationCommand<SlashCommandInteractionEvent, ?> base = subcommand.getParent();
                 if (base != null) {
-                    if (!base.canExecute(event)) {
-                        return;
-                    }
                     if (passesRequirements(event, base, base.getRegistrationType()) && passesRequirements(event, subcommand, base.getRegistrationType())) {
                         subcommand.execute(event);
                     }
                 }
-            } else {
-                if (!slashcommand.canExecute(event)) {
-                    return;
-                }
-                if (passesRequirements(event, slashcommand, slashcommand.getRegistrationType())) {
-                    slashcommand.execute(event);
-                }
+            } else if (passesRequirements(event, slashcommand, slashcommand.getRegistrationType())) {
+                slashcommand.execute(event);
             }
         }
     }
@@ -727,7 +719,7 @@ public class InteractionHandler extends ListenerAdapter {
         Long[] userIds = command.getRequiredUsers();
         Long[] roleIds = command.getRequiredRoles();
         if (type == RegistrationType.GUILD && guildIds.length != 0 && interaction.isFromGuild() &&
-                interaction.getGuild() != null && !List.of(guildIds).contains(interaction.getGuild().getIdLong())
+                interaction.isFromGuild() && !List.of(guildIds).contains(interaction.getGuild().getIdLong())
         ) {
             DIH4JDAEvent.fire(new InvalidGuildEvent(dih4jda, interaction, Set.of(guildIds)));
             return false;
@@ -741,7 +733,7 @@ public class InteractionHandler extends ListenerAdapter {
             DIH4JDAEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
             return false;
         }
-        if (interaction.isFromGuild() && interaction.getGuild() != null && interaction.getMember() != null) {
+        if (interaction.isFromGuild() && interaction.getMember() != null) {
             Member member = interaction.getMember();
             if (roleIds.length != 0 && !member.getRoles().isEmpty() &&
                     member.getRoles().stream().noneMatch(r -> List.of(roleIds).contains(r.getIdLong()))) {
@@ -750,7 +742,7 @@ public class InteractionHandler extends ListenerAdapter {
             }
         }
         // check if the command has enabled some sort of cooldown
-        if (command.getCommandCooldown() != Duration.ZERO) {
+        if (!command.getCommandCooldown().equals(Duration.ZERO)) {
             if (command.hasCooldown(userId)) {
                 DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, command.retrieveCooldown(userId)));
                 return false;

@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
  * @since v1.3
  */
 public class CommandUtils {
-
 	private CommandUtils() {}
 
 	/**

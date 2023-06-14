@@ -1,5 +1,8 @@
 package xyz.dynxsty.dih4jda.util;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -11,30 +14,11 @@ import java.util.stream.Collectors;
  */
 public class ComponentIdBuilder {
 
-	private static String separator = ":";
+	@Getter
+	@Setter
+	private static String defaultSeparator = ":";
 
 	private ComponentIdBuilder() {}
-
-	/**
-	 * Changes the default component-id separator.
-	 *
-	 * @param separator The string that should act as the separator.
-	 * @since v1.4
-	 */
-	public static void setDefaultSeparator(@Nonnull String separator) {
-		ComponentIdBuilder.separator = separator;
-	}
-
-	/**
-	 * Gets the current separator.
-	 *
-	 * @return The separator.
-	 * @since v1.4
-	 */
-	@Nonnull
-	public static String getSeparator() {
-		return separator;
-	}
 
 	/**
 	 * Builds a component-id using the (set) separator and the given identifier and arguments.
@@ -51,7 +35,7 @@ public class ComponentIdBuilder {
 	public static String build(@Nonnull String identifier, @Nonnull Object... args) {
 		StringBuilder sb = new StringBuilder(identifier);
 		if (args.length > 0) {
-			sb.append(separator).append(Arrays.stream(args).map(Object::toString).collect(Collectors.joining(separator)));
+			sb.append(defaultSeparator).append(Arrays.stream(args).map(Object::toString).collect(Collectors.joining(defaultSeparator)));
 		}
 		return sb.toString();
 	}
@@ -65,6 +49,6 @@ public class ComponentIdBuilder {
 	 */
 	@Nonnull
 	public static String[] split(@Nonnull String id) {
-		return id.split(separator);
+		return id.split(defaultSeparator);
 	}
 }

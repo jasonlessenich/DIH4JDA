@@ -1,12 +1,14 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.ltgt.gradle.errorprone.errorprone
 
 plugins {
     java
-    `java-library`
     signing
+    `java-library`
     `maven-publish`
-    id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("net.ltgt.errorprone") version "3.1.0"
 }
 
 java {
@@ -20,7 +22,7 @@ group = "xyz.dynxsty"
 val archivesBaseName = "dih4jda"
 version = "1.6.2"
 
-val javaVersion = JavaVersion.current()
+val javaVersion: JavaVersion = JavaVersion.current()
 var isCI: Boolean = System.getProperty("GIT_COMMIT") != null // jitpack
         || System.getenv("GIT_COMMIT") != null
         || System.getProperty("GITHUB_ACTIONS") != null // GitHub Actions
@@ -48,17 +50,20 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
-val lombokVersion = "1.18.24"
+val lombokVersion = "1.18.28"
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
-    testImplementation("ch.qos.logback:logback-classic:1.4.5")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+    testImplementation("ch.qos.logback:logback-classic:1.4.7")
 
-    api("net.dv8tion:JDA:5.0.0-beta.3") {
+    api("net.dv8tion:JDA:5.0.0-beta.10") {
         exclude(module = "opus-java")
     }
+
+    //code saftey
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+    errorprone("com.google.errorprone:error_prone_core:2.19.1")
 
     //Lombok's annotations
     compileOnly("org.projectlombok:lombok:$lombokVersion")
@@ -84,8 +89,15 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.withType<JavaCompile> {
+tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
+    //enable this when the StaticAssignmentInConstructor error-prone error is fixed
+    //if (isCI) options.compilerArgs.add("-Werror")
+
+    //error-prone configuration
+    options.errorprone.disableWarningsInGeneratedCode.set(true)
+    options.errorprone.errorproneArgs.addAll(
+            "-Xep:AnnotateFormatMethod:OFF", "-Xep:FutureReturnValueIgnored:OFF")
 }
 
 val javadocJar = task<Jar>("javadocJar") {
@@ -204,7 +216,7 @@ publishing {
                     developer {
                         id.set("Denux")
                         name.set("Timon Thomas Klinkert")
-                        email.set("dev@denux.dev")
+                        email.set("timon.klinkert@denux.dev")
                     }
                 }
             }
@@ -212,13 +224,11 @@ publishing {
     }
 }
 
-nexusPublishing {
-    repositories {
+nexusPublishing.repositories {
         sonatype {
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
         }
-    }
 }
 
 // Turn off sign tasks if we don't have a key

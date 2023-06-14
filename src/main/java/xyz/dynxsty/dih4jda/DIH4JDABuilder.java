@@ -73,8 +73,10 @@ public class DIH4JDABuilder {
 	 *
 	 * @param types All {@link DIH4JDALogger.Type}'s that should be disabled.
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
+	 * @deprecated Use {@link DIH4JDALogger#disableLogging(DIH4JDALogger.Type...)} instead. <b>Will be removed in 2.0</b>
 	 */
 	@Nonnull
+	@Deprecated(forRemoval = true)
 	public DIH4JDABuilder disableLogging(@Nullable DIH4JDALogger.Type... types) {
 		DIH4JDALogger.Type[] blocked;
 		if (types == null || types.length < 1) {

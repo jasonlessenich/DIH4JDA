@@ -39,7 +39,9 @@ public class DIH4JDAConfig {
     /**
      * All {@link DIH4JDALogger.Type}s that are not getting logged.<br>
      * <b>Standard:</b> {@code new DIH4JDALogger.Type[]{}}
+     * @deprecated Use {@link DIH4JDALogger#disableLogging(DIH4JDALogger.Type...)} <b>Will be removed in 2.0</b>
      */
+    @Deprecated(forRemoval = true)
     private DIH4JDALogger.Type[] blockedLogTypes = new DIH4JDALogger.Type[]{};
 
     /**
