@@ -9,7 +9,6 @@ import xyz.dynxsty.dih4jda.util.ClassWalker;
 import xyz.dynxsty.dih4jda.util.ClasspathHelper;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.Executor;
 
 /**
@@ -57,26 +56,6 @@ public class DIH4JDABuilder {
 	@Nonnull
 	public DIH4JDABuilder setExecutor(@Nonnull Executor executor) {
 		config.setExecutor(executor);
-		return this;
-	}
-
-	/**
-	 * Sets the types of logging that should be disabled.
-	 *
-	 * @param types All {@link DIH4JDALogger.Type}'s that should be disabled.
-	 * @return The {@link DIH4JDABuilder} for chaining convenience.
-	 * @deprecated Use {@link DIH4JDALogger#disableLogging(DIH4JDALogger.Type...)} instead. <b>Will be removed in 2.0</b>
-	 */
-	@Nonnull
-	@Deprecated(forRemoval = true)
-	public DIH4JDABuilder disableLogging(@Nullable DIH4JDALogger.Type... types) {
-		DIH4JDALogger.Type[] blocked;
-		if (types == null || types.length < 1) {
-			blocked = DIH4JDALogger.Type.values();
-		} else {
-			blocked = types;
-		}
-		config.setBlockedLogTypes(blocked);
 		return this;
 	}
 

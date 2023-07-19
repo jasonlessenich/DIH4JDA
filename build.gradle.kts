@@ -91,10 +91,14 @@ tasks.withType<Test> {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
-    //enable this when the StaticAssignmentInConstructor error-prone error is fixed
-    //if (isCI) options.compilerArgs.add("-Werror")
 
     //error-prone configuration
+    options.errorprone.isEnabled.set(false)
+    if (javaVersion >= JavaVersion.VERSION_17) {
+        options.errorprone.isEnabled.set(true)
+        if (isCI) options.compilerArgs.add("-Werror")
+
+    }
     options.errorprone.disableWarningsInGeneratedCode.set(true)
     options.errorprone.errorproneArgs.addAll(
             "-Xep:AnnotateFormatMethod:OFF", "-Xep:FutureReturnValueIgnored:OFF")
