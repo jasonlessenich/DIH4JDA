@@ -35,10 +35,14 @@ public class CommandUtils {
 	 * @return Whether both {@link DataObject} share the same properties.
 	 * @since v1.6
 	 */
-	public static boolean equals(@Nonnull DataObject data, @Nonnull DataObject other) {
+	public static boolean equals(@Nonnull DataObject data, @Nonnull DataObject other, boolean isGuildOnly) {
 		if (!Arrays.equals(ArrayUtil.sortArrayFromDataArray(data.getArray("options")),
 				ArrayUtil.sortArrayFromDataArray(other.getArray("options")))) {
 			return false;
+		}
+		if (isGuildOnly) {
+			data = data.remove("dm_permission");
+			other = data.remove("dm_permission");
 		}
 		Map<String, Object> dataMap = data.remove("options").toMap();
 		Map<String, Object> otherMap = other.remove("options").toMap();
@@ -52,10 +56,10 @@ public class CommandUtils {
 	 * @param cmd The {@link Command} that wraps a {@link SlashCommandData} object.
 	 * @param data The {@link SlashCommand} to compare two.
 	 * @return true if both are identical.
-	 * @see CommandUtils#equals(DataObject, DataObject)
+	 * @see CommandUtils#equals(DataObject, DataObject, boolean)
 	 */
 	public static boolean compareSlashCommands(@Nonnull Command cmd, @Nonnull SlashCommand data) {
-		return equals(CommandData.fromCommand(cmd).toData(), data.getCommandData().toData());
+		return equals(CommandData.fromCommand(cmd).toData(), data.getCommandData().toData(), data.getRegistrationType() == RegistrationType.GUILD);
 	}
 
 	/**
@@ -66,7 +70,7 @@ public class CommandUtils {
 	 * @return true if both are identical.
 	 */
 	public static boolean compareContextCommands(@Nonnull Command cmd, @Nonnull ContextCommand<?> data) {
-		return equals(CommandData.fromCommand(cmd).toData(), data.getCommandData().toData());
+		return equals(CommandData.fromCommand(cmd).toData(), data.getCommandData().toData(), data.getRegistrationType() == RegistrationType.GUILD);
 	}
 
 	/**
