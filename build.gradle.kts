@@ -97,7 +97,7 @@ tasks.withType<JavaCompile>().configureEach {
     //error-prone configuration
     options.errorprone.disableWarningsInGeneratedCode.set(true)
     options.errorprone.errorproneArgs.addAll(
-            "-Xep:AnnotateFormatMethod:OFF", "-Xep:FutureReturnValueIgnored:OFF")
+            "-Xep:AnnotateFormatMethod:OFF", "-Xep:FutureReturnValueIgnored:OFF", "-Xep:NotJavadoc:OFF")
 }
 
 val javadocJar = task<Jar>("javadocJar") {
