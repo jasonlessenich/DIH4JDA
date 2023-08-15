@@ -1,6 +1,7 @@
 package xyz.dynxsty.dih4jda.util;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
@@ -74,7 +75,7 @@ public class AutoCompleteUtils {
 				.stream()
 				.filter(choice -> choice.getName().toLowerCase().contains(filter.toLowerCase()))
 				.limit(OptionData.MAX_CHOICES)
-				.toList();
+				.collect(Collectors.toList());
 	}
 
 	/**
