@@ -1,18 +1,23 @@
 package xyz.dynxsty.dih4jda.util;
 
-import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import java.util.List;
+
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 /**
- * Utility class that contains some useful methods regarding the AutoComplete system.
+ * Utility class that contains some useful methods regarding the AutoComplete
+ * system.
  *
  * @since v1.4
  */
 public class AutoCompleteUtils {
-	private AutoCompleteUtils() {}
+	private AutoCompleteUtils() {
+	}
 
 	/**
 	 * Filters all AutoComplete choices based on the user's current input.
@@ -21,14 +26,15 @@ public class AutoCompleteUtils {
 	 * return event.replyChoices(AutoCompleteUtils.filterChoices(event, choices));
 	 * }</pre>
 	 *
-	 * @param event   The {@link CommandAutoCompleteInteractionEvent} that was fired.
+	 * @param event   The {@link CommandAutoCompleteInteractionEvent} that was
+	 *                fired.
 	 * @param choices A {@link List} of {@link Command.Choice}s.
 	 * @return The filtered {@link List} of {@link Command.Choice}s.
 	 * @since v1.4
 	 */
 	@Nonnull
 	public static List<Command.Choice> filterChoices(@Nonnull CommandAutoCompleteInteractionEvent event,
-															  @Nonnull List<Command.Choice> choices) {
+			@Nonnull List<Command.Choice> choices) {
 		return filterChoices(event.getFocusedOption().getValue().toLowerCase(), choices);
 	}
 
@@ -39,14 +45,15 @@ public class AutoCompleteUtils {
 	 * return event.replyChoices(AutoCompleteUtils.filterChoices(event, choices));
 	 * }</pre>
 	 *
-	 * @param event   The {@link CommandAutoCompleteInteractionEvent} that was fired.
+	 * @param event   The {@link CommandAutoCompleteInteractionEvent} that was
+	 *                fired.
 	 * @param choices An array of {@link Command.Choice}s.
 	 * @return The filtered {@link List} of {@link Command.Choice}s.
 	 * @since v1.4
 	 */
 	@Nonnull
 	public static List<Command.Choice> filterChoices(@Nonnull CommandAutoCompleteInteractionEvent event,
-															 @Nonnull Command.Choice... choices) {
+			@Nonnull Command.Choice... choices) {
 		return filterChoices(event.getFocusedOption().getValue().toLowerCase(), List.of(choices));
 	}
 
@@ -64,8 +71,11 @@ public class AutoCompleteUtils {
 	 */
 	@Nonnull
 	public static List<Command.Choice> filterChoices(@Nonnull String filter, @Nonnull List<Command.Choice> choices) {
-		choices.removeIf(choice -> !choice.getName().toLowerCase().contains(filter.toLowerCase()));
-		return choices;
+		return choices
+				.stream()
+				.filter(choice -> choice.getName().toLowerCase().contains(filter.toLowerCase()))
+				.limit(OptionData.MAX_CHOICES)
+				.collect(Collectors.toList());
 	}
 
 	/**
