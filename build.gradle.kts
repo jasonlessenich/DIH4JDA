@@ -50,22 +50,22 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
-val lombokVersion = "1.18.26"
+val lombokVersion = "1.18.28"
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.3")
-    testImplementation("ch.qos.logback:logback-classic:1.4.7")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+    testImplementation("ch.qos.logback:logback-classic:1.4.11")
     //needed for reasons...
     testCompileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
-    api("net.dv8tion:JDA:5.0.0-beta.8") {
+    api("net.dv8tion:JDA:5.0.0-beta.13") {
         exclude(module = "opus-java")
     }
 
     //code saftey
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-    errorprone("com.google.errorprone:error_prone_core:2.18.0")
+    errorprone("com.google.errorprone:error_prone_core:2.21.1")
 
     //Lombok's annotations
     compileOnly("org.projectlombok:lombok:$lombokVersion")
@@ -99,7 +99,7 @@ tasks.withType<JavaCompile>().configureEach {
     //error-prone configuration
     options.errorprone.disableWarningsInGeneratedCode.set(true)
     options.errorprone.errorproneArgs.addAll(
-            "-Xep:AnnotateFormatMethod:OFF", "-Xep:FutureReturnValueIgnored:OFF")
+            "-Xep:AnnotateFormatMethod:OFF", "-Xep:FutureReturnValueIgnored:OFF", "-Xep:NotJavadoc:OFF")
 }
 
 val javadocJar = task<Jar>("javadocJar") {
