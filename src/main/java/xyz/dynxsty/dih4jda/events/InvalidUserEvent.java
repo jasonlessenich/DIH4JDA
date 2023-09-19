@@ -13,7 +13,7 @@ import java.util.Set;
  *
  * @see RestrictedCommand#setRequiredUsers(Long...)
  */
-public class InvalidUserEvent extends DIH4JDAEvent<CommandInteraction> {
+public class InvalidUserEvent extends DIH4JDAInteractionEvent<CommandInteraction> {
 
 	@Getter
 	private final Set<Long> userIds;

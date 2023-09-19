@@ -1,12 +1,24 @@
 package xyz.dynxsty.dih4jda.config;
 
 import lombok.Data;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import xyz.dynxsty.dih4jda.DIH4JDA;
 import xyz.dynxsty.dih4jda.DIH4JDALogger;
+import xyz.dynxsty.dih4jda.events.DIH4JDAMessageEvent;
+import xyz.dynxsty.dih4jda.events.text.HelpTextCommandEvent;
+import xyz.dynxsty.dih4jda.events.text.TextCommandEvent;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
+import xyz.dynxsty.dih4jda.util.CommandUtils;
 
+import java.awt.*;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * Simple data class which represents {@link DIH4JDA}'s configuration.
@@ -80,6 +92,33 @@ public class DIH4JDAConfig {
      * <b>Standard:</b> {@link ForkJoinPool#commonPool()}
      */
     private Executor executor = ForkJoinPool.commonPool();
+
+    /**
+     * Whether the help command is enabled.
+     */
+    private boolean enableHelpCommand = true;
+
+    /**
+     * A list of names that trigger the help list.
+     */
+    private List<String> helpCommandNames = List.of("help");
+
+    /**
+     * The {@link BiConsumer} used to generate the help list.
+     */
+    private BiConsumer<HelpTextCommandEvent, List<TextCommand>> helpCommandConsumer = (event, commands) -> {
+        final String prefix = event.getDih4jda().getEffectivePrefix(event.getGuild());
+        final Map<String, List<TextCommand>> categorizedCommand = event.getDih4jda().getTextCommandsCategorized("Uncategorized");
+        // build embed
+        final EmbedBuilder builder = new EmbedBuilder()
+                .setTitle("Help List")
+                .setColor(Color.blue)
+                .setTimestamp(Instant.now());
+        categorizedCommand.forEach((category, list) ->
+                builder.addField(category, list.stream().map(c ->
+                        CommandUtils.formatTextCommand(prefix, c)).collect(Collectors.joining("\n")), false));
+        event.getMessage().replyEmbeds(builder.build()).queue();
+    };
 
     /**
      * Creates a default instance.

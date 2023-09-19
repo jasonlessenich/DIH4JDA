@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.interaction.command.UserContextInteractionEven
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
@@ -31,6 +32,9 @@ import xyz.dynxsty.dih4jda.events.InvalidGuildEvent;
 import xyz.dynxsty.dih4jda.events.InvalidRoleEvent;
 import xyz.dynxsty.dih4jda.events.InvalidUserEvent;
 import xyz.dynxsty.dih4jda.events.ModalExceptionEvent;
+import xyz.dynxsty.dih4jda.events.text.HelpTextCommandEvent;
+import xyz.dynxsty.dih4jda.events.text.InvalidOptionsEvent;
+import xyz.dynxsty.dih4jda.events.text.TextCommandEvent;
 import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
@@ -39,6 +43,11 @@ import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationComm
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommandData;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionData;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionMapping;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextOptionType;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
 import xyz.dynxsty.dih4jda.interactions.components.EntitySelectMenuHandler;
 import xyz.dynxsty.dih4jda.interactions.components.IdMapping;
@@ -55,6 +64,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -85,6 +95,7 @@ public class InteractionHandler extends ListenerAdapter {
 
     protected final Set<SlashCommand> slashCommands;
     protected final Set<ContextCommand<?>> contextCommands;
+    protected final Set<TextCommand> textCommands;
     /**
      * The main {@link DIH4JDA} instance.
      */
@@ -124,6 +135,9 @@ public class InteractionHandler extends ListenerAdapter {
      */
     private final Map<String, AutoCompletable> autoCompleteIndex;
 
+    // TODO: Docs
+    private final Map<String, TextCommand> textCommandsIndex;
+
     /**
      * Constructs a new {@link InteractionHandler} from the supplied {@link DIH4JDA} instance}.
      *
@@ -135,10 +149,12 @@ public class InteractionHandler extends ListenerAdapter {
 
         slashCommands = new HashSet<>();
         contextCommands = new HashSet<>();
+        textCommands = new HashSet<>();
         for (String pkg : config.getCommandsPackages()) {
             try {
                 findSlashCommands(pkg);
                 findContextCommands(pkg);
+                findTextCommands(pkg);
             } catch (ReflectiveOperationException | DIH4JDAException e) {
                 DIH4JDALogger.error("An error occurred while initializing commands in package %s: %s", pkg, e.getMessage());
             }
@@ -149,6 +165,7 @@ public class InteractionHandler extends ListenerAdapter {
         messageContextIndex = new HashMap<>();
         userContextIndex = new HashMap<>();
         autoCompleteIndex = new HashMap<>();
+        textCommandsIndex = new HashMap<>();
     }
 
     /**
@@ -164,12 +181,12 @@ public class InteractionHandler extends ListenerAdapter {
     }
 
     /**
-     * Registers all interactions.
+     * Registers all commands.
      * This method can be accessed from the {@link DIH4JDA} instance.
      * <br>This is automatically executed each time the {@link ListenerAdapter#onReady(net.dv8tion.jda.api.events.session.ReadyEvent)} event is executed.
      * (can be disabled using {@link DIH4JDABuilder#disableAutomaticCommandRegistration()})
      */
-    public void registerInteractions() {
+    public void registerCommands() {
         // retrieve (and smartqueue) guild commands
         Pair<Set<SlashCommand>, Set<ContextCommand<?>>> data = new Pair<>(getSlashCommands(), getContextCommandData());
         for (Guild guild : config.getJda().getGuilds()) {
@@ -208,6 +225,17 @@ public class InteractionHandler extends ListenerAdapter {
             DIH4JDALogger.info("Created %s AutoComplete binding(s): %s", autoCompleteIndex.size(),
                     autoCompleteIndex.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue().getClass().getSimpleName()).collect(Collectors.joining(", ")));
         }
+        textCommands.forEach(t -> {
+            final TextCommandData d = t.getCommandData();
+            if (checkTextCommand(t)) {
+                textCommandsIndex.put(d.getName(), t);
+                if (d.getAliases() != null) {
+                    for (String alias : d.getAliases()) {
+                        textCommandsIndex.put(alias, t);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -308,6 +336,76 @@ public class InteractionHandler extends ListenerAdapter {
 
     private void cacheCommand(@Nonnull Command command) {
         RETRIEVED_COMMANDS.put(command.getName(), command);
+    }
+
+    // TODO: Docs
+    private void findTextCommands(@Nonnull String pkg) throws ReflectiveOperationException, DIH4JDAException {
+        ClassWalker classes = new ClassWalker(pkg);
+        Set<Class<? extends TextCommand>> subTypes = classes.getSubTypesOf(TextCommand.class);
+        for (Class<? extends TextCommand> subType : subTypes) {
+            if (Checks.checkEmptyConstructor(subType)) {
+                textCommands.add((TextCommand) ClassUtils.getInstance(subType));
+            } else {
+                DIH4JDALogger.error("Could not initialize %s! The class MUST contain a public constructor with no arguments!", subType.getName());
+            }
+        }
+    }
+
+    // TODO: Docs
+    private boolean checkTextCommand(@Nonnull TextCommand command) {
+        // TODO: check for whitespace names
+        final TextCommandData data = command.getCommandData();
+        if (data.getName() == null || data.getName().isEmpty()) {
+            DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) name may not be empty or null!", command.getClass().getName());
+            return false;
+        }
+        if (!command.getCommandData().getName().toLowerCase().equals(data.getName())) {
+            DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) name MUST be lowercase!", command.getClass().getName());
+            return false;
+        }
+        if (data.getAliases() != null) {
+            for (String alias : data.getAliases()) {
+                if (!alias.toLowerCase().equals(alias)) {
+                    DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) aliases MUST be lowercase!", command.getClass().getName());
+                    return false;
+                }
+            }
+        }
+        if ((config.isEnableHelpCommand() && config.getHelpCommandNames().contains(data.getName())) ||
+                textCommandsIndex.values().stream().anyMatch(t -> t.getCommandData().getName().equals(command.getCommandData().getName()) || Arrays.asList(t.getCommandData().getAliases()).contains(data.getName()))
+        ) {
+            DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand in class (%s) uses a name (%s) that is already taken!", command.getClass().getName(), data.getName());
+            return false;
+        }
+        TextOptionData[] options = data.getOptions();
+        boolean requiredPassed = false;
+        for (int i = 0; i < options.length; i++) {
+            final TextOptionData option = options[i];
+            if (!requiredPassed) requiredPassed = option.isRequired();
+            if (!checkTextCommandOptions(command, option, i, requiredPassed)) return false;
+        }
+        return true;
+    }
+
+    private boolean checkTextCommandOptions(TextCommand command, TextOptionData option, int index, boolean requiredPassed) {
+        final TextCommandData data = command.getCommandData();
+        if (option.getName() == null || option.getName().isEmpty()) {
+            DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) option name may not be empty or null!", command.getClass().getName());
+            return false;
+        }
+        if (!option.getName().toLowerCase().equals(option.getName())) {
+            DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextCommand (%s) option name MUST be lowercase!", command.getClass().getName());
+            return false;
+        }
+        if (requiredPassed && !option.isRequired()) {
+            DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "Non-required options MUST be always after required ones.");
+            return false;
+        }
+        if (option.getType() == TextOptionType.MULTI_STRING && data.getOptions().length - 1 != index) {
+            DIH4JDALogger.error(DIH4JDALogger.Type.INVALID_TEXT_COMMAND, "TextOptionType#MULTI_STRING MUST be always the last option!");
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -578,6 +676,33 @@ public class InteractionHandler extends ListenerAdapter {
         }
     }
 
+    private void handleTextCommand(@Nonnull MessageReceivedEvent event) throws CommandNotRegisteredException {
+        final String prefix = dih4jda.getEffectivePrefix(event.getGuild());
+        final String content = event.getMessage().getContentRaw();
+        // TODO: add mention prefix
+        if (!content.startsWith(prefix)) return;
+        final String[] args = content.split("\\s+");
+        final TextCommand command = textCommandsIndex.get(args[0].substring(prefix.length()));
+        // check if command is registered
+        if (command == null) {
+            if (config.isEnableHelpCommand() && config.getHelpCommandNames().contains(args[0].substring(prefix.length()))) {
+                config.getHelpCommandConsumer().accept(new HelpTextCommandEvent(dih4jda, event), new ArrayList<>(textCommandsIndex.values()));
+                return;
+            }
+            if (config.isThrowUnregisteredException()) {
+                throw new CommandNotRegisteredException(String.format("Text Command \"%s\" is not registered.", args[0]));
+            }
+            return;
+        }
+        final List<TextOptionMapping> mappings = getTextOptionMappings(dih4jda, event, args, command);
+        if (mappings == null) return;
+        final TextCommandEvent textEvent = new TextCommandEvent(dih4jda, event, command, mappings);
+        // TODO: Implement Command Requirements
+        //if (passesRequirements(event, command, RegistrationType.GUILD)) {
+            command.execute(textEvent);
+        //}
+    }
+
     /**
      * Checks if the given {@link CommandInteraction} passes the
      * {@link RestrictedCommand} requirements.
@@ -629,6 +754,22 @@ public class InteractionHandler extends ListenerAdapter {
             }
         }
         return true;
+    }
+
+    public static List<TextOptionMapping> getTextOptionMappings(DIH4JDA dih4jda, MessageReceivedEvent event, String[] args, TextCommand command) {
+        final List<TextOptionMapping> mappings = new ArrayList<>();
+        List<TextOptionData> options = List.of(command.getCommandData().getOptions());
+        // check and create TextOptionMappings
+        for (int i = 0; i < options.size(); i++) {
+            final TextOptionData option = options.get(i);
+            if (args.length - 1 >= i + 1) {
+                mappings.add(new TextOptionMapping(option, args, i + 1));
+            } else if (option.isRequired()) {
+                DIH4JDAEvent.fire(new InvalidOptionsEvent(dih4jda, event, command));
+                return null;
+            }
+        }
+        return mappings;
     }
 
     /**
@@ -789,6 +930,18 @@ public class InteractionHandler extends ListenerAdapter {
                 }
             } catch (Throwable e) {
                 DIH4JDAEvent.fire(new ModalExceptionEvent(dih4jda, event, e));
+            }
+        }, config.getExecutor());
+    }
+
+    @Override
+    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                handleTextCommand(event);
+            } catch (Throwable e) {
+                // TODO: Implement Exceptions
+                // DIH4JDAEvent.fire(new CommandExceptionEvent(dih4jda, event, e));
             }
         }, config.getExecutor());
     }

@@ -1,16 +1,24 @@
 package xyz.dynxsty.dih4jda;
 
 import net.dv8tion.jda.api.JDA;
+import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.config.DIH4JDAConfig;
+import xyz.dynxsty.dih4jda.events.text.HelpTextCommandEvent;
+import xyz.dynxsty.dih4jda.events.text.TextCommandEvent;
 import xyz.dynxsty.dih4jda.exceptions.CommandNotRegisteredException;
 import xyz.dynxsty.dih4jda.exceptions.DIH4JDAException;
 import xyz.dynxsty.dih4jda.exceptions.InvalidPackageException;
+import xyz.dynxsty.dih4jda.interactions.commands.text.TextCommand;
 import xyz.dynxsty.dih4jda.util.ClassWalker;
 import xyz.dynxsty.dih4jda.util.ClasspathHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
 
 /**
  * Builder class used to instantiate a new {@link DIH4JDA} instance. 
@@ -156,6 +164,25 @@ public class DIH4JDABuilder {
 	public DIH4JDABuilder disableUnregisteredCommandException() {
 		config.setThrowUnregisteredException(false);
 		return this;
+	}
+
+	// TODO: Docs
+	public DIH4JDABuilder disableHelpCommand() {
+		config.setEnableHelpCommand(false);
+		return this;
+	}
+
+	// TODO: Docs
+	public void setHelpCommandName(String name, @NotNull String... aliases) {
+		List<String> names = new ArrayList<>(1 + aliases.length);
+		names.add(name);
+		Collections.addAll(names, aliases);
+		config.setHelpCommandNames(names);
+	}
+
+	// TODO: Docs
+	public void setHelpCommandConsumer(BiConsumer<HelpTextCommandEvent, List<TextCommand>> helpCommandConsumer) {
+		config.setHelpCommandConsumer(helpCommandConsumer);
 	}
 
 	/**

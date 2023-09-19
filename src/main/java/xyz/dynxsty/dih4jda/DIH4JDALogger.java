@@ -222,6 +222,10 @@ public class DIH4JDALogger {
 		/**
 		 * If an implementation for {@link xyz.dynxsty.dih4jda.events.DIH4JDAEventListener} is missing.
 		 */
-		EVENT_MISSING_HANDLER
+		EVENT_MISSING_HANDLER,
+		/**
+		 * TODO: docs
+		 */
+		INVALID_TEXT_COMMAND
 	}
 }

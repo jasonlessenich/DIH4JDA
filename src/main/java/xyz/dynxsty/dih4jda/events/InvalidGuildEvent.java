@@ -13,7 +13,7 @@ import java.util.Set;
  *
  * @see RestrictedCommand#setRequiredGuilds(Long...)
  */
-public class InvalidGuildEvent extends DIH4JDAEvent<CommandInteraction> {
+public class InvalidGuildEvent extends DIH4JDAInteractionEvent<CommandInteraction> {
 
 	@Getter
 	private final Set<Long> guildIds;

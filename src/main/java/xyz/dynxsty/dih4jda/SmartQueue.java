@@ -120,6 +120,7 @@ public class SmartQueue {
 		if (existing.contains(command)) {
 			if (deleteUnknown) {
 				DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_DELETED_UNKNOWN, prefix + "Deleting unknown %s command: %s", command.getType(), command.getName());
+				command.delete().queue();
 			} else {
 				DIH4JDALogger.info(DIH4JDALogger.Type.SMART_QUEUE_IGNORED_UNKNOWN, prefix + "Ignored unknown %s command: %s", command.getType(), command.getName());
 			}

@@ -16,7 +16,7 @@ import java.time.Duration;
  *
  * @see RestrictedCommand#setCommandCooldown(Duration)
  */
-public class CommandCooldownEvent extends DIH4JDAEvent<CommandInteraction> {
+public class CommandCooldownEvent extends DIH4JDAInteractionEvent<CommandInteraction> {
 
 	@Getter
 	private final RestrictedCommand.Cooldown cooldown;
