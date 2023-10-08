@@ -11,6 +11,8 @@ import xyz.dynxsty.dih4jda.util.ClasspathHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Builder class used to instantiate a new {@link DIH4JDA} instance. 
@@ -49,7 +51,10 @@ public class DIH4JDABuilder {
 	}
 
 	/**
-	 * Allows to specify a custom {@link Executor} that will be used to execute all commands and events.
+	 * Allows to specify a custom {@link Executor} that will be used to execute all commands and events.<br>
+	 * If you have access to Java 21 it's recommended to use the {@link Executors#newVirtualThreadPerTaskExecutor()}.<br>
+	 * <br>
+	 * <b>Standard:</b> {@link ForkJoinPool#commonPool()}
 	 *
 	 * @param executor The custom {@link Executor}.
 	 * @return The {@link DIH4JDABuilder} for chaining convenience.
