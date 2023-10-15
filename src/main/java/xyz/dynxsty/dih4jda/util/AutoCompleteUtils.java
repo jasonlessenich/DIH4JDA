@@ -1,13 +1,13 @@
 package xyz.dynxsty.dih4jda.util;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Utility class that contains some useful methods regarding the AutoComplete
@@ -35,7 +35,7 @@ public class AutoCompleteUtils {
 	@Nonnull
 	public static List<Command.Choice> filterChoices(@Nonnull CommandAutoCompleteInteractionEvent event,
 			@Nonnull List<Command.Choice> choices) {
-		return filterChoices(event.getFocusedOption().getValue().toLowerCase(), choices);
+		return filterChoices(event.getFocusedOption().getValue().toLowerCase(Locale.ROOT), choices);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class AutoCompleteUtils {
 	@Nonnull
 	public static List<Command.Choice> filterChoices(@Nonnull CommandAutoCompleteInteractionEvent event,
 			@Nonnull Command.Choice... choices) {
-		return filterChoices(event.getFocusedOption().getValue().toLowerCase(), List.of(choices));
+		return filterChoices(event.getFocusedOption().getValue().toLowerCase(Locale.ROOT), List.of(choices));
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class AutoCompleteUtils {
 	public static List<Command.Choice> filterChoices(@Nonnull String filter, @Nonnull List<Command.Choice> choices) {
 		return choices
 				.stream()
-				.filter(choice -> choice.getName().toLowerCase().contains(filter.toLowerCase()))
+				.filter(choice -> choice.getName().toLowerCase(Locale.ROOT).contains(filter.toLowerCase(Locale.ROOT)))
 				.limit(OptionData.MAX_CHOICES)
 				.collect(Collectors.toList());
 	}
