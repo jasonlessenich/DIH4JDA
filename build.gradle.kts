@@ -120,8 +120,8 @@ To find all missing javadocs / all javadocs warnings execute this command:
 javadoc.apply {
     isFailOnError = isCI
 
-    //Javadocs are scuffed on these version I don't know and care why.
-    if (javaVersion <= JavaVersion.VERSION_13) {
+    //Fixes the error where the executor could not be found and the build fails.
+    if (javaVersion <= JavaVersion.VERSION_20) {
         isFailOnError = false
     }
 
@@ -141,7 +141,7 @@ javadoc.apply {
         if (javaVersion >= JavaVersion.VERSION_13) {
             opt.addBooleanOption("Xdoclint:all", true)
         } else {
-            //Can be ignored because JavaDocs are generated using Java 17.
+            //Can be ignored because JavaDocs are generated using Java 21.
             opt.addBooleanOption("Xdoclint:all,-missing,-accessibility", true)
         }
     }
