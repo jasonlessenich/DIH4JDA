@@ -50,20 +50,20 @@ repositories {
     maven(url = "https://jitpack.io")
 }
 
-val lombokVersion = "1.18.28"
+val lombokVersion = "1.18.30"
 
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
     testImplementation("ch.qos.logback:logback-classic:1.4.11")
 
-    api("net.dv8tion:JDA:5.0.0-beta.13") {
+    api("net.dv8tion:JDA:5.0.0-beta.15") {
         exclude(module = "opus-java")
     }
 
     //code saftey
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-    errorprone("com.google.errorprone:error_prone_core:2.21.1")
+    errorprone("com.google.errorprone:error_prone_core:2.22.0")
 
     //Lombok's annotations
     compileOnly("org.projectlombok:lombok:$lombokVersion")
@@ -120,8 +120,8 @@ To find all missing javadocs / all javadocs warnings execute this command:
 javadoc.apply {
     isFailOnError = isCI
 
-    //Javadocs are scuffed on these version I don't know and care why.
-    if (javaVersion <= JavaVersion.VERSION_13) {
+    //Fixes the error where the executor could not be found and the build fails.
+    if (javaVersion <= JavaVersion.VERSION_20) {
         isFailOnError = false
     }
 
@@ -141,7 +141,7 @@ javadoc.apply {
         if (javaVersion >= JavaVersion.VERSION_13) {
             opt.addBooleanOption("Xdoclint:all", true)
         } else {
-            //Can be ignored because JavaDocs are generated using Java 17.
+            //Can be ignored because JavaDocs are generated using Java 21.
             opt.addBooleanOption("Xdoclint:all,-missing,-accessibility", true)
         }
     }
