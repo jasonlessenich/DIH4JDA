@@ -1,14 +1,13 @@
 package xyz.dynxsty.dih4jda.util;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Utility class that contains some useful methods regarding the AutoComplete
