@@ -37,6 +37,7 @@ import xyz.dynxsty.dih4jda.interactions.AutoCompletable;
 import xyz.dynxsty.dih4jda.interactions.commands.RestrictedCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.BaseApplicationCommand;
 import xyz.dynxsty.dih4jda.interactions.commands.application.ContextCommand;
+import xyz.dynxsty.dih4jda.interactions.commands.application.CooldownScope;
 import xyz.dynxsty.dih4jda.interactions.commands.application.RegistrationType;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
@@ -578,57 +579,83 @@ public class InteractionHandler extends ListenerAdapter {
         }
     }
 
+	/**
+	 * Checks if the given {@link CommandInteraction} passes the
+	 * {@link RestrictedCommand} requirements.
+	 * If not, this will then fire the corresponding event using {@link DIH4JDAEvent#fire(DIH4JDAEvent)}
+	 *
+	 * @param interaction The {@link CommandInteraction}.
+	 * @param command     The {@link RestrictedCommand} which contains the (possible) restrictions.
+	 * @param type        The {@link RegistrationType} of the {@link BaseApplicationCommand}.
+	 * @return Whether the event was fired.
+	 * @since v1.5
+	 */
+	private boolean passesRequirements(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command,
+									   @Nonnull RegistrationType type) {
+		long userId = interaction.getUser().getIdLong();
+		Long[] guildIds = command.getRequiredGuilds();
+		Permission[] permissions = command.getRequiredPermissions();
+		Long[] userIds = command.getRequiredUsers();
+		Long[] roleIds = command.getRequiredRoles();
+		if (type == RegistrationType.GUILD && guildIds.length != 0 && interaction.isFromGuild() &&
+				!Arrays.asList(guildIds).contains(interaction.getGuild().getIdLong())
+		) {
+			DIH4JDAEvent.fire(new InvalidGuildEvent(dih4jda, interaction, Set.of(guildIds)));
+			return false;
+		}
+		if (permissions.length != 0 && interaction.isFromGuild() &&
+				interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
+			DIH4JDAEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
+			return false;
+		}
+		if (userIds.length != 0 && !Arrays.asList(userIds).contains(userId)) {
+			DIH4JDAEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
+			return false;
+		}
+		if (interaction.isFromGuild() && interaction.getMember() != null) {
+			Member member = interaction.getMember();
+			if (roleIds.length != 0 && !member.getRoles().isEmpty() &&
+					member.getRoles().stream().noneMatch(r -> Arrays.asList(roleIds).contains(r.getIdLong()))) {
+				DIH4JDAEvent.fire(new InvalidRoleEvent(dih4jda, interaction, Set.of(roleIds)));
+				return false;
+			}
+		}
+        return !hasCooldown(interaction, command);
+    }
+
     /**
-     * Checks if the given {@link CommandInteraction} passes the
-     * {@link RestrictedCommand} requirements.
-     * If not, this will then fire the corresponding event using {@link DIH4JDAEvent#fire(DIH4JDAEvent)}
-     *
+     * Checks if the given {@link CommandInteraction} and {@link net.dv8tion.jda.api.entities.User} has a cooldown.
      * @param interaction The {@link CommandInteraction}.
-     * @param command     The {@link RestrictedCommand} which contains the (possible) restrictions.
-     * @param type        The {@link RegistrationType} of the {@link BaseApplicationCommand}.
-     * @return Whether the event was fired.
-     * @since v1.5
+     * @param command The {@link RestrictedCommand} which contains the cooldown.
+     * @return true if the command and user has a cooldown, false otherwise.
      */
-    private boolean passesRequirements(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command,
-                                       @Nonnull RegistrationType type) {
-        long userId = interaction.getUser().getIdLong();
-        Long[] guildIds = command.getRequiredGuilds();
-        Permission[] permissions = command.getRequiredPermissions();
-        Long[] userIds = command.getRequiredUsers();
-        Long[] roleIds = command.getRequiredRoles();
-        if (type == RegistrationType.GUILD && guildIds.length != 0 && interaction.isFromGuild() &&
-                interaction.isFromGuild() && !List.of(guildIds).contains(interaction.getGuild().getIdLong())
-        ) {
-            DIH4JDAEvent.fire(new InvalidGuildEvent(dih4jda, interaction, Set.of(guildIds)));
-            return false;
-        }
-        if (permissions.length != 0 && interaction.isFromGuild() &&
-                interaction.getMember() != null && !interaction.getMember().hasPermission(permissions)) {
-            DIH4JDAEvent.fire(new InsufficientPermissionsEvent(dih4jda, interaction, Set.of(permissions)));
-            return false;
-        }
-        if (userIds.length != 0 && !List.of(userIds).contains(userId)) {
-            DIH4JDAEvent.fire(new InvalidUserEvent(dih4jda, interaction, Set.of(userIds)));
-            return false;
-        }
-        if (interaction.isFromGuild() && interaction.getMember() != null) {
-            Member member = interaction.getMember();
-            if (roleIds.length != 0 && !member.getRoles().isEmpty() &&
-                    member.getRoles().stream().noneMatch(r -> List.of(roleIds).contains(r.getIdLong()))) {
-                DIH4JDAEvent.fire(new InvalidRoleEvent(dih4jda, interaction, Set.of(roleIds)));
-                return false;
-            }
-        }
+    private boolean hasCooldown(@Nonnull CommandInteraction interaction, @Nonnull RestrictedCommand command) {
         // check if the command has enabled some sort of cooldown
-        if (!command.getCommandCooldown().equals(Duration.ZERO)) {
-            if (command.hasCooldown(userId)) {
-                DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, command.retrieveCooldown(userId)));
-                return false;
-            } else {
-                command.applyCooldown(userId, Instant.now().plus(command.getCommandCooldown()));
-            }
+        Pair<Duration, CooldownScope> cooldownPair = command.getCooldownConfiguration();
+        if (cooldownPair.getFirst().equals(Duration.ZERO) || cooldownPair.getSecond().equals(CooldownScope.NONE)) {
+            return false;
         }
-        return true;
+        RestrictedCommand.Cooldown cooldown = command.getCooldown(interaction.getUser(), interaction.getGuild());
+        if (interaction.isFromGuild()) {
+            if (command.hasCooldown(interaction.getMember())) {
+                DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, cooldown));
+                return true;
+            }
+            Instant nextUse = Instant.now().plus(cooldownPair.getFirst());
+            switch (cooldownPair.getSecond()) {
+                case USER_GLOBAL: command.applyCooldown(interaction.getUser(), nextUse); break;
+                case MEMBER_GUILD: command.applyCooldown(interaction.getUser(), interaction.getGuild(), nextUse); break;
+                case GUILD: command.applyCooldown(interaction.getGuild(), nextUse); break;
+            }
+        } else {
+            if (command.hasCooldown(interaction.getUser())) {
+                DIH4JDAEvent.fire(new CommandCooldownEvent(dih4jda, interaction, cooldown));
+                return true;
+            }
+            Instant nextUse = Instant.now().plus(cooldownPair.getFirst());
+            command.applyCooldown(interaction.getUser(), nextUse);
+        }
+        return false;
     }
 
     /**
