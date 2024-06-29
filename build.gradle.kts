@@ -8,7 +8,7 @@ plugins {
     `maven-publish`
     id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("net.ltgt.errorprone") version "4.0.0"
+    id("net.ltgt.errorprone") version "4.0.1"
 }
 
 java {
