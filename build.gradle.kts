@@ -63,7 +63,7 @@ dependencies {
 
     //code saftey
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-    errorprone("com.google.errorprone:error_prone_core:2.28.0")
+    errorprone("com.google.errorprone:error_prone_core:2.29.0")
 
     //Lombok's annotations
     compileOnly("org.projectlombok:lombok:$lombokVersion")
