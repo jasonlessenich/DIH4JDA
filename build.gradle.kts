@@ -53,8 +53,8 @@ repositories {
 val lombokVersion = "1.18.34"
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.3")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.3")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.0")
     testImplementation("ch.qos.logback:logback-classic:1.5.7")
 
     api("net.dv8tion:JDA:5.0.2") {
