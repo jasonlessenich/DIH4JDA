@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * An interface that contains the method that should be executed when a user interacts with a
- * {@link net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu}.
+ * {@link net.dv8tion.jda.api.components.selections.EntitySelectMenu}.
  */
 public interface EntitySelectMenuHandler {
 

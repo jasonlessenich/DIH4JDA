@@ -1,10 +1,11 @@
 package xyz.dynxsty.examples.commands;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jetbrains.annotations.NotNull;
 import xyz.dynxsty.dih4jda.interactions.commands.application.SlashCommand;
 import xyz.dynxsty.dih4jda.interactions.components.ButtonHandler;
@@ -27,17 +28,20 @@ public class PollCommand extends SlashCommand implements ButtonHandler {
     public void execute(@Nonnull SlashCommandInteractionEvent event) {
         // Creates a message with buttons.
         event.reply("Choose between these two options!")
-                .addActionRow(Button.primary(ComponentIdBuilder.build("button", "1"), "Option 1"),
-                        Button.secondary(ComponentIdBuilder.build("button", "2"), "Option 2"))
-                .setEphemeral(false).queue();
+            .addComponents(
+                ActionRow.of(
+                    Button.primary(ComponentIdBuilder.build("button", "1"), "Option 1"),
+                    Button.secondary(ComponentIdBuilder.build("button", "2"), "Option 2")
+                )
+            ).setEphemeral(false).queue();
     }
 
     @Override
     public void handleButton(@NotNull ButtonInteractionEvent event, @NotNull Button button) {
         // Handles buttons that were previously mapped using DIH4JDA#addButtonMappings
-        String[] id = ComponentIdBuilder.split(button.getId());
+        String[] id = ComponentIdBuilder.split(button.getCustomId());
         // Splits the buttons' id on the specified separator (in this case ':')
-        if (id[1].equals("1")) {
+        if ("1".equals(id[1])) {
             event.reply("You voted for option 1!").queue();
         } else {
             event.reply("You voted for option 2!").queue();

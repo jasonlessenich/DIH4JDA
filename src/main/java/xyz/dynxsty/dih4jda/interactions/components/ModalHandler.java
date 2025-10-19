@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * An interface that contains the method that should be executed when a user interacts with a
- * {@link net.dv8tion.jda.api.interactions.modals.Modal}.
+ * {@link net.dv8tion.jda.api.modals.Modal}.
  */
 public interface ModalHandler {
 	/**
