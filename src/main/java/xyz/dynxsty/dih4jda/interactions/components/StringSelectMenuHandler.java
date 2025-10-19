@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * An interface that contains the method that should be executed when a user interacts with a
- * {@link net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu}.
+ * {@link net.dv8tion.jda.api.components.selections.StringSelectMenu}.
  */
 public interface StringSelectMenuHandler {
 
